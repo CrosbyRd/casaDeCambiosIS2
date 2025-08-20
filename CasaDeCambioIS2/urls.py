@@ -20,8 +20,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from . import views as proyecto_views # Importa el nuevo views.py
 
 urlpatterns = [
+        # Asocia la URL vacía ('') con la vista home de tu proyecto principal
+    path('', proyecto_views.home, name='home'),
     path("lib/", include("lib.urls")),
     path('admin/', admin.site.urls),
     path('api/auth/', include('usuarios.urls')),
