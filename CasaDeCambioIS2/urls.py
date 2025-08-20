@@ -16,6 +16,8 @@ urlpatterns = [
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
     path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),  # crea esta cuando la tengas
     path("forgot-password/", TemplateView.as_view(template_name="site/forgot-password.html"), name="site_forgot_password"),
+    path("login/", TemplateView.as_view(template_name="site/login.html"), name="site_login"),
+    path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),
 
     # Tu app
     path("lib/", include("lib.urls")),
