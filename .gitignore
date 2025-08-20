@@ -1,11 +1,76 @@
+cat > .gitignore << 'EOF'
+# --- Python / build ---
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.so
+
+# --- Entornos / secretos ---
 venv/
+.venv/
+env/
+ENV/
+venv.bak/
+env.bak/
 .env
+.env.*
+*.env
+
+# --- Django ---
+# Mantener la DB local fuera del repo
 db.sqlite3
 *.sqlite3
+
+# Media generada por usuarios (nombres comunes)
 media/
+mediafiles/
+
+# Static colectado para deploy (NO confundir con /static de desarrollo)
 staticfiles/
+
+# --- Herramientas / tipado / debug ---
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+.ruff_cache/
+
+# --- Docs / site builders ---
+/site
+
+# --- IDEs / editores / OS ---
 .DS_Store
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+
+# --- Otros específicos ---
+.spyderproject
+.spyproject
+.ropeproject
+.abstra/
+.pypirc
+.cursorignore
+.cursorindexingignore
+
+# --- Testing / coverage / logs ---
+.coverage
+htmlcov/
+.pytest_cache/
+*.log
+
+# --- Marimo ---
+marimo/_static/
+marimo/_lsp/
+__marimo__/
+EOF
+
+git add .gitignore
+git commit -m "chore: unify .gitignore for Django/py"
