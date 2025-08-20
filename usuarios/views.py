@@ -18,3 +18,18 @@ class CurrentUserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+# Vista para listar y crear usuarios.
+# Solo los administradores podrán acceder a esta vista.
+class UserListCreate(generics.ListCreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+# Vista para recuperar, actualizar y eliminar un usuario específico.
+# Solo los administradores podrán acceder a esta vista.
+class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
