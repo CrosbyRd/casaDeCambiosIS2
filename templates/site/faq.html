@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange — Preguntas frecuentes{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6">Preguntas frecuentes</h1>
+
+<!-- Acordeón -->
+<div class="border border-neutral-200 rounded-lg" data-accordion>
+  <!-- ABIERTA POR DEFECTO -->
+  <button class="accordion-button" aria-expanded="true" data-open data-accordion-target="#faq1">
+    <span class="font-semibold">¿Cómo se calcula el tipo de cambio?</span>
+    <span class="ml-2" aria-hidden="true">▾</span>
+  </button>
+  <div id="faq1" class="accordion-panel" style="display:block">
+    <p class="text-neutral-700">Usamos proveedores mayoristas y aplicamos un spread dinámico.</p>
+  </div>
+
+  <hr class="border-neutral-200" />
+
+  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq2">
+    <span class="font-semibold">¿Cuánto tarda una transferencia?</span>
+    <span class="ml-2" aria-hidden="true">▸</span>
+  </button>
+  <div id="faq2" class="accordion-panel">
+    <p class="text-neutral-700">Las transferencias locales suelen acreditarse el mismo día hábil.</p>
+  </div>
+
+  <hr class="border-neutral-200" />
+
+  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq3">
+    <span class="font-semibold">¿Puedo simular sin registrarme?</span>
+    <span class="ml-2" aria-hidden="true">▸</span>
+  </button>
+  <div id="faq3" class="accordion-panel">
+    <p class="text-neutral-700">Sí, usá la calculadora pública.</p>
+  </div>
+</div>
+
+<div class="mt-8">
+  <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
+</div>
+</main>
+{% endblock %}

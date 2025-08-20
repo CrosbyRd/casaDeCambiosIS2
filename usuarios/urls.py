@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import home, RegisterView, CurrentUserView
+from .views import RegisterView, CurrentUserView  # quitamos 'home'
+
+app_name = "usuarios"
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),
     path('me/', CurrentUserView.as_view(), name='current_user'),
-     path('', home, name='home'),
 ]
