@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'lib', # Tu app existente
     'usuarios',      # Nuestra nueva app de usuarios
+    'clientes'
 ]
 
 MIDDLEWARE = [

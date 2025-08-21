@@ -1,0 +1,151 @@
+{% extends 'clientes/base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Editar{% else %}Crear{% endif %} Cliente{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-label {
+        font-weight: 500;
+    }
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas {% if object %}fa-edit{% else %}fa-plus{% endif %}"></i>
+                    {% if object %}Editar{% else %}Crear{% endif %} Cliente
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="clienteForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_nombre" class="form-label">Nombre completo *</label>
+                            <input type="text" name="nombre" class="form-control" 
+                                   value="{{ form.nombre.value|default:'' }}" required
+                                   placeholder="Ingrese el nombre completo">
+                            {% if form.nombre.errors %}
+                            <div class="text-danger">{{ form.nombre.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_correo_electronico" class="form-label">Correo electrónico *</label>
+                            <input type="email" name="correo_electronico" class="form-control" 
+                                   value="{{ form.correo_electronico.value|default:'' }}" required
+                                   placeholder="correo@ejemplo.com">
+                            {% if form.correo_electronico.errors %}
+                            <div class="text-danger">{{ form.correo_electronico.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_categoria" class="form-label">Categoría *</label>
+                            <select name="categoria" class="form-select" id="id_categoria" required
+                                    onchange="actualizarInformacionCliente(this)">
+                                <option value="">Seleccione una categoría</option>
+                                <option value="minorista" {% if form.categoria.value == 'minorista' %}selected{% endif %}>Minorista</option>
+                                <option value="corporativo" {% if form.categoria.value == 'corporativo' %}selected{% endif %}>Corporativo</option>
+                                <option value="vip" {% if form.categoria.value == 'vip' %}selected{% endif %}>VIP</option>
+                            </select>
+                            {% if form.categoria.errors %}
+                            <div class="text-danger">{{ form.categoria.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_bonificacion_display" class="form-label">Bonificación</label>
+                            <input type="text" class="form-control" id="id_bonificacion_display" 
+                                   value="{{ form.bonificacion_display.value|default:'0%' }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_limite_usd_display" class="form-label">Límite USD</label>
+                            <input type="text" class="form-control" id="id_limite_usd_display" 
+                                   value="{{ form.limite_usd_display.value|default:'$5,000.00' }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4 pt-3">
+                                <input type="checkbox" name="activo" class="form-check-input" id="id_activo"
+                                       {% if form.activo.value or not object %}checked{% endif %}>
+                                <label class="form-check-label" for="id_activo">Cliente activo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        La bonificación y los límites se calculan automáticamente según la categoría seleccionada.
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% if object %}{% url 'clientes:detalle' object.id_cliente %}{% else %}{% url 'clientes:lista' %}{% endif %}" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {% if object %}Actualizar{% else %}Crear{% endif %} Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function actualizarInformacionCliente(selectElement) {
+    const configuraciones = {
+        'vip': {
+            bonificacion: '10%',
+            limite_usd: '$50,000.00'
+        },
+        'corporativo': {
+            bonificacion: '5%', 
+            limite_usd: '$25,000.00'
+        },
+        'minorista': {
+            bonificacion: '0%',
+            limite_usd: '$5,000.00'
+        }
+    };
+    
+    const selectedValue = selectElement.value;
+    const config = configuraciones[selectedValue] || configuraciones.minorista;
+    
+    // Actualizar todos los campos
+    document.getElementById('id_bonificacion_display').value = config.bonificacion;
+    document.getElementById('id_limite_usd_display').value = config.limite_usd;
+}
+
+// Inicializar la información al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('id_categoria');
+    if (categoriaSelect) {
+        actualizarInformacionCliente(categoriaSelect);
+    }
+});
+</script>
+{% endblock %}
