@@ -1,19 +1,22 @@
-# usuarios/models.py
+# proyecto/usuarios/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from roles.models import Role 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(unique=True)
-    roles = models.ManyToManyField(
-        Role,
-        verbose_name="Roles",
-        blank=True,
-        related_name="users"
+    # Definimos los tipos de usuario
+    class UserTypes(models.TextChoices):
+        ADMIN = 'ADMIN', 'Administrador'
+        CAJERO = 'CAJERO', 'Cajero'
+        CLIENTE = 'CLIENTE', 'Cliente'
+
+    # Campo para diferenciar el tipo de usuario
+    tipo_usuario = models.CharField(
+        max_length=50,
+        choices=UserTypes.choices,
+        default=UserTypes.CLIENTE
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
     def __str__(self):
-        return self.email
+        return self.username
+    
+

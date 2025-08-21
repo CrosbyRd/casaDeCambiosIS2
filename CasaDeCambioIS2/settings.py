@@ -1,4 +1,3 @@
-
 """
 Django settings for CasaDeCambioIS2 project.
 
@@ -32,18 +31,18 @@ ALLOWED_HOSTS = [
 
 # --- Apps instaladas ---
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'lib', # Tu app existente
-    'usuarios',      # Nuestra nueva app de usuarios
-    'clientes',
-    'roles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "lib",
+    "usuarios",
+    "clientes",
+    "roles",
 ]
 
 
