@@ -18,12 +18,12 @@ class Command(BaseCommand):
                 'tipo_usuario': CustomUser.UserTypes.ADMIN
             },
             {
-                'username': 'cajero_uno',
-                'email': 'cajero1@casadecambio.com',
+                'username': 'analista_uno',
+                'email': 'analista1@casadecambio.com',
                 'password': 'password123',
                 'first_name': 'Juan',
                 'last_name': 'Pérez',
-                'tipo_usuario': CustomUser.UserTypes.CAJERO
+                'tipo_usuario': CustomUser.UserTypes.ANALISTA
             },
             {
                 'username': 'cliente_test',

@@ -6,7 +6,7 @@ class CustomUser(AbstractUser):
     # Definimos los tipos de usuario
     class UserTypes(models.TextChoices):
         ADMIN = 'ADMIN', 'Administrador'
-        CAJERO = 'CAJERO', 'Cajero'
+        ANALISTA = 'ANALISTA', 'Analista'
         CLIENTE = 'CLIENTE', 'Cliente'
 
     # Campo para diferenciar el tipo de usuario
