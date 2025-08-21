@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange — Contacto{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6">Contacto</h1>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <!-- Formulario -->
+  <form class="border border-neutral-200 rounded-lg p-6" id="contactForm" novalidate>
+    <div class="mb-6">
+      <label class="block mb-3 font-medium" for="name">Nombre</label>
+      <input id="name" name="name" type="text" required
+             class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+             placeholder="Tu nombre" />
+    </div>
+    <div class="mb-6">
+      <label class="block mb-3 font-medium" for="email">Email</label>
+      <input id="email" name="email" type="email" required
+             class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+             placeholder="tu@correo.com" />
+    </div>
+    <div class="mb-6">
+      <label class="block mb-3 font-medium" for="msg">Mensaje</label>
+      <textarea id="msg" name="msg" rows="4" required
+                class="w-full px-4 py-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                placeholder="Contanos en qué podemos ayudarte"></textarea>
+    </div>
+    <button type="submit" class="btn w-full">Enviar</button>
+  </form>
+
+  <!-- Lateral -->
+  <div class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">¿Preferís otro canal?</h2>
+    <ul class="grid gap-3">
+      <li>Chat: Lun–Vie 9:00–18:00</li>
+      <li>Email: soporte@globalexchange.test</li>
+      <li>Centro de ayuda con artículos y guías</li>
+    </ul>
+    <div class="mt-6">
+      <a href="{% url 'site_faq' %}" class="btn-secondary">Ver FAQ</a>
+    </div>
+  </div>
+</div>
+</main>
+{% endblock %}
