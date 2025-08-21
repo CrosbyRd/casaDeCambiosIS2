@@ -1,5 +1,11 @@
 from django.urls import path
+<<<<<<< HEAD
 from .views import RegisterView, CurrentUserView, UserListCreate, UserRetrieveUpdateDestroy
+=======
+from .views import RegisterView, CurrentUserView  # quitamos 'home'
+
+app_name = "usuarios"
+>>>>>>> development
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),
