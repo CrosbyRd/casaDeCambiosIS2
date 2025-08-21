@@ -40,6 +40,14 @@ class Command(BaseCommand):
                 'first_name': 'Lope',
                 'last_name': 'GGG',
                 'tipo_usuario': CustomUser.UserTypes.CLIENTE
+            },
+                                    {
+                'username': 'admin44',
+                'email': 'lclc@mgail.com',
+                'password': 'ttu789',
+                'first_name': 'Lope',
+                'last_name': 'GGG',
+                'tipo_usuario': CustomUser.UserTypes.ADMIN
             }
         ]
 

@@ -55,53 +55,77 @@
   // Cargar desde storage al abrir (si ya hay token)
   document.addEventListener('DOMContentLoaded', fetchAndShowUserData);
 
-  loginForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    errorInfoDiv.style.display = 'none';
+loginForm.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  errorInfoDiv.style.display = 'none';
 
-    const username = event.target.username.value;
-    const password = event.target.password.value;
+  const username = event.target.username.value;
+  const password = event.target.password.value;
 
-    try {
-      const res = await fetch('/api/token/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      if (!res.ok) throw new Error('Usuario o contraseña incorrectos.');
-      const data = await res.json();
+  try {
+    const res = await fetch('/api/token/', {
+      method: 'POST', // 💡 Método HTTP
+      headers: {
+        'Content-Type': 'application/json' // 💡 Tipo de contenido
+      },
+      body: JSON.stringify({ username, password }) // 💡 Datos a enviar
+    });
+    
+    if (!res.ok) throw new Error('Usuario o contraseña incorrectos.');
+    const data = await res.json();
 
-      localStorage.setItem('accessToken', data.access);
-      localStorage.setItem('refreshToken', data.refresh);
+    localStorage.setItem('accessToken', data.access);
+    localStorage.setItem('refreshToken', data.refresh);
 
-      await fetchAndShowUserData();
-    } catch (err) {
-      errorInfoDiv.textContent = err.message;
-      errorInfoDiv.style.display = 'block';
-    }
-  });
+    // Redirige al usuario a la vista 'home' después del login
+    window.location.href = '/'; 
 
-  async function fetchAndShowUserData() {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) return;
-    try {
-      const res = await fetch('/api/auth/me/', {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
-      if (res.status === 401) throw new Error('Sesión expirada. Inicia sesión de nuevo.');
-      if (!res.ok) throw new Error('No se pudo obtener la información del usuario.');
-      const user = await res.json();
-      userDataPre.textContent = JSON.stringify(user, null, 2);
-      userInfoDiv.style.display = 'block';
-      loginForm.style.display = 'none';
-    } catch (err) {
-      logout();
-      errorInfoDiv.textContent = err.message;
-      errorInfoDiv.style.display = 'block';
-    }
+  } catch (err) {
+    errorInfoDiv.textContent = err.message;
+    errorInfoDiv.style.display = 'block';
   }
+});
 
+// ... (código existente)
+
+async function fetchAndShowUserData() {
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) return;
+  try {
+    const res = await fetch('/api/auth/me/', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    
+    // Si la sesión ha expirado o el token es inválido, cierra sesión
+    if (res.status === 401) throw new Error('Sesión expirada. Inicia sesión de nuevo.');
+    
+    // Si la petición falla por otro motivo
+    if (!res.ok) throw new Error('No se pudo obtener la información del usuario.');
+
+    const user = await res.json();
+    console.log(user);
+    
+    // 💡 Lógica de Redirección 💡
+    if (user.tipo_usuario === 'ADMIN') {
+        // Redirige al menú de administrador si el usuario es un ADMIN
+        window.location.href = '/api/auth/admin-menu/';
+    } else {
+        // Si no es un ADMIN, muestra la información en la misma página
+        userDataPre.textContent = JSON.stringify(user, null, 2);
+        userInfoDiv.style.display = 'block';
+        loginForm.style.display = 'none';
+    }
+
+  } catch (err) {
+    // Si ocurre un error, limpia los tokens y muestra el mensaje
+    logout();
+    errorInfoDiv.textContent = err.message;
+    errorInfoDiv.style.display = 'block';
+  }
+}
+
+// ... (resto del código)
   function logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');

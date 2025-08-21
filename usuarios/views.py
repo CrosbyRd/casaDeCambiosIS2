@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, RegisterSerializer
 from .models import CustomUser
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Vista para el registro de usuarios
 class RegisterView(generics.CreateAPIView):
@@ -40,11 +40,24 @@ def home(request):
     # 'request.user' es una instancia de CustomUser si está autenticado,
     # o de AnonymousUser si no lo está.
     if request.user.is_authenticated:
+            # Lógica de redirección basada en el tipo de usuario
+            if request.user.tipo_usuario == 'ADMIN':
+                return redirect('usuarios:admin_menu') # Redirige al menú del administrador
+            else:
+                # Lógica para otros tipos de usuarios (Clientes, Cajeros, etc.)
+                mensaje = f"¡Bienvenido, {request.user.username}! Eres un {request.user.get_tipo_usuario_display()}."
+                return render(request, 'usuarios/home.html', {'mensaje': mensaje})
         # Lógica para usuarios registrados
-        mensaje = f"¡Bienvenido, {request.user.username}!"
+         #   mensaje = f"¡Bienvenido, {request.user.username}!"   esta linea se omite de momento
         # ... puedes añadir más datos del usuario aquí
     else:
         # Lógica para usuarios visitantes (anónimos)
         mensaje = "¡Bienvenido! Inicia sesión o regístrate para acceder a más funciones."
     
     return render(request, 'usuarios/templates/home.html', {'mensaje': mensaje})
+
+def admin_menu(request):
+    # Asegura que solo los administradores puedan acceder
+    if request.user.is_authenticated and request.user.tipo_usuario == 'ADMIN':
+        return render(request, 'usuarios/admin_menu.html')
+    return redirect('home') # Si no es admin, lo redirige de vuelta a home
