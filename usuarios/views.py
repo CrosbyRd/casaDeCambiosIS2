@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, RegisterSerializer
 from .models import CustomUser
+from django.shortcuts import render
 
 # Vista para el registro de usuarios
 class RegisterView(generics.CreateAPIView):
@@ -18,3 +19,18 @@ class CurrentUserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+
+
+def home(request):
+    # 'request.user' es una instancia de CustomUser si está autenticado,
+    # o de AnonymousUser si no lo está.
+    if request.user.is_authenticated:
+        # Lógica para usuarios registrados
+        mensaje = f"¡Bienvenido, {request.user.username}!"
+        # ... puedes añadir más datos del usuario aquí
+    else:
+        # Lógica para usuarios visitantes (anónimos)
+        mensaje = "¡Bienvenido! Inicia sesión o regístrate para acceder a más funciones."
+    
+    return render(request, 'usuarios/templates/home.html', {'mensaje': mensaje})    

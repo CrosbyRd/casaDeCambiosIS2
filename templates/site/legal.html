@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange — Legal{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6">Legal</h1>
+
+<div class="grid md:grid-cols-3 gap-6">
+  <nav class="border border-neutral-200 rounded-lg p-6">
+    <ul class="grid gap-3">
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#terms">Términos de servicio</a></li>
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#privacy">Política de privacidad</a></li>
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#cookies">Política de cookies</a></li>
+    </ul>
+  </nav>
+
+  <section class="md:col-span-2 grid gap-6">
+    <article id="terms" class="border border-neutral-200 rounded-lg p-6">
+      <h2 class="h2 mb-3">Términos de servicio</h2>
+      <p class="text-neutral-700">Uso permitido, limitaciones, disponibilidad del servicio.</p>
+    </article>
+
+    <article id="privacy" class="border border-neutral-200 rounded-lg p-6">
+      <h2 class="h2 mb-3">Política de privacidad</h2>
+      <p class="text-neutral-700">Datos recolectados, base legal, derechos del usuario.</p>
+    </article>
+
+    <article id="cookies" class="border border-neutral-200 rounded-lg p-6">
+      <h2 class="h2 mb-3">Política de cookies</h2>
+      <p class="text-neutral-700">Tipos de cookies, finalidades, cómo gestionarlas.</p>
+    </article>
+  </section>
+</div>
+</main>
+{% endblock %}
