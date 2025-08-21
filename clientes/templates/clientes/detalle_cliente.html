@@ -1,0 +1,122 @@
+{% extends 'clientes/base.html' %}
+
+{% block title %}Detalles de {{ cliente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-user"></i> {{ cliente.nombre }}</h1>
+            <div class="btn-group">
+                <a href="{% url 'clientes:editar' cliente.id_cliente %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="{% url 'clientes:toggle_estado' cliente.id_cliente %}" 
+                   class="btn {% if cliente.activo %}btn-warning{% else %}btn-success{% endif %}">
+                    <i class="fas {% if cliente.activo %}fa-times{% else %}fa-check{% endif %}"></i>
+                    {% if cliente.activo %}Desactivar{% else %}Activar{% endif %}
+                </a>
+                <a href="{% url 'clientes:eliminar' cliente.id_cliente %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+                <a href="{% url 'clientes:lista' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Información del Cliente</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Nombre:</th>
+                        <td>{{ cliente.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ cliente.correo_electronico }}</td>
+                    </tr>
+                    <tr>
+                        <th>Categoría:</th>
+                        <td>
+                            <span class="badge bg-info">{{ cliente.get_categoria_display }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Bonificación:</th>
+                        <td>
+                            <span class="badge bg-success">{{ cliente.bonificacion }}%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            <span class="badge {% if cliente.activo %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if cliente.activo %}Activo{% else %}Inactivo{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha Registro:</th>
+                        <td>{{ cliente.fecha_registro|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Última Actualización:</th>
+                        <td>{{ cliente.ultima_modificacion|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Límites de Compra</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>USD:</th>
+                        <td>${{ cliente.limite_compra_usd|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Capacidad de Compra:</th>
+                        <td>
+                            {% with puede_comprar=cliente.puede_comprar %}
+                            <span class="badge bg-{% if puede_comprar.0 %}success{% else %}danger{% endif %}">
+                                {% if puede_comprar.0 %}Puede comprar{% else %}Límite excedido{% endif %}
+                            </span>
+                            {% endwith %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Información de Transacciones</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong>
+                    en todas sus transacciones.
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

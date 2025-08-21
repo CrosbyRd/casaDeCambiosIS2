@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'lib', # Tu app existente
     'usuarios',      # Nuestra nueva app de usuarios
     'clientes',
+    'roles',
 ]
 
 
