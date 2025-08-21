@@ -1,5 +1,7 @@
 from django.urls import path
-from .views import RegisterView, CurrentUserView, UserListCreate, UserRetrieveUpdateDestroy
+from .views import RegisterView, CurrentUserView, UserListCreate, UserRetrieveUpdateDestroy  # quitamos 'home'
+
+app_name = "usuarios"
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),

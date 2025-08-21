@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange — Calculadora{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6 twemoji-scope">Calculadora</h1>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <div class="border border-neutral-200 rounded-lg p-6">
+    <div class="mb-6">
+      <label class="block mb-3 font-medium">Par</label>
+
+      <!-- Select ORIGINAL oculto (el JS se apoya en él) -->
+      <select id="pair" class="hidden">
+        <option value="USD_PYG" data-rate="7320">🇺🇸 USD → 🇵🇾 PYG</option>
+        <option value="EUR_PYG" data-rate="8020">🇪🇺 EUR → 🇵🇾 PYG</option>
+        <option value="BRL_PYG" data-rate="1320">🇧🇷 BRL → 🇵🇾 PYG</option>
+      </select>
+
+      <!-- Dropdown personalizado accesible (combobox ARIA) -->
+      <div class="relative twemoji-scope" id="pairDropdown">
+        <button type="button"
+                id="pairButton"
+                class="w-full h-11 px-4 border border-neutral-300 rounded-md flex items-center justify-between"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="pairLabel">
+          <span id="pairLabel" class="flex items-center gap-2"></span>
+          <span aria-hidden="true">▾</span>
+        </button>
+
+        <ul id="pairListbox"
+            class="absolute z-20 mt-1 w-full max-h-60 overflow-auto bg-white border border-neutral-300 rounded-md shadow-lg hidden"
+            role="listbox">
+        </ul>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <label class="block mb-3 font-medium">Monto origen</label>
+      <input id="amount" type="number" min="0" class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" placeholder="100" />
+    </div>
+
+    <div class="mb-6">
+      <label class="block mb-3 font-medium">Método</label>
+      <select id="method" class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand">
+        <option value="transfer">Transferencia</option>
+        <option value="card">Tarjeta de crédito (fee 1.5%)</option>
+      </select>
+    </div>
+
+    <button id="calcBtn" class="btn w-full">Calcular</button>
+  </div>
+
+  <div class="border border-neutral-200 rounded-lg p-6 twemoji-scope">
+    <h2 class="h2 mb-3">Resultado</h2>
+    <div id="result" class="grid gap-3">
+      <p class="text-neutral-600">Completá los campos y presioná calcular.</p>
+    </div>
+    <div class="mt-6">
+      <a href="{% url 'site_rates' %}" class="btn-secondary">Ver tabla de tipos</a>
+    </div>
+  </div>
+</div>
+</main>
+{% endblock %}
