@@ -20,7 +20,6 @@ class CurrentUserView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
     
-<<<<<<< HEAD
 # Vista para listar y crear usuarios.
 # Solo los administradores podrán acceder a esta vista.
 class UserListCreate(generics.ListCreateAPIView):
@@ -35,7 +34,6 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
-=======
 
 
 def home(request):
@@ -49,5 +47,4 @@ def home(request):
         # Lógica para usuarios visitantes (anónimos)
         mensaje = "¡Bienvenido! Inicia sesión o regístrate para acceder a más funciones."
     
-    return render(request, 'usuarios/templates/home.html', {'mensaje': mensaje})    
->>>>>>> development
+    return render(request, 'usuarios/templates/home.html', {'mensaje': mensaje})

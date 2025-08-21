@@ -21,7 +21,6 @@ urlpatterns = [
 
     # Tu app
     path("lib/", include("lib.urls")),
-<<<<<<< HEAD
     path('admin/', admin.site.urls),
     path('api/auth/', include('usuarios.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -30,10 +29,3 @@ urlpatterns = [
     # Rutas para el nuevo CRUD de roles
     path('api/roles/', include('roles.urls')),
 ]
-=======
-    path("admin/", admin.site.urls),
-    path("api/auth/", include("usuarios.urls")),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-]
->>>>>>> development
