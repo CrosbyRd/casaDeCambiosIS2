@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Global Exchange{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[1100px] mx-auto px-6 py-10">
+  <header class="flex items-center justify-between gap-4 mb-8">
+    <h1 class="h1">Dashboard</h1>
+
+    <div class="flex items-center gap-2">
+      <button id="logoutBtn" class="btn-secondary">Cerrar sesión</button>
+      <a class="btn" href="{% url 'home' %}">Ir al inicio</a>
+    </div>
+  </header>
+
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <article class="card p-5">
+      <h2 class="h2 mb-2">Bienvenido/a</h2>
+      <p class="text-neutral-700">Hola, <strong id="userName">…</strong>.</p>
+      <p class="text-neutral-700">Tipo de usuario: <strong id="userType">—</strong></p>
+      <p class="text-neutral-700">Email: <strong id="userEmail">—</strong></p>
+    </article>
+
+    <article class="card p-5">
+      <h2 class="h2 mb-2">Estado</h2>
+      <p class="text-neutral-700">
+        <span id="status">Cargando…</span>
+      </p>
+    </article>
+
+    <article class="card p-5">
+      <h2 class="h2 mb-2">Siguientes pasos</h2>
+      <ul class="list-disc pl-6 text-neutral-700">
+        <li>Conecta este dashboard con tus endpoints reales.</li>
+        <li>Protege rutas en el frontend revisando el JWT.</li>
+        <li>Agrega tarjetas con KPIs, tablas o gráficos.</li>
+      </ul>
+    </article>
+  </section>
+</main>
+
+<style>
+  .btn { padding:.65rem 1rem; border-radius:.8rem; background:var(--brand); color:#fff; font-weight:800; display:inline-flex; align-items:center; justify-content:center; }
+  .btn-secondary { padding:.65rem 1rem; border-radius:.8rem; background:#111827; color:#fff; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .card { border:1px solid #e5e7eb; border-radius:1rem; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+</style>
+
+<script>
+  // Si no hay token, manda al login
+  const access = localStorage.getItem('accessToken');
+  if (!access) {
+    window.location.href = "{% url 'site_login' %}";
+  }
+
+  // Cargar datos del usuario autenticado
+  async function loadMe() {
+    const statusEl = document.getElementById('status');
+    try {
+      const res = await fetch('/api/auth/me/', {
+        headers: { 'Authorization': 'Bearer ' + access }
+      });
+      if (!res.ok) {
+        statusEl.textContent = 'Sesión no válida. Vuelve a iniciar sesión.';
+        // Opcional: limpiar token y redirigir
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setTimeout(()=>{ window.location.href = "{% url 'site_login' %}"; }, 1200);
+        return;
+      }
+      const me = await res.json();
+      document.getElementById('userName').textContent = me.first_name || me.username || 'Usuario';
+      document.getElementById('userEmail').textContent = me.email || '—';
+      document.getElementById('userType').textContent = me.tipo_usuario || '—';
+      statusEl.textContent = 'Autenticado correctamente.';
+    } catch (e) {
+      statusEl.textContent = 'Error cargando el perfil.';
+    }
+  }
+
+  // Logout: limpiar tokens y volver al login
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    window.location.href = "{% url 'site_login' %}";
+  });
+
+  loadMe();
+</script>
+{% endblock %}

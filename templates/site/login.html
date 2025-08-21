@@ -35,81 +35,45 @@
       </a>
     </form>
 
-    <div id="userInfo" class="box ok" style="display:none;">
-      <h2 class="font-bold mb-2">Información del usuario</h2>
-      <pre id="userData" class="whitespace-pre-wrap text-sm"></pre>
-      <button id="logoutButton" class="mt-2">Cerrar sesión</button>
-    </div>
-
+    <div id="info" class="box ok" style="display:none;"></div>
     <div id="errorInfo" class="box err" style="display:none;"></div>
   </div>
 </main>
 
 <script>
   const loginForm = document.getElementById('loginForm');
-  const userInfoDiv = document.getElementById('userInfo');
-  const userDataPre = document.getElementById('userData');
+  const infoDiv = document.getElementById('info');
   const errorInfoDiv = document.getElementById('errorInfo');
-  const logoutButton = document.getElementById('logoutButton');
-
-  // Cargar desde storage al abrir (si ya hay token)
-  document.addEventListener('DOMContentLoaded', fetchAndShowUserData);
 
   loginForm.addEventListener('submit', async function(event) {
     event.preventDefault();
     errorInfoDiv.style.display = 'none';
+    infoDiv.style.display = 'none';
 
     const username = event.target.username.value;
     const password = event.target.password.value;
 
     try {
-      const res = await fetch('/api/token/', {
+      const res = await fetch('/api/auth/login-step1/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      if (!res.ok) throw new Error('Usuario o contraseña incorrectos.');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'No se pudo iniciar el proceso MFA.');
 
-      localStorage.setItem('accessToken', data.access);
-      localStorage.setItem('refreshToken', data.refresh);
+      // Guardar token temporal para el paso 2
+      localStorage.setItem('mfaToken', data.mfa_token || '');
+      const destino = data.email_mask || 'tu correo';
+      infoDiv.textContent = `Te enviamos un código de 6 dígitos a ${destino}. Ingrésalo para completar el acceso.`;
+      infoDiv.style.display = 'block';
 
-      await fetchAndShowUserData();
+      // Redirigir a la pantalla de verificación
+      window.location.href = "{% url 'site_verify_code' %}";
     } catch (err) {
       errorInfoDiv.textContent = err.message;
       errorInfoDiv.style.display = 'block';
     }
   });
-
-  async function fetchAndShowUserData() {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) return;
-    try {
-      const res = await fetch('/api/auth/me/', {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      });
-      if (res.status === 401) throw new Error('Sesión expirada. Inicia sesión de nuevo.');
-      if (!res.ok) throw new Error('No se pudo obtener la información del usuario.');
-      const user = await res.json();
-      userDataPre.textContent = JSON.stringify(user, null, 2);
-      userInfoDiv.style.display = 'block';
-      loginForm.style.display = 'none';
-    } catch (err) {
-      logout();
-      errorInfoDiv.textContent = err.message;
-      errorInfoDiv.style.display = 'block';
-    }
-  }
-
-  function logout() {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    userInfoDiv.style.display = 'none';
-    loginForm.style.display = 'block';
-    loginForm.reset();
-  }
-
-  if (logoutButton) logoutButton.addEventListener('click', logout);
 </script>
 {% endblock %}

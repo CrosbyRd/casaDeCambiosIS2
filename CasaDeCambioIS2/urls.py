@@ -14,15 +14,20 @@ urlpatterns = [
     path("calculator/", TemplateView.as_view(template_name="site/calculator.html"), name="site_calculator"),
     path("contact/", TemplateView.as_view(template_name="site/contact.html"), name="site_contact"),
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
-    path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),  # crea esta cuando la tengas
     path("forgot-password/", TemplateView.as_view(template_name="site/forgot-password.html"), name="site_forgot_password"),
     path("login/", TemplateView.as_view(template_name="site/login.html"), name="site_login"),
     path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),
+    path("verify-code/", TemplateView.as_view(template_name="site/verify-code.html"), name="site_verify_code"),
+
+    # NUEVO: Dashboard post-login
+    path("dashboard/", TemplateView.as_view(template_name="site/dashboard.html"), name="dashboard"),
 
     # Tu app
     path("lib/", include("lib.urls")),
     path("admin/", admin.site.urls),
-    path("api/auth/", include("usuarios.urls")),
+
+    # API
+    path("api/auth/", include("usuarios.urls")),  # incluye register, me, login-step1, verify-code
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]

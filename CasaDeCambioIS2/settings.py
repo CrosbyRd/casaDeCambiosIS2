@@ -12,9 +12,7 @@ from datetime import timedelta
 # --- Paths base ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # --- Seguridad / Debug ---
-# Sugerencia: lee SECRET_KEY desde variable de entorno en producción; dejamos fallback para desarrollo.
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
     "django-insecure-yhfkpx7h5kqtf2zv&2vm*a)kc-47@l0wro4xbu_ty7$-3p8jgt"
@@ -27,7 +25,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "*",  # Útil para desarrollo inicial; en prod, restringe esto.
 ]
-
 
 # --- Apps instaladas ---
 INSTALLED_APPS = [
@@ -43,11 +40,10 @@ INSTALLED_APPS = [
     "usuarios",
 ]
 
-
 # --- Middleware ---
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Para servir estáticos en prod
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -56,18 +52,15 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
 # --- URLs / WSGI ---
 ROOT_URLCONF = "CasaDeCambioIS2.urls"
 WSGI_APPLICATION = "CasaDeCambioIS2.wsgi.application"
 
-
 # --- Templates ---
-# Cambiamos a Pathlib y aseguramos que use /templates en la raíz del proyecto.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # <— Ajuste recomendado
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -79,23 +72,17 @@ TEMPLATES = [
     },
 ]
 
-
 # --- Base de datos ---
-# Para desarrollo local usamos sqlite; tu config previa REMOTA queda comentada.
-# DATABASES = {
-#     "default": dj_database_url.config(conn_max_age=600)
-# }
 DATABASES = {
     'default': {
-        'NAME': 'casadecambio_db',         # El nombre de la BD que creaste en el paso 2
+        'NAME': 'casadecambio_db',
         'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'casadecambio_user',       # El usuario que creaste
-        'PASSWORD': 'una_contraseña_muy_segura', # La contraseña que elegiste
-        'HOST': 'localhost',               # O '127.0.0.1'. Se conecta a la BD en la misma máquina
-        'PORT': '5432',                    # El puerto por defecto de PostgreSQL
+        'USER': 'casadecambio_user',
+        'PASSWORD': 'una_contraseña_muy_segura',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
 
 # --- Validadores de password ---
 AUTH_PASSWORD_VALIDATORS = [
@@ -105,33 +92,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
 # --- Internacionalización ---
-# (Opcional, recomendado para tu contexto)
-LANGUAGE_CODE = "es"  # <— Antes: 'en-us'
-TIME_ZONE = "America/Asuncion"  # <— Antes: 'UTC'
+LANGUAGE_CODE = "es"
+TIME_ZONE = "America/Asuncion"
 USE_I18N = True
 USE_TZ = True
 
-
 # --- Archivos estáticos ---
-# ✅ Unificamos a una sola definición de STATIC_URL y añadimos STATICFILES_DIRS.
-STATIC_URL = "/static/"  # <— Deja solo esta (antes tenías duplicado)
-
-# Carpeta de estáticos en desarrollo (al lado de manage.py)
-STATICFILES_DIRS = [BASE_DIR / "static"]  # <— NUEVO: para encontrar /static en dev
-
-# Carpeta a la que collectstatic copiará todo para producción
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Recomendado para producción con WhiteNoise (actívalo cuando hagas collectstatic):
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 # --- Modelo de usuario ---
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "usuarios.CustomUser"
-
 
 # --- DRF / JWT ---
 REST_FRAMEWORK = {
@@ -147,7 +122,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
     "ALGORITHM": "HS256",
-    "SIGNING_KEY": SECRET_KEY,  # Reutiliza la SECRET_KEY (ideal si viene del entorno)
+    "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": None,
     "AUDIENCE": None,
     "ISSUER": None,
@@ -162,3 +137,12 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+# --- Email (SMTP) para MFA ---
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "no-reply@globalexchangeparaguay.com")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")  # tu App Password de 16 dígitos
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Verificar código — Global Exchange{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[800px] mx-auto px-6 py-10">
+  <h1 class="h1 mb-6">Verificación en dos pasos</h1>
+
+  <style>
+    .api-login *{box-sizing:border-box}
+    .api-login label{display:block;margin:.5rem 0 .25rem;font-weight:600}
+    .api-login input{width:100%;padding:.7rem;border:1px solid #d1d5db;border-radius:.5rem}
+    .api-login button{padding:.75rem 1rem;border-radius:.9rem;background:var(--brand);color:#fff;border:0;cursor:pointer;font-weight:800}
+    .api-login .box{border:1px solid #e5e7eb;border-radius:.9rem;padding:1rem;margin-top:1rem;background:#fff}
+    .api-login .ok{background:#e6ffed}
+    .api-login .err{background:#ffe6e6;color:#b91c1c}
+  </style>
+
+  <div class="api-login">
+    <form id="verifyForm" class="box">
+      <p class="mb-3 text-neutral-600">Ingresa el código de <strong>6 dígitos</strong> que enviamos a tu correo.</p>
+      <label for="code">Código</label>
+      <input type="text" id="code" name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autofocus placeholder="••••••">
+
+      <button type="submit" class="mt-4 w-full">Verificar</button>
+
+      <a href="{% url 'site_login' %}" class="btn-secondary mt-3 w-full inline-flex justify-center">
+        Volver a iniciar sesión
+      </a>
+    </form>
+
+    <div id="ok" class="box ok" style="display:none;"></div>
+    <div id="err" class="box err" style="display:none;"></div>
+  </div>
+</main>
+
+<script>
+  const form = document.getElementById('verifyForm');
+  const okDiv = document.getElementById('ok');
+  const errDiv = document.getElementById('err');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const mfaToken = localStorage.getItem('mfaToken');
+    if (!mfaToken) {
+      errDiv.textContent = 'No encontramos una sesión de verificación activa. Vuelve a iniciar sesión.';
+      errDiv.style.display = 'block';
+      form.style.display = 'none';
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errDiv.style.display = 'none';
+    okDiv.style.display = 'none';
+
+    const mfa_token = localStorage.getItem('mfaToken') || '';
+    const code = (document.getElementById('code').value || '').trim();
+
+    try {
+      const res = await fetch('/api/auth/verify-code/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mfa_token, code })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'No se pudo verificar el código.');
+
+      // Guardar JWT y limpiar mfa
+      localStorage.setItem('accessToken', data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+      localStorage.removeItem('mfaToken');
+
+      okDiv.textContent = '¡Listo! Verificación correcta. Redirigiendo…';
+      okDiv.style.display = 'block';
+
+      // Redirige al dashboard
+      setTimeout(() => { window.location.href = "{% url 'dashboard' %}"; }, 700);
+    } catch (err) {
+      errDiv.textContent = err.message;
+      errDiv.style.display = 'block';
+    }
+  });
+</script>
+{% endblock %}
