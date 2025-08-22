@@ -1,6 +1,9 @@
 # proyecto/usuarios/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from clientes.models import Cliente 
+from roles.models import Role
+
 
 class CustomUser(AbstractUser):
     # Definimos los tipos de usuario
@@ -13,7 +16,22 @@ class CustomUser(AbstractUser):
     tipo_usuario = models.CharField(
         max_length=50,
         choices=UserTypes.choices,
-        default=UserTypes.CLIENTE
+        default=UserTypes.CLIENTE     #si no se especifica el tipo de usuario es por default CLIENTE
+    )
+
+    clientes = models.ManyToManyField(
+        Cliente,
+        blank=True,
+        related_name='usuarios'  # Permite acceder desde Cliente a sus usuarios
+    )
+
+    role = models.ForeignKey(
+        Role,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='users',
+        verbose_name='Rol del usuario'
     )
 
     def __str__(self):
