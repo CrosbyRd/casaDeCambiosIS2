@@ -3,14 +3,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, RegisterSerializer
 from .models import CustomUser
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from clientes.models import Cliente
+
+
 
 # Vista para el registro de usuarios
+
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = (permissions.AllowAny,) # Cualquiera puede registrarse
@@ -49,3 +55,27 @@ class AdminPanelView(APIView):
             return Response({"detail": "No autorizado"}, status=status.HTTP_403_FORBIDDEN)
         # Renderizamos el HTML
         return render(request, 'usuarios/admin_panel.html')
+    
+
+
+def listar_usuarios(request):
+    usuarios = CustomUser.objects.all().prefetch_related('clientes')
+    todos_clientes = Cliente.objects.all()
+    return render(request, 'usuarios/listar_usuarios.html', {
+        'usuarios': usuarios,
+        'todos_clientes': todos_clientes
+    })
+
+def agregar_cliente(request, user_id, cliente_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
+    user.clientes.add(cliente)
+    messages.success(request, f"Cliente '{cliente.nombre}' agregado a {user.username}.")
+    return redirect('usuarios:listar_usuarios')
+
+def quitar_cliente(request, user_id, cliente_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
+    user.clientes.remove(cliente)
+    messages.success(request, f"Cliente '{cliente.nombre}' quitado de {user.username}.")
+    return redirect('usuarios:listar_usuarios')
