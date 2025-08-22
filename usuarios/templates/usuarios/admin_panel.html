@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto p-10">
+  <h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
+  <div class="grid gap-6">
+    <a href="{% url 'clientes:lista' %}" class="block bg-blue-600 text-white text-center p-4 rounded-lg shadow hover:bg-blue-700">
+      Gestión de Clientes
+    </a>
+    <a href="{% url 'roles:gestion_roles' %}" class="block bg-green-600 text-white text-center p-4 rounded-lg shadow hover:bg-green-700">
+      Gestión de Roles
+    </a>
+    <a href="#" class="block bg-purple-600 text-white text-center p-4 rounded-lg shadow hover:bg-purple-700">
+      Asociación Usuario ↔ Cliente
+    </a>
+  </div>
+</main>
+{% endblock %}
