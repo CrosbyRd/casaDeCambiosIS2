@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Reenviar código — Global Exchange{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Reenviar código de verificación</h1>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <form method="post" class="border border-neutral-200 rounded-lg p-6">
+      {% csrf_token %}
+      <div class="mb-6">
+        <label class="block mb-3 font-medium" for="id_email">Email</label>
+        <input id="id_email" name="email" type="email" required
+               class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+               placeholder="tu@correo.com" autofocus />
+      </div>
+
+      <button class="btn w-full" type="submit">Reenviar código</button>
+      <a href="{% url 'usuarios:verify' %}" class="btn-secondary mt-6 w-full inline-flex justify-center">Volver a verificación</a>
+    </form>
+
+    <aside class="border border-neutral-200 rounded-lg p-6">
+      <h2 class="h2 mb-3">Recordatorio</h2>
+      <p class="text-neutral-600">Si tu código expiró, puedes solicitar uno nuevo aquí. Se enviará a tu correo registrado.</p>
+    </aside>
+  </div>
+</main>
+{% endblock %}

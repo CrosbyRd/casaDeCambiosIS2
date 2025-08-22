@@ -97,7 +97,14 @@ DATABASES = {
         'PORT': '5432',                    # El puerto por defecto de PostgreSQL
     }
 }
-
+AUTH_USER_MODEL = 'usuarios.CustomUser'
+# Configuración de correo (ejemplo con Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'richarcarballo.rc@fpuna.edu.py'
+EMAIL_HOST_PASSWORD = 'kkvk hevn lbkf ywta'  # Usar contraseña de aplicación
 
 # --- Validadores de password ---
 AUTH_PASSWORD_VALIDATORS = [
