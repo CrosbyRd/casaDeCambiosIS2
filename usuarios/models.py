@@ -1,54 +1,40 @@
 # proyecto/usuarios/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from clientes.models import Cliente 
+from roles.models import Role
+
 
 class CustomUser(AbstractUser):
     # Definimos los tipos de usuario
     class UserTypes(models.TextChoices):
         ADMIN = 'ADMIN', 'Administrador'
-        CAJERO = 'CAJERO', 'Cajero'
+        ANALISTA = 'ANALISTA', 'Analista'
         CLIENTE = 'CLIENTE', 'Cliente'
 
     # Campo para diferenciar el tipo de usuario
     tipo_usuario = models.CharField(
         max_length=50,
         choices=UserTypes.choices,
-        default=UserTypes.CLIENTE
+        default=UserTypes.CLIENTE     #si no se especifica el tipo de usuario es por default CLIENTE
     )
-    
-    # Relacionamos el usuario con el rol (uno a uno)
-    rol = models.OneToOneField(
-        'Rol',
+
+    clientes = models.ManyToManyField(
+        Cliente,
+        blank=True,
+        related_name='usuarios'  # Permite acceder desde Cliente a sus usuarios
+    )
+
+    role = models.ForeignKey(
+        Role,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        help_text="Rol asignado a este usuario"
+        related_name='users',
+        verbose_name='Rol del usuario'
     )
 
     def __str__(self):
         return self.username
     
 
-
-
-
-
-
-class Permiso(models.Model):
-    nombre = models.CharField(max_length=100, unique=True, help_text="Nombre descriptivo del permiso (ej. 'Crear Cliente')")
-    codigo = models.CharField(max_length=50, unique=True, help_text="Código único para usar en el código (ej. 'crear_cliente')")
-    descripcion = models.CharField(max_length=255, blank=True)
-
-    def __str__(self):
-        return self.nombre
-    
-
-
-
-class Rol(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    descripcion = models.CharField(max_length=255, blank=True)
-    permisos = models.ManyToManyField(Permiso, related_name='roles')
-
-    def __str__(self):
-        return self.nombre

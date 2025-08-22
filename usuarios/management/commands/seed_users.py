@@ -18,12 +18,12 @@ class Command(BaseCommand):
                 'tipo_usuario': CustomUser.UserTypes.ADMIN
             },
             {
-                'username': 'cajero_uno',
-                'email': 'cajero1@casadecambio.com',
+                'username': 'analista_uno',
+                'email': 'analista1@casadecambio.com',
                 'password': 'password123',
                 'first_name': 'Juan',
                 'last_name': 'Pérez',
-                'tipo_usuario': CustomUser.UserTypes.CAJERO
+                'tipo_usuario': CustomUser.UserTypes.ANALISTA
             },
             {
                 'username': 'cliente_test',
@@ -31,6 +31,14 @@ class Command(BaseCommand):
                 'password': 'password123',
                 'first_name': 'Ana',
                 'last_name': 'García',
+                'tipo_usuario': CustomUser.UserTypes.CLIENTE
+            },
+                        {
+                'username': 'beta_tester',
+                'email': 'lclc@mgail.com',
+                'password': 'ttu789',
+                'first_name': 'Lope',
+                'last_name': 'GGG',
                 'tipo_usuario': CustomUser.UserTypes.CLIENTE
             }
         ]
