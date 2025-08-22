@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 
+
+
 class Cliente(models.Model):
     class Categoria(models.TextChoices):
         MINORISTA = 'minorista', _('Minorista')
@@ -34,6 +36,8 @@ class Cliente(models.Model):
         verbose_name=_('Categoría del cliente')
     )
     
+    
+
     # Atributo de bonificación (se calcula automáticamente)
     @property
     def bonificacion(self):

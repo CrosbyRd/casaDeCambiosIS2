@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.utils import timezone # <--- IMPORTANTE: Importar timezone
-from roles.models import Role 
+from django.utils import timezone
+from roles.models import Role
+from clientes.models import Cliente # MERGE: Importamos el modelo Cliente de la rama entrante
+import random
+from datetime import timedelta
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -9,8 +12,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         
-        # Aseguramos que is_staff y is_superuser no se pasen directamente
-        # a menos que sea a través de create_superuser
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         
@@ -28,25 +29,30 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        # Para el superusuario, también creamos el usuario a través de create_user
-        # para mantener la lógica centralizada
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False) # Inicia inactivo hasta verificar
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
-    
-    # --- CAMBIO CLAVE ---
-    # Añadimos el campo date_joined con un valor por defecto.
-    # default=timezone.now asegura que se establezca la fecha y hora actual
-    # al momento de crear el registro.
     date_joined = models.DateTimeField(default=timezone.now)
 
-    roles = models.ManyToManyField(Role)
+    # MERGE: Campos para la verificación por código de tu rama (HEAD)
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
+    code_created_at = models.DateTimeField(blank=True, null=True)
+
+    # MERGE: Relación ManyToMany con Role (más flexible que ForeignKey)
+    roles = models.ManyToManyField(Role, blank=True)
+
+    # MERGE: Relación ManyToMany con Cliente de la rama entrante
+    clientes = models.ManyToManyField(
+        Cliente,
+        blank=True,
+        related_name='usuarios'
+    )
 
     objects = CustomUserManager()
 
@@ -55,3 +61,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    # MERGE: Métodos para manejar la lógica de verificación de tu rama (HEAD)
+    def generate_verification_code(self):
+        """Genera un código de 6 dígitos y guarda el momento de creación."""
+        self.verification_code = str(random.randint(100000, 999999))
+        self.code_created_at = timezone.now()
+        self.save()
+
+    def is_code_valid(self, code, minutes_valid=5):
+        """Verifica si el código es correcto y no ha expirado."""
+        if self.verification_code != code:
+            return False
+        if self.code_created_at:
+            expiration_time = self.code_created_at + timedelta(minutes=minutes_valid)
+            return timezone.now() <= expiration_time
+        return False

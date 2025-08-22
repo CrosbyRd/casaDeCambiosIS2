@@ -1,40 +1,32 @@
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .serializers import UserSerializer, RegisterSerializer
-from .models import CustomUser
-from django.shortcuts import render
-from django.utils import timezone
-
-# usuarios/views.py
-from django.shortcuts import render, redirect
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail, EmailMessage
+# MERGE: Imports de ambas ramas, organizados y sin duplicados
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
-from datetime import datetime, timedelta
-from .forms import RegistroForm, VerificacionForm
-import random
+from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
-from django.conf import settings
+
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import CustomUser
+from .serializers import UserSerializer, RegisterSerializer
+from .forms import RegistroForm, VerificacionForm
+from clientes.models import Cliente
+
+# --- Vistas de Autoregistro y Verificación (Tu rama - HEAD) ---
 
 def register(request):
     if request.method == "POST":
         form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False
-            # Guardamos la contraseña correctamente
+            user.is_active = False # El usuario no está activo hasta que se verifique
             user.password = make_password(form.cleaned_data['password'])
-        
-            # Generar código de verificación
+            user.save() # Guardamos primero para tener un ID
+            
             user.generate_verification_code()
       
-            # Enviar correo
             send_mail(
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
@@ -43,7 +35,8 @@ def register(request):
                 fail_silently=False,
             )
 
-            request.session['usuario_verificar'] = user.id
+            # Usamos el email para la verificación para no depender del ID
+            request.session['email_verificacion'] = user.email
             return redirect('usuarios:verify')
         else:
             return render(request, "site/signup.html", {"form": form})
@@ -51,102 +44,101 @@ def register(request):
         form = RegistroForm()
     return render(request, "site/signup.html", {"form": form})
 
-# modoficado 
 def verify(request):
-    user_id = request.session.get('usuario_verificar')
-    if not user_id:
-        messages.error(request, "No hay usuario para verificar.")
-        return redirect('site_signup')
+    email = request.session.get('email_verificacion')
+    if not email:
+        messages.error(request, "Sesión de verificación inválida. Por favor, regístrate de nuevo.")
+        return redirect('usuarios:register')
 
-    user = CustomUser.objects.get(id=user_id)
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        messages.error(request, "El usuario no existe.")
+        return redirect('usuarios:register')
+        
     form = VerificacionForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
         codigo = form.cleaned_data['codigo']
-        if user.is_code_valid(codigo, minutes_valid=1):
+        if user.is_code_valid(codigo, minutes_valid=5): # Damos 5 minutos de validez
             user.is_active = True
             user.is_verified = True
-            user.verification_code = ''
+            user.verification_code = None
             user.code_created_at = None
             user.save()
-            request.session.pop('usuario_verificar', None)
-            messages.success(request, "Cuenta verificada correctamente.")
-            return redirect('site_login')
+            request.session.pop('email_verificacion', None)
+            messages.success(request, "¡Cuenta verificada correctamente! Ya puedes iniciar sesión.")
+            return redirect('site_login') # Asumiendo que tienes una URL con este nombre
         else:
             messages.error(request, "Código incorrecto o expirado.")
-            return redirect('usuarios:reenviar_codigo')
-
+            
     return render(request, "site/verify.html", {"form": form, "email": user.email})
 
-
-
-
-
-
 def reenviar_codigo(request):
-    user_id = request.session.get('usuario_verificar')
-    if not user_id:
-        messages.error(request, "No hay usuario para reenviar código.")
-        return redirect('site_signup')
+    email = request.session.get('email_verificacion')
+    if not email:
+        messages.error(request, "No hay una sesión de verificación activa.")
+        return redirect('usuarios:register')
 
-    user = CustomUser.objects.get(id=user_id)
+    user = get_object_or_404(CustomUser, email=email)
+    user.generate_verification_code()
+    
+    send_mail(
+        "Nuevo código de verificación",
+        f"Tu nuevo código de verificación es: {user.verification_code}",
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
+    messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
+    return redirect('usuarios:verify')
 
-    if request.method == "POST":
-        user.generate_verification_code()
-        send_mail(
-            "Nuevo código de verificación",
-            f"Tu nuevo código es: {user.verification_code}",
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
-        messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
-        return redirect('usuarios:verify')
+# --- Vistas de API (Rama entrante) ---
 
-    # GET → mostrar formulario
-    return render(request, "site/reenviar_codigo.html")
-
-
-# Vista para el registro de usuarios
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
-    permission_classes = (permissions.AllowAny,) # Cualquiera puede registrarse
+    permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
 
-
-# Vista para obtener los datos del usuario logueado
 class CurrentUserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,) # Solo usuarios autenticados
-
+    permission_classes = (permissions.IsAuthenticated,)
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
     
-# Vista para listar y crear usuarios.
-# Solo los administradores podrán acceder a esta vista.
 class UserListCreate(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
-
-# Vista para recuperar, actualizar y eliminar un usuario específico.
-# Solo los administradores podrán acceder a esta vista.
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
+# --- Vistas de Administración (Rama entrante) ---
 
-def home(request):
-    # 'request.user' es una instancia de CustomUser si está autenticado,
-    # o de AnonymousUser si no lo está.
-    if request.user.is_authenticated:
-        # Lógica para usuarios registrados
-        mensaje = f"¡Bienvenido, {request.user.username}!"
-        # ... puedes añadir más datos del usuario aquí
-    else:
-        # Lógica para usuarios visitantes (anónimos)
-        mensaje = "¡Bienvenido! Inicia sesión o regístrate para acceder a más funciones."
-    
-    return render(request, 'usuarios/templates/home.html', {'mensaje': mensaje})
+def admin_panel(request):
+    return render(request, 'usuarios/admin_panel.html')
+
+def listar_usuarios(request):
+    usuarios = CustomUser.objects.all().prefetch_related('clientes', 'roles')
+    todos_clientes = Cliente.objects.all()
+    return render(request, 'usuarios/listar_usuarios.html', {
+        'usuarios': usuarios,
+        'todos_clientes': todos_clientes
+    })
+
+def agregar_cliente(request, user_id, cliente_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
+    user.clientes.add(cliente)
+    messages.success(request, f"Cliente '{cliente.nombre}' agregado a {user.email}.")
+    return redirect('usuarios:listar_usuarios')
+
+def quitar_cliente(request, user_id, cliente_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
+    user.clientes.remove(cliente)
+    messages.success(request, f"Cliente '{cliente.nombre}' quitado de {user.email}.")
+    return redirect('usuarios:listar_usuarios')
