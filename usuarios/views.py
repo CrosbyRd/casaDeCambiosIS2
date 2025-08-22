@@ -1,8 +1,10 @@
+# usuarios/views.py
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, RegisterSerializer
 from .models import CustomUser
+from roles.models import Role
 from django.shortcuts import render
 
 # Vista para el registro de usuarios
@@ -27,6 +29,17 @@ class UserListCreate(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # Asignar roles si se proporcionan en el cuerpo de la solicitud (solo para administradores)
+        roles_data = self.request.data.get('roles', [])
+        for role_id in roles_data:
+            try:
+                role = Role.objects.get(id=role_id)
+                user.roles.add(role)
+            except Role.DoesNotExist:
+                pass
+
 
 # Vista para recuperar, actualizar y eliminar un usuario específico.
 # Solo los administradores podrán acceder a esta vista.
@@ -34,7 +47,18 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
-    
+
+    def perform_update(self, serializer):
+        user = serializer.save()
+        # Actualizar los roles del usuario
+        user.roles.clear()
+        roles_data = self.request.data.get('roles', [])
+        for role_id in roles_data:
+            try:
+                role = Role.objects.get(id=role_id)
+                user.roles.add(role)
+            except Role.DoesNotExist:
+                pass
 
 
 def home(request):

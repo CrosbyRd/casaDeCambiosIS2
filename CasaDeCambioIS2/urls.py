@@ -1,3 +1,4 @@
+# CasaDeCambioIS2/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
@@ -14,7 +15,6 @@ urlpatterns = [
     path("calculator/", TemplateView.as_view(template_name="site/calculator.html"), name="site_calculator"),
     path("contact/", TemplateView.as_view(template_name="site/contact.html"), name="site_contact"),
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
-    path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),  # crea esta cuando la tengas
     path("forgot-password/", TemplateView.as_view(template_name="site/forgot-password.html"), name="site_forgot_password"),
     path("login/", TemplateView.as_view(template_name="site/login.html"), name="site_login"),
     path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),

@@ -1,6 +1,5 @@
+# roles/views.py
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import generics, permissions
 from .models import Role
 from .serializers import RoleSerializer
