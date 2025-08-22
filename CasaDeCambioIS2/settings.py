@@ -87,22 +87,11 @@ TEMPLATES = [
 # DATABASES = {
 #     "default": dj_database_url.config(conn_max_age=600)
 # }
-DATABASES = {
-    'default': {
-        'NAME': 'casadecambio_db',         # El nombre de la BD que creaste en el paso 2
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'casadecambio_user',       # El usuario que creaste
-        'PASSWORD': 'una_contraseña_muy_segura', # La contraseña que elegiste
-        'HOST': 'localhost',               # O '127.0.0.1'. Se conecta a la BD en la misma máquina
-        'PORT': '5432',                    # El puerto por defecto de PostgreSQL
-    }
-}
 
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=True
-    )
+DATABASES = {
+            'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+        }
+
 
 AUTH_USER_MODEL = 'usuarios.CustomUser'
 # Configuración de correo (ejemplo con Gmail)
