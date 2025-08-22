@@ -96,12 +96,6 @@
       userInfoDiv.style.display = 'block';
       loginForm.style.display = 'none';
 
-      // 👇 Agregamos la redirección según rol
-      if (user.tipo_usuario === "ADMIN") {
-        window.location.href = "/api/auth/admin-panel/";   // Aquí va la ruta del panel de administración
-      } else {
-        window.location.href = "/";      // O a donde quieras que vayan los clientes normales
-      }
 
     } catch (err) {
       logout();
@@ -109,6 +103,14 @@
       errorInfoDiv.style.display = 'block';
     }
 }
+
+  function logout() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    userInfoDiv.style.display = 'none';
+    loginForm.style.display = 'block';
+    loginForm.reset();
+  }
 
 
   if (logoutButton) logoutButton.addEventListener('click', logout);
