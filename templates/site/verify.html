@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Verificar cuenta{% endblock %}
+
+{% block content %}
+<main class="max-w-[600px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Verificación de cuenta</h1>
+
+  {% if error %}
+  <p class="text-red-600 mb-4">{{ error }}</p>
+  {% endif %}
+
+
+  <form method="post">
+  {% csrf_token %}
+  <div class="mb-6">
+    <label class="block mb-3 font-medium" for="{{ form.codigo.id_for_label }}">Código de verificación</label>
+    {{ form.codigo }}
+  </div>
+  <button class="btn w-full" type="submit">Verificar</button>
+</form>
+{% if messages %}
+  {% for message in messages %}
+    <p class="text-red-600 mb-4">{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+</main>
+{% endblock %}
