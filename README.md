@@ -112,7 +112,16 @@ python manage.py createsuperuser
 ```
 Sigue las instrucciones para crear tu nombre de usuario, email y contraseña.
 
-### 7. Ejecutar el Servidor de Desarrollo
+### 7. Poblar la Base de Datos con Datos de Prueba (Seeding)
+
+Para tener un conjunto de datos inicial para probar la aplicación, ejecuta nuestro comando de "seeding". Esto creará usuarios de diferentes tipos.
+
+```bash
+python manage.py seed_users
+```
+Este comando se describe con más detalle en la sección de abajo.
+
+### 8. Ejecutar el Servidor de Desarrollo
 
 ¡Todo está listo! Ahora puedes ejecutar el proyecto.
 
@@ -121,6 +130,28 @@ python manage.py runserver
 ```
 
 Abre tu navegador web y ve a **`http://127.0.0.1:8000/`** para ver la aplicación funcionando.
+
+---
+
+## Poblar la Base de Datos con Datos de Prueba (Seeding)
+
+Para facilitar el desarrollo y las pruebas, hemos creado un comando que puebla la base de datos con un conjunto de usuarios predefinidos (Administradores, Cajeros, Clientes).
+
+Debes ejecutar este comando después de haber aplicado las migraciones (`migrate`) por primera vez.
+
+```bash
+python manage.py seed_users
+```
+
+Verás en la consola los mensajes de los usuarios que se van creando. El comando creará los siguientes usuarios de prueba:
+
+* **Usuario:** `admin_general` (Tipo: Administrador)
+* **Usuario:** `cajero_uno` (Tipo: Cajero)
+* **Usuario:** `cliente_test` (Tipo: Cliente)
+
+La contraseña para **todos** estos usuarios de prueba es: `password123`
+
+> **Nota:** El comando es seguro de ejecutar varias veces. Si un usuario ya existe, simplemente lo omitirá y no intentará crearlo de nuevo.
 
 ---
 
