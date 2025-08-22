@@ -32,6 +32,13 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+
+    class UserTypes(models.TextChoices):
+        ADMIN = 'ADMIN', 'Administrador'
+        ANALISTA = 'ANALISTA', 'Analista'
+        CLIENTE = 'CLIENTE', 'Cliente'
+
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)

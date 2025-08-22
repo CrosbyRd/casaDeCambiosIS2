@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import me
 
 # Es una buena práctica definir el app_name al principio del archivo.
 app_name = "usuarios"
@@ -25,4 +26,5 @@ urlpatterns = [
     path('api/me/', views.CurrentUserView.as_view(), name='current_user'),
     path('api/users/', views.UserListCreate.as_view(), name='user_list_create'),
     path('api/users/<int:pk>/', views.UserRetrieveUpdateDestroy.as_view(), name='user_retrieve_update_destroy'),
+    path('auth/me/', me, name='me'),
 ]

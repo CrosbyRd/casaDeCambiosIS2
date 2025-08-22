@@ -16,6 +16,26 @@ from clientes.models import Cliente
 
 # --- Vistas de Autoregistro y Verificación (Tu rama - HEAD) ---
 
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me(request):
+    user = request.user
+    data = {
+        "id": user.id,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "is_verified": user.is_verified,
+    }
+    return Response(data)
+
+
+
 def register(request):
     if request.method == "POST":
         form = RegistroForm(request.POST)
