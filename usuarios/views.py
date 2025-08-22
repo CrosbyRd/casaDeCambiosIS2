@@ -46,14 +46,7 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
-class AdminPanelView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # Validamos que sea ADMIN
-        if request.user.tipo_usuario != 'ADMIN':
-            return Response({"detail": "No autorizado"}, status=status.HTTP_403_FORBIDDEN)
-        # Renderizamos el HTML
+def admin_panel(request):
         return render(request, 'usuarios/admin_panel.html')
     
 
