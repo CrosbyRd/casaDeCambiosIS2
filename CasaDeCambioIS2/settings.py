@@ -89,10 +89,10 @@ TEMPLATES = [
 # }
 DATABASES = {
     'default': {
-        'NAME': 'casa_de_cambios_dev',         # El nombre de la BD que creaste en el paso 2
+        'NAME': 'casadecambio_db',         # El nombre de la BD que creaste en el paso 2
         'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'usuario_dev',       # El usuario que creaste
-        'PASSWORD': 'zangetsu_dev', # La contraseña que elegiste
+        'USER': 'casadecambio_user',       # El usuario que creaste
+        'PASSWORD': 'una_contraseña_muy_segura', # La contraseña que elegiste
         'HOST': 'localhost',               # O '127.0.0.1'. Se conecta a la BD en la misma máquina
         'PORT': '5432',                    # El puerto por defecto de PostgreSQL
     }
