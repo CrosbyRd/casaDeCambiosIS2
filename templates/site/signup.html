@@ -7,7 +7,7 @@
 
   <div class="grid md:grid-cols-2 gap-6">
     <form id="signupForm" class="border border-neutral-200 rounded-lg p-6"
-          method="post" action="{% url 'usuarios:auth_register' %}" novalidate>
+          method="post" action="{% url 'usuarios:register' %}" novalidate>
       {% csrf_token %}
 
       <div class="mb-6">
