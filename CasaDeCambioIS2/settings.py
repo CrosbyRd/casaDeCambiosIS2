@@ -97,6 +97,13 @@ DATABASES = {
         'PORT': '5432',                    # El puerto por defecto de PostgreSQL
     }
 }
+
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True
+    )
+
 AUTH_USER_MODEL = 'usuarios.CustomUser'
 # Configuración de correo (ejemplo con Gmail)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
