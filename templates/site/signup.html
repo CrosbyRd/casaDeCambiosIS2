@@ -6,12 +6,14 @@
   <h1 class="h1 mb-6">Crear cuenta</h1>
 
   <div class="grid md:grid-cols-2 gap-6">
-    <form id="signupForm" class="border border-neutral-200 rounded-lg p-6" method="post" novalidate>
+    <form id="signupForm" class="border border-neutral-200 rounded-lg p-6"
+          method="post" action="{% url 'usuarios:register' %}" novalidate>
       {% csrf_token %}
 
       <div class="mb-6">
         <label class="block mb-3 font-medium" for="id_email">Email</label>
         <input id="id_email" name="email" type="email"
+               value="{{ form.email.value|default_if_none:'' }}"
                class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
                placeholder="tu@correo.com" autofocus />
       </div>
@@ -25,13 +27,13 @@
 
       <div class="mb-6">
         <label class="inline-flex items-center gap-3">
-          <input id="id_terms" type="checkbox" class="h-5 w-5" />
+          <input id="id_terms" name="terms" type="checkbox" class="h-5 w-5"
+                 {% if form.terms.value %}checked{% endif %} />
           <span>Acepto <a class="text-brand hover:underline" href="{% url 'site_legal' %}">términos y privacidad</a></span>
         </label>
       </div>
 
       <button class="btn w-full" type="submit">Registrarme</button>
-
       <a href="{% url 'site_login' %}" class="btn-secondary mt-6 w-full inline-flex justify-center">Ya tengo cuenta</a>
     </form>
 
@@ -42,12 +44,25 @@
   </div>
 
   <!-- Modal de error -->
-  <div id="signupError" class="modal hidden">
+  <div id="signupError" class="modal {% if form.errors %}block{% else %}hidden{% endif %}">
     <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
     <div class="w-full h-full flex items-center justify-center p-6">
       <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="signupErrTitle">
-        <h2 id="signupErrTitle" class="h2 mb-4">Datos incompletos</h2>
-        <p class="text-neutral-700 mb-6">Email, contraseña y aceptación de términos son obligatorios.</p>
+        <h2 id="signupErrTitle" class="h2 mb-4">Datos incompletos o incorrectos</h2>
+        {% if form.errors %}
+          <ul class="text-neutral-700 mb-6 list-disc pl-5">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-neutral-700 mb-6">Email, contraseña y aceptación de términos son obligatorios.</p>
+        {% endif %}
         <div class="flex gap-3 justify-end">
           <button class="btn" data-modal-close="signupError">Entendido</button>
         </div>
@@ -55,20 +70,21 @@
     </div>
   </div>
 
-  <!-- Modal OK (placeholder mientras no hay backend) -->
+  <!-- Modal de registro pendiente o éxito -->
   <div id="signupOK" class="modal hidden">
     <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
     <div class="w-full h-full flex items-center justify-center p-6">
       <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="signupOkTitle">
         <h2 id="signupOkTitle" class="h2 mb-4">Registro pendiente</h2>
-        <p class="text-neutral-700 mb-6">Pronto habilitaremos el registro. Mientras tanto, puedes iniciar sesión si ya tienes cuenta.</p>
+        <p class="text-neutral-700 mb-6">Se ha enviado un código de verificación a tu correo. Revisa tu bandeja de entrada para activar la cuenta.</p>
         <div class="flex gap-3 justify-end">
-          <a class="btn-secondary" href="{% url 'site_login' %}">Ir a iniciar sesión</a>
+          <a class="btn-secondary" href="{% url 'usuarios:verify' %}">Verificar ahora</a>
           <button class="btn" data-modal-close="signupOK">Cerrar</button>
         </div>
       </div>
     </div>
   </div>
+
 </main>
 
 <script>
@@ -77,20 +93,19 @@
   const modalOK  = document.getElementById('signupOK');
 
   form.addEventListener('submit', function(e){
-    e.preventDefault();
     const email = document.getElementById('id_email').value.trim();
     const pass  = document.getElementById('id_password').value.trim();
     const terms = document.getElementById('id_terms').checked;
 
     if (!email || !pass || !terms) {
+      e.preventDefault();
       modalErr.classList.remove('hidden');
-      return;
+    } else {
+      // Se envía normalmente al backend
     }
-    // Mientras no haya backend: mostramos confirmación de placeholder
-    modalOK.classList.remove('hidden');
   });
 
-  // Cierre de modales (mismo patrón que usamos en home)
+  // Cierre de modales
   document.addEventListener('click', (e) => {
     const overlay = e.target?.closest('[data-modal-overlay]');
     const closeId = e.target?.closest('[data-modal-close]')?.getAttribute('data-modal-close');
