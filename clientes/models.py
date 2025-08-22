@@ -69,9 +69,9 @@ class Cliente(models.Model):
         """
         limites = {
             'USD': self.limite_compra_usd,
-            'EUR': self.limite_compra_eur,
-            'BRL': self.limite_compra_brl,
-            'PYG': self.limite_compra_pyg  # Podemos agregar más monedas
+            #'EUR': self.limite_compra_eur,
+            #'BRL': self.limite_compra_brl,
+            #'PYG': self.limite_compra_pyg  # Podemos agregar más monedas
         }
         return limites.get(moneda.upper(), Decimal('0.00'))
     activo = models.BooleanField(

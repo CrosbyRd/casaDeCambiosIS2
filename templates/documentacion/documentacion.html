@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación de los módulos Clientes, Usuarios y Roles</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; background: #f9f9f9; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        code { background: #ecf0f1; padding: 2px 5px; border-radius: 3px; }
+        pre { background: #ecf0f1; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #bdc3c7; padding: 8px; text-align: left; }
+        th { background: #34495e; color: #fff; }
+        a { color: #2980b9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .section { margin-bottom: 40px; }
+        .indice { margin-bottom: 30px; }
+        .indice a { display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Documentación de los módulos del sistema</h1>
+    <p>Este documento describe los modelos, vistas, URLs y formularios de los módulos principales del sistema de la casa de cambio.</p>
+
+    <div class="indice">
+        <h2>Índice</h2>
+        <a href="#clientes">1. Clientes</a>
+        <a href="#usuarios">2. Usuarios</a>
+        <a href="#roles">3. Roles</a>
+    </div>
+
+    <!-- MÓDULO CLIENTES -->
+    <div class="section" id="clientes">
+        <h2>1. Módulo Clientes</h2>
+        <h3>Modelos</h3>
+        <p>Modelo <code>Cliente</code> con atributos básicos, categoría, bonificación y límites de compra.</p>
+        <table>
+            <tr><th>Atributo</th><th>Tipo</th><th>Descripción</th></tr>
+            <tr><td>id_cliente</td><td>UUIDField</td><td>Identificador único</td></tr>
+            <tr><td>nombre</td><td>CharField</td><td>Nombre completo o razón social</td></tr>
+            <tr><td>correo_electronico</td><td>EmailField</td><td>Correo electrónico único</td></tr>
+            <tr><td>categoria</td><td>CharField (choices)</td><td>Minorista, Corporativo, VIP</td></tr>
+            <tr><td>activo</td><td>BooleanField</td><td>Estado del cliente</td></tr>
+            <tr><td>fecha_registro</td><td>DateTimeField</td><td>Fecha de creación</td></tr>
+            <tr><td>ultima_modificacion</td><td>DateTimeField</td><td>Última modificación</td></tr>
+        </table>
+        <p>Propiedades y métodos: <code>bonificacion</code>, <code>limite_compra_usd</code>, <code>obtener_limite_compra</code>, <code>esta_activo</code>, <code>puede_comprar</code>.</p>
+
+        <h3>Vistas</h3>
+        <ul>
+            <li>ClienteListView: Lista paginada con filtros.</li>
+            <li>ClienteDetailView: Detalle de cliente.</li>
+            <li>ClienteCreateView: Crear cliente.</li>
+            <li>ClienteUpdateView: Actualizar cliente.</li>
+            <li>ClienteDeleteView: Eliminar cliente.</li>
+            <li>toggle_cliente_estado: Activar/desactivar cliente.</li>
+        </ul>
+
+        <h3>URLs</h3>
+        <table>
+            <tr><th>URL</th><th>Vista</th><th>Nombre</th></tr>
+            <tr><td>/clientes/</td><td>ClienteListView</td><td>lista</td></tr>
+            <tr><td>/clientes/crear/</td><td>ClienteCreateView</td><td>crear</td></tr>
+            <tr><td>/clientes/&lt;uuid:pk&gt;/</td><td>ClienteDetailView</td><td>detalle</td></tr>
+            <tr><td>/clientes/&lt;uuid:pk&gt;/editar/</td><td>ClienteUpdateView</td><td>editar</td></tr>
+            <tr><td>/clientes/&lt;uuid:pk&gt;/eliminar/</td><td>ClienteDeleteView</td><td>eliminar</td></tr>
+            <tr><td>/clientes/&lt;uuid:pk&gt;/toggle-estado/</td><td>toggle_cliente_estado</td><td>toggle_estado</td></tr>
+        </table>
+    </div>
+
+    <!-- MÓDULO USUARIOS -->
+    <div class="section" id="usuarios">
+        <h2>2. Módulo Usuarios</h2>
+        <h3>Modelos</h3>
+        <p>Modelo <code>CustomUser</code> con tipo de usuario, relación con clientes y rol.</p>
+        <table>
+            <tr><th>Atributo</th><th>Tipo</th><th>Descripción</th></tr>
+            <tr><td>username</td><td>CharField</td><td>Nombre de usuario</td></tr>
+            <tr><td>email</td><td>EmailField</td><td>Correo del usuario</td></tr>
+            <tr><td>tipo_usuario</td><td>CharField (choices)</td><td>ADMIN, ANALISTA, CLIENTE</td></tr>
+            <tr><td>clientes</td><td>ManyToManyField</td><td>Clientes asignados</td></tr>
+            <tr><td>role</td><td>ForeignKey</td><td>Rol asociado</td></tr>
+        </table>
+
+        <h3>Vistas y Serializers</h3>
+        <ul>
+            <li>RegisterView: Registro de usuarios.</li>
+            <li>CurrentUserView: Datos del usuario logueado.</li>
+            <li>UserListCreate: Listar y crear usuarios (solo admin).</li>
+            <li>UserRetrieveUpdateDestroy: CRUD de usuario (solo admin).</li>
+            <li>admin_panel: Panel HTML para administración.</li>
+            <li>listar_usuarios, agregar_cliente, quitar_cliente: Gestión de clientes asignados.</li>
+        </ul>
+
+        <h3>URLs</h3>
+        <table>
+            <tr><th>URL</th><th>Vista</th></tr>
+            <tr><td>/usuarios/register/</td><td>RegisterView</td></tr>
+            <tr><td>/usuarios/me/</td><td>CurrentUserView</td></tr>
+            <tr><td>/usuarios/admin-panel/</td><td>admin_panel</td></tr>
+            <tr><td>/usuarios/usuarios/</td><td>listar_usuarios</td></tr>
+            <tr><td>/usuarios/usuarios/agregar/&lt;int:user_id&gt;/&lt;uuid:cliente_id&gt;/</td><td>agregar_cliente</td></tr>
+            <tr><td>/usuarios/usuarios/quitar/&lt;int:user_id&gt;/&lt;uuid:cliente_id&gt;/</td><td>quitar_cliente</td></tr>
+        </table>
+    </div>
+
+    <!-- MÓDULO ROLES -->
+    <div class="section" id="roles">
+        <h2>3. Módulo Roles</h2>
+        <h3>Modelos</h3>
+        <p>Modelo <code>Role</code> con nombre, descripción y permisos.</p>
+        <table>
+            <tr><th>Atributo</th><th>Tipo</th><th>Descripción</th></tr>
+            <tr><td>name</td><td>CharField</td><td>Nombre del rol</td></tr>
+            <tr><td>description</td><td>TextField</td><td>Descripción del rol</td></tr>
+            <tr><td>permissions</td><td>ManyToManyField</td><td>Permisos asignados</td></tr>
+        </table>
+
+        <h3>Vistas y Serializers</h3>
+        <ul>
+            <li>RoleListCreateView: Listar y crear roles.</li>
+            <li>RoleDetailView: CRUD de roles.</li>
+            <li>role_panel: Panel HTML de administración.</li>
+        </ul>
+
+        <h3>URLs</h3>
+        <table>
+            <tr><th>URL</th><th>Vista</th></tr>
+            <tr><td>/roles/</td><td>RoleListCreateView</td></tr>
+            <tr><td>/roles/&lt;int:pk&gt;/</td><td>RoleDetailView</td></tr>
+            <tr><td>/roles/panel/</td><td>role_panel</td></tr>
+        </table>
+    </div>
+
+</body>
+</html>

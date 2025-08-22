@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 urlpatterns = [
     # Home público
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
@@ -27,5 +26,6 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('clientes/', include('clientes.urls', namespace='clientes')),
     path('roles/', include('roles.urls', namespace='roles')),
+     path('documentacion/', TemplateView.as_view(template_name='documentacion/documentacion.html'), name='documentacion'),
     
 ]
