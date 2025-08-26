@@ -1,14 +1,14 @@
-""" # usuarios/management/commands/seed_users.py
+# usuarios/management/commands/seed_users.py
 from django.core.management.base import BaseCommand
 from usuarios.models import CustomUser
 from roles.models import Role
 from django.utils import timezone
 
 class Command(BaseCommand):
-    help = 'Crea los usuarios iniciales para el sistema.'
+    help = 'Crea los usuarios y roles iniciales para el sistema si no existen.'
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS('Iniciando la creación de usuarios iniciales...'))
+        self.stdout.write(self.style.SUCCESS('Iniciando la creación de usuarios y roles iniciales...'))
 
         users_to_create = [
             {'email': 'admin@example.com', 'password': 'password123', 'first_name': 'Admin', 'last_name': 'General', 'role': 'ADMINISTRADOR'},
@@ -21,23 +21,27 @@ class Command(BaseCommand):
             role_name = user_data.pop('role')
 
             if not CustomUser.objects.filter(email=email).exists():
-                try:
-                    role = Role.objects.get(name=role_name)
-                    user = CustomUser.objects.create_user(
-                        email=user_data['email'],
-                        password=user_data['password'],
-                        first_name=user_data.get('first_name', ''),
-                        last_name=user_data.get('last_name', ''),
-                        is_staff=role.name == 'ADMINISTRADOR',
-                        is_superuser=role.name == 'ADMINISTRADOR'
-                    )
-                    user.roles.add(role)
-                    self.stdout.write(self.style.SUCCESS(f'Usuario "{email}" creado con éxito.'))
-                except Role.DoesNotExist:
-                    self.stdout.write(self.style.ERROR(f'Error: El rol "{role_name}" no existe.'))
-                    return
+                # CAMBIO CLAVE: Usamos get_or_create para obtener o crear el rol.
+                # Esto elimina la necesidad del bloque try/except y hace el script más robusto.
+                role, created = Role.objects.get_or_create(name=role_name)
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f'Rol "{role_name}" no existía, ha sido creado.'))
+
+                user = CustomUser.objects.create_user(
+                    email=user_data['email'],
+                    password=user_data['password'],
+                    first_name=user_data.get('first_name', ''),
+                    last_name=user_data.get('last_name', ''),
+                    is_staff=role.name == 'ADMINISTRADOR',
+                    is_superuser=role.name == 'ADMINISTRADOR',
+                    is_active=True,    # Activa el usuario para que pueda iniciar sesión.
+                    is_verified=True   # Márcalo como verificado también.
+                )
+                user.roles.add(role)
+                self.stdout.write(self.style.SUCCESS(f'Usuario "{email}" con rol "{role_name}" creado con éxito.'))
             else:
-                self.stdout.write(self.style.WARNING(f'El usuario "{email}" ya existe, saltando su creación.')) """
+                self.stdout.write(self.style.WARNING(f'El usuario "{email}" ya existe, saltando su creación.'))              
+"""
 
 from django.core.management.base import BaseCommand
 from usuarios.models import CustomUser
@@ -100,3 +104,5 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"Usuario '{user_data['username']}' ya existe. Saltando."))
         
         self.stdout.write(self.style.SUCCESS('Proceso de seeding finalizado.'))
+
+"""

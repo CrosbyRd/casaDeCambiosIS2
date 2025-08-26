@@ -1,13 +1,25 @@
 from rest_framework import serializers
 from .models import CustomUser
+from roles.models import Role
+
+class RoleSerializer(serializers.ModelSerializer):
+    """
+    Serializer para mostrar la información de un Rol.
+    """
+    class Meta:
+        model = Role
+        fields = ['name']
 
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer para mostrar la información del usuario (sin datos sensibles).
     """
+    roles = RoleSerializer(many=True, read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'tipo_usuario']
+        # CORREGIDO: Solo usamos campos que existen en el modelo CustomUser.
+        fields = ['id', 'email', 'first_name', 'last_name', 'roles']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,20 +30,24 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'password', 'email', 'first_name', 'last_name', 'tipo_usuario']
+        # CORREGIDO: Solo usamos campos que existen en el modelo CustomUser.
+        fields = ['password', 'email', 'first_name', 'last_name']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True}
         }
 
     def create(self, validated_data):
-        # Usamos create_user para hashear la contraseña correctamente
         user = CustomUser.objects.create_user(
-            username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            tipo_usuario=validated_data.get('tipo_usuario', CustomUser.UserTypes.CLIENTE)
         )
+        try:
+            default_role, _ = Role.objects.get_or_create(name='CLIENTE')
+            user.roles.add(default_role)
+        except Exception as e:
+            print(f"No se pudo asignar el rol por defecto: {e}")
+            
         return user
