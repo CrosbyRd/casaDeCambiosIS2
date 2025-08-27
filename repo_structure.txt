@@ -20,6 +20,11 @@
 │   ├── models.py
 │   ├── templates
 │   │   └── clientes
+│   │       ├── base.html
+│   │       ├── confirmar_eliminacion.html
+│   │       ├── detalle_cliente.html
+│   │       ├── formulario_cliente.html
+│   │       └── lista_clientes.html
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -59,6 +64,10 @@
 │   ├── models.py
 │   ├── templates
 │   │   └── monedas
+│   │       ├── crear.html
+│   │       ├── editar.html
+│   │       ├── eliminar.html
+│   │       └── listar.html
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -77,6 +86,7 @@
 │   ├── serializers.py
 │   ├── templates
 │   │   └── roles
+│   │       └── role_admin.html
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -107,6 +117,8 @@
     ├── __init__.py
     ├── management
     │   ├── commands
+    │   │   ├── __init__.py
+    │   │   └── seed_users.py
     │   └── __init__.py
     ├── migrations
     │   ├── 0001_initial.py
@@ -129,8 +141,10 @@
     ├── serializers.py
     ├── templates
     │   └── usuarios
+    │       ├── admin_panel.html
+    │       └── listar_usuarios.html
     ├── tests.py
     ├── urls.py
     └── views.py
 
-30 directories, 104 files
+30 directories, 118 files
