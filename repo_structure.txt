@@ -1,0 +1,136 @@
+.
+├── CasaDeCambioIS2
+│   ├── asgi.py
+│   ├── docs
+│   │   ├── Chats.txt
+│   │   └── Conversaciones.md
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── views.py
+│   └── wsgi.py
+├── clientes
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── clientes
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── correo
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   ├── register.html
+│   │   └── verificacion_email.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── db.sqlite3
+├── lib
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── monedas
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── monedas
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── Procfile
+├── README.md
+├── repo_structure.txt
+├── requirements.txt
+├── roles
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── templates
+│   │   └── roles
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── runtime.txt
+├── static
+│   └── css
+│       └── styles.css
+├── templates
+│   ├── base.html
+│   └── site
+│       ├── calculator.html
+│       ├── contact.html
+│       ├── faq.html
+│       ├── forgot-password.html
+│       ├── home.html
+│       ├── how-it-works.html
+│       ├── legal.html
+│       ├── login.html
+│       ├── rates.html
+│       ├── reenviar_codigo.html
+│       ├── register.html
+│       ├── signup.html
+│       └── verify.html
+└── usuarios
+    ├── admin.py
+    ├── apps.py
+    ├── forms.py
+    ├── __init__.py
+    ├── management
+    │   ├── commands
+    │   └── __init__.py
+    ├── migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_customuser_roles.py
+    │   ├── 0002_permiso_rol_customuser_rol.py
+    │   ├── 0003_auto_20250820_1326.py
+    │   ├── 0004_remove_customuser_tipo_usuario_and_more.py
+    │   ├── 0005_merge_20250821_0105.py
+    │   ├── 0006_remove_rol_permisos_remove_customuser_rol_and_more.py
+    │   ├── 0007_remove_customuser_roles_customuser_tipo_usuario_and_more.py
+    │   ├── 0008_alter_customuser_tipo_usuario.py
+    │   ├── 0009_customuser_clientes.py
+    │   ├── 0009_remove_customuser_username_and_more.py
+    │   ├── 0010_alter_customuser_options_alter_customuser_managers_and_more.py
+    │   ├── 0010_customuser_role.py
+    │   ├── 0011_merge_20250822_1119.py
+    │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.py
+    │   └── __init__.py
+    ├── models.py
+    ├── serializers.py
+    ├── templates
+    │   └── usuarios
+    ├── tests.py
+    ├── urls.py
+    └── views.py
+
+30 directories, 104 files

@@ -1,0 +1,43 @@
+<!-- moneda/templates/moneda/listar.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Monedas</title>
+    <style>
+        table {border-collapse: collapse; width: 60%;}
+        th, td {border: 1px solid #ccc; padding: 8px; text-align: left;}
+        th {background-color: #eee;}
+        a {margin-right: 5px;}
+    </style>
+</head>
+<body>
+<h1>Monedas</h1>
+
+<a href="{% url 'monedas:crear_moneda' %}">Crear nueva moneda</a>
+<table>
+    <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Símbolo</th>
+        <th>Acciones</th>
+    </tr>
+    {% for m in monedas %}
+    <tr>
+        <td>{{ m.codigo }}</td>
+        <td>{{ m.nombre }}</td>
+        <td>{{ m.simbolo }}</td>
+        <td>
+            <a href="{% url 'monedas:editar_moneda' m.id %}">Editar</a>
+            <a href="{% url 'monedas:eliminar_moneda' m.id %}">Eliminar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">No hay monedas registradas.</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
+5

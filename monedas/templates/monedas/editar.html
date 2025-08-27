@@ -1,0 +1,18 @@
+<!-- moneda/templates/moneda/editar.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Moneda</title>
+</head>
+<body>
+<h1>Editar Moneda: {{ moneda.nombre }} ({{ moneda.codigo }})</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Actualizar</button>
+    <a href="{% url 'monedas:listar_monedas' %}">Cancelar</a>
+</form>
+</body>
+</html>
