@@ -39,6 +39,8 @@ urlpatterns = [
     path('api/', include('usuarios.urls')),
     path('monedas/', include('monedas.urls')),
 
-   path("cotizaciones/", include("cotizaciones.urls")),
+    path("cotizaciones/", include("cotizaciones.urls")),
+
+    path('pagos/', include('pagos.urls')),
 
 ]

@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de Tipos de Medio de Pago — Global Exchange</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <main class="container container--tight">
+    <header class="page-header page-header--tight">
+      <h1 class="h1 h1--sm">Tipos de Medio de Pago</h1>
+      <a href="{% url 'pagos:agregar_tipo_medio_pago' %}" class="btn">Agregar Tipo</a>
+    </header>
+
+    <section class="box box--tight no-padding">
+      <div class="table-scroll table-wrap--max">
+        <table class="table table--compact">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Comisión %</th>
+              <th>Comisión Fija</th>
+              <th>Bonificación %</th>
+              <th>Cuenta Bancaria</th>
+              <th style="width: 180px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tipo in tipos %}
+            <tr>
+              <td>{{ tipo.nombre }}</td>
+              <td>{{ tipo.comision_porcentaje }}</td>
+              <td>{{ tipo.comision_monto_fijo }}</td>
+              <td>{{ tipo.bonificacion_porcentaje }}</td>
+              <td>{{ tipo.es_cuenta_bancaria|yesno:"Sí,No" }}</td>
+              <td>
+                <div style="display: inline-flex; gap: 0.5rem;">
+                  <a href="{% url 'pagos:editar_tipo_medio_pago' tipo.pk %}" class="btn-secondary">Editar</a>
+                  <a href="{% url 'pagos:eliminar_tipo_medio_pago' tipo.pk %}" class="btn-ghost">Eliminar</a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="empty">No hay tipos de medio de pago registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
+
+
+

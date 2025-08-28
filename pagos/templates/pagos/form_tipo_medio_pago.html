@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="container container--tight">
+  <h1 class="h1 h1--sm">{{ accion }} Tipo de Medio de Pago</h1>
+
+  <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+    <form method="post" class="form form--compact">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <div class="actions">
+        <button type="submit" class="btn">{{ accion }}</button>
+        <a href="{% url 'pagos:listar_tipos_medio_pago' %}" class="btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
+
