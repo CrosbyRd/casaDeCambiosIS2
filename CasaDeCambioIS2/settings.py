@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "roles",
     "monedas",
     'cotizaciones',
+    "admin_panel",
 ]
 
 

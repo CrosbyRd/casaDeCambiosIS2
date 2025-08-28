@@ -4,46 +4,81 @@
 <head>
   <meta charset="UTF-8" />
   <title>Listado de Monedas — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --brand:#7c3aed;        /* morado principal */
+      --brand-soft:#ede9fe;   /* morado suave */
+      --brand-dark:#4c1d95;   /* morado oscuro */
+      --ink:#111827;          /* gris muy oscuro */
+      --muted:#6b7280;        /* gris medio */
+      --line:#e5e7eb;         /* borde suave */
+    }
+  </style>
 </head>
-<body>
+<body class="bg-gray-50 text-[var(--ink)]">
 
-  <main class="container container--tight">
-    <header class="page-header page-header--tight">
-      <h1 class="h1 h1--sm">Monedas</h1>
-      <a href="{% url 'monedas:crear_moneda' %}" class="btn">Crear nueva moneda</a>
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    
+    <!-- Encabezado -->
+    <header class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">💱 Monedas</h1>
+        <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+          Aquí puedes gestionar todas las monedas disponibles en el sistema: crea nuevas, edita las existentes o elimínalas según sea necesario.
+        </p>
+      </div>
+      <div class="space-x-3 flex">
+        <a href="{% url 'admin_panel:dashboard' %}" 
+           class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+           style="color:var(--brand-dark)">
+          ⬅ Volver al Panel
+        </a>
+        <a href="{% url 'monedas:crear_moneda' %}" 
+           class="px-4 py-2 rounded-lg font-bold text-white"
+           style="background:var(--brand)">
+          ➕ Crear nueva moneda
+        </a>
+      </div>
     </header>
 
-    <section class="box box--tight no-padding">
-      <div class="table-scroll table-wrap--max">
-        <table class="table table--compact" id="monedas-table">
-          <thead>
+    <!-- Tabla de monedas -->
+    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead style="background:var(--brand); color:#fff">
             <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Símbolo</th>
-              <th>Acciones</th>
+              <th class="px-6 py-3">Código</th>
+              <th class="px-6 py-3">Nombre</th>
+              <th class="px-6 py-3">Símbolo</th>
+              <th class="px-6 py-3">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {% for m in monedas %}
-            <tr>
-              <td class="cell-strong">
+            <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+              <td class="px-6 py-4 font-semibold text-[var(--ink)]">
                 <span class="currency-emoji" data-code="{{ m.codigo }}"></span>
                 {{ m.codigo }}
               </td>
-              <td>{{ m.nombre }}</td>
-              <td>{{ m.simbolo }}</td>
-              <td>
-                <div class="action-row">
-                  <a href="{% url 'monedas:editar_moneda' m.id %}" class="btn-secondary">Editar</a>
-                  <a href="{% url 'monedas:eliminar_moneda' m.id %}" class="btn-ghost">Eliminar</a>
-                </div>
+              <td class="px-6 py-4">{{ m.nombre }}</td>
+              <td class="px-6 py-4">{{ m.simbolo }}</td>
+              <td class="px-6 py-4 space-x-2">
+                <a href="{% url 'monedas:editar_moneda' m.id %}" 
+                   class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
+                  Editar
+                </a>
+                <a href="{% url 'monedas:eliminar_moneda' m.id %}" 
+                   class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
+                  Eliminar
+                </a>
               </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="4" class="empty">No hay monedas registradas.</td>
+              <td colspan="4" class="px-6 py-6 text-center" style="color:var(--muted)">
+                No hay monedas registradas.
+              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -52,7 +87,7 @@
     </section>
   </main>
 
-  <!-- Pequeño mapa y script: añade la bandera según el código -->
+  <!-- Script para mostrar banderas -->
   <script>
     (function(){
       const MAP = {

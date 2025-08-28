@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/', include('usuarios.urls')),
     path('monedas/', include('monedas.urls')),
 
-   path("cotizaciones/", include("cotizaciones.urls")),
+    path("cotizaciones/", include("cotizaciones.urls")),
+    path("admin_panel/", include("admin_panel.urls")),
 
 ]
