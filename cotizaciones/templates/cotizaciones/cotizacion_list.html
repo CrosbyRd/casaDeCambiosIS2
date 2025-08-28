@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Listado de Cotizaciones — Global Exchange</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+  <main class="container container--tight">
+    <header class="page-header page-header--tight">
+      <h1 class="h1 h1--sm">Cotizaciones</h1>
+      <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn">Agregar Cotización</a>
+    </header>
+
+    <section class="box box--tight no-padding">
+      <div class="table-scroll table-wrap--max">
+        <table class="table table--compact" id="cotizaciones-table">
+          <thead>
+            <tr>
+              <th>Moneda Base</th>
+              <th>Moneda Destino</th>
+              <th>Valor de Compra</th>
+              <th>Valor de Venta</th>
+              <th>Última Actualización</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in cotizaciones %}
+            <tr>
+              <td class="cell-strong">
+                <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
+                {{ c.moneda_base.nombre }} ({{ c.moneda_base.simbolo }})
+              </td>
+              <td class="cell-strong">
+                <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                {{ c.moneda_destino.nombre }} ({{ c.moneda_destino.simbolo }})
+              </td>
+              <td>{{ c.valor_compra }}</td>
+              <td>{{ c.valor_venta }}</td>
+              <td>{{ c.fecha_actualizacion }}</td>
+              <td>
+                <div style="display: inline-flex; gap: 0.5rem;">
+                  <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="btn-secondary" style="display: inline-block;">Editar</a>
+                  <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" class="btn-ghost" style="display: inline-block;">Eliminar</a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="empty">No hay cotizaciones registradas.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mapa de emojis por código de moneda -->
+  <script>
+    (function(){
+      const MAP = {
+        USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+        MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+        CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
+      };
+      document.querySelectorAll('.currency-emoji').forEach(el => {
+        const code = String(el.dataset.code || '').toUpperCase();
+        el.textContent = (MAP[code] || "💱") + " ";
+      });
+    })();
+  </script>
+
+</body>
+</html>
+
+

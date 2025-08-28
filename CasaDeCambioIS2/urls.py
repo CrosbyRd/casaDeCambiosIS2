@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 urlpatterns = [
     # --- Páginas Públicas y del Sitio ---
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
@@ -39,4 +38,7 @@ urlpatterns = [
 
     path('api/', include('usuarios.urls')),
     path('monedas/', include('monedas.urls')),
+
+   path("cotizaciones/", include("cotizaciones.urls")),
+
 ]

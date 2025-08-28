@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Eliminar Cotización — Global Exchange</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+  <main class="container container--tight">
+    <h1 class="h1 h1--sm">Eliminar Cotización</h1>
+
+    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+      <p class="lead">
+        ¿Confirmás que querés eliminar la cotización de 
+        <strong>{{ cotizacion.moneda_base.nombre }} ({{ cotizacion.moneda_base.simbolo }}) a 
+        {{ cotizacion.moneda_destino.nombre }} ({{ cotizacion.moneda_destino.simbolo }})</strong>?
+      </p>
+
+      <form method="post" class="form form--compact">
+        {% csrf_token %}
+        <div class="actions" style="display: inline-flex; gap: 0.5rem;">
+          <button type="submit" class="btn btn--danger">Sí, eliminar</button>
+          <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+</body>
+</html>
