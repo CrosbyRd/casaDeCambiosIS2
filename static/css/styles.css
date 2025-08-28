@@ -160,6 +160,15 @@ body{
   font: inherit;
   outline: none;
   transition: box-shadow .15s ease, border-color .15s ease;
+  box-sizing: border-box;    /* <-- clave para que input y select midan igual */
+}
+
+/* Asegurar que los inputs deshabilitados (nombre, símbolo) se vean igual que el select */
+.form input[disabled],
+.form select[disabled] {
+  background: #f9fafb;   /* gris clarito, solo para indicar que no se puede editar */
+  color: var(--muted);   /* texto gris, consistente con el diseño */
+  opacity: 1;            /* evita que el navegador lo haga "apagado" */
 }
 
 .form input:focus,
