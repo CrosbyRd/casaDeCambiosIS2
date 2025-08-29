@@ -41,6 +41,8 @@
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── cotizaciones
+│   └── migrations
 ├── db.sqlite3
 ├── lib
 │   ├── admin.py
@@ -68,6 +70,7 @@
 │   │       ├── editar.html
 │   │       ├── eliminar.html
 │   │       └── listar.html
+│   ├── templatetags
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -96,6 +99,8 @@
 │       └── styles.css
 ├── templates
 │   ├── base.html
+│   ├── registration
+│   │   └── login.html
 │   └── site
 │       ├── calculator.html
 │       ├── contact.html
@@ -104,7 +109,6 @@
 │       ├── home.html
 │       ├── how-it-works.html
 │       ├── legal.html
-│       ├── login.html
 │       ├── rates.html
 │       ├── reenviar_codigo.html
 │       ├── register.html
@@ -138,7 +142,6 @@
     │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.py
     │   └── __init__.py
     ├── models.py
-    ├── serializers.py
     ├── templates
     │   └── usuarios
     │       ├── admin_panel.html
@@ -147,4 +150,4 @@
     ├── urls.py
     └── views.py
 
-30 directories, 118 files
+34 directories, 117 files
