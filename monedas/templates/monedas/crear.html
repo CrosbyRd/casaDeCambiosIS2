@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crear Moneda — Global Exchange</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+  <main class="container container--tight">
+    <h1 class="h1 h1--sm">Crear Nueva Moneda</h1>
+
+    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+      <form method="post" class="form form--compact" id="moneda-form"
+            data-currencies='{
+              "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
+              "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
+              "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
+              "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
+              "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
+              "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
+              "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
+              "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
+              "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
+              "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
+              "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
+              "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
+              "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
+              "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
+              "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
+              "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
+            }'>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <!-- Render con as_p (el select ya trae emoji en las opciones) -->
+        {{ form.as_p }}
+
+        <!-- Preview compacto con emoji -->
+        <p style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 0;">
+          <span id="emojiPreview" style="font-size:1.25rem;line-height:1">💱</span>
+          <span id="codePreview" class="cell-strong"></span>
+          <span id="namePreview" style="color:var(--muted)"></span>
+        </p>
+
+        <div class="actions">
+          <button type="submit" class="btn">Guardar</button>
+          <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('moneda-form');
+      if(!form) return;
+
+      const data = JSON.parse(form.dataset.currencies || "{}");
+      const select  = document.getElementById('id_codigo');
+      const nombre  = document.getElementById('id_nombre');
+      const simbolo = document.getElementById('id_simbolo');
+
+      const emojiEl = document.getElementById('emojiPreview');
+      const codeEl  = document.getElementById('codePreview');
+      const nameEl  = document.getElementById('namePreview');
+
+      function syncFields(code){
+        if(!(code in data)) return;
+        const {name, symbol, emoji} = data[code];
+        if(nombre)  nombre.value  = name;
+        if(simbolo) simbolo.value = symbol;
+        if(emojiEl) emojiEl.textContent = emoji;
+        if(codeEl)  codeEl.textContent  = code;
+        if(nameEl)  nameEl.textContent  = `— ${name}`;
+      }
+
+      if(select && select.value){ syncFields(select.value); }
+      if(select){ select.addEventListener('change', e => syncFields(e.target.value)); }
+    })();
+  </script>
+
+</body>
+</html>

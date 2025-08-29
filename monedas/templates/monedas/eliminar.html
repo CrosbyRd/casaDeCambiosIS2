@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Eliminar Moneda — Global Exchange</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+  <main class="container container--tight">
+    <h1 class="h1 h1--sm">Eliminar Moneda</h1>
+
+    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+      <p class="lead">
+        ¿Confirmás que querés eliminar la moneda
+        <strong>{{ monedas.nombre }} ({{ monedas.codigo }})</strong>?
+      </p>
+
+      <form method="post" class="form form--compact">
+        {% csrf_token %}
+        <div class="actions">
+          <button type="submit" class="btn">Sí, eliminar</button>
+          <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+</body>
+</html>

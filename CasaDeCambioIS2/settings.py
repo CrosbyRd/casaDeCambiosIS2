@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "usuarios",
     "clientes",
     "roles",
+    "monedas",
 ]
 
 
@@ -138,3 +139,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # --- Modelo de usuario ---
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "usuarios.CustomUser"
+
+# --- Config de autenticación / redirecciones ---
+LOGIN_URL = "/cuentas/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
