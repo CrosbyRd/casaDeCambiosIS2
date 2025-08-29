@@ -1,89 +1,69 @@
-{% extends "base.html" %}
+{% comment %} Ubicación: templates/roles/role_admin.html {% endcomment %}
+{% extends "site/base.html" %}  {% block content %}
+<div class="container">
+    <h1>Panel de Administración de Roles</h1>
 
-{% block title %}Administración de Roles{% endblock %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Crear Nuevo Rol</h2>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'roles:role-panel' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre del Rol</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Rol</button>
+            </form>
+        </div>
+    </div>
 
-{% block content %}
-<main class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
-  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panel de Administración de Roles</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
-  <!-- Botón para volver al panel de administrador -->
-  <div class="mb-6 text-center">
-    <a href="{% url 'admin_panel:dashboard' %}" 
-       class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-200">
-       ← Volver al Panel de Administrador
-    </a>
-  </div>
-
-  <!-- Formulario para crear un nuevo rol -->
-  <form id="createRoleForm" class="flex flex-wrap gap-4 mb-6 justify-center items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-    <input type="text" id="roleName" placeholder="Nombre del rol" required class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none flex-1 min-w-[200px]">
-    <input type="text" id="roleDesc" placeholder="Descripción" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none flex-1 min-w-[200px]">
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-200">Crear Rol</button>
-  </form>
-
-  <!-- Lista de roles -->
-  <div class="overflow-x-auto">
-    <table class="w-full table-auto border-collapse text-left">
-      <thead class="bg-blue-100">
-        <tr>
-          <th class="border px-4 py-2">ID</th>
-          <th class="border px-4 py-2">Nombre</th>
-          <th class="border px-4 py-2">Descripción</th>
-          <th class="border px-4 py-2 text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="rolesTable" class="bg-white">
-        <!-- Aquí se cargan los roles vía JS -->
-      </tbody>
-    </table>
-  </div>
-</main>
-
-<script>
-async function fetchRoles() {
-    const res = await fetch('/roles/');
-    const data = await res.json();
-    const table = document.getElementById('rolesTable');
-    table.innerHTML = '';
-    data.forEach(role => {
-        table.innerHTML += `
-        <tr class="hover:bg-gray-50">
-            <td class="border px-4 py-2">${role.id}</td>
-            <td class="border px-4 py-2 font-medium">${role.name}</td>
-            <td class="border px-4 py-2">${role.description || '-'}</td>
-            <td class="border px-4 py-2 text-center">
-                <button onclick="deleteRole(${role.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg shadow-sm transition duration-200">Eliminar</button>
-            </td>
-        </tr>
-        `;
-    });
-}
-
-async function createRole(event) {
-    event.preventDefault();
-    const name = document.getElementById('roleName').value;
-    const description = document.getElementById('roleDesc').value;
-    const res = await fetch('/roles/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name, description})
-    });
-    if (res.ok) {
-        document.getElementById('createRoleForm').reset();
-        fetchRoles();
-    } else {
-        alert('Error al crear rol');
-    }
-}
-
-async function deleteRole(id) {
-    if (!confirm('¿Seguro que quieres eliminar este rol?')) return;
-    const res = await fetch(`/roles/${id}/`, {method: 'DELETE'});
-    if (res.ok) fetchRoles();
-    else alert('Error al eliminar rol');
-}
-
-document.getElementById('createRoleForm').addEventListener('submit', createRole);
-window.addEventListener('DOMContentLoaded', fetchRoles);
-</script>
+    <div class="card">
+        <div class="card-header">
+            <h2>Roles Existentes</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rol in roles %}
+                    <tr>
+                        <td>{{ rol.id }}</td>
+                        <td>{{ rol.nombre }}</td>
+                        <td>{{ rol.descripcion }}</td>
+                        <td>
+                            <form action="{% url 'roles:role-delete' rol.pk %}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este rol?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No hay roles registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

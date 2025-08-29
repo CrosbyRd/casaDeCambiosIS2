@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import me
 
 # Es una buena práctica definir el app_name al principio del archivo.
 app_name = "usuarios"
@@ -18,13 +17,5 @@ urlpatterns = [
     path('listar/', views.listar_usuarios, name='listar_usuarios'),
     path('agregar-cliente/<int:user_id>/<uuid:cliente_id>/', views.agregar_cliente, name='agregar_cliente'),
     path('quitar-cliente/<int:user_id>/<uuid:cliente_id>/', views.quitar_cliente, name='quitar_cliente'),
-    
-    # --- Rutas de la API (DRF - Combinación de ambas ramas) ---
-    # Estos son los endpoints que devolverán JSON, para ser consumidos por un frontend, por ejemplo.
-    # Sugerencia: Es común prefijar las rutas de la API con 'api/' para diferenciarlas.
-    path('api/register/', views.RegisterView.as_view(), name='api_register'),
-    path('api/me/', views.CurrentUserView.as_view(), name='current_user'),
-    path('api/users/', views.UserListCreate.as_view(), name='user_list_create'),
-    path('api/users/<int:pk>/', views.UserRetrieveUpdateDestroy.as_view(), name='user_retrieve_update_destroy'),
-    path('auth/me/', me, name='me'),
+
 ]
