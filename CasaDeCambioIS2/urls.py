@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 urlpatterns = [
     # --- Páginas Públicas y del Sitio ---
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
@@ -13,7 +13,7 @@ urlpatterns = [
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
     # CORRECCIÓN: Se elimina el path("signup/", ...) de aquí porque ahora lo maneja la app 'usuarios'.
     path("forgot-password/", TemplateView.as_view(template_name="site/forgot-password.html"), name="site_forgot_password"),
-    path("login/", TemplateView.as_view(template_name="site/login.html"), name="site_login"),
+    #path("login/", TemplateView.as_view(template_name="site/login.html"), name="site_login"),
 
     # --- Inclusión de Apps del Proyecto ---
     path('admin/', admin.site.urls),
@@ -30,15 +30,13 @@ urlpatterns = [
     # CORRECCIÓN: La app 'lib' no parece tener un propósito claro, la comento por ahora.
     # Si la necesitas, puedes descomentarla.
     # path("lib/", include("lib.urls")), 
-
-    # --- Endpoints de Autenticación para la API (JWT) ---
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
-
-    path('api/', include('usuarios.urls')),
-    path('monedas/', include('monedas.urls')),
-
-   path("cotizaciones/", include("cotizaciones.urls")),
-
+    
+    # --- NUEVO: URLs de Autenticación de Django ---
+    # Esto te dará automáticamente:
+    # /cuentas/login/
+    # /cuentas/logout/
+    # /cuentas/password_change/
+    # /cuentas/password_reset/
+    # y más...
+    path('cuentas/', include('django.contrib.auth.urls')),
 ]

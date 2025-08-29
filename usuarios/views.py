@@ -1,40 +1,19 @@
-# MERGE: Imports de ambas ramas, organizados y sin duplicados
+# usuarios/views.py
+
+# --- Imports necesarios (solo los que se usan) ---
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required # <--- Importante para proteger vistas
 
-from rest_framework import generics, permissions, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
+# --- Modelos y Formularios ---
 from .models import CustomUser
-from .serializers import UserSerializer, RegisterSerializer
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
 
-# --- Vistas de Autoregistro y Verificación (Tu rama - HEAD) ---
-
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def me(request):
-    user = request.user
-    data = {
-        "id": user.id,
-        "email": user.email,
-        "first_name": user.first_name,
-        "last_name": user.last_name,
-        "is_verified": user.is_verified,
-    }
-    return Response(data)
-
-
+# --- Vistas de Autoregistro y Verificación (Estas se quedan igual) ---
 
 def register(request):
     if request.method == "POST":
@@ -46,7 +25,7 @@ def register(request):
             user.save() # Guardamos primero para tener un ID
             
             user.generate_verification_code()
-      
+    
             send_mail(
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
@@ -55,7 +34,6 @@ def register(request):
                 fail_silently=False,
             )
 
-            # Usamos el email para la verificación para no depender del ID
             request.session['email_verificacion'] = user.email
             return redirect('usuarios:verify')
         else:
@@ -88,7 +66,8 @@ def verify(request):
             user.save()
             request.session.pop('email_verificacion', None)
             messages.success(request, "¡Cuenta verificada correctamente! Ya puedes iniciar sesión.")
-            return redirect('site_login') # Asumiendo que tienes una URL con este nombre
+            # Redirigimos a la nueva URL de login de Django
+            return redirect('login') 
         else:
             messages.error(request, "Código incorrecto o expirado.")
             
@@ -113,35 +92,20 @@ def reenviar_codigo(request):
     messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
     return redirect('usuarios:verify')
 
-# --- Vistas de API (Rama entrante) ---
+# --- Vistas de Administración (Ahora protegidas) ---
 
-class RegisterView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = RegisterSerializer
-
-class CurrentUserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
-    
-class UserListCreate(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-# --- Vistas de Administración (Rama entrante) ---
-
+@login_required
 def admin_panel(request):
+    # Buena práctica: verificar si el usuario es staff/admin
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permiso para acceder a esta página.")
+        return redirect('home') # Redirigir a la página de inicio
     return render(request, 'usuarios/admin_panel.html')
 
+@login_required
 def listar_usuarios(request):
+    if not request.user.is_staff:
+        return redirect('home')
     usuarios = CustomUser.objects.all().prefetch_related('clientes', 'roles')
     todos_clientes = Cliente.objects.all()
     return render(request, 'usuarios/listar_usuarios.html', {
@@ -149,14 +113,20 @@ def listar_usuarios(request):
         'todos_clientes': todos_clientes
     })
 
+@login_required
 def agregar_cliente(request, user_id, cliente_id):
+    if not request.user.is_staff:
+        return redirect('home')
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
     user.clientes.add(cliente)
     messages.success(request, f"Cliente '{cliente.nombre}' agregado a {user.email}.")
     return redirect('usuarios:listar_usuarios')
 
+@login_required
 def quitar_cliente(request, user_id, cliente_id):
+    if not request.user.is_staff:
+        return redirect('home')
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
     user.clientes.remove(cliente)
