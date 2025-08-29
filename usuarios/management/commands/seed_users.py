@@ -40,7 +40,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'El usuario "{email}" ya existe, saltando su creación.')) """
 
 from django.core.management.base import BaseCommand
-from usuarios.models import CustomUser
+from django.contrib.auth import get_user_model
+from django.db import transaction
+
+User = get_user_model()
 
 class Command(BaseCommand):
     help = 'Crea usuarios iniciales para la base de datos'
@@ -48,55 +51,103 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write(self.style.SUCCESS('Iniciando la creación de usuarios iniciales...'))
 
-        # Lista de usuarios a crear
+        # Usamos el identificador real del modelo (normalmente 'email')
+        key_field = User.USERNAME_FIELD  # p.ej. 'email'
+
+        # Lista de usuarios a crear —> usa email como clave
         users_to_create = [
             {
-                'username': 'admin_general',
                 'email': 'admin@casadecambio.com',
                 'password': 'password123',
                 'first_name': 'Admin',
                 'last_name': 'Principal',
-                'tipo_usuario': CustomUser.UserTypes.ADMIN
+                'role': 'ADMIN',
             },
             {
-                'username': 'analista_uno',
                 'email': 'analista1@casadecambio.com',
                 'password': 'password123',
                 'first_name': 'Juan',
                 'last_name': 'Pérez',
-                'tipo_usuario': CustomUser.UserTypes.ANALISTA
+                'role': 'ANALISTA',
             },
             {
-                'username': 'cliente_test',
                 'email': 'cliente@example.com',
                 'password': 'password123',
                 'first_name': 'Ana',
                 'last_name': 'García',
-                'tipo_usuario': CustomUser.UserTypes.CLIENTE
+                'role': 'CLIENTE',
             },
-                        {
-                'username': 'beta_tester',
+            {
                 'email': 'lclc@mgail.com',
                 'password': 'ttu789',
                 'first_name': 'Lope',
                 'last_name': 'GGG',
-                'tipo_usuario': CustomUser.UserTypes.CLIENTE
-            }
+                'role': 'CLIENTE',
+            },
         ]
 
-        for user_data in users_to_create:
-            # Revisa si el usuario ya existe antes de crearlo
-            if not CustomUser.objects.filter(username=user_data['username']).exists():
-                CustomUser.objects.create_user(
-                    username=user_data['username'],
-                    email=user_data['email'],
-                    password=user_data['password'],
-                    first_name=user_data['first_name'],
-                    last_name=user_data['last_name'],
-                    tipo_usuario=user_data['tipo_usuario']
+        # Utilidad para saber si el modelo tiene un campo con ese nombre
+        model_field_names = {f.name for f in User._meta.get_fields()}
+        has_tipo_usuario = 'tipo_usuario' in model_field_names
+
+        created = 0
+        skipped = 0
+
+        with transaction.atomic():
+            for data in users_to_create:
+                key_value = data.get(key_field)
+                if not key_value:
+                    self.stdout.write(self.style.ERROR(
+                        f"Falta el campo clave '{key_field}' en: {data}"
+                    ))
+                    continue
+
+                # ¿Ya existe?
+                if User.objects.filter(**{key_field: key_value}).exists():
+                    self.stdout.write(self.style.WARNING(
+                        f"Usuario '{key_value}' ya existe. Saltando."
+                    ))
+                    skipped += 1
+                    continue
+
+                # Flags por rol
+                role = data.get('role', '').upper()
+                is_staff = role in ('ADMIN', 'ANALISTA')
+                is_superuser = role == 'ADMIN'
+
+                # Campos extra (no incluir password ni role)
+                extra = {
+                    'first_name': data.get('first_name', ''),
+                    'last_name': data.get('last_name', ''),
+                    'is_staff': is_staff,
+                    'is_superuser': is_superuser,
+                    'is_active': True,
+                }
+
+                # Crear con el manager para que hashee la password
+                user = User.objects.create_user(
+                    password=data['password'],
+                    **{key_field: key_value},
+                    **extra
                 )
-                self.stdout.write(self.style.SUCCESS(f"Usuario '{user_data['username']}' creado exitosamente."))
-            else:
-                self.stdout.write(self.style.WARNING(f"Usuario '{user_data['username']}' ya existe. Saltando."))
-        
-        self.stdout.write(self.style.SUCCESS('Proceso de seeding finalizado.'))
+
+                # Si tu modelo realmente tiene 'tipo_usuario', lo fijamos
+                if has_tipo_usuario:
+                    # Si definiste TextChoices en User.UserTypes, intentamos mapear
+                    if hasattr(User, 'UserTypes'):
+                        try:
+                            # p.ej. User.UserTypes.ADMIN
+                            value = getattr(User.UserTypes, role)
+                        except AttributeError:
+                            value = role  # usa el texto si no coincide
+                        setattr(user, 'tipo_usuario', value)
+                    else:
+                        setattr(user, 'tipo_usuario', role)
+                    user.save(update_fields=['tipo_usuario'])
+
+                self.stdout.write(self.style.SUCCESS(f"Usuario '{key_value}' creado exitosamente."))
+                created += 1
+
+        self.stdout.write(self.style.SUCCESS(
+            f'Proceso de seeding finalizado. Creados: {created} | Ya existían: {skipped}'
+        ))
