@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
+    "core.apps.CoreConfig",
 ]
 
 
