@@ -100,7 +100,7 @@ def admin_panel(request):
     if not request.user.is_staff:
         messages.error(request, "No tienes permiso para acceder a esta página.")
         return redirect('home') # Redirigir a la página de inicio
-    return render(request, 'usuarios/admin_panel.html')
+    return render(request, 'admin_panel:dashboard')
 
 @login_required
 def listar_usuarios(request):
