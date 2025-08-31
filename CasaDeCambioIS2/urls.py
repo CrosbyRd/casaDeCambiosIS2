@@ -28,4 +28,7 @@ urlpatterns = [
 
     # ⬇️ NUEVO: Monedas protegidas (rutas están dentro de la app)
     path('monedas/', include('monedas.urls', namespace='monedas')),
+    
+
+    path('', include('core.urls')),
 ]
