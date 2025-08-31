@@ -28,4 +28,5 @@ def pagina_inicio_y_simulador(request):
         'form': form,
         'resultado': resultado_simulacion
     }
-    return render(request, 'core/inicio.html', context)
+    # return render(request, 'core/inicio.html', context)
+    return render(request, 'site/calculator.html', context)
