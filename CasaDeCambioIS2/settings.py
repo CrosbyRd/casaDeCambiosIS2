@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
+    'cotizaciones',
+    "admin_panel",
 ]
 
 
@@ -142,5 +144,9 @@ AUTH_USER_MODEL = "usuarios.CustomUser"
 
 # --- Config de autenticación / redirecciones ---
 LOGIN_URL = "/cuentas/login/"
-LOGIN_REDIRECT_URL = "/"
+
+LOGIN_REDIRECT_URL = "usuarios:login_redirect"
+
 LOGOUT_REDIRECT_URL = "/"
+
+

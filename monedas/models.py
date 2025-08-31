@@ -6,5 +6,13 @@ class Moneda(models.Model):
     simbolo = models.CharField(max_length=5)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
+    # Requerimientos ERS
+    decimales = models.PositiveSmallIntegerField(default=2)  
+    minima_denominacion = models.PositiveIntegerField(default=1)
+    ultima_actualizacion_tasa = models.DateTimeField(null=True, blank=True)
+
+    admite_en_linea = models.BooleanField(default=True)
+    admite_terminal = models.BooleanField(default=True)
+
     def __str__(self):
         return f"{self.nombre} ({self.codigo})"

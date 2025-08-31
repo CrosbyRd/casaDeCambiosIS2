@@ -4,15 +4,38 @@
 <head>
   <meta charset="UTF-8" />
   <title>Crear Moneda — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <style>
+    /* Lila suave para los campos solicitados */
+    #id_codigo, #id_simbolo, #id_nombre {
+      background-color: var(--brand-soft, #ede9fe);
+    }
+    #id_codigo:focus, #id_simbolo:focus, #id_nombre:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25); /* halo tenue al enfocar */
+    }
+  </style>
 </head>
-<body>
+<body class="bg-gray-50 text-[var(--ink)]">
 
-  <main class="container container--tight">
-    <h1 class="h1 h1--sm">Crear Nueva Moneda</h1>
+  <main class="max-w-6xl mx-auto px-6 py-12">
 
-    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
-      <form method="post" class="form form--compact" id="moneda-form"
+    <!-- Header con icono (sin botón de Ver Monedas) -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+      <div>
+        <h1 class="text-4xl font-extrabold flex items-center gap-2">
+          <span class="text-[var(--brand)]">💱</span> Crear Moneda
+        </h1>
+        <p class="text-lg leading-relaxed text-[var(--muted)] max-w-2xl mt-2">
+          Completa el siguiente formulario para registrar una nueva moneda en el sistema.
+        </p>
+      </div>
+    </div>
+
+    <!-- Card del formulario (borde más grueso y lila oscuro) -->
+    <section class="bg-white rounded-xl border-2 border-[var(--brand-dark)] shadow-sm p-8">
+      <form method="post" id="moneda-form"
             data-currencies='{
               "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
               "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
@@ -34,27 +57,78 @@
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="form-alert">{{ form.non_field_errors }}</div>
+          <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            {{ form.non_field_errors }}
+          </div>
         {% endif %}
 
-        <!-- Render con as_p (el select ya trae emoji en las opciones) -->
-        {{ form.as_p }}
+        <!-- Campos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            {{ form.codigo.label_tag }}
+            {{ form.codigo }}
+          </div>
+          <div>
+            {{ form.simbolo.label_tag }}
+            {{ form.simbolo }}
+          </div>
+          <div class="md:col-span-2">
+            {{ form.nombre.label_tag }}
+            {{ form.nombre }}
+          </div>
+          <div>
+            {{ form.decimales.label_tag }}
+            {{ form.decimales }}
+          </div>
+          <div>
+            {{ form.minima_denominacion.label_tag }}
+            {{ form.minima_denominacion }}
+          </div>
+          <div class="md:col-span-2">
+            {{ form.limite_transaccion.label_tag }}
+            {{ form.limite_transaccion }}
+          </div>
+        </div>
 
-        <!-- Preview compacto con emoji -->
-        <p style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 0;">
-          <span id="emojiPreview" style="font-size:1.25rem;line-height:1">💱</span>
-          <span id="codePreview" class="cell-strong"></span>
-          <span id="namePreview" style="color:var(--muted)"></span>
-        </p>
+        <!-- Checkboxes (se eliminó “Admite Efectivo”) -->
+        <div class="mt-8 grid gap-3">
+          <label class="flex items-center gap-3">
+            <input type="checkbox" name="admite_en_linea" id="id_admite_en_linea"
+                   class="w-5 h-5 rounded border-gray-300 text-purple-700 focus:ring-purple-700"
+                   {% if form.admite_en_linea.value %}checked{% endif %}>
+            <span class="font-medium">Admite Operaciones en Línea</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <input type="checkbox" name="admite_terminal" id="id_admite_terminal"
+                   class="w-5 h-5 rounded border-gray-300 text-purple-700 focus:ring-purple-700"
+                   {% if form.admite_terminal.value %}checked{% endif %}>
+            <span class="font-medium">Admite Terminal de Autoservicio</span>
+          </label>
+        </div>
 
-        <div class="actions">
-          <button type="submit" class="btn">Guardar</button>
-          <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
+        <!-- Preview -->
+        <div class="flex items-center gap-2 mt-6 text-lg">
+          <span id="emojiPreview" class="text-2xl">💱</span>
+          <span id="codePreview" class="font-bold"></span>
+          <span id="namePreview" class="text-[var(--muted)]"></span>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex items-center gap-4 mt-8">
+          <button type="submit"
+                  class="px-6 py-2 rounded-xl bg-purple-700 text-white font-semibold shadow hover:bg-purple-900 transition">
+            Guardar
+          </button>
+          <a href="{% url 'monedas:listar_monedas' %}"
+             class="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold shadow hover:bg-red-700 transition">
+            Cancelar
+          </a>
         </div>
       </form>
     </section>
   </main>
 
+  <!-- Script -->
   <script>
     (function(){
       const form = document.getElementById('moneda-form');

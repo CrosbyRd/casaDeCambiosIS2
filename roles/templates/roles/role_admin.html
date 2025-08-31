@@ -1,27 +1,15 @@
 {% comment %} Ubicación: templates/roles/role_admin.html {% endcomment %}
-{% extends "site/base.html" %}  {% block content %}
+
 <div class="container">
     <h1>Panel de Administración de Roles</h1>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Crear Nuevo Rol</h2>
-        </div>
-        <div class="card-body">
-            <form action="{% url 'roles:role-panel' %}" method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre del Rol</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" required>
-                </div>
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción</label>
-                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Crear Rol</button>
-            </form>
-        </div>
-    </div>
+  <!-- Botón para volver al panel de administrador -->
+  <div class="mb-6 text-center">
+    <a href="{% url 'admin_panel:dashboard' %}" 
+       class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-200">
+       ← Volver al Panel de Administrador
+    </a>
+  </div>
 
     {% if messages %}
         {% for message in messages %}
@@ -66,4 +54,3 @@
         </div>
     </div>
 </div>
-{% endblock %}

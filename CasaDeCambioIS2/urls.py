@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
+
 urlpatterns = [
     # --- Páginas Públicas y del Sitio ---
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
@@ -22,10 +23,23 @@ urlpatterns = [
     # Clientes y Roles (con namespace tal como lo tenías)
     path('clientes/', include('clientes.urls', namespace='clientes')),
     path('roles/', include('roles.urls', namespace='roles')),
+    
+    # CORRECCIÓN: La app 'lib' no parece tener un propósito claro, la comento por ahora.
+    # Si la necesitas, puedes descomentarla.
+    # path("lib/", include("lib.urls")), 
 
-    # Auth de Django montado en /cuentas/
+
+
+    path('api/', include('usuarios.urls')),
+    #path('monedas/', include('monedas.urls')),
+
+        # Auth de Django montado en /cuentas/
     path('cuentas/', include('django.contrib.auth.urls')),
 
     # ⬇️ NUEVO: Monedas protegidas (rutas están dentro de la app)
     path('monedas/', include('monedas.urls', namespace='monedas')),
+
+    path("cotizaciones/", include("cotizaciones.urls")),
+    path("admin_panel/", include("admin_panel.urls")),
+
 ]
