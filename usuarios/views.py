@@ -94,6 +94,18 @@ def reenviar_codigo(request):
 
 # --- Vistas de Administración (Ahora protegidas) ---
 
+
+def login_redirect(request):
+    user = request.user
+    
+    # Si es superusuario o staff, va al dashboard admin
+    if user.is_staff:
+        return redirect("admin_panel:dashboard")
+
+    # Por defecto, lo mandamos al home
+    return redirect("home")
+
+
 @login_required
 def admin_panel(request):
     # Buena práctica: verificar si el usuario es staff/admin

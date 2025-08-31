@@ -10,6 +10,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('verify/', views.verify, name='verify'),
     path('reenviar-codigo/', views.reenviar_codigo, name='reenviar_codigo'),
+
+    path("login-redirect/", views.login_redirect, name="login_redirect"),
     
     # --- Rutas para el Panel de Administración (de la rama entrante) ---
     # Vistas para que un administrador gestione usuarios y su relación con clientes.
