@@ -27,40 +27,17 @@ class Command(BaseCommand):
         # Usuarios semilla (ajusta lo que necesites)
         seeds = [
             {
-                "email": "admin@casadecambio.com",
+                "email": "globalexchange2@gmail.com",
                 "password": "password123",
                 "first_name": "Admin",
                 "last_name": "Principal",
                 "roles": ["ADMINISTRADOR"],
                 "is_staff": True,
-                "is_superuser": True,
+                "is_superuser": False,
                 "is_active": True,
                 "is_verified": True,
             },
-            {
-                "email": "analista1@casadecambio.com",
-                "password": "password123",
-                "first_name": "Juan",
-                "last_name": "Pérez",
-                "roles": ["ANALISTA"],
-                "is_active": True,
-            },
-            {
-                "email": "cliente@example.com",
-                "password": "password123",
-                "first_name": "Ana",
-                "last_name": "García",
-                "roles": ["CLIENTE"],
-                "is_active": True,
-            },
-            {
-                "email": "lclc@mgail.com",
-                "password": "ttu789",
-                "first_name": "Lope",
-                "last_name": "GGG",
-                "roles": ["CLIENTE"],
-                "is_active": True,
-            },
+     
         ]
 
         for data in seeds:
