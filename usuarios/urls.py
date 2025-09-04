@@ -1,23 +1,27 @@
 from django.urls import path, include
 from . import views
 
-# Es una buena práctica definir el app_name al principio del archivo.
+# Espacio de nombres de la app
 app_name = "usuarios"
 
 urlpatterns = [
-    # --- Rutas para Autoregistro y Verificación de Cuenta (de tu rama HEAD) ---
-    # Estas son las vistas que usan plantillas HTML para que un usuario se registre.
-    path('register/', views.register, name='register'),
-    path('verify/', views.verify, name='verify'),
-    path('reenviar-codigo/', views.reenviar_codigo, name='reenviar_codigo'),
+    # --- Autoregistro y verificación ---
+    path("register/", views.register, name="register"),
+    path("verify/", views.verify, name="verify"),
+    path("reenviar-codigo/", views.reenviar_codigo, name="reenviar_codigo"),
 
+    # --- Redirección post-login ---
     path("login-redirect/", views.login_redirect, name="login_redirect"),
-    
-    # --- Rutas para el Panel de Administración (de la rama entrante) ---
-    # Vistas para que un administrador gestione usuarios y su relación con clientes.
-    path('admin-panel/', views.admin_panel, name='admin_panel'),
-    path('listar/', views.listar_usuarios, name='listar_usuarios'),
-    path('agregar-cliente/<int:user_id>/<uuid:cliente_id>/', views.agregar_cliente, name='agregar_cliente'),
-    path('quitar-cliente/<int:user_id>/<uuid:cliente_id>/', views.quitar_cliente, name='quitar_cliente'),
+
+    # --- Dashboard de usuario autenticado ---
+    path("dashboard/", views.dashboard, name="dashboard"),
+
+    # --- Herramientas de administración internas ---
+    path("admin-panel/", views.admin_panel, name="admin_panel"),
+    path("listar/", views.listar_usuarios, name="listar_usuarios"),
+    path("agregar-cliente/<int:user_id>/<uuid:cliente_id>/", views.agregar_cliente, name="agregar_cliente"),
+    path("quitar-cliente/<int:user_id>/<uuid:cliente_id>/", views.quitar_cliente, name="quitar_cliente"),
+
+    # Rutas del módulo admin_panel (si existe)
     path("admin_panel/", include("admin_panel.urls")),
 ]
