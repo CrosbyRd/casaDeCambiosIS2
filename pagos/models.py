@@ -5,9 +5,6 @@ from django.db import models
 # Se aplica un porcentaje sobre el monto de la transacción.
 # Ejemplo: 2% por cada pago enviado con la billetera.
 
-# Comisión fija:
-# Se aplica un monto fijo por cada transacción, independientemente del valor.
-# Ejemplo: 5000 PYG por operación.
 
 # Bonificaciones o descuentos:
 # Algunas billeteras pueden ofrecer incentivos por uso frecuente
@@ -19,20 +16,28 @@ from django.db import models
 
 class TipoMedioPago(models.Model):
     """
-    Tipos de medio de pago: Billetera Electrónica, Tarjeta, Cheque, etc.
+    Define los tipos de medios de pago, como 'Billetera Electrónica',
+    'Tarjeta de Crédito', 'Cheque', etc.
     """
-    nombre = models.CharField(max_length=50, unique=True)
-    comision_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    comision_monto_fijo = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    bonificacion_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    # Definición de tipos de medio de pago y su relación con bonificaciones:
-# "Billetera Electrónica": es_cuenta_bancaria = False
-# Esto indica al sistema que, cuando un cliente use este método, se aplicará la bonificación correspondiente en el futuro.
-
-# "Transferencia Bancaria": es_cuenta_bancaria = True
-# Esto indica al sistema que, si el cliente utiliza este método, la bonificación configurada no debe aplicarse.
-
-    es_cuenta_bancaria = models.BooleanField(default=False)
+    nombre = models.CharField(
+        max_length=50, 
+        unique=True, 
+        help_text="Ej. 'Billetera Electrónica', 'Tarjeta de Crédito'"
+    )
+    comision_porcentaje = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        default=0.00, 
+        help_text="Comisión en % del monto total de la transacción"
+    )
+    es_cuenta_bancaria = models.BooleanField(
+        default=False, 
+        help_text="Indica si es una cuenta bancaria (no se aplican bonificaciones)."
+    )
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        verbose_name = "Tipo de Medio de Pago"
+        verbose_name_plural = "Tipos de Medios de Pago"
