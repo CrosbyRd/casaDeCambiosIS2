@@ -149,4 +149,8 @@ LOGIN_REDIRECT_URL = "usuarios:login_redirect"
 
 LOGOUT_REDIRECT_URL = "/"
 
+#
 
+# Agregar al final del archivo
+EXCHANGE_RATE_API_KEY = os.environ.get('EXCHANGE_RATE_API_KEY', '')
+ALPHAVANTAGE_API_KEY = os.environ.get('ALPHAVANTAGE_API_KEY', '')
