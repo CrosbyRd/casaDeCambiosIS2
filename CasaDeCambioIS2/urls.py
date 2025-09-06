@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from usuarios import views as usuarios_views
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 urlpatterns = [
     # --- Home ---
@@ -14,7 +16,8 @@ urlpatterns = [
     path("faq/", TemplateView.as_view(template_name="site/faq.html"), name="site_faq"),
     path("contact/", TemplateView.as_view(template_name="site/contact.html"), name="site_contact"),
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
-    path("forgot-password/", TemplateView.as_view(template_name="site/forgot-password.html"), name="site_forgot_password"),
+    # NUEVO: Landing de alta (botón “Crear cuenta”)
+    path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),
 
     # --- Apps ---
     path("usuarios/", include("usuarios.urls")),
@@ -28,7 +31,15 @@ urlpatterns = [
     path("cuentas/login/", usuarios_views.login_view, name="login"),
     path("cuentas/otp/", usuarios_views.login_otp, name="login_otp"),
     path("cuentas/otp/reenviar/", usuarios_views.login_otp_resend, name="login_otp_resend"),
-    path("cuentas/logout/", usuarios_views.logout_view, name="logout"),  # <- nuestro logout
+    path("cuentas/logout/", usuarios_views.logout_view, name="logout"),
+    path("forgot-password/",auth_views.PasswordResetView.as_view(template_name="site/forgot-password.html",
+        success_url=reverse_lazy("password_reset_done")),name="site_forgot_password",),
+    path("cuentas/password_reset/done/", auth_views.PasswordResetDoneView.as_view(
+        template_name="site/forgot-password-done.html"), name="password_reset_done"),
+    path("cuentas/reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(
+        template_name="site/reset-confirm.html"), name="password_reset_confirm"),
+    path("cuentas/reset/done/",  auth_views.PasswordResetCompleteView.as_view(
+        template_name="site/reset-complete.html"), name="password_reset_complete"),
 
     # --- Auth de Django (reset de contraseña, etc.) ---
     path("cuentas/", include("django.contrib.auth.urls")),
