@@ -37,7 +37,7 @@ def register(request):
             return redirect("usuarios:verify")
     else:
         form = RegistroForm()
-    return render(request, "site/register.html", {"form": form})
+    return render(request, "site/signup.html", {"form": form})
 
 
 def verify(request):
@@ -209,17 +209,10 @@ def dashboard(request):
 
 
 @login_required
-def admin_panel(request):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
-        return redirect("home")
-    return redirect("admin_panel:dashboard")
-
-
-@login_required
 def listar_usuarios(request):
     if not request.user.is_staff:
         return redirect("home")
+    
     usuarios = CustomUser.objects.all().prefetch_related("clientes", "roles")
     todos_clientes = Cliente.objects.all()
     return render(

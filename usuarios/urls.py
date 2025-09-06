@@ -17,7 +17,6 @@ urlpatterns = [
     path("dashboard/", views.dashboard, name="dashboard"),
 
     # --- Herramientas de administración internas ---
-    path("admin-panel/", views.admin_panel, name="admin_panel"),
     path("listar/", views.listar_usuarios, name="listar_usuarios"),
     path("agregar-cliente/<int:user_id>/<uuid:cliente_id>/", views.agregar_cliente, name="agregar_cliente"),
     path("quitar-cliente/<int:user_id>/<uuid:cliente_id>/", views.quitar_cliente, name="quitar_cliente"),
