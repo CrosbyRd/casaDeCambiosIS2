@@ -2,69 +2,179 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>{% if form.instance.pk %}Editar Cotización{% else %}Agregar Cotización{% endif %} — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <style>
-    /* Estilo simple para mensajes */
-    .messages {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 1rem;
-    }
-    .messages li {
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-      color: #fff;
-    }
-    .messages li.success { background-color: #4CAF50; }
-    .messages li.error { background-color: #f44336; }
-    .messages li.warning { background-color: #ff9800; }
-    .messages li.info { background-color: #2196F3; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>{% if form.instance.pk %}Editar Cotización{% else %}Agregar Cotización{% endif %} — Global Exchange</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .total-value {
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+    </style>
+    <script>
+        function cargarValoresBase(selectElement) {
+            const monedaDestinoId = selectElement.value;
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            
+            // Ocultar mensajes anteriores
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            if (monedaDestinoId) {
+                loadingIndicator.style.display = 'block';
+                
+                fetch(`{% url "cotizaciones:api_valores" %}?moneda_destino_id=${monedaDestinoId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        loadingIndicator.style.display = 'none';
+                        
+                        if (data.success) {
+                            // Establecer la tasa recibida de la API
+                            document.getElementById('id_valor_compra').value = data.valor_compra;
+                            document.getElementById('id_valor_venta').value = data.valor_venta;
+                            
+                            // Mostrar mensaje de éxito
+                            successMessage.textContent = `Valores base cargados para ${data.moneda}. Ahora puede agregar sus comisiones.`;
+                            successMessage.style.display = 'block';
+                            
+                            calcularTotales();
+                        } else {
+                            errorMessage.textContent = data.error;
+                            errorMessage.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        loadingIndicator.style.display = 'none';
+                        errorMessage.textContent = 'Error de conexión. Por favor, ingrese los valores manualmente.';
+                        errorMessage.style.display = 'block';
+                        console.error('Error:', error);
+                    });
+            }
+        }
+        
+        function calcularTotales() {
+            const valorCompra = parseFloat(document.getElementById('id_valor_compra').value) || 0;
+            const comisionCompra = parseFloat(document.getElementById('id_comision_compra').value) || 0;
+            const valorVenta = parseFloat(document.getElementById('id_valor_venta').value) || 0;
+            const comisionVenta = parseFloat(document.getElementById('id_comision_venta').value) || 0;
+            
+            document.getElementById('total_compra').textContent = (valorCompra + comisionCompra).toFixed(4);
+            document.getElementById('total_venta').textContent = (valorVenta + comisionVenta).toFixed(4);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = ['id_valor_compra', 'id_comision_compra', 'id_valor_venta', 'id_comision_venta'];
+            inputs.forEach(function(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', calcularTotales);
+                }
+            });
+            
+            calcularTotales();
+        });
+    </script>
 </head>
 <body>
+    <main class="container container--tight">
+        <h1 class="h1 h1--sm">
+            {% if form.instance.pk %}
+                Editar Cotización <span class="subtitle">— PYG a {{ form.instance.moneda_destino.simbolo }}</span>
+            {% else %}
+                Agregar Nueva Cotización
+            {% endif %}
+        </h1>
 
-  <main class="container container--tight">
-    <h1 class="h1 h1--sm">
-      {% if form.instance.pk %}
-        Editar Cotización <span class="subtitle">— PYG a {{ form.instance.moneda_destino.simbolo }}</span>
-      {% else %}
-        Agregar Nueva Cotización
-      {% endif %}
-    </h1>
-
-    {# ------------------ Mensajes de Django ------------------ #}
-            {% if messages %}
+        {% if messages %}
         <ul class="messages">
-        {% for message in messages %}
-        <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
         </ul>
         {% endif %}
 
+        <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+            <!-- Mensajes de estado -->
+            <div id="loading-indicator" style="display: none; margin-bottom: 1rem;">
+                <div class="alert alert-info">Cargando valores desde la API...</div>
+            </div>
+            <div id="success-message" class="alert alert-info" style="display: none; margin-bottom: 1rem;"></div>
+            <div id="error-message" class="alert alert-danger" style="display: none; margin-bottom: 1rem;"></div>
 
+            <form method="post" class="form form--compact">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="form-alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="id_moneda_destino">Moneda Destino:</label>
+                    {{ form.moneda_destino }}
+                    {% if not form.instance.pk %}
+                    <small class="form-text">Seleccione una moneda para cargar los valores base automáticamente</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_valor_compra">Valor Compra Base (PYG):</label>
+                    {{ form.valor_compra }}
+                    <small class="form-text">Tasa base para compra (sin comisión)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_comision_compra">Comisión Compra (PYG):</label>
+                    {{ form.comision_compra }}
+                    <small class="form-text">Comisión adicional para compra</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Compra:</label>
+                    <span id="total_compra" class="total-value">0.0000</span> PYG
+                    <small class="form-text">Valor Base + Comisión</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_valor_venta">Valor Venta Base (PYG):</label>
+                    {{ form.valor_venta }}
+                    <small class="form-text">Tasa base para venta (sin comisión)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_comision_venta">Comisión Venta (PYG):</label>
+                    {{ form.comision_venta }}
+                    <small class="form-text">Comisión adicional para venta</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Venta:</label>
+                    <span id="total_venta" class="total-value">0.0000</span> PYG
+                    <small class="form-text">Valor Base + Comisión</small>
+                </div>
 
-    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
-      <form method="post" class="form form--compact">
-        {% csrf_token %}
-
-        {% if form.non_field_errors %}
-          <div class="form-alert">{{ form.non_field_errors }}</div>
-        {% endif %}
-
-        {# Solo mostramos moneda_destino, valor_compra y valor_venta #}
-        {{ form.as_p }}
-
-        <div class="actions">
-          <button type="submit" class="btn">Guardar</button>
-          <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn-secondary">Cancelar</a>
-        </div>
-      </form>
-    </section>
-  </main>
-
+                <div class="actions">
+                    <button type="submit" class="btn">Guardar</button>
+                    <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
-

@@ -2,9 +2,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Listado de Cotizaciones — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <meta charset="UTF-8" />
+    <title>Listado de Cotizaciones — Global Exchange</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .total-row {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
@@ -25,81 +31,72 @@
       <h1 class="h1 h1--sm">Cotizaciones</h1>
     </header>
 
-    <!-- Tabla más compacta y centrada -->
-    <section class="box box--tight no-padding" style="display: flex; justify-content: center;">
-      <div style="overflow-x: auto;">
-        <table class="table table--compact"
-              id="cotizaciones-table"
-              style="width: auto; margin: 0 auto; border-collapse: collapse; border: 2px solid var(--brand);">
-          <thead style="background-color: var(--brand); color: white;">
-            <tr>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Moneda Base</th>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Moneda Destino</th>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Valor de Compra</th>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Valor de Venta</th>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Última Actualización</th>
-              <th style="padding: .75rem; border: 1px solid var(--brand); white-space: nowrap;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for c in cotizaciones %}
-            <tr>
-              <td style="border: 1px solid var(--brand);" class="cell-strong">
-                <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
-                {{ c.moneda_base.nombre }} ({{ c.moneda_base.simbolo }})
-              </td>
-              <td style="border: 1px solid var(--brand);" class="cell-strong">
-                <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-                {{ c.moneda_destino.nombre }} ({{ c.moneda_destino.simbolo }})
-              </td>
-              <td style="border: 1px solid var(--brand);">{{ c.valor_compra }}</td>
-              <td style="border: 1px solid var(--brand);">{{ c.valor_venta }}</td>
-              <td style="border: 1px solid var(--brand);">{{ c.fecha_actualizacion }}</td>
-              <td style="border: 1px solid var(--brand);">
-                <div style="display: inline-flex; gap: 0.5rem;">
-                  <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="btn-secondary">Editar</a>
-                  <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" 
-                    style="background-color: #dc2626; color: white; padding: .6rem 1rem; border-radius: .75rem; font-weight: 700; text-decoration: none; display: inline-block;">
-                    Eliminar
-                  </a>
-                </div>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="6" class="empty" style="border: 1px solid var(--brand);">No hay cotizaciones registradas.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <section class="box box--tight no-padding">
+            <div class="table-scroll table-wrap--max">
+                <table class="table table--compact" id="cotizaciones-table">
+                    <thead>
+                        <tr>
+                            <th>Moneda Base</th>
+                            <th>Moneda Destino</th>
+                            <th>Valor Compra</th>
+                            <th>Comisión Compra</th>
+                            <th>Total Compra</th>
+                            <th>Valor Venta</th>
+                            <th>Comisión Venta</th>
+                            <th>Total Venta</th>
+                            <th>Última Actualización</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in cotizaciones %}
+                        <tr>
+                            <td class="cell-strong">
+                                <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
+                                {{ c.moneda_base.nombre }} ({{ c.moneda_base.simbolo }})
+                            </td>
+                            <td class="cell-strong">
+                                <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                                {{ c.moneda_destino.nombre }} ({{ c.moneda_destino.simbolo }})
+                            </td>
+                            <td>{{ c.valor_compra }}</td>
+                            <td>{{ c.comision_compra }}</td>
+                            <td class="total-row">{{ c.total_compra }}</td>
+                            <td>{{ c.valor_venta }}</td>
+                            <td>{{ c.comision_venta }}</td>
+                            <td class="total-row">{{ c.total_venta }}</td>
+                            <td>{{ c.fecha_actualizacion }}</td>
+                            <td>
+                                <div style="display: inline-flex; gap: 0.5rem;">
+                                    <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="btn-secondary" style="display: inline-block;">Editar</a>
+                                    <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" class="btn-ghost" style="display: inline-block;">Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="empty">No hay cotizaciones registradas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 
-        <!-- Botones alineados con Moneda Base/Destino -->
-        <div style="display: flex; justify-content: flex-start; gap: 0.75rem; margin-top: 1rem; margin-left: 0;">
-          <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn">Agregar Cotización</a>
-          <a href="{% url 'admin_panel:dashboard' %}" 
-             style="background-color: #dc2626; color: white; padding: .85rem 1.2rem; border-radius: .9rem; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; transition: background .2s ease;">
-            Volver
-          </a>
-        </div>
-
-      </div>
-    </section>
-  </main>
-
-  <!-- Mapa de emojis por código de moneda -->
-  <script>
-    (function(){
-      const MAP = {
-        USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-        MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-        CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
-      };
-      document.querySelectorAll('.currency-emoji').forEach(el => {
-        const code = String(el.dataset.code || '').toUpperCase();
-        el.textContent = (MAP[code] || "💱") + " ";
-      });
-    })();
-  </script>
-
+    <!-- Mapa de emojis por código de moneda -->
+    <script>
+        (function(){
+            const MAP = {
+                USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+                MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+                CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
+            };
+            document.querySelectorAll('.currency-emoji').forEach(el => {
+                const code = String(el.dataset.code || '').toUpperCase();
+                el.textContent = (MAP[code] || "💱") + " ";
+            });
+        })();
+    </script>
 </body>
 </html>
