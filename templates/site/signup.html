@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Crear cuenta — Global Exchange{% endblock %}
+{% block header_auth %}{% endblock %}
 
 {% block content %}
 <main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
   <h1 class="h1 mb-6">Crear cuenta</h1>
 
-  <div class="grid md:grid-cols-2 gap-6">
+  <!-- Alineación con el panel derecho -->
+  <div class="grid md:grid-cols-2 gap-6 items-start">
     <form id="signupForm" class="border border-neutral-200 rounded-lg p-6"
           method="post" action="{% url 'usuarios:register' %}" novalidate>
       {% csrf_token %}
@@ -37,9 +39,31 @@
       <a href="{% url 'login' %}" class="btn-secondary mt-6 w-full inline-flex justify-center">Ya tengo cuenta</a>
     </form>
 
-    <aside class="border border-neutral-200 rounded-lg p-6">
-      <h2 class="h2 mb-3">Verificación por email</h2>
-      <p class="text-neutral-600">Te enviaremos un enlace para verificar tu dirección.</p>
+    <!-- Panel informativo al estilo del login -->
+    <aside class="border border-neutral-200 rounded-lg p-6 bg-white self-start">
+      <h2 class="h2 mb-3">Verificación por correo electrónico</h2>
+      <p class="text-neutral-700">
+        Para activar tu cuenta, te enviaremos un <strong>enlace de verificación</strong> al email que registres.
+      </p>
+
+      <ul class="mt-4 space-y-2 text-neutral-700">
+        <li class="flex gap-3">
+          <span class="select-none">✉️</span>
+          Recibirás un mensaje en tu bandeja de entrada con el enlace.
+        </li>
+        <li class="flex gap-3">
+          <span class="select-none">🔗</span>
+          El enlace es de <strong>un solo uso</strong> y sirve para confirmar tu dirección.
+        </li>
+        <li class="flex gap-3">
+          <span class="select-none">🧭</span>
+          Asegúrate de escribir bien tu dirección antes de registrarte.
+        </li>
+      </ul>
+
+      <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
+        Si no te llega el código, revisa tu carpeta de spam o solicita reenviar desde la pantalla de verificación.
+      </div>
     </aside>
   </div>
 
@@ -101,7 +125,7 @@
       e.preventDefault();
       modalErr.classList.remove('hidden');
     } else {
-      // Se envía normalmente al backend
+      // Envío normal al backend
     }
   });
 

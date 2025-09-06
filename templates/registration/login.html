@@ -1,49 +1,86 @@
 {% extends "base.html" %}
 {% block title %}Iniciar sesión — Global Exchange{% endblock %}
+{% block header_auth %}{% endblock %}
 
 {% block content %}
-<main id="main" class="max-w-[800px] mx-auto px-6 py-10">
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-10">
+
   <h1 class="h1 mb-6">Iniciar sesión</h1>
 
-  {% if messages %}
-    <div class="space-y-2 mb-4">
-      {% for message in messages %}
-        <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm">
-          {{ message }}
+  <div class="grid md:grid-cols-2 gap-10 items-start">
+    <!-- Columna izquierda: formulario -->
+    <section>
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+          {% for message in messages %}
+            <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm">
+              {{ message }}
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+      {% endif %}
 
-  <style>
-    .api-login *{box-sizing:border-box}
-    .api-login label{display:block;margin:.5rem 0 .25rem;font-weight:600}
-    .api-login input{width:100%;padding:.7rem;border:1px solid #d1d5db;border-radius:.5rem}
-    .api-login button{padding:.75rem 1rem;border-radius:.9rem;background:var(--brand);color:#fff;border:0;cursor:pointer;font-weight:800}
-    .api-login .box{border:1px solid #e5e7eb;border-radius:.9rem;padding:1rem;margin-top:1rem;background:#fff}
-  </style>
+      <style>
+        .api-login *{box-sizing:border-box}
+        .api-login label{display:block;margin:.5rem 0 .25rem;font-weight:600}
+        .api-login input{width:100%;padding:.7rem;border:1px solid #d1d5db;border-radius:.5rem}
+        .api-login button{padding:.75rem 1rem;border-radius:.9rem;background:var(--brand);color:#fff;border:0;cursor:pointer;font-weight:800}
+        /* 🔧 Alineación: sin margen superior en la tarjeta del formulario */
+        .api-login .box{border:1px solid #e5e7eb;border-radius:.9rem;padding:1rem;margin-top:0;background:#fff}
+      </style>
 
-  <div class="api-login">
-    <form class="box" method="post" action="{% url 'login' %}">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.GET.next|default_if_none:'' }}"/>
+      <div class="api-login">
+        <form class="box" method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.GET.next|default_if_none:'' }}"/>
 
-      <label for="id_username">Correo electrónico</label>
-      <input type="email" id="id_username" name="username" required autocomplete="email" autofocus>
+          <label for="id_username">Correo electrónico</label>
+          <input type="email" id="id_username" name="username" required autocomplete="email" autofocus>
 
-      <label for="id_password" class="mt-3">Contraseña</label>
-      <input type="password" id="id_password" name="password" required autocomplete="current-password">
+          <label for="id_password" class="mt-3">Contraseña</label>
+          <input type="password" id="id_password" name="password" required autocomplete="current-password">
 
-      <div class="mt-3 flex items-center justify-between">
-        <a href="{% url 'password_reset' %}" class="text-brand hover:underline">¿Olvidaste tu contraseña?</a>
+          <div class="mt-3 flex items-center justify-between">
+            <a href="{% url 'site_forgot_password' %}" class="text-brand hover:underline">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <button type="submit" class="mt-4 w-full">Ingresar</button>
+
+          <!-- Botón Crear cuenta -> landing pública -->
+          <a class="btn-secondary mt-3 w-full inline-flex justify-center" href="{% url 'site_signup' %}">
+            Crear cuenta
+          </a>
+        </form>
       </div>
+    </section>
 
-      <button type="submit" class="mt-4 w-full">Ingresar</button>
+    <!-- Columna derecha: info seguridad OTP -->
+    <aside class="rounded-2xl border border-neutral-200 p-6 bg-white self-start">
+      <h2 class="text-3xl font-extrabold tracking-tight mb-3">Protección por OTP</h2>
+      <p class="text-neutral-700">
+        Para mantener tu cuenta segura, al iniciar sesión te pediremos un
+        <strong>código de un solo uso (OTP)</strong> que enviaremos a tu correo.
+      </p>
 
-      <a class="btn-secondary mt-3 w-full inline-flex justify-center" href="{% url 'usuarios:register' %}">
-        Crear cuenta
-      </a>
-    </form>
+      <ul class="mt-4 space-y-2 text-neutral-700">
+        <li class="flex gap-3">
+          <span class="select-none">🔐</span>
+          Código de <strong>6 dígitos</strong> válido por tiempo limitado.
+        </li>
+        <li class="flex gap-3">
+          <span class="select-none">✉️</span>
+          Lo recibirás en el email asociado a tu cuenta.
+        </li>
+        <li class="flex gap-3">
+          <span class="select-none">🚫</span>
+          No compartas tu código con nadie.
+        </li>
+      </ul>
+
+      <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
+        Si no te llega el código, revisa tu carpeta de spam  o solicita reenviar desde la pantalla de verificación.
+      </div>
+    </aside>
   </div>
 </main>
 {% endblock %}

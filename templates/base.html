@@ -28,7 +28,7 @@
   <div class="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
     <!-- Logo principal -> home -->
     <a href="{% url 'home' %}" class="flex items-center gap-3" aria-label="Ir al inicio">
-      <img src="{% static 'img/logo-principal.png' %}" alt="Global Exchange — logo" class="h-11 w-auto">
+      <img src="{% static 'img/logo-principal.png' %}" alt="Global Exchange — logo" class="h-14 w-auto">
       <span class="sr-only">Global Exchange</span>
     </a>
 
@@ -53,16 +53,18 @@
       <a href="{{ legal_url }}" class="nav-link {% if request.path == legal_url %}nav-link--active{% endif %}">Legal</a>
     </nav>
 
-    <!-- Acciones derecha -->
+    <!-- Acciones derecha (ESCRITORIO) -->
+    {% block header_auth %}
     <div class="hidden md:flex items-center gap-3">
       {% if request.user.is_authenticated %}
         <a href="{% url 'usuarios:login_redirect'%}" class="btn-secondary">Mi panel</a>
         <a href="{% url 'logout' %}" class="btn">Cerrar sesión</a>
       {% else %}
         <a href="{% url 'login' %}" class="btn-secondary">Iniciar sesión</a>
-        <a href="{% url 'usuarios:register' %}" class="btn">Crear cuenta</a>
+        <a href="{% url 'site_signup' %}" class="btn">Crear cuenta</a>
       {% endif %}
     </div>
+    {% endblock header_auth %}
 
     <!-- Botón hamburguesa -->
     <button id="menuToggle"
@@ -85,13 +87,16 @@
 
       <div class="h-px bg-neutral-200 my-2"></div>
 
+      <!-- Acciones (MÓVIL) -->
+      {% block header_auth_mobile %}
       {% if request.user.is_authenticated %}
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'usuarios:login_redirect' %}">Mi panel</a>
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'logout' %}">Cerrar sesión</a>
       {% else %}
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'login' %}">Iniciar sesión</a>
-        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'usuarios:register' %}">Crear cuenta</a>
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'site_signup' %}">Crear cuenta</a>
       {% endif %}
+      {% endblock header_auth_mobile %}
     </div>
   </div>
 </header>
