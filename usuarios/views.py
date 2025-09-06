@@ -16,15 +16,16 @@ from clientes.models import Cliente
 # ----------------------------
 
 def register(request):
-    if request.method == "POST":
+    if request.method == "POST":      #si llega un 'POST' procesa el registro
         form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
-            user.password = make_password(form.cleaned_data["password"])
+            user.password = make_password(form.cleaned_data["password"])    #guarda la contrasea encriptada
             user.save()
 
-            user.generate_verification_code()
+            user.generate_verification_code()     #genera codigo de verificacion
+            #envia el codigo de verificacion al correo del usuario
             send_mail(
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
@@ -188,10 +189,16 @@ def logout_view(request):
 
 
 def login_redirect(request):
-    if not request.user.is_authenticated:
+    user = request.user
+
+    if not user.is_authenticated:
         return redirect("login")
-    if request.user.is_staff:
+    
+    #redirige al panel de administrador si es un administrador
+    if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
+
+    #normalmente redirige al dashboard de clientes
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")
 
