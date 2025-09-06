@@ -5,6 +5,12 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+
+
 from .models import Cliente
 from .forms import ClienteForm, ClienteSearchForm
 
@@ -89,6 +95,12 @@ class ClienteDeleteView(DeleteView):
         messages.success(self.request, _('Cliente eliminado exitosamente'))
         return super().delete(request, *args, **kwargs)
 
+
+def es_admin(user):
+    return user.is_authenticated and user.is_staff
+
+# --- Vista protegida ---
+@login_required
 def toggle_cliente_estado(request, pk):
     cliente = get_object_or_404(Cliente, id_cliente=pk)
     cliente.activo = not cliente.activo
