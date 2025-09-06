@@ -39,4 +39,5 @@ urlpatterns = [
     # /cuentas/password_reset/
     # y más...
     path('cuentas/', include('django.contrib.auth.urls')),
+    path('pagos/', include('pagos.urls', namespace='pagos')),
 ]
