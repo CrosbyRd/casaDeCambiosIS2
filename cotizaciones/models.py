@@ -11,6 +11,9 @@ class Cotizacion(models.Model):
     
     class Meta:
         unique_together = ('moneda_base', 'moneda_destino')
+        permissions = [
+            ("access_cotizaciones", "Puede acceder a la sección de cotizaciones"),
+        ]
     
     def __str__(self):
         return f"{self.moneda_base.codigo} a {self.moneda_destino.codigo}"

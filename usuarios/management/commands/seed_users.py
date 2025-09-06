@@ -40,23 +40,27 @@ class Command(BaseCommand):
             defaults={"description": "Rol de Administrador"}
         )
 
-        # --- Buscar permiso personalizado ---
-        try:
-            perm = Permission.objects.get(codename="access_admin_dashboard")
-        except Permission.DoesNotExist:
-            self.stdout.write(self.style.ERROR(
-                "El permiso 'access_admin_dashboard' no existe. "
-                "Ejecuta 'makemigrations' y 'migrate' en admin_panel primero."
-            ))
-            return
+        # --- Buscar permisos personalizados ---
+        permisos_codenames = ["access_admin_dashboard", "access_cotizaciones"]
+        permisos = []
+        for codename in permisos_codenames:
+            try:
+                perm = Permission.objects.get(codename=codename)
+                permisos.append(perm)
+            except Permission.DoesNotExist:
+                self.stdout.write(self.style.ERROR(
+                    f"El permiso '{codename}' no existe. "
+                    f"Ejecuta 'makemigrations' y 'migrate' en la app correspondiente primero."
+                ))
 
-        # Asignar permiso al rol
-        rol_admin.permissions.add(perm)
-        rol_admin.save()
+        # Asignar permisos al rol
+        if permisos:
+            rol_admin.permissions.add(*permisos)
+            rol_admin.save()
 
         # Asignar rol al usuario
         user.roles.add(rol_admin)
 
         self.stdout.write(self.style.SUCCESS(
-            f"Usuario {email} asignado al rol Administrador con permiso access_admin_dashboard."
+            f"Usuario {email} asignado al rol Administrador con permisos {[p.codename for p in permisos]}."
         ))

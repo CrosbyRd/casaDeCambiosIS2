@@ -10,15 +10,10 @@ from monedas.models import Moneda
 from .forms import CotizacionForm
 
 
-# --- Función auxiliar para verificar si es admin ---
-def es_admin(user):
-    return user.is_authenticated and user.is_staff
-
 
 @login_required
 def cotizacion_list(request):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("cotizaciones.access_cotizaciones"):
         return redirect("home")
 
     cotizaciones = Cotizacion.objects.all()
@@ -27,8 +22,7 @@ def cotizacion_list(request):
 
 @login_required
 def cotizacion_create(request):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("cotizaciones.access_cotizaciones"):
         return redirect("home")
 
     if request.method == 'POST':
@@ -57,8 +51,7 @@ def cotizacion_create(request):
 
 @login_required
 def cotizacion_update(request, pk):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("cotizaciones.access_cotizaciones"):
         return redirect("home")
 
     cotizacion = get_object_or_404(Cotizacion, pk=pk)
@@ -75,8 +68,7 @@ def cotizacion_update(request, pk):
 
 @login_required
 def cotizacion_delete(request, pk):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("cotizaciones.access_cotizaciones"):
         return redirect("home")
 
     cotizacion = get_object_or_404(Cotizacion, pk=pk)
