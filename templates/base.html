@@ -53,7 +53,8 @@
       <a href="{{ legal_url }}" class="nav-link {% if request.path == legal_url %}nav-link--active{% endif %}">Legal</a>
     </nav>
 
-    <!-- Acciones derecha -->
+    <!-- Acciones derecha (ESCRITORIO) -->
+    {% block header_auth %}
     <div class="hidden md:flex items-center gap-3">
       {% if request.user.is_authenticated %}
         <a href="{% url 'usuarios:dashboard' %}" class="btn-secondary">Mi panel</a>
@@ -63,6 +64,7 @@
         <a href="{% url 'site_signup' %}" class="btn">Crear cuenta</a>
       {% endif %}
     </div>
+    {% endblock header_auth %}
 
     <!-- Botón hamburguesa -->
     <button id="menuToggle"
@@ -85,6 +87,8 @@
 
       <div class="h-px bg-neutral-200 my-2"></div>
 
+      <!-- Acciones (MÓVIL) -->
+      {% block header_auth_mobile %}
       {% if request.user.is_authenticated %}
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'usuarios:dashboard' %}">Mi panel</a>
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'logout' %}">Cerrar sesión</a>
@@ -92,6 +96,7 @@
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'login' %}">Iniciar sesión</a>
         <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'site_signup' %}">Crear cuenta</a>
       {% endif %}
+      {% endblock header_auth_mobile %}
     </div>
   </div>
 </header>
