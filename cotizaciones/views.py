@@ -12,7 +12,7 @@ from .forms import CotizacionForm
 @login_required
 def cotizacion_list(request):
     if not request.user.has_perm("cotizaciones.access_cotizaciones"):
-        return redirect("home")
+        return redirect("home") 
 
     cotizaciones = Cotizacion.objects.all()
     return render(request, 'cotizaciones/cotizacion_list.html', {'cotizaciones': cotizaciones})
