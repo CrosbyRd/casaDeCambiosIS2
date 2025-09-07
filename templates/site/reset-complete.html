@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange — Contraseña actualizada{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">¡Listo! Contraseña actualizada</h1>
+
+  <section class="border border-neutral-200 rounded-lg p-6">
+    <p class="text-neutral-700">
+      Tu contraseña se cambió correctamente. Ya puedes ingresar con tus nuevas credenciales.
+    </p>
+    <div class="mt-6">
+      <a class="btn" href="{% url 'login' %}">Ir a iniciar sesión</a>
+    </div>
+  </section>
+</main>
+{% endblock %}
