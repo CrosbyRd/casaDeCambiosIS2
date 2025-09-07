@@ -94,13 +94,16 @@
 </head>
 <body>
     <main class="container container--tight">
-        <h1 class="h1 h1--sm">
-            {% if form.instance.pk %}
-                Editar Cotización <span class="subtitle">— PYG a {{ form.instance.moneda_destino.simbolo }}</span>
-            {% else %}
-                Agregar Nueva Cotización
-            {% endif %}
-        </h1>
+            <header class="page-header page-header--tight" style="text-align: center; margin-bottom: 1rem;">
+            <h1 class="h1 h1--sm">
+                {% if form.instance.pk %}
+                    Editar Cotización <span class="subtitle">— PYG a {{ form.instance.moneda_destino.simbolo }}</span>
+                {% else %}
+                    Agregar Nueva Cotización
+                {% endif %}
+            </h1>
+            </header>
+
 
         {% if messages %}
         <ul class="messages">
