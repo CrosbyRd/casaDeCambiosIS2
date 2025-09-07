@@ -41,11 +41,15 @@ class Command(BaseCommand):
         )
 
         # --- Buscar permisos personalizados ---
+
         permisos_codenames = [
-            "access_admin_dashboard",   # Panel Admin
-            "access_cotizaciones",      # Cotizaciones
-            "access_monedas_section",   # NUEVO: acceso a sección de Monedas
-        ]
+                "access_admin_dashboard",   # Panel Admin
+                "access_cotizaciones",      # Cotizaciones
+                "access_monedas_section",   # Monedas
+                "access_roles_panel",       # NUEVO: acceso a Roles
+                "delete_roles",             # NUEVO: eliminar Roles
+            ]
+
         permisos = []
         for codename in permisos_codenames:
             try:
