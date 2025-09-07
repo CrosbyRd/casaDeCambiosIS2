@@ -8,15 +8,10 @@ from .models import Moneda
 from .forms import MonedaForm
 
 
-# --- Función auxiliar para verificar si es admin ---
-def es_admin(user):
-    return user.is_authenticated and user.is_staff
-
 
 @login_required
 def listar_monedas(request):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("monedas.access_monedas_section"):
         return redirect("home")
 
     monedas = Moneda.objects.all()
@@ -25,8 +20,7 @@ def listar_monedas(request):
 
 @login_required
 def crear_moneda(request):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("monedas.access_monedas_section"):
         return redirect("home")
 
     if request.method == "POST":
@@ -42,8 +36,7 @@ def crear_moneda(request):
 
 @login_required
 def editar_moneda(request, pk):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("monedas.access_monedas_section"):
         return redirect("home")
 
     moneda = get_object_or_404(Moneda, pk=pk)
@@ -60,8 +53,7 @@ def editar_moneda(request, pk):
 
 @login_required
 def eliminar_moneda(request, pk):
-    if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+    if not request.user.has_perm("monedas.access_monedas_section"):
         return redirect("home")
 
     moneda = get_object_or_404(Moneda, pk=pk)

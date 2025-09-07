@@ -14,5 +14,11 @@ class Moneda(models.Model):
     admite_en_linea = models.BooleanField(default=True)
     admite_terminal = models.BooleanField(default=True)
 
+
+    class Meta:
+        permissions = [
+            ("access_monedas_section", "Puede acceder a la sección de Monedas"),
+        ]
+
     def __str__(self):
         return f"{self.nombre} ({self.codigo})"
