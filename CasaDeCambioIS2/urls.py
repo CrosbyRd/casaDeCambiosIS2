@@ -11,7 +11,6 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
 
     # --- Páginas informativas ---
-    path("calculator/", TemplateView.as_view(template_name="site/calculator.html"), name="site_calculator"),
     path("how-it-works/", TemplateView.as_view(template_name="site/how-it-works.html"), name="site_how_it_works"),
     path("rates/", TemplateView.as_view(template_name="site/rates.html"), name="site_rates"),
     path("faq/", TemplateView.as_view(template_name="site/faq.html"), name="site_faq"),
