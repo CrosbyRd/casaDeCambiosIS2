@@ -15,27 +15,23 @@
   <!-- Twemoji para banderas consistentes -->
   <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
 
-  {# Gancho para que páginas puedan inyectar <head> extra si lo necesitan #}
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-white text-neutral-900">
-  <!-- Skip link accesible (oculto salvo foco con teclado) -->
   <a href="#main"
      class="sr-only focus:not-sr-only focus:absolute focus:m-4 focus:bg-white focus:px-3 focus:py-2 focus:rounded focus:shadow">
      Saltar al contenido
   </a>
 
-  <!-- Header / Nav compartida -->
-<!-- Header / Nav compartida -->
+{% block site_header %}
 <header class="border-b border-neutral-200">
   <div class="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
-    <!-- Logo GE -> home -->
-    <a href="{% url 'home' %}" class="flex items-center gap-3">
-      <div class="h-11 w-11 inline-flex items-center justify-center rounded-md brand-chip">GE</div>
+    <!-- Logo principal -> home -->
+    <a href="{% url 'home' %}" class="flex items-center gap-3" aria-label="Ir al inicio">
+      <img src="{% static 'img/logo-principal.png' %}" alt="Global Exchange — logo" class="h-14 w-auto">
       <span class="sr-only">Global Exchange</span>
     </a>
 
-    {# URLs que usan ambos menús (escritorio y móvil) #}
     {% url 'home' as home_url %}
     {% url 'site_rates' as rates_url %}
     {% url 'site_how_it_works' as how_url %}
@@ -45,33 +41,30 @@
     {% url 'site_legal' as legal_url %}
 
     <!-- Menú escritorio -->
-<nav class="hidden md:flex items-center gap-6">
-  {% url 'home' as home_url %}
-  {% url 'site_rates' as rates_url %}
-  {% url 'site_how_it_works' as how_url %}
-  {% url 'site_faq' as faq_url %}
-  {% url 'site_calculator' as calc_url %}
-  {% url 'site_contact' as contact_url %}
-  {% url 'site_legal' as legal_url %}
+    <nav class="hidden md:flex items-center gap-6">
+      {% if request.path != home_url %}
+        <a href="{{ home_url }}" class="nav-link">Inicio</a>
+      {% endif %}
+      <a href="{{ rates_url }}" class="nav-link {% if request.path == rates_url %}nav-link--active{% endif %}">Tipos de cambio</a>
+      <a href="{{ how_url }}" class="nav-link {% if request.path == how_url %}nav-link--active{% endif %}">Cómo funciona</a>
+      <a href="{{ faq_url }}" class="nav-link {% if request.path == faq_url %}nav-link--active{% endif %}">FAQ</a>
+      <a href="{{ calc_url }}" class="nav-link {% if request.path == calc_url %}nav-link--active{% endif %}">Calculadora</a>
+      <a href="{{ contact_url }}" class="nav-link {% if request.path == contact_url %}nav-link--active{% endif %}">Contacto</a>
+      <a href="{{ legal_url }}" class="nav-link {% if request.path == legal_url %}nav-link--active{% endif %}">Legal</a>
+    </nav>
 
-  {# Inicio: OCULTO si ya estamos en / #}
-  {% if request.path != home_url %}
-    <a href="{{ home_url }}" class="nav-link">Inicio</a>
-  {% endif %}
-
-  <a href="{{ rates_url }}" class="nav-link {% if request.path == rates_url %}nav-link--active{% endif %}">Tipos de cambio</a>
-  <a href="{{ how_url }}" class="nav-link {% if request.path == how_url %}nav-link--active{% endif %}">Cómo funciona</a>
-  <a href="{{ faq_url }}" class="nav-link {% if request.path == faq_url %}nav-link--active{% endif %}">FAQ</a>
-  <a href="{{ calc_url }}" class="nav-link {% if request.path == calc_url %}nav-link--active{% endif %}">Calculadora</a>
-  <a href="{{ contact_url }}" class="nav-link {% if request.path == contact_url %}nav-link--active{% endif %}">Contacto</a>
-  <a href="{{ legal_url }}" class="nav-link {% if request.path == legal_url %}nav-link--active{% endif %}">Legal</a>
-</nav>
-
-
+    <!-- Acciones derecha (ESCRITORIO) -->
+    {% block header_auth %}
     <div class="hidden md:flex items-center gap-3">
-      <a href="{% url 'login' %}" class="btn-secondary">Iniciar sesión</a>
-      <a href="{% url 'usuarios:register' %}" class="btn">Crear cuenta</a> {# <--- ASÍ QUEDA CORREGIDO #}
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'usuarios:dashboard' %}" class="btn-secondary">Mi panel</a>
+        <a href="{% url 'logout' %}" class="btn">Cerrar sesión</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn-secondary">Iniciar sesión</a>
+        <a href="{% url 'site_signup' %}" class="btn">Crear cuenta</a>
+      {% endif %}
     </div>
+    {% endblock header_auth %}
 
     <!-- Botón hamburguesa -->
     <button id="menuToggle"
@@ -79,49 +72,57 @@
             aria-label="Abrir menú" aria-controls="mobileMenu" aria-expanded="false">☰</button>
   </div>
 
-  <!-- Menú móvil (OCULTO por defecto y solo visible en móviles) -->
+  <!-- Menú móvil -->
   <div id="mobileMenu" class="md:hidden hidden border-t border-neutral-200">
     <div class="max-w-[1200px] mx-auto px-6 py-4 grid gap-3">
-  {# Inicio: OCULTO en home #}
-  {% if request.path != home_url %}
-    <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ home_url }}">Inicio</a>
-  {% endif %}
+      {% if request.path != home_url %}
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ home_url }}">Inicio</a>
+      {% endif %}
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ rates_url }}">Tipos de cambio</a>
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ how_url }}">Cómo funciona</a>
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ faq_url }}">FAQ</a>
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ calc_url }}">Calculadora</a>
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ contact_url }}">Contacto</a>
+      <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ legal_url }}">Legal</a>
 
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ rates_url }}">Tipos de cambio</a>
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ how_url }}">Cómo funciona</a>
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ faq_url }}">FAQ</a>
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ calc_url }}">Calculadora</a>
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ contact_url }}">Contacto</a>
-  <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{{ legal_url }}">Legal</a>
-</div>
+      <div class="h-px bg-neutral-200 my-2"></div>
+
+      <!-- Acciones (MÓVIL) -->
+      {% block header_auth_mobile %}
+      {% if request.user.is_authenticated %}
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'usuarios:dashboard' %}">Mi panel</a>
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'logout' %}">Cerrar sesión</a>
+      {% else %}
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'login' %}">Iniciar sesión</a>
+        <a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'site_signup' %}">Crear cuenta</a>
+      {% endif %}
+      {% endblock header_auth_mobile %}
+    </div>
   </div>
 </header>
+{% endblock site_header %}
 
-  <!-- Contenido de cada página -->
+  <!-- Contenido -->
   <main id="main">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
-<footer class="border-t border-neutral-200">
-  <div class="max-w-[1200px] mx-auto px-6 py-8 flex items-center justify-between">
-    <!-- Logo + Marca en línea -->
-    <div class="flex items-center gap-3">
-      <div class="h-11 w-11 flex items-center justify-center rounded-md bg-[var(--brand)] text-white font-bold">GE</div>
-      <p class="text-neutral-600">© {{ now|date:"Y" }} Global Exchange</p>
+  <footer class="border-t border-neutral-200">
+    <div class="max-w-[1200px] mx-auto px-6 py-8 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="{% static 'img/logo-secundario.png' %}" alt="Global Exchange — logo secundario" class="h-11 w-auto">
+        <p class="text-neutral-600">© {% now "Y" %} Global Exchange</p>
+      </div>
+      <nav class="flex gap-6">
+        <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_legal' %}">Términos &amp; Privacidad</a>
+        <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_faq' %}">FAQ</a>
+        <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_contact' %}">Contacto</a>
+      </nav>
     </div>
+  </footer>
 
-    <!-- Links alineados a la derecha -->
-    <nav class="flex gap-6">
-      <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_legal' %}">Términos &amp; Privacidad</a>
-      <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_faq' %}">FAQ</a>
-      <a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="{% url 'site_contact' %}">Contacto</a>
-    </nav>
-  </div>
-</footer>
-
-
-  <!-- JS mínimo para menú + Twemoji -->
+  <!-- JS mínimo -->
   <script>
     (function () {
       const t = document.getElementById('menuToggle');
@@ -130,7 +131,6 @@
         const hidden = m.classList.toggle('hidden');
         t.setAttribute('aria-expanded', String(!hidden));
       });
-      // Twemoji en toda la página
       document.addEventListener("DOMContentLoaded", () => {
         try {
           twemoji.parse(document.body, {
@@ -140,22 +140,16 @@
         } catch (e) {}
       });
     })();
+
+    // Modales (si los usas)
+    document.addEventListener('click', (e) => {
+      const openId = e.target?.closest('[data-open]')?.getAttribute('data-open');
+      if (openId) { const modal = document.getElementById(openId); if (modal) modal.classList.remove('hidden'); }
+      const overlay = e.target?.closest('[data-modal-overlay]');
+      const closeId = e.target?.closest('[data-modal-close]')?.getAttribute('data-modal-close');
+      if (overlay) overlay.closest('.modal')?.classList.add('hidden');
+      if (closeId) document.getElementById(closeId)?.classList.add('hidden');
+    });
   </script>
-
-  <script>
-  // Abrir: agrega data-open="ratesModal" en cualquier elemento que quieras que lo dispare
-  document.addEventListener('click', (e) => {
-    const openId = e.target?.closest('[data-open]')?.getAttribute('data-open');
-    if (openId) {
-      const modal = document.getElementById(openId);
-      if (modal) modal.classList.remove('hidden');
-    }
-    const overlay = e.target?.closest('[data-modal-overlay]');
-    const closeId = e.target?.closest('[data-modal-close]')?.getAttribute('data-modal-close');
-    if (overlay) overlay.closest('.modal')?.classList.add('hidden');
-    if (closeId) document.getElementById(closeId)?.classList.add('hidden');
-  });
-</script>
-
 </body>
 </html>
