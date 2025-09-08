@@ -3,7 +3,8 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from usuarios import views as usuarios_views
 from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazyfrom core.views import pagina_inicio_y_simulador #vista de simulacionpy
+from django.urls import reverse_lazy
+from core.views import pagina_inicio_y_simulador #vista de simulacionpy
 
 urlpatterns = [
     # --- Home ---
