@@ -84,3 +84,36 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             expiration_time = self.code_created_at + timedelta(minutes=minutes_valid)
             return timezone.now() <= expiration_time
         return False
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        if self.is_active and self.is_superuser:
+            return True
+
+        # Primero, revisamos los permisos a nivel de usuario
+        # Esto es importante para mantener la compatibilidad con los permisos directos
+        if super().has_perm(perm, obj):
+            return True
+
+        # Si no, verificamos si alguno de sus roles tiene el permiso
+        # 'perm' tiene el formato "app_label.codename"
+        try:
+            app_label, codename = perm.split('.')
+        except ValueError:
+            return False
+
+        return self.roles.filter(
+            permissions__content_type__app_label=app_label,
+            permissions__codename=codename
+        ).exists()
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        if self.is_active and self.is_superuser:
+            return True
+        
+        if super().has_module_perms(app_label):
+            return True
+
+        return self.roles.filter(permissions__content_type__app_label=app_label).exists()
