@@ -31,7 +31,6 @@ urlpatterns = [
 
 
 
-    path('api/', include('usuarios.urls')),
     #path('monedas/', include('monedas.urls')),
 
         # Auth de Django montado en /cuentas/
