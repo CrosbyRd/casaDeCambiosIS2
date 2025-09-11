@@ -25,10 +25,9 @@ class ClienteForm(forms.ModelForm):
     
     class Meta:
         model = Cliente
-        fields = ['nombre', 'correo_electronico', 'categoria', 'activo']
+        fields = ['nombre', 'categoria', 'activo']   # 🔹 Quitamos correo_electronico
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'correo_electronico': forms.EmailInput(attrs={'class': 'form-control'}),
             'categoria': forms.Select(attrs={
                 'class': 'form-select', 
                 'id': 'id_categoria',
@@ -37,7 +36,6 @@ class ClienteForm(forms.ModelForm):
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
-            'correo_electronico': 'Correo electrónico',
             'activo': 'Cliente activo',
         }
     
@@ -53,12 +51,13 @@ class ClienteForm(forms.ModelForm):
             self.fields['bonificacion_display'].initial = "0%"
             self.fields['limite_usd_display'].initial = "$5,000.00"
 
+
 class ClienteSearchForm(forms.Form):
     q = forms.CharField(
         required=False,
         label='Buscar',
         widget=forms.TextInput(attrs={
-            'placeholder': 'Buscar por nombre o email...',
+            'placeholder': 'Buscar por nombre...',
             'class': 'form-control'
         })
     )

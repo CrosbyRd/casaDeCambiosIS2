@@ -75,7 +75,6 @@
         <thead style="background:var(--brand); color:#fff">
           <tr>
             <th class="px-6 py-3">Nombre</th>
-            <th class="px-6 py-3">Correo</th>
             <th class="px-6 py-3">Categoría</th>
             <th class="px-6 py-3">Bonificación</th>
             <th class="px-6 py-3">Límite USD</th>
@@ -87,7 +86,7 @@
           {% for cliente in clientes %}
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
             <td class="px-6 py-4 font-semibold text-[var(--ink)]">{{ cliente.nombre }}</td>
-            <td class="px-6 py-4 text-neutral-600">{{ cliente.correo_electronico }}</td>
+
             <td class="px-6 py-4">
               <span class="px-2 py-1 rounded text-sm font-medium bg-[var(--brand-soft)] text-[var(--brand-dark)]">
                 {{ cliente.get_categoria_display }}
