@@ -84,3 +84,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             expiration_time = self.code_created_at + timedelta(minutes=minutes_valid)
             return timezone.now() <= expiration_time
         return False
+    
+
+class UsuariosPermissions(models.Model):
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = [
+            ("access_user_client_management", "Puede gestionar usuarios y clientes"),
+        ]

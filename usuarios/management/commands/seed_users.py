@@ -48,6 +48,7 @@ class Command(BaseCommand):
                 "access_monedas_section",   # Monedas
                 "access_roles_panel",       # NUEVO: acceso a Roles
                 "delete_roles",             # NUEVO: eliminar Roles
+                "access_user_client_management",  # NUEVO:  acceso a asociacion cliente a usuario
             ]
 
         permisos = []

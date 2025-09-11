@@ -210,7 +210,7 @@ def dashboard(request):
 
 @login_required
 def listar_usuarios(request):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
     
     usuarios = CustomUser.objects.all().prefetch_related("clientes", "roles")
@@ -224,7 +224,7 @@ def listar_usuarios(request):
 
 @login_required
 def agregar_cliente(request, user_id, cliente_id):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
@@ -235,7 +235,7 @@ def agregar_cliente(request, user_id, cliente_id):
 
 @login_required
 def quitar_cliente(request, user_id, cliente_id):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
