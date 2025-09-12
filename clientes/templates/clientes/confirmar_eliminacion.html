@@ -1,39 +1,50 @@
-{% extends 'clientes/base.html' %}
-
-{% block title %}Confirmar Eliminación{% endblock %}
+{% extends "base.html" %}
+{% block title %}Eliminar Cliente — Global Exchange{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h4 class="card-title mb-0">
-                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
-                </h4>
-            </div>
-            <div class="card-body text-center">
-                <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
-                <h5>¿Está seguro que desea eliminar este cliente?</h5>
-                <p class="text-muted">Esta acción no se puede deshacer y se perderán todos los datos del cliente.</p>
-                
-                <div class="alert alert-warning mt-3">
-                    <strong>{{ object.nombre }}</strong><br>
-                    <small>{{ object.correo_electronico }}</small><br>
-                    <span class="badge bg-{{ object.get_categoria_display|lower }}">{{ object.get_categoria_display }}</span>
-                </div>
-            </div>
-            <div class="card-footer d-flex justify-content-between">
-                <a href="{% url 'clientes:detalle' object.id_cliente %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Confirmar Eliminación
-                    </button>
-                </form>
-            </div>
-        </div>
+<main class="max-w-3xl mx-auto px-6 py-12">
+
+  <!-- Encabezado -->
+  <header class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold text-red-600 flex items-center justify-center gap-2">
+      🗑️ Eliminar Cliente
+    </h1>
+    <p class="text-[var(--muted)] mt-2">
+      Esta acción no se puede deshacer. Revisá la información antes de continuar.
+    </p>
+  </header>
+
+  <!-- Tarjeta -->
+  <section class="bg-white border rounded-xl shadow-sm p-8" style="border-color:var(--line)">
+    <!-- Mensaje de confirmación -->
+    <p class="text-lg">
+      ¿Confirmás que querés eliminar al cliente
+      <strong>{{ object.nombre }}</strong>?
+    </p>
+
+    <!-- Alerta -->
+    <div class="mt-4 mb-6 rounded-lg px-4 py-3"
+         style="background:#FFF4CC; color:#7A5B00; border:1px solid #FBE6A2;">
+      ⚠ Al eliminar este cliente se perderán sus datos de manera permanente.
     </div>
-</div>
+
+    <!-- Botones -->
+    <div class="flex items-center gap-3">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit"
+                class="px-5 py-2 rounded-lg font-bold text-white hover:brightness-95"
+                style="background:#E53935;">
+          🗑️ Sí, eliminar
+        </button>
+      </form>
+
+      <a href="{% url 'clientes:lista' %}"
+         class="px-5 py-2 rounded-lg font-semibold text-white hover:brightness-95"
+         style="background:var(--brand);">
+        ✖ Cancelar
+      </a>
+    </div>
+  </section>
+</main>
 {% endblock %}

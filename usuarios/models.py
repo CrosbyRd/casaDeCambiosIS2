@@ -20,24 +20,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        return self.create_user(email, password, **extra_fields)
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-
-    class UserTypes(models.TextChoices):
-        ADMIN = 'ADMIN', 'Administrador'
-        ANALISTA = 'ANALISTA', 'Analista'
-        CLIENTE = 'CLIENTE', 'Cliente'
-
 
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
@@ -47,12 +30,28 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
-    # MERGE: Campos para la verificación por código de tu rama (HEAD)
+    # campos para  verificacion con OTP
     verification_code = models.CharField(max_length=6, blank=True, null=True)
     code_created_at = models.DateTimeField(blank=True, null=True)
 
-    # MERGE: Relación ManyToMany con Role (más flexible que ForeignKey)
+    # relaciona customUser con Role (N:M)
     roles = models.ManyToManyField(Role, blank=True)
+
+    def get_all_permissions(self, obj=None):
+        # permisos estándar (user_permissions + groups)
+        perms = super().get_all_permissions(obj)
+
+        # permisos heredados de roles
+        role_perms = self.roles.values_list(
+            "permissions__content_type__app_label",
+            "permissions__codename"
+        )
+        role_perms = {f"{ct}.{name}" for ct, name in role_perms}
+
+        return perms.union(role_perms)
+
+    def has_perm(self, perm, obj=None):
+        return perm in self.get_all_permissions(obj)
 
     # MERGE: Relación ManyToMany con Cliente de la rama entrante
     clientes = models.ManyToManyField(
@@ -69,14 +68,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-    # MERGE: Métodos para manejar la lógica de verificación de tu rama (HEAD)
+    # Genera un código de 6 dígitos y marca la hora de creación
     def generate_verification_code(self):
         """Genera un código de 6 dígitos y guarda el momento de creación."""
         self.verification_code = str(random.randint(100000, 999999))
         self.code_created_at = timezone.now()
         self.save()
 
-    def is_code_valid(self, code, minutes_valid=5):
+    # verifica que el codigo sea correcto
+    def is_code_valid(self, code, minutes_valid=1):     #el codigo expira en 1 minuto
         """Verifica si el código es correcto y no ha expirado."""
         if self.verification_code != code:
             return False
@@ -84,3 +84,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             expiration_time = self.code_created_at + timedelta(minutes=minutes_valid)
             return timezone.now() <= expiration_time
         return False
+    
+
+class UsuariosPermissions(models.Model):
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = [
+            ("access_user_client_management", "Puede gestionar usuarios y clientes"),
+        ]
