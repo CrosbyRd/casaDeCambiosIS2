@@ -62,3 +62,14 @@ def eliminar_moneda(request, pk):
         messages.success(request, "Moneda eliminada correctamente.")
         return redirect("monedas:listar_monedas")
     return render(request, "monedas/eliminar.html", {"moneda": moneda})
+
+
+@login_required
+def moneda_detalle(request, pk):
+
+    if not request.user.has_perm("monedas.access_monedas_section"):
+        return redirect("home")
+    
+
+    moneda = get_object_or_404(Moneda, pk=pk)
+    return render(request, "monedas/moneda_detalle.html", {"moneda": moneda})
