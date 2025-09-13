@@ -12,7 +12,7 @@ from clientes.models import Cliente
 
 
 # ----------------------------
-# Registro + verificación de cuenta
+# Registro + verificaciรณn de cuenta
 # ----------------------------
 
 def register(request):
@@ -30,7 +30,7 @@ def register(request):
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
                 settings.DEFAULT_FROM_EMAIL,
-                [user.email],
+                user.email,
                 fail_silently=False,
             )
             request.session["email_verificacion"] = user.email
