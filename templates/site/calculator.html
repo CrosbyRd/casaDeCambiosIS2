@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Calculadora{% endblock %}
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<section class="max-w-[1200px] mx-auto px-6 py-8">
 <h1 class="h1 mb-6 twemoji-scope">Calculadora</h1>
 
 <div class="grid md:grid-cols-2 gap-6">
@@ -9,14 +8,12 @@
     <div class="mb-6">
       <label class="block mb-3 font-medium">Par</label>
 
-      <!-- Select ORIGINAL oculto (el JS se apoya en él) -->
       <select id="pair" class="hidden">
         <option value="USD_PYG" data-rate="7320">🇺🇸 USD → 🇵🇾 PYG</option>
         <option value="EUR_PYG" data-rate="8020">🇪🇺 EUR → 🇵🇾 PYG</option>
         <option value="BRL_PYG" data-rate="1320">🇧🇷 BRL → 🇵🇾 PYG</option>
       </select>
 
-      <!-- Dropdown personalizado accesible (combobox ARIA) -->
       <div class="relative twemoji-scope" id="pairDropdown">
         <button type="button"
                 id="pairButton"
@@ -61,5 +58,5 @@
     </div>
   </div>
 </div>
-</main>
+</section>
 {% endblock %}

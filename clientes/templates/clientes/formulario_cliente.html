@@ -1,16 +1,10 @@
 {% extends 'clientes/base.html' %}
 {% load static %}
 
-{% block title %}{% if object %}Editar{% else %}Crear{% endif %} Cliente{% endblock %}
-
 {% block extra_css %}
 <style>
-    .form-label {
-        font-weight: 500;
-    }
-    .card {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
+    .form-label { font-weight: 500; }
+    .card { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
 </style>
 {% endblock %}
 
@@ -30,9 +24,7 @@
                     
                     {% if form.non_field_errors %}
                     <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            {{ error }}
-                        {% endfor %}
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
                     </div>
                     {% endif %}
 
@@ -118,34 +110,18 @@
 <script>
 function actualizarInformacionCliente(selectElement) {
     const configuraciones = {
-        'vip': {
-            bonificacion: '10%',
-            limite_usd: '$50,000.00'
-        },
-        'corporativo': {
-            bonificacion: '5%', 
-            limite_usd: '$25,000.00'
-        },
-        'minorista': {
-            bonificacion: '0%',
-            limite_usd: '$5,000.00'
-        }
+        'vip': { bonificacion: '10%', limite_usd: '$50,000.00' },
+        'corporativo': { bonificacion: '5%', limite_usd: '$25,000.00' },
+        'minorista': { bonificacion: '0%', limite_usd: '$5,000.00' }
     };
-    
     const selectedValue = selectElement.value;
     const config = configuraciones[selectedValue] || configuraciones.minorista;
-    
-    // Actualizar todos los campos
     document.getElementById('id_bonificacion_display').value = config.bonificacion;
     document.getElementById('id_limite_usd_display').value = config.limite_usd;
 }
-
-// Inicializar la información al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     const categoriaSelect = document.getElementById('id_categoria');
-    if (categoriaSelect) {
-        actualizarInformacionCliente(categoriaSelect);
-    }
+    if (categoriaSelect) { actualizarInformacionCliente(categoriaSelect); }
 });
 </script>
 {% endblock %}

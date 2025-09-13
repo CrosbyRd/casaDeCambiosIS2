@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% block title %}Panel de Administrador — Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-[1200px] mx-auto px-6 py-10">
@@ -77,28 +76,21 @@
 </main>
 
 <script>
-    // Redirecciones existentes
     document.getElementById('btn-gestionar-clientes').addEventListener('click', () => {
         window.location.href = "{% url 'clientes:lista' %}";
     });
-
     document.getElementById('btn-gestionar-roles').addEventListener('click', () => {
         window.location.href = "{% url 'roles:role-panel' %}";
     });
-
     document.getElementById('btn-agregar-cliente').addEventListener('click', () => {
         window.location.href = "{% url 'usuarios:listar_usuarios' %}";
     });
-
-    // Nuevos botones (aún sin URL asignada)
     document.getElementById('btn-gestionar-monedas').addEventListener('click', () => {
         window.location.href = "{% url 'monedas:listar_monedas' %}";
     });
-
     document.getElementById('btn-gestionar-tasas').addEventListener('click', () => {
         window.location.href = "{% url 'cotizaciones:cotizacion_list' %}";
     });
-
     document.getElementById('btn-gestionar-pagos').addEventListener('click', () => {
         alert("Redirección pendiente: Gestión de Métodos de Pago");
     });

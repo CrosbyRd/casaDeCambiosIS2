@@ -1,106 +1,81 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Listado de Monedas — Global Exchange</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{
-      --brand:#7c3aed;        /* morado principal */
-      --brand-soft:#ede9fe;   /* morado suave */
-      --brand-dark:#4c1d95;   /* morado oscuro */
-      --ink:#111827;          /* gris muy oscuro */
-      --muted:#6b7280;        /* gris medio */
-      --line:#e5e7eb;         /* borde suave */
-    }
-  </style>
-</head>
-<body class="bg-gray-50 text-[var(--ink)]">
+{% extends "base.html" %}
 
-  <main class="max-w-6xl mx-auto px-6 py-10">
-    
-    <!-- Encabezado -->
-    <header class="flex items-center justify-between mb-8">
-      <div>
-        <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">💱 Monedas</h1>
-        <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
-          Aquí puedes gestionar todas las monedas disponibles en el sistema: crea nuevas, edita las existentes o elimínalas según sea necesario.
-        </p>
-      </div>
-      <div class="space-x-3 flex">
-        <a href="{% url 'admin_panel:dashboard' %}" 
-           class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-           style="color:var(--brand-dark)">
-          ⬅ Volver al Panel
-        </a>
-        <a href="{% url 'monedas:crear_moneda' %}" 
-           class="px-4 py-2 rounded-lg font-bold text-white"
-           style="background:var(--brand)">
-          ➕ Crear nueva moneda
-        </a>
-      </div>
-    </header>
+{% block extra_head %}
+<style>
+  :root{
+    --brand:#7c3aed; --brand-soft:#ede9fe; --brand-dark:#4c1d95;
+    --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  }
+</style>
+{% endblock %}
 
-    <!-- Tabla de monedas -->
-    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead style="background:var(--brand); color:#fff">
-            <tr>
-              <th class="px-6 py-3">Código</th>
-              <th class="px-6 py-3">Nombre</th>
-              <th class="px-6 py-3">Símbolo</th>
-              <th class="px-6 py-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for m in monedas %}
-            <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
-              <td class="px-6 py-4 font-semibold text-[var(--ink)]">
-                <span class="currency-emoji" data-code="{{ m.codigo }}"></span>
-                {{ m.codigo }}
-              </td>
-              <td class="px-6 py-4">{{ m.nombre }}</td>
-              <td class="px-6 py-4">{{ m.simbolo }}</td>
-              <td class="px-6 py-4 space-x-2">
-                <a href="{% url 'monedas:editar_moneda' m.id %}" 
-                   class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
-                  Editar
-                </a>
-                <a href="{% url 'monedas:eliminar_moneda' m.id %}" 
-                   class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
-                  Eliminar
-                </a>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="px-6 py-6 text-center" style="color:var(--muted)">
-                No hay monedas registradas.
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10 text-[var(--ink)]">
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2">💱 Monedas</h1>
+      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">
+        Aquí puedes gestionar todas las monedas disponibles en el sistema: crea nuevas, edita las existentes o elimínalas según sea necesario.
+      </p>
+    </div>
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'monedas:crear_moneda' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+        ➕ Crear nueva moneda
+      </a>
+    </div>
+  </header>
 
-  <!-- Script para mostrar banderas -->
-  <script>
-    (function(){
-      const MAP = {
-        USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-        MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-        CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
-      };
-      document.querySelectorAll('.currency-emoji').forEach(el => {
-        const code = String(el.dataset.code || '').toUpperCase();
-        el.textContent = (MAP[code] || "💱") + " ";
-      });
-    })();
-  </script>
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead style="background:var(--brand); color:#fff">
+          <tr>
+            <th class="px-6 py-3">Código</th>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Símbolo</th>
+            <th class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in monedas %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-4 font-semibold">
+              <span class="currency-emoji" data-code="{{ m.codigo }}"></span>{{ m.codigo }}
+            </td>
+            <td class="px-6 py-4">{{ m.nombre }}</td>
+            <td class="px-6 py-4">{{ m.simbolo }}</td>
+            <td class="px-6 py-4 space-x-2">
+              <a href="{% url 'monedas:editar_moneda' m.id %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Editar</a>
+              <a href="{% url 'monedas:eliminar_moneda' m.id %}" class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">Eliminar</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="px-6 py-6 text-center text-[var(--muted)]">No hay monedas registradas.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
 
-</body>
-</html>
+<script>
+  (function(){
+    const MAP = {
+      USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+      MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+      CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
+    };
+    document.querySelectorAll('.currency-emoji').forEach(el => {
+      const code = String(el.dataset.code || '').toUpperCase();
+      el.textContent = (MAP[code] || "💱") + " ";
+    });
+  })();
+</script>
+{% endblock %}

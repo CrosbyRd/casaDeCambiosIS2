@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Preguntas frecuentes{% endblock %}
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<section class="max-w-[1200px] mx-auto px-6 py-8">
 <h1 class="h1 mb-6">Preguntas frecuentes</h1>
 
-<!-- Acordeón -->
 <div class="border border-neutral-200 rounded-lg" data-accordion>
-  <!-- ABIERTA POR DEFECTO -->
   <button class="accordion-button" aria-expanded="true" data-open data-accordion-target="#faq1">
     <span class="font-semibold">¿Cómo se calcula el tipo de cambio?</span>
     <span class="ml-2" aria-hidden="true">▾</span>
@@ -39,5 +36,5 @@
 <div class="mt-8">
   <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
 </div>
-</main>
+</section>
 {% endblock %}

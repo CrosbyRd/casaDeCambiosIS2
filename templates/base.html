@@ -4,12 +4,15 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>{% block title %}Global Exchange{% endblock %}</title>
+  <title>Global Exchange</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{% static 'img/logo.ico' %}"/>
 
   <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Tu CSS -->
+  <!-- CSS del sitio -->
   <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
 
   <!-- Twemoji para banderas consistentes -->
@@ -141,7 +144,6 @@
       });
     })();
 
-    // Modales (si los usas)
     document.addEventListener('click', (e) => {
       const openId = e.target?.closest('[data-open]')?.getAttribute('data-open');
       if (openId) { const modal = document.getElementById(openId); if (modal) modal.classList.remove('hidden'); }
