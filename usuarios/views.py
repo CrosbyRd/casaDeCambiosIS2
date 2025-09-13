@@ -12,7 +12,7 @@ from clientes.models import Cliente
 
 
 # ----------------------------
-# Registro + verificación de cuenta
+# Registro + verificaciรณn de cuenta
 # ----------------------------
 
 def register(request):
@@ -26,8 +26,8 @@ def register(request):
 
             user.generate_verification_code()
             send_mail(
-                "Código de verificación",
-                f"Tu código de verificación es: {user.verification_code}",
+                "Cรณdigo de verificaciรณn",
+                f"Tu cรณdigo de verificaciรณn es: {user.verification_code}",
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email],
                 fail_silently=False,
@@ -42,7 +42,7 @@ def register(request):
 def verify(request):
     email = request.session.get("email_verificacion")
     if not email:
-        messages.error(request, "Sesión de verificación inválida. Por favor, regístrate de nuevo.")
+        messages.error(request, "Sesiรณn de verificaciรณn invรกlida. Por favor, regรญstrate de nuevo.")
         return redirect("usuarios:register")
 
     try:
@@ -61,10 +61,10 @@ def verify(request):
             user.code_created_at = None
             user.save()
             request.session.pop("email_verificacion", None)
-            messages.success(request, "¡Cuenta verificada correctamente! Ya puedes iniciar sesión.")
+            messages.success(request, "ยกCuenta verificada correctamente! Ya puedes iniciar sesiรณn.")
             return redirect("login")
         else:
-            messages.error(request, "Código incorrecto o expirado.")
+            messages.error(request, "Cรณdigo incorrecto o expirado.")
 
     return render(request, "site/verify.html", {"form": form, "email": user.email})
 
@@ -72,19 +72,19 @@ def verify(request):
 def reenviar_codigo(request):
     email = request.session.get("email_verificacion")
     if not email:
-        messages.error(request, "No hay una sesión de verificación activa.")
+        messages.error(request, "No hay una sesiรณn de verificaciรณn activa.")
         return redirect("usuarios:register")
 
     user = get_object_or_404(CustomUser, email=email)
     user.generate_verification_code()
     send_mail(
-        "Nuevo código de verificación",
-        f"Tu nuevo código de verificación es: {user.verification_code}",
+        "Nuevo cรณdigo de verificaciรณn",
+        f"Tu nuevo cรณdigo de verificaciรณn es: {user.verification_code}",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
         fail_silently=False,
     )
-    messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
+    messages.success(request, f"Se ha enviado un nuevo cรณdigo a {user.email}.")
     return redirect("usuarios:verify")
 
 
@@ -102,17 +102,23 @@ def login_view(request):
 
     user = authenticate(request, username=email, password=password)
     if user is None:
-        messages.error(request, "Correo o contraseña inválidos.")
+        messages.error(request, "Correo o contraseÃ±a invÃ¡lidos.")
         return render(request, "registration/login.html", status=401)
 
     if not user.is_active:
-        messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
+        messages.error(request, "Tu cuenta no estÃ¡ verificada. Verifica tu correo para activarla.")
         return redirect("login")
+
+    # Bypass OTP for superusers
+    if user.is_superuser:
+        login(request, user)
+        next_url = request.session.pop("pending_login_next", None)
+        return redirect(next_url or "usuarios:login_redirect")
 
     user.generate_verification_code()
     send_mail(
-        "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
+        "Tu cÃ³digo de acceso",
+        f"Tu cÃ³digo de verificaciÃ³n es: {user.verification_code}",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
         fail_silently=False,
@@ -122,14 +128,14 @@ def login_view(request):
     if next_url:
         request.session["pending_login_next"] = next_url
 
-    messages.info(request, f"Hemos enviado un código a {user.email}.")
+    messages.info(request, f"Hemos enviado un cÃ³digo a {user.email}.")
     return redirect("login_otp")
 
 
 def login_otp(request):
     uid = request.session.get("pending_login_user_id")
     if not uid:
-        messages.info(request, "Inicia sesión para continuar.")
+        messages.info(request, "Inicia sesiรณn para continuar.")
         return redirect("login")
 
     user = CustomUser.objects.filter(id=uid).first()
@@ -150,7 +156,7 @@ def login_otp(request):
             # Mensaje de bienvenida lo dejamos en login_redirect para no duplicar
             return redirect(next_url or "usuarios:login_redirect")
         else:
-            messages.error(request, "Código incorrecto o expirado.")
+            messages.error(request, "Cรณdigo incorrecto o expirado.")
 
     return render(request, "registration/verify-code.html", {"email": user.email})
 
@@ -163,13 +169,13 @@ def login_otp_resend(request):
     user = get_object_or_404(CustomUser, id=uid)
     user.generate_verification_code()
     send_mail(
-        "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
+        "Tu cรณdigo de acceso",
+        f"Tu cรณdigo de verificaciรณn es: {user.verification_code}",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
         fail_silently=False,
     )
-    messages.success(request, f"Enviamos un nuevo código a {user.email}.")
+    messages.success(request, f"Enviamos un nuevo cรณdigo a {user.email}.")
     return redirect("login_otp")
 
 
@@ -178,12 +184,12 @@ def login_otp_resend(request):
 # ----------------------------
 
 def logout_view(request):
-    """Cierra sesión aceptando GET o POST y redirige al inicio."""
+    """Cierra sesiรณn aceptando GET o POST y redirige al inicio."""
     if request.method in ("GET", "POST"):
         logout(request)
-        messages.info(request, "Sesión cerrada correctamente.")
+        messages.info(request, "Sesiรณn cerrada correctamente.")
         return redirect("home")
-    # Cualquier otro método no permitido:
+    # Cualquier otro mรฉtodo no permitido:
     return redirect("home")
 
 
@@ -192,7 +198,7 @@ def login_redirect(request):
         return redirect("login")
     if request.user.is_staff:
         return redirect("admin_panel:dashboard")
-    messages.success(request, "¡Bienvenido!")
+    messages.success(request, "ยกBienvenido!")
     return redirect("usuarios:dashboard")
 
 
@@ -204,7 +210,7 @@ def dashboard(request):
 @login_required
 def admin_panel(request):
     if not request.user.is_staff:
-        messages.error(request, "No tienes permiso para acceder a esta página.")
+        messages.error(request, "No tienes permiso para acceder a esta pรกgina.")
         return redirect("home")
     return redirect("admin_panel:dashboard")
 

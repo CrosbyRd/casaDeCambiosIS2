@@ -30,6 +30,21 @@ class SimulacionForm(forms.Form):
         self.fields['moneda_origen'].choices = choices
         self.fields['moneda_destino'].choices = choices
 
+    def clean_monto(self):
+        monto = self.cleaned_data['monto']
+        moneda_origen_codigo = self.cleaned_data.get('moneda_origen')
+
+        if moneda_origen_codigo:
+            try:
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                if monto < moneda_origen_obj.minima_denominacion:
+                    raise forms.ValidationError(
+                        f"El monto mínimo para cambiar {moneda_origen_obj.nombre} es {moneda_origen_obj.minima_denominacion}."
+                    )
+            except Moneda.DoesNotExist:
+                # Esto debería ser manejado por la validación de ChoiceField, pero es un fallback
+                pass
+        return monto
 
     def clean(self):
         cleaned_data = super().clean()

@@ -67,37 +67,30 @@ class Command(BaseCommand):
             roles = data.pop("roles", [])
             email = data["email"].lower()
 
-            # Crear si no existe, si existe, actualizar campos relevantes
-            user, created = User.objects.get_or_create(
+            # Usar update_or_create para simplificar y asegurar la actualización
+            defaults = {
+                "first_name": data.get("first_name", ""),
+                "last_name": data.get("last_name", ""),
+                "is_staff": data.get("is_staff", False),
+                "is_superuser": data.get("is_superuser", False),
+                "is_active": data.get("is_active", True),
+                "is_verified": data.get("is_verified", True),
+            }
+            
+            user, created = User.objects.update_or_create(
                 email=email,
-                defaults={
-                    "first_name": data.get("first_name", ""),
-                    "last_name": data.get("last_name", ""),
-                    "is_staff": data.get("is_staff", False),
-                    "is_superuser": data.get("is_superuser", False),
-                    "is_active": data.get("is_active", True),
-                    "is_verified": data.get("is_verified", True),
-                },
+                defaults=defaults
             )
 
-            if created:
+            # Siempre establecer/actualizar la contraseña
+            if data.get("password"):
                 user.set_password(data["password"])
                 user.save()
-                self.stdout.write(self.style.SUCCESS(f"Creado: {email}"))
+
+            if created:
+                self.stdout.write(self.style.SUCCESS(f"Creado y contraseña establecida para: {email}"))
             else:
-                changed = False
-                for field in ["first_name", "last_name", "is_staff", "is_superuser", "is_active", "is_verified"]:
-                    if field in data and getattr(user, field) != data[field]:
-                        setattr(user, field, data[field])
-                        changed = True
-                if "password" in data and data["password"]:
-                    user.set_password(data["password"])
-                    changed = True
-                if changed:
-                    user.save()
-                    self.stdout.write(self.style.WARNING(f"Actualizado: {email}"))
-                else:
-                    self.stdout.write(self.style.WARNING(f"Ya existe: {email} (sin cambios)"))
+                self.stdout.write(self.style.WARNING(f"Actualizado y contraseña re-establecida para: {email}"))
 
             # Asignar roles (se crean si no existen)
             for role_name in roles:

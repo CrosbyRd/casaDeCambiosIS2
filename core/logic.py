@@ -26,14 +26,24 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
     }
 
     try:
-        # 1. Determinar la bonificación del cliente
+        # 1. Obtener las monedas de origen y destino
+        moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen)
+        moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino)
+
+        # 2. Validar el monto mínimo de la moneda de origen
+        if monto_origen < moneda_origen_obj.minima_denominacion:
+            raise ValueError(
+                f"El monto mínimo para cambiar {moneda_origen} es {moneda_origen_obj.minima_denominacion}."
+            )
+
+        # 3. Determinar la bonificación del cliente
         bonificacion_pct = Decimal('0')
         if user and user.is_authenticated:
             cliente = user.clientes.first()
             if cliente:
                 bonificacion_pct = cliente.bonificacion
 
-        # 2. Lógica de cálculo
+        # 4. Lógica de cálculo
         if moneda_origen == 'PYG' and moneda_destino != 'PYG':
             # --- VENTA DE DIVISA (La casa de cambios VENDE USD, EUR, etc.) ---
             cotizacion = Cotizacion.objects.get(moneda_base__codigo='PYG', moneda_destino__codigo=moneda_destino)
@@ -67,10 +77,22 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         else:
             raise ValueError("La simulación debe ser entre PYG y una moneda extranjera.")
 
+        # Cuantificar monto_recibido basado en los decimales de la moneda de destino
+        monto_recibido = monto_recibido.quantize(
+            Decimal('1') / (Decimal('10') ** moneda_destino_obj.decimales),
+            rounding=ROUND_HALF_UP
+        )
+
+        # Validar contra la denominación mínima de la moneda de destino
+        if monto_recibido < moneda_destino_obj.minima_denominacion:
+            raise ValueError(
+                f"El monto a recibir ({monto_recibido} {moneda_destino_obj.codigo}) es menor a la denominación mínima de {moneda_destino_obj.minima_denominacion} {moneda_destino_obj.codigo}."
+            )
+
         resultado.update({
             'tasa_aplicada': tasa_final,
             'bonificacion_aplicada': bonificacion_monto,
-            'monto_recibido': monto_recibido.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            'monto_recibido': monto_recibido
         })
 
     except Cotizacion.DoesNotExist:
