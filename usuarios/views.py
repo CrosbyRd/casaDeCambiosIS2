@@ -110,6 +110,12 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
+    # Bypass OTP for superusers
+    if user.is_superuser:
+        login(request, user)
+        next_url = request.session.pop("pending_login_next", None)
+        return redirect(next_url or "usuarios:login_redirect")
+
     user.generate_verification_code()
     send_mail(
         "Tu código de acceso",
@@ -206,6 +212,14 @@ def login_redirect(request):
 @login_required
 def dashboard(request):
     return render(request, "usuarios/dashboard.html")
+
+
+@login_required
+def admin_panel(request):
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permiso para acceder a esta página.")
+        return redirect("home")
+    return redirect("admin_panel:dashboard")
 
 
 @login_required

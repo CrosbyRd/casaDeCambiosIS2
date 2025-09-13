@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "monedas",
     "cotizaciones",
     "admin_panel",
+    "core.apps.CoreConfig",
 ]
 
 # --- Middleware ---

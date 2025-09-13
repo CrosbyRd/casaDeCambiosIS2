@@ -34,6 +34,31 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING(f"Usuario ya existía: {email}"))
 
+        # --- Usar update_or_create para simplificar y asegurar la actualización
+        defaults = {
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+            "is_active": user.is_active,
+            "is_verified": user.is_verified,
+        }
+
+        user, created = User.objects.update_or_create(
+            email=email,
+            defaults=defaults
+        )
+
+        # Siempre establecer/actualizar la contraseña
+        if password:
+            user.set_password(password)
+            user.save()
+
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Creado y contraseña establecida para: {email}"))
+        else:
+            self.stdout.write(self.style.WARNING(f"Actualizado y contraseña re-establecida para: {email}"))
+
         # --- Crear Rol Administrador ---
         rol_admin, _ = Role.objects.get_or_create(
             name="Administrador",

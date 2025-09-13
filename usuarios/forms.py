@@ -8,10 +8,11 @@ from django.contrib.auth.forms import UserCreationForm
 
 class RegistroForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, required=True)
+    terms = forms.BooleanField(required=True)
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'password')  # Solo los que usas en el template
+        fields = ('email', 'password')
 
 
 class VerificacionForm(forms.Form):
