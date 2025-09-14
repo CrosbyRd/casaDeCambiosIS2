@@ -4,6 +4,7 @@
 │   ├── apps.py
 │   ├── __init__.py
 │   ├── migrations
+│   │   ├── 0001_initial.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -29,6 +30,11 @@
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
+│   │   ├── 0002_cliente_user.py
+│   │   ├── 0002_remove_cliente_correo_electronico.py
+│   │   ├── 0003_alter_cliente_options.py
+│   │   ├── 0003_remove_cliente_user.py
+│   │   ├── 0004_merge_20250914_0108.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -36,10 +42,21 @@
 │   │       ├── base.html
 │   │       ├── confirmar_eliminacion.html
 │   │       ├── detalle_cliente.html
+│   │       ├── editar_cliente.html
 │   │       ├── formulario_cliente.html
 │   │       └── lista_clientes.html
 │   ├── tests.py
 │   ├── urls.py
+│   └── views.py
+├── core
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── logic.py
+│   ├── management
+│   │   └── commands
+│   │       └── export_models_dot.py
+│   ├── tests.py
 │   └── views.py
 ├── correo
 │   ├── admin.py
@@ -61,7 +78,9 @@
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_cotizacion_options.py
 │   │   ├── 0002_cotizacion_comision_compra_cotizacion_comision_venta.py
+│   │   ├── 0003_merge_20250906_2230.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -86,6 +105,8 @@
 │   ├── urls.py
 │   └── views.py
 ├── manage.py
+├── mi_modelo_datos.dot
+├── models.dot
 ├── monedas
 │   ├── admin.py
 │   ├── apps.py
@@ -97,6 +118,7 @@
 │   │   ├── 0003_alter_moneda_minima_denominacion.py
 │   │   ├── 0004_remove_moneda_limite_transaccion.py
 │   │   ├── 0005_remove_moneda_admite_efectivo_and_more.py
+│   │   ├── 0006_alter_moneda_options.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -104,7 +126,30 @@
 │   │       ├── crear.html
 │   │       ├── editar.html
 │   │       ├── eliminar.html
-│   │       └── listar.html
+│   │       ├── listar.html
+│   │       └── moneda_detalle.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── output.png
+├── pagos
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_tipomediopago_bonificacion_porcentaje_and_more.py
+│   │   ├── 0003_alter_tipomediopago_options_and_more.py
+│   │   ├── 0004_alter_tipomediopago_options_and_more.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── pagos
+│   │       ├── confirmar_eliminacion.html
+│   │       ├── form_tipo_medio_pago.html
+│   │       ├── listar_tipos_medio_pago.html
+│   │       └── ver_tipo_medio_pago.html
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
@@ -119,6 +164,7 @@
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_role_options.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── serializers.py
@@ -136,8 +182,12 @@
 │       ├── logo.ico
 │       ├── logo-principal.png
 │       └── logo-secundario.png
+├── structurre.txt
 ├── templates
 │   ├── base.html
+│   ├── partials
+│   │   ├── messages.html
+│   │   └── page_header.html
 │   ├── registration
 │   │   ├── login.html
 │   │   ├── password_reset_email.html
@@ -185,6 +235,7 @@
     │   ├── 0010_customuser_role.py
     │   ├── 0011_merge_20250822_1119.py
     │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.py
+    │   ├── 0013_usuariospermissions.py
     │   └── __init__.py
     ├── models.py
     ├── templates
@@ -195,4 +246,4 @@
     ├── urls.py
     └── views.py
 
-41 directories, 155 files
+49 directories, 198 files

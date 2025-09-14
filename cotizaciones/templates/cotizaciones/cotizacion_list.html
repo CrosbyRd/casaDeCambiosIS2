@@ -1,61 +1,86 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
-<style>.total-row{background-color:#f8f9fa;font-weight:bold}</style>
+<style>
+  :root{
+    --brand:#7c3aed; --brand-soft:#ede9fe; --brand-dark:#4c1d95;
+    --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  }
+  .badge-pill{padding:.25rem .5rem;border-radius:9999px;font-weight:600;}
+  .kpi{background:#f7f7fb;border-radius:8px;padding:.15rem .5rem;font-weight:800;}
+</style>
 {% endblock %}
 
 {% block content %}
-<main class="container container--tight mx-auto py-10">
-  <header class="page-header page-header--tight flex items-center justify-between mb-6">
-    <h1 class="h1 h1--sm">Cotizaciones</h1>
-    <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn">Agregar Cotización</a>
+<main class="max-w-6xl mx-auto px-6 py-10 text-[var(--ink)]">
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2">📈 Cotizaciones</h1>
+      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">
+        Administra las tasas entre <strong>PYG</strong> y las demás divisas: crea, edita o elimina según sea necesario.
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)] w-full sm:w-auto">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'cotizaciones:cotizacion_create' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white w-full sm:w-auto" style="background:var(--brand)">
+        ➕ Agregar Cotización
+      </a>
+    </div>
   </header>
 
-  <section class="box box--tight no-padding">
-    <div class="table-scroll table-wrap--max">
-      <table class="table table--compact" id="cotizaciones-table">
-        <thead>
+  <!-- Tabla -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="min-w-[860px] w-full text-left border-collapse">
+        <thead style="background:var(--brand); color:#fff">
           <tr>
-            <th>Moneda Base</th>
-            <th>Moneda Destino</th>
-            <th>Valor Compra</th>
-            <th>Comisión Compra</th>
-            <th>Total Compra</th>
-            <th>Valor Venta</th>
-            <th>Comisión Venta</th>
-            <th>Total Venta</th>
-            <th>Última Actualización</th>
-            <th>Acciones</th>
+            <th class="px-6 py-3">Moneda Base</th>
+            <th class="px-6 py-3">Moneda Destino</th>
+            <th class="px-6 py-3 text-right">Valor Compra</th>
+            <th class="px-6 py-3 text-right">Comisión Compra</th>
+            <th class="px-6 py-3 text-right">Total Compra</th>
+            <th class="px-6 py-3 text-right">Valor Venta</th>
+            <th class="px-6 py-3 text-right">Comisión Venta</th>
+            <th class="px-6 py-3 text-right">Total Venta</th>
+            <th class="px-6 py-3">Última actualización</th>
+            <th class="px-6 py-3">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for c in cotizaciones %}
-          <tr>
-            <td class="cell-strong">
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-4">
               <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
-              {{ c.moneda_base.nombre }} ({{ c.moneda_base.simbolo }})
+              {{ c.moneda_base.nombre }} <span class="text-[var(--muted)]">({{ c.moneda_base.simbolo }})</span>
             </td>
-            <td class="cell-strong">
+            <td class="px-6 py-4">
               <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-              {{ c.moneda_destino.nombre }} ({{ c.moneda_destino.simbolo }})
+              {{ c.moneda_destino.nombre }} <span class="text-[var(--muted)]">({{ c.moneda_destino.simbolo }})</span>
             </td>
-            <td>{{ c.valor_compra }}</td>
-            <td>{{ c.comision_compra }}</td>
-            <td class="total-row">{{ c.total_compra }}</td>
-            <td>{{ c.valor_venta }}</td>
-            <td>{{ c.comision_venta }}</td>
-            <td class="total-row">{{ c.total_venta }}</td>
-            <td>{{ c.fecha_actualizacion }}</td>
-            <td>
-              <div class="action-row">
-                <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="btn-secondary">Editar</a>
-                <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" class="btn-ghost">Eliminar</a>
+            <td class="px-6 py-4 text-right">{{ c.valor_compra|floatformat:0 }}</td>
+            <td class="px-6 py-4 text-right">{{ c.comision_compra|floatformat:0 }}</td>
+            <td class="px-6 py-4 text-right"><span class="kpi">{{ c.valor_compra|add:c.comision_compra|floatformat:0 }}</span></td>
+            <td class="px-6 py-4 text-right">{{ c.valor_venta|floatformat:0 }}</td>
+            <td class="px-6 py-4 text-right">{{ c.comision_venta|floatformat:0 }}</td>
+            <td class="px-6 py-4 text-right"><span class="kpi">{{ c.valor_venta|add:c.comision_venta|floatformat:0 }}</span></td>
+            <td class="px-6 py-4">
+              {{ c.fecha_actualizacion|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex flex-wrap gap-2">
+                <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Editar</a>
+                <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">Eliminar</a>
               </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="10" class="empty">No hay cotizaciones registradas.</td>
+            <td colspan="10" class="px-6 py-6 text-center text-[var(--muted)]">No hay cotizaciones registradas.</td>
           </tr>
           {% endfor %}
         </tbody>
