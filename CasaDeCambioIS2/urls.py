@@ -1,22 +1,25 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+
 from usuarios import views as usuarios_views
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+from core.views import pagina_inicio_y_simulador #vista de simulacionpy
 
 urlpatterns = [
     # --- Home ---
     path("", TemplateView.as_view(template_name="site/home.html"), name="home"),
 
     # --- Páginas informativas ---
-    path("calculator/", TemplateView.as_view(template_name="site/calculator.html"), name="site_calculator"),
     path("how-it-works/", TemplateView.as_view(template_name="site/how-it-works.html"), name="site_how_it_works"),
     path("rates/", TemplateView.as_view(template_name="site/rates.html"), name="site_rates"),
     path("faq/", TemplateView.as_view(template_name="site/faq.html"), name="site_faq"),
+    #path("calculator/", TemplateView.as_view(template_name="site/calculator.html"), name="site_calculator"),
+    path("calculator/", pagina_inicio_y_simulador, name="site_calculator"),
     path("contact/", TemplateView.as_view(template_name="site/contact.html"), name="site_contact"),
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
-    # NUEVO: Landing de alta (botón “Crear cuenta”)
+     # NUEVO: Landing de alta (botón “Crear cuenta”)
     path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),
 
     # --- Apps ---
@@ -42,8 +45,36 @@ urlpatterns = [
         template_name="site/reset-complete.html"), name="password_reset_complete"),
 
     # --- Auth de Django (reset de contraseña, etc.) ---
-    path("cuentas/", include("django.contrib.auth.urls")),
-
+        # --- Reset de contraseña (personalizado con nuestros templates) ---
+    path(
+        "cuentas/password_reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name="registration/password_reset_form.html"
+        ),
+        name="password_reset",
+    ),
+    path(
+        "cuentas/password_reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="registration/password_reset_done.html"
+        ),
+        name="password_reset_done",
+    ),
+    path(
+        "cuentas/reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="registration/password_reset_confirm.html"
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "cuentas/reset/done/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="registration/password_reset_complete.html"
+        ),
+        name="password_reset_complete",
+    ),
+    path('pagos/', include('pagos.urls', namespace='pagos')),
     # --- Admin Django ---
     path("admin/", admin.site.urls),
 ]

@@ -92,7 +92,7 @@
         window.location.href = "{% url 'cotizaciones:cotizacion_list' %}";
     });
     document.getElementById('btn-gestionar-pagos').addEventListener('click', () => {
-        alert("Redirección pendiente: Gestión de Métodos de Pago");
+        window.location.href = "{% url 'pagos:listar_tipos_medio_pago' %}";
     });
 </script>
 {% endblock %}
