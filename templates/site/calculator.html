@@ -6,7 +6,6 @@
 {% include "partials/messages.html" %}
 
 <main class="max-w-5xl mx-auto px-6 py-10">
-
   <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
     <form method="post" id="form-simulador"
           data-currencies='{
@@ -53,23 +52,30 @@
       </table>
 
       <div class="px-4 py-4">
-<div style="margin-top:18px;">
-  <button class="gx-btn" type="submit">Calcular</button>
+        <!-- Aviso si no hay PYG en el par -->
+        <div id="pair-error" class="gx-error mb-2" style="display:none;">
+          Las operaciones se deben realizar con la moneda base (Guaraní).
+        </div>
+        <!-- Aviso si las dos monedas son iguales -->
+        <div id="same-error" class="gx-error mb-4" style="display:none;">
+          No se pueden realizar conversiones con la misma moneda.
+        </div>
 
-            {% if resultado %}
-                {% if resultado.error %}
-                <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
-                {% else %}
-                <div class="gx-result-wrap mt-4">
-                    <div class="gx-result-big">
-                    Recibirás aproximadamente: {{ resultado.monto_recibido }} {{ form.moneda_destino.value }}
-                    </div>
+        <div style="margin-top:18px;">
+          <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
 
+          {% if resultado %}
+            {% if resultado.error %}
+              <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
+            {% else %}
+              <div class="gx-result-wrap mt-4">
+                <div class="gx-result-big">
+                  Recibirás aproximadamente: {{ resultado.monto_recibido }} {{ form.moneda_destino.value }}
                 </div>
-                {% endif %}
+              </div>
             {% endif %}
-            </div>
-
+          {% endif %}
+        </div>
       </div>
     </form>
   </section>
@@ -104,12 +110,24 @@
     box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
     cursor:pointer;
   }
+  .gx-btn[disabled] {
+    opacity:.55;
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+  .gx-error {
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+    padding:12px 14px;
+    border-radius:12px;
+  }
   .gx-result-big { font-size:24px; font-weight:900; color:#22c55e; }
 </style>
 
 <script>
 (function(){
-  const form = document.getElementById('form-simulador');
+  const form  = document.getElementById('form-simulador');
   if(!form) return;
 
   const data = JSON.parse(form.dataset.currencies || "{}");
@@ -126,14 +144,40 @@
     sel.classList.add('gx-select');
   }
 
-  decorateSelect(document.getElementById('id_moneda_origen'));
-  decorateSelect(document.getElementById('id_moneda_destino'));
+  const selOri = document.getElementById('id_moneda_origen');
+  const selDst = document.getElementById('id_moneda_destino');
+  decorateSelect(selOri);
+  decorateSelect(selDst);
 
-  // 🔥 Forzar clase gx-input al campo de monto
   const monto = document.getElementById('id_monto');
   if(monto) monto.classList.add('gx-input');
-})();
 
+  // === Validaciones: requiere PYG y no permitir monedas iguales ===
+  const btn    = document.getElementById('btn-calcular');
+  const errPYG = document.getElementById('pair-error');
+  const errEQ  = document.getElementById('same-error');
+
+  function checkRules(){
+    const o = (selOri?.value || '').toUpperCase();
+    const d = (selDst?.value || '').toUpperCase();
+
+    const hasBase = (o === 'PYG' || d === 'PYG');     // al menos una PYG
+    const same    = (o && d && o === d);              // monedas iguales
+
+    // Mostrar/ocultar avisos
+    errPYG.style.display = hasBase ? 'none' : 'block';
+    errEQ.style.display  = same    ? 'block' : 'none';
+
+    // Deshabilitar botón si falta PYG o si son iguales
+    btn.disabled = (!hasBase || same);
+  }
+
+  selOri?.addEventListener('change', checkRules);
+  selDst?.addEventListener('change', checkRules);
+
+  // Evaluación inicial
+  checkRules();
+})();
 </script>
 
 {% endblock %}
