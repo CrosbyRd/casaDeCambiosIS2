@@ -18,12 +18,5 @@ class Role(models.Model):
         verbose_name = "Rol"
         verbose_name_plural = "Roles"
 
-        managed = False
-        default_permissions = ()
-        permissions = [
-            ("access_roles_panel", "Puede acceder al panel de Roles"),
-            ("delete_roles", "Puede eliminar roles"),
-        ]
-
     def __str__(self):
         return self.name

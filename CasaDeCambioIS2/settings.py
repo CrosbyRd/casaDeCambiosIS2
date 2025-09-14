@@ -26,10 +26,8 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
-    'cotizaciones',
+    "cotizaciones",
     "admin_panel",
-    "core.apps.CoreConfig",
-    'pagos',
 ]
 
 # --- Middleware ---
