@@ -1,13 +1,13 @@
 from django.db import models
 from monedas.models import Moneda
-
+from django.core.validators import MinValueValidator
 class Cotizacion(models.Model):
     moneda_base = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='cotizaciones_base')
     moneda_destino = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='cotizaciones_destino')
-    valor_compra = models.DecimalField(max_digits=10, decimal_places=4)
-    valor_venta = models.DecimalField(max_digits=10, decimal_places=4)
-    comision_compra = models.DecimalField(max_digits=10, decimal_places=4, default=0)
-    comision_venta = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    valor_compra = models.DecimalField(max_digits=10, decimal_places=4, validators=[MinValueValidator(0)])
+    valor_venta = models.DecimalField(max_digits=10, decimal_places=4,validators=[MinValueValidator(0)])
+    comision_compra = models.DecimalField(max_digits=10, decimal_places=4, default=0, validators=[MinValueValidator(0)])
+    comision_venta = models.DecimalField(max_digits=10, decimal_places=4, default=0, validators=[MinValueValidator(0)])
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     class Meta:
