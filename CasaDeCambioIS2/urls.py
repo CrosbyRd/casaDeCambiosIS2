@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+
 from usuarios import views as usuarios_views
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
@@ -18,7 +19,7 @@ urlpatterns = [
     path("calculator/", pagina_inicio_y_simulador, name="site_calculator"),
     path("contact/", TemplateView.as_view(template_name="site/contact.html"), name="site_contact"),
     path("legal/", TemplateView.as_view(template_name="site/legal.html"), name="site_legal"),
-    # NUEVO: Landing de alta (botón “Crear cuenta”)
+     # NUEVO: Landing de alta (botón “Crear cuenta”)
     path("signup/", TemplateView.as_view(template_name="site/signup.html"), name="site_signup"),
 
     # --- Apps ---
@@ -73,7 +74,7 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-
+    path('pagos/', include('pagos.urls', namespace='pagos')),
     # --- Admin Django ---
     path("admin/", admin.site.urls),
 ]

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="container container--tight">
+  <h1 class="h1 h1--sm">Eliminar Tipo de Medio de Pago</h1>
+
+  <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
+    <p class="lead">
+      ¿Estás seguro que deseas eliminar el tipo de medio de pago
+      <strong>{{ tipo.nombre }}</strong>?
+    </p>
+
+    <form method="post" class="form form--compact">
+      {% csrf_token %}
+      <div class="actions">
+        <button type="submit" class="btn btn--danger">Sí, eliminar</button>
+        <a href="{% url 'pagos:listar_tipos_medio_pago' %}" class="btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
