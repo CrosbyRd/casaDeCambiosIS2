@@ -1,88 +1,175 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Crear Moneda — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Crear Moneda — Global Exchange{% endblock %}
 
-  <main class="container container--tight">
-    <h1 class="h1 h1--sm">Crear Nueva Moneda</h1>
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
 
-    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
-      <form method="post" class="form form--compact" id="moneda-form"
-            data-currencies='{
-              "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
-              "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
-              "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
-              "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
-              "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
-              "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
-              "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
-              "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
-              "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
-              "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
-              "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
-              "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
-              "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
-              "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
-              "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
-              "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
-            }'>
-        {% csrf_token %}
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+        🪙 Crear Moneda
+      </h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Completa el formulario para registrar una nueva moneda en el sistema.
+      </p>
+    </div>
+  </header>
 
-        {% if form.non_field_errors %}
-          <div class="form-alert">{{ form.non_field_errors }}</div>
-        {% endif %}
+  <!-- Formulario -->
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <form method="post" id="moneda-form" class="pb-6"
+          data-currencies='{
+            "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
+            "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
+            "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
+            "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
+            "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
+            "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
+            "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
+            "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
+            "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
+            "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
+            "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
+            "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
+            "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
+            "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
+            "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
+            "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
+          }'>
+      {% csrf_token %}
 
-        <!-- Render con as_p (el select ya trae emoji en las opciones) -->
-        {{ form.as_p }}
+      <!-- Código -->
+      <table class="w-full border-collapse">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr><th class="px-4 py-3 text-left">Código</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">
+              {{ form.codigo }}
+              {% if form.codigo.errors %}
+                <div class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
+                  ⚠️ Ya existe una moneda con ese código.
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-        <!-- Preview compacto con emoji -->
-        <p style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 0;">
-          <span id="emojiPreview" style="font-size:1.25rem;line-height:1">💱</span>
-          <span id="codePreview" class="cell-strong"></span>
-          <span id="namePreview" style="color:var(--muted)"></span>
-        </p>
+      <!-- Nombre / Símbolo -->
+      <table class="w-full border-collapse mt-6">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Nombre</th>
+            <th class="px-4 py-3 text-left">Símbolo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.nombre }}</td>
+            <td class="px-4 py-3">{{ form.simbolo }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div class="actions">
-          <button type="submit" class="btn">Guardar</button>
-          <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
-        </div>
-      </form>
-    </section>
-  </main>
+      <!-- Decimales / Mínima denominación -->
+      <table class="w-full border-collapse mt-6">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Decimales</th>
+            <th class="px-4 py-3 text-left">Mínima denominación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.decimales }}</td>
+            <td class="px-4 py-3">{{ form.minima_denominacion }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-  <script>
-    (function(){
-      const form = document.getElementById('moneda-form');
-      if(!form) return;
+      <!-- Flags -->
+      <table class="w-full border-collapse mt-6">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Admite en línea</th>
+            <th class="px-4 py-3 text-left">Admite terminal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.admite_en_linea }}</td>
+            <td class="px-4 py-3">{{ form.admite_terminal }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </section>
 
-      const data = JSON.parse(form.dataset.currencies || "{}");
-      const select  = document.getElementById('id_codigo');
-      const nombre  = document.getElementById('id_nombre');
-      const simbolo = document.getElementById('id_simbolo');
+  <!-- Botones fuera del recuadro (consistente con Editar) -->
+  <div class="flex justify-end space-x-3 pt-2">
+    <a href="{% url 'monedas:listar_monedas' %}"
+       class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+      Cancelar
+    </a>
+    <button type="submit" form="moneda-form"
+            class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+            style="background:var(--brand)">
+      ➕ Crear Moneda
+    </button>
+  </div>
+</main>
 
-      const emojiEl = document.getElementById('emojiPreview');
-      const codeEl  = document.getElementById('codePreview');
-      const nameEl  = document.getElementById('namePreview');
+<style>
+  /* Inputs y selects grandes (igual que en Editar Moneda / Cotizaciones) */
+  #id_codigo,
+  #id_nombre,
+  #id_simbolo,
+  #id_decimales,
+  #id_minima_denominacion{
+    width:100%;
+    max-width:380px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    height:48px;
+    font-size:1rem;
+    color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+    transition:box-shadow .2s ease,border-color .2s ease;
+  }
+  #id_codigo:focus,
+  #id_nombre:focus,
+  #id_simbolo:focus,
+  #id_decimales:focus,
+  #id_minima_denominacion:focus{
+    outline:none;
+    border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  }
+</style>
 
-      function syncFields(code){
-        if(!(code in data)) return;
-        const {name, symbol, emoji} = data[code];
-        if(nombre)  nombre.value  = name;
-        if(simbolo) simbolo.value = symbol;
-        if(emojiEl) emojiEl.textContent = emoji;
-        if(codeEl)  codeEl.textContent  = code;
-        if(nameEl)  nameEl.textContent  = `— ${name}`;
-      }
+<script>
+  (function(){
+    const form = document.getElementById('moneda-form');
+    if(!form) return;
 
-      if(select && select.value){ syncFields(select.value); }
-      if(select){ select.addEventListener('change', e => syncFields(e.target.value)); }
-    })();
-  </script>
+    const data = JSON.parse(form.dataset.currencies || "{}");
+    const sel   = document.getElementById('id_codigo');
+    const name  = document.getElementById('id_nombre');
+    const sym   = document.getElementById('id_simbolo');
 
-</body>
-</html>
+    function sync(code){
+      if(!data[code]) return;
+      const {name: n, symbol} = data[code];
+      if(name) name.value = n;      // autocompleta nombre
+      if(sym)  sym.value  = symbol; // autocompleta símbolo
+    }
+    if(sel && sel.value) sync(sel.value);
+    if(sel) sel.addEventListener('change', e => sync(e.target.value));
+  })();
+</script>
+{% endblock %}

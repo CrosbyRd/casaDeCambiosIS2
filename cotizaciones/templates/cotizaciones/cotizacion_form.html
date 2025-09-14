@@ -1,70 +1,137 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>{% if form.instance.pk %}Editar Cotización{% else %}Agregar Cotización{% endif %} — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <style>
-    /* Estilo simple para mensajes */
-    .messages {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 1rem;
-    }
-    .messages li {
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-      color: #fff;
-    }
-    .messages li.success { background-color: #4CAF50; }
-    .messages li.error { background-color: #f44336; }
-    .messages li.warning { background-color: #ff9800; }
-    .messages li.info { background-color: #2196F3; }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{% if form.instance.pk %}Editar Cotización{% else %}Agregar Cotización{% endif %} — Global Exchange{% endblock %}
 
-  <main class="container container--tight">
-    <h1 class="h1 h1--sm">
-      {% if form.instance.pk %}
-        Editar Cotización <span class="subtitle">— PYG a {{ form.instance.moneda_destino.simbolo }}</span>
-      {% else %}
-        Agregar Nueva Cotización
-      {% endif %}
-    </h1>
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
 
-    {# ------------------ Mensajes de Django ------------------ #}
-            {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-        <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+        💱 {% if form.instance.pk %}Editar Cotización{% else %}Agregar Nueva Cotización{% endif %}
+      </h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        {% if form.instance.pk %}
+          Modifica la información de la cotización seleccionada y guarda los cambios.
+        {% else %}
+          Completa la información para registrar una nueva cotización en el sistema.
         {% endif %}
+      </p>
+    </div>
+  </header>
 
+  <!-- Formulario -->
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <form method="post" id="form-cotizacion" class="pb-6">
+      {% csrf_token %}
 
+      <!-- Moneda destino -->
+      <table class="w-full border-collapse">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr><th class="px-4 py-3 text-left">Moneda Destino</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.moneda_destino }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
-      <form method="post" class="form form--compact">
-        {% csrf_token %}
+      <!-- COMPRA -->
+      <table class="w-full border-collapse mt-6">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Valor Compra Base (PYG)</th>
+            <th class="px-4 py-3 text-left">Comisión Compra (PYG)</th>
+            <th class="px-4 py-3 text-left">Total Compra</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.valor_compra }}</td>
+            <td class="px-4 py-3">{{ form.comision_compra }}</td>
+            <td class="px-4 py-3"><span id="total_compra" class="font-bold">0.0000</span> PYG</td>
+          </tr>
+        </tbody>
+      </table>
 
-        {% if form.non_field_errors %}
-          <div class="form-alert">{{ form.non_field_errors }}</div>
-        {% endif %}
+      <!-- VENTA -->
+      <table class="w-full border-collapse mt-6">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Valor Venta Base (PYG)</th>
+            <th class="px-4 py-3 text-left">Comisión Venta (PYG)</th>
+            <th class="px-4 py-3 text-left">Total Venta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.valor_venta }}</td>
+            <td class="px-4 py-3">{{ form.comision_venta }}</td>
+            <td class="px-4 py-3"><span id="total_venta" class="font-bold">0.0000</span> PYG</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </section>
 
-        {# Solo mostramos moneda_destino, valor_compra y valor_venta #}
-        {{ form.as_p }}
+  <!-- Botones (debajo del recuadro) -->
+  <div class="flex justify-end space-x-3 pt-2">
+    <a href="{% url 'cotizaciones:cotizacion_list' %}"
+       class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+      Cancelar
+    </a>
+    <button type="submit" form="form-cotizacion"
+            class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+            style="background:var(--brand)">
+      {% if form.instance.pk %}💾 Guardar Cambios{% else %}➕ Agregar{% endif %}
+    </button>
+  </div>
+</main>
 
-        <div class="actions">
-          <button type="submit" class="btn">Guardar</button>
-          <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn-secondary">Cancelar</a>
-        </div>
-      </form>
-    </section>
-  </main>
+<style>
+  /* Select grande (como filtros de clientes) */
+  #id_moneda_destino{
+    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
+  }
+  #id_moneda_destino:focus{outline:none;border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);}
 
-</body>
-</html>
+  /* Inputs claros para escribir */
+  #id_valor_compra,#id_comision_compra,#id_valor_venta,#id_comision_venta{
+    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
+  }
+  #id_valor_compra:focus,#id_comision_compra:focus,#id_valor_venta:focus,#id_comision_venta:focus{
+    outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(115,60,255,.15);}
+  #id_valor_compra::placeholder,#id_comision_compra::placeholder,
+  #id_valor_venta::placeholder,#id_comision_venta::placeholder{color:#9aa3b2;}
+</style>
 
+<script>
+  function calcularTotales(){
+    const vC=parseFloat(document.getElementById('id_valor_compra')?.value)||0;
+    const cC=parseFloat(document.getElementById('id_comision_compra')?.value)||0;
+    const vV=parseFloat(document.getElementById('id_valor_venta')?.value)||0;
+    const cV=parseFloat(document.getElementById('id_comision_venta')?.value)||0;
+    const tc=document.getElementById('total_compra');
+    const tv=document.getElementById('total_venta');
+    if(tc) tc.textContent=(vC+cC).toFixed(4);
+    if(tv) tv.textContent=(vV+cV).toFixed(4);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    ['id_valor_compra','id_comision_compra','id_valor_venta','id_comision_venta']
+      .forEach(id=>{const el=document.getElementById(id); if(el) el.addEventListener('input',calcularTotales);});
+    // Placeholders útiles
+    const setPH=(id,ph)=>{const el=document.getElementById(id); if(el&&!el.placeholder) el.placeholder=ph;};
+    setPH('id_valor_compra','Ej: 8900,0000');
+    setPH('id_comision_compra','Ej: 500,0000');
+    setPH('id_valor_venta','Ej: 8000,0000');
+    setPH('id_comision_venta','Ej: 860,0000');
+    calcularTotales();
+  });
+</script>
+{% endblock %}

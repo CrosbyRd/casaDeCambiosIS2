@@ -1,102 +1,101 @@
-""" # usuarios/management/commands/seed_users.py
 from django.core.management.base import BaseCommand
-from usuarios.models import CustomUser
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.contrib.auth.models import Permission
 from roles.models import Role
-from django.utils import timezone
 
 class Command(BaseCommand):
-    help = 'Crea los usuarios iniciales para el sistema.'
+    help = "Crea/actualiza un usuario Administrador con rol y permisos"
 
+    @transaction.atomic
     def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS('Iniciando la creación de usuarios iniciales...'))
+        User = get_user_model()
+        self.stdout.write(self.style.SUCCESS("Iniciando creación de usuario Administrador..."))
 
-        users_to_create = [
-            {'email': 'admin@example.com', 'password': 'password123', 'first_name': 'Admin', 'last_name': 'General', 'role': 'ADMINISTRADOR'},
-            {'email': 'cajero@example.com', 'password': 'password123', 'first_name': 'Cajero', 'last_name': 'Uno', 'role': 'CAJERO'},
-            {'email': 'cliente@example.com', 'password': 'password123', 'first_name': 'Cliente', 'last_name': 'Prueba', 'role': 'CLIENTE'},
-        ]
-
-        for user_data in users_to_create:
-            email = user_data['email']
-            role_name = user_data.pop('role')
-
-            if not CustomUser.objects.filter(email=email).exists():
-                try:
-                    role = Role.objects.get(name=role_name)
-                    user = CustomUser.objects.create_user(
-                        email=user_data['email'],
-                        password=user_data['password'],
-                        first_name=user_data.get('first_name', ''),
-                        last_name=user_data.get('last_name', ''),
-                        is_staff=role.name == 'ADMINISTRADOR',
-                        is_superuser=role.name == 'ADMINISTRADOR'
-                    )
-                    user.roles.add(role)
-                    self.stdout.write(self.style.SUCCESS(f'Usuario "{email}" creado con éxito.'))
-                except Role.DoesNotExist:
-                    self.stdout.write(self.style.ERROR(f'Error: El rol "{role_name}" no existe.'))
-                    return
-            else:
-                self.stdout.write(self.style.WARNING(f'El usuario "{email}" ya existe, saltando su creación.')) """
-
-from django.core.management.base import BaseCommand
-from usuarios.models import CustomUser
-
-class Command(BaseCommand):
-    help = 'Crea usuarios iniciales para la base de datos'
-
-    def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.SUCCESS('Iniciando la creación de usuarios iniciales...'))
-
-        # Lista de usuarios a crear
-        users_to_create = [
-            {
-                'username': 'admin_general',
-                'email': 'admin@casadecambio.com',
-                'password': 'password123',
-                'first_name': 'Admin',
-                'last_name': 'Principal',
-                'tipo_usuario': CustomUser.UserTypes.ADMIN
+        # --- Crear usuario admin de la app ---
+        email = "globalexchangea2@gmail.com"
+        password = "password123"
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                "first_name": "Admin",
+                "last_name": "Principal",
+                "is_staff": True,     # puede loguearse como staff
+                "is_superuser": False, # no es superusuario global
+                "is_active": True,
+                "is_verified": True,
             },
-            {
-                'username': 'analista_uno',
-                'email': 'analista1@casadecambio.com',
-                'password': 'password123',
-                'first_name': 'Juan',
-                'last_name': 'Pérez',
-                'tipo_usuario': CustomUser.UserTypes.ANALISTA
-            },
-            {
-                'username': 'cliente_test',
-                'email': 'cliente@example.com',
-                'password': 'password123',
-                'first_name': 'Ana',
-                'last_name': 'García',
-                'tipo_usuario': CustomUser.UserTypes.CLIENTE
-            },
-                        {
-                'username': 'beta_tester',
-                'email': 'lclc@mgail.com',
-                'password': 'ttu789',
-                'first_name': 'Lope',
-                'last_name': 'GGG',
-                'tipo_usuario': CustomUser.UserTypes.CLIENTE
-            }
-        ]
+        )
 
-        for user_data in users_to_create:
-            # Revisa si el usuario ya existe antes de crearlo
-            if not CustomUser.objects.filter(username=user_data['username']).exists():
-                CustomUser.objects.create_user(
-                    username=user_data['username'],
-                    email=user_data['email'],
-                    password=user_data['password'],
-                    first_name=user_data['first_name'],
-                    last_name=user_data['last_name'],
-                    tipo_usuario=user_data['tipo_usuario']
-                )
-                self.stdout.write(self.style.SUCCESS(f"Usuario '{user_data['username']}' creado exitosamente."))
-            else:
-                self.stdout.write(self.style.WARNING(f"Usuario '{user_data['username']}' ya existe. Saltando."))
-        
-        self.stdout.write(self.style.SUCCESS('Proceso de seeding finalizado.'))
+        if created:
+            user.set_password(password)
+            user.save()
+            self.stdout.write(self.style.SUCCESS(f"Usuario creado: {email}"))
+        else:
+            self.stdout.write(self.style.WARNING(f"Usuario ya existía: {email}"))
+
+        # --- Usar update_or_create para simplificar y asegurar la actualización
+        defaults = {
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+            "is_active": user.is_active,
+            "is_verified": user.is_verified,
+        }
+
+        user, created = User.objects.update_or_create(
+            email=email,
+            defaults=defaults
+        )
+
+        # Siempre establecer/actualizar la contraseña
+        if password:
+            user.set_password(password)
+            user.save()
+
+        if created:
+            self.stdout.write(self.style.SUCCESS(f"Creado y contraseña establecida para: {email}"))
+        else:
+            self.stdout.write(self.style.WARNING(f"Actualizado y contraseña re-establecida para: {email}"))
+
+        # --- Crear Rol Administrador ---
+        rol_admin, _ = Role.objects.get_or_create(
+            name="Administrador",
+            defaults={"description": "Rol de Administrador"}
+        )
+
+        # --- Buscar permisos personalizados ---
+
+        permisos_codenames = [
+                "access_admin_dashboard",   # Panel Admin
+                "access_cotizaciones",      # Cotizaciones
+                "access_monedas_section",   # Monedas
+                "access_roles_panel",       # NUEVO: acceso a Roles
+                "delete_roles",             # NUEVO: eliminar Roles
+                "access_user_client_management",  # NUEVO:  acceso a asociacion cliente a usuario
+                "access_clientes_panel",   #accede al menu de administracion de clientes
+            ]
+
+        permisos = []
+        for codename in permisos_codenames:
+            try:
+                perm = Permission.objects.get(codename=codename)
+                permisos.append(perm)
+            except Permission.DoesNotExist:
+                self.stdout.write(self.style.ERROR(
+                    f"El permiso '{codename}' no existe. "
+                    f"Ejecuta 'makemigrations' y 'migrate' en la app correspondiente primero."
+                ))
+
+        # Asignar permisos al rol
+        if permisos:
+            rol_admin.permissions.add(*permisos)
+            rol_admin.save()
+
+        # Asignar rol al usuario
+        user.roles.add(rol_admin)
+
+        self.stdout.write(self.style.SUCCESS(
+            f"Usuario {email} asignado al rol Administrador con permisos {[p.codename for p in permisos]}."
+        ))

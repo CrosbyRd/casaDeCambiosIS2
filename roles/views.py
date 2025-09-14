@@ -1,48 +1,49 @@
 # roles/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
 from .models import Role
 
-def is_admin(user):
-    """
-    Función que comprueba si un usuario es autenticado y de tipo ADMIN.
-    """
-    return user.is_authenticated and hasattr(user, 'tipo_usuario') and user.tipo_usuario == 'ADMIN'
 
-@user_passes_test(is_admin)
+@login_required
 def role_panel(request):
     """
     Renderiza la página para administrar Roles y maneja la creación de nuevos roles.
+    Solo accesible con permiso específico.
     """
-    # Si el método es POST, significa que se está enviando el formulario para crear un rol.
+    if not request.user.has_perm("roles.access_roles_panel"):
+        messages.error(request, "No tienes permiso para acceder a Roles.")
+        return redirect("home")
+
     if request.method == 'POST':
         nombre_rol = request.POST.get('nombre')
         descripcion_rol = request.POST.get('descripcion')
         
         if nombre_rol:
-            Role.objects.create(nombre=nombre_rol, descripcion=descripcion_rol)
+            Role.objects.create(name=nombre_rol, description=descripcion_rol)
             messages.success(request, f"Rol '{nombre_rol}' creado exitosamente.")
         else:
             messages.error(request, "El nombre del rol no puede estar vacío.")
         
-        return redirect('roles:role-panel') # Redirigimos para evitar reenvío del formulario
+        return redirect('roles:role-panel')  # Redirigimos para evitar reenvío del formulario
 
-    # Si el método es GET, simplemente mostramos la página con la lista de roles.
     roles = Role.objects.all()
     context = {
         'roles': roles
     }
     return render(request, 'roles/role_admin.html', context)
 
-@user_passes_test(is_admin)
+
+@login_required
 def role_delete(request, pk):
-    """
-    Vista para eliminar un rol específico.
-    """
+    if not request.user.has_perm("roles.delete_roles"):
+        messages.error(request, "No tienes permiso para eliminar roles.")
+        return redirect("home")
+
     rol_a_eliminar = get_object_or_404(Role, pk=pk)
-    rol_nombre = rol_a_eliminar.nombre
+    rol_nombre = rol_a_eliminar.name   # 👈 cambio aquí
     rol_a_eliminar.delete()
     messages.success(request, f"Rol '{rol_nombre}' eliminado exitosamente.")
     return redirect('roles:role-panel')

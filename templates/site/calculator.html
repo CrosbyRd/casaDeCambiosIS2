@@ -1,65 +1,75 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Calculadora{% endblock %}
+
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
-<h1 class="h1 mb-6 twemoji-scope">Calculadora</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">Simulador de Cambio de Divisas</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form method="post" action="{% url 'site_calculator' %}">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.monto.id_for_label }}" class="form-label">{{ form.monto.label }}</label>
+                                    {{ form.monto }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.moneda_origen.id_for_label }}" class="form-label">{{ form.moneda_origen.label }}</label>
+                                    {{ form.moneda_origen }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.moneda_destino.id_for_label }}" class="form-label">{{ form.moneda_destino.label }}</label>
+                                    {{ form.moneda_destino }}
+                                </div>
 
-<div class="grid md:grid-cols-2 gap-6">
-  <div class="border border-neutral-200 rounded-lg p-6">
-    <div class="mb-6">
-      <label class="block mb-3 font-medium">Par</label>
-
-      <!-- Select ORIGINAL oculto (el JS se apoya en él) -->
-      <select id="pair" class="hidden">
-        <option value="USD_PYG" data-rate="7320">🇺🇸 USD → 🇵🇾 PYG</option>
-        <option value="EUR_PYG" data-rate="8020">🇪🇺 EUR → 🇵🇾 PYG</option>
-        <option value="BRL_PYG" data-rate="1320">🇧🇷 BRL → 🇵🇾 PYG</option>
-      </select>
-
-      <!-- Dropdown personalizado accesible (combobox ARIA) -->
-      <div class="relative twemoji-scope" id="pairDropdown">
-        <button type="button"
-                id="pairButton"
-                class="w-full h-11 px-4 border border-neutral-300 rounded-md flex items-center justify-between"
-                aria-haspopup="listbox"
-                aria-expanded="false"
-                aria-labelledby="pairLabel">
-          <span id="pairLabel" class="flex items-center gap-2"></span>
-          <span aria-hidden="true">▾</span>
-        </button>
-
-        <ul id="pairListbox"
-            class="absolute z-20 mt-1 w-full max-h-60 overflow-auto bg-white border border-neutral-300 rounded-md shadow-lg hidden"
-            role="listbox">
-        </ul>
-      </div>
+                                {% if form.errors %}
+                                    <div class="alert alert-warning mt-3">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Simular Transacción</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-6 d-flex align-items-center">
+                            {% if resultado %}
+                                {% if resultado.error %}
+                                    <div class="alert alert-danger w-100">
+                                        <strong>Error:</strong> {{ resultado.error }}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center w-100">
+                                        <h4>Recibirás aproximadamente:</h4>
+                                        <h1 class="display-4 text-success fw-bold">
+                                            {{ resultado.monto_recibido|floatformat:2 }}
+                                        </h1>
+                                        <hr>
+                                        <p class="text-muted mb-1">
+                                            Tasa de cambio final aplicada: <strong>{{ resultado.tasa_aplicada|floatformat:4 }}</strong>
+                                        </p>
+                                        {% if resultado.bonificacion_aplicada > 0 %}
+                                            <small class="text-info">
+                                                Ahorro por segmento: {{ resultado.bonificacion_aplicada|floatformat:4 }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center text-muted w-100">
+                                    <p>El resultado de tu simulación aparecerá aquí.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="mb-6">
-      <label class="block mb-3 font-medium">Monto origen</label>
-      <input id="amount" type="number" min="0" class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" placeholder="100" />
-    </div>
-
-    <div class="mb-6">
-      <label class="block mb-3 font-medium">Método</label>
-      <select id="method" class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand">
-        <option value="transfer">Transferencia</option>
-        <option value="card">Tarjeta de crédito (fee 1.5%)</option>
-      </select>
-    </div>
-
-    <button id="calcBtn" class="btn w-full">Calcular</button>
-  </div>
-
-  <div class="border border-neutral-200 rounded-lg p-6 twemoji-scope">
-    <h2 class="h2 mb-3">Resultado</h2>
-    <div id="result" class="grid gap-3">
-      <p class="text-neutral-600">Completá los campos y presioná calcular.</p>
-    </div>
-    <div class="mt-6">
-      <a href="{% url 'site_rates' %}" class="btn-secondary">Ver tabla de tipos</a>
-    </div>
-  </div>
 </div>
-</main>
 {% endblock %}

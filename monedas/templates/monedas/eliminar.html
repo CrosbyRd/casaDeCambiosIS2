@@ -1,31 +1,56 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Eliminar Moneda — Global Exchange</title>
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Eliminar Moneda — Global Exchange{% endblock %}
 
-  <main class="container container--tight">
-    <h1 class="h1 h1--sm">Eliminar Moneda</h1>
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <!-- Encabezado -->
+  <header class="mb-8">
+    <h1 class="text-4xl font-extrabold text-red-600 flex items-center gap-2">
+      🗑️ Eliminar Moneda
+    </h1>
+    <p class="text-lg text-[var(--muted)] mt-2">
+      Esta acción no se puede deshacer. Revisá la información antes de continuar.
+    </p>
+  </header>
 
-    <section class="box box--tight" style="max-width: 720px; margin: 0 auto;">
-      <p class="lead">
+  <!-- Tarjeta de confirmación -->
+  <section class="bg-white border rounded-xl shadow-sm p-8" style="border-color:var(--line)">
+    <form method="post">
+      {% csrf_token %}
+
+      <p class="text-lg">
         ¿Confirmás que querés eliminar la moneda
-        <strong>{{ monedas.nombre }} ({{ monedas.codigo }})</strong>?
+        <span class="font-semibold">
+          {% if moneda %}
+            {{ moneda.nombre }} ({{ moneda.codigo }})
+          {% elif object %}
+            {{ object.nombre }} ({{ object.codigo }})
+          {% elif monedas %}
+            {{ monedas.nombre }} ({{ monedas.codigo }})
+          {% else %}
+            <!-- fallback por si no llega nada -->
+            —
+          {% endif %}
+        </span>?
       </p>
 
-      <form method="post" class="form form--compact">
-        {% csrf_token %}
-        <div class="actions">
-          <button type="submit" class="btn">Sí, eliminar</button>
-          <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
-        </div>
-      </form>
-    </section>
-  </main>
+      <div class="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-start gap-3">
+        <span class="text-xl">⚠️</span>
+        <span>Al eliminar esta moneda se perderán sus datos de manera permanente.</span>
+      </div>
 
-</body>
-</html>
+      <div class="flex justify-center gap-4 mt-6">
+        <button type="submit"
+                class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700 flex items-center gap-2">
+          🗑️ <span>Sí, eliminar</span>
+        </button>
+        <a href="{% url 'monedas:listar_monedas' %}"
+           class="px-5 py-2 rounded-lg font-semibold text-white flex items-center gap-2"
+           style="background:var(--brand)">
+          ✖ <span>Cancelar</span>
+        </a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
