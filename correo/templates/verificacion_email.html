@@ -1,18 +1,29 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Global Exchange</title>
+  <title>Verificación de cuenta — Global Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{margin:0;background:#f6f7fb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:560px;margin:0 auto;padding:24px}
+    .card{background:#fff;border-radius:12px;padding:24px;border:1px solid #e5e7eb}
+    .btn{display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700}
+    .muted{color:#6b7280}
+    h1{margin:0 0 10px;font-size:22px}
+  </style>
 </head>
 <body>
-  <h2>Hola {{ user.get_full_name|default:user.username }},</h2>
-  <p>Gracias por registrarte en <strong>Global Exchange</strong>.</p>
-  <p>Hacé clic en el siguiente enlace para activar tu cuenta:</p>
-  <p>
-    <a href="http://{{ domain }}{% url 'activar' uidb64=uid token=token %}">
-      Activar cuenta
-    </a>
-  </p>
-  <p>Si no creaste esta cuenta, ignorá este correo.</p>
+  <div class="wrap">
+    <div class="card">
+      <h1>Verificá tu cuenta</h1>
+      <p>Hola {{ user.first_name|default:user.email }},</p>
+      <p>Usá este código para activar tu cuenta:</p>
+      <p style="font-size:28px;font-weight:900;letter-spacing:2px;margin:12px 0">{{ code }}</p>
+      <p class="muted">El código expira en unos minutos. Si no fuiste vos, ignorá este correo.</p>
+      <p><a class="btn" href="{{ scheme }}://{{ domain }}{% url 'usuarios:verify' %}">Verificar ahora</a></p>
+    </div>
+    <p class="muted" style="font-size:12px;margin-top:10px">© {{ year }} Global Exchange</p>
+  </div>
 </body>
 </html>

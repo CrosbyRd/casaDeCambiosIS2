@@ -1,65 +1,97 @@
 {% extends "base.html" %}
+
 {% block content %}
-<section class="max-w-[1200px] mx-auto px-6 py-10">
-  <div class="mb-6">
-    <a href="{% url 'admin_panel:dashboard' %}"
-       class="inline-block bg-purple-600 text-white font-bold px-4 py-2 rounded hover:bg-purple-700">
-      ← Volver al Panel de Administrador
-    </a>
+<section class="max-w-[1200px] mx-auto px-6 py-8">
+  <div class="mb-4">
+    <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary">← Volver al Panel de Administrador</a>
   </div>
 
-  <h1 class="h1 mb-6 text-center text-purple-600">Gestión de Usuarios y Clientes</h1>
+  <h1 class="h1 h1--sm mb-6">Gestión de usuarios</h1>
 
   {% if messages %}
-    <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg max-w-[800px] mx-auto mb-6">
-      <ul class="list-disc pl-5">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
+    <div class="mb-4 space-y-2">
+      {% for message in messages %}
+        <div class="form-alert">{{ message }}</div>
+      {% endfor %}
     </div>
   {% endif %}
 
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
-      <thead class="bg-white">
+  <div class="overflow-x-auto border border-neutral-200 rounded-xl bg-white">
+    <table class="min-w-[760px] w-full table--compact">
+      <thead class="bg-neutral-50">
         <tr>
-          <th class="px-6 py-3 text-left font-medium text-purple-600">Usuario<br><span class="text-sm text-purple-400">Nombre y Correo Electrónico</span></th>
-          <th class="px-6 py-3 text-left font-medium text-purple-600">Tipo<br><span class="text-sm text-purple-400">Rol del usuario</span></th>
-          <th class="px-6 py-3 text-left font-medium text-purple-600">Clientes asociados<br><span class="text-sm text-purple-400">Clientes ya asignados</span></th>
-          <th class="px-6 py-3 text-left font-medium text-purple-600">Clientes disponibles<br><span class="text-sm text-purple-400">Clientes que se pueden agregar</span></th>
+          <th class="text-left py-3 px-4">Usuario</th>
+          <th class="text-left py-3 px-4">Email</th>
+          <th class="text-left py-3 px-4">Estado</th>
+          <th class="text-left py-3 px-4">Clientes asignados</th>
+          <th class="text-left py-3 px-4">Agregar cliente</th>
         </tr>
       </thead>
-      <tbody class="text-neutral-700">
+      <tbody>
         {% for usuario in usuarios %}
-        <tr class="hover:bg-neutral-50">
-          <td class="px-6 py-4">
-            <span class="font-semibold block">{{ usuario.first_name }} {{ usuario.last_name }}</span>
-            <span class="text-sm text-neutral-500">{{ usuario.email }}</span>
-          </td>
-          <td class="px-6 py-4">
-            <span class="text-sm text-neutral-600">{{ usuario.get_tipo_usuario_display }}</span>
-          </td>
-          <td class="px-6 py-4">
-            {% for cliente in usuario.clientes.all %}
-              <div class="flex items-center justify-between mb-1 bg-neutral-100 rounded px-2 py-1">
-                <span>{{ cliente.nombre }}</span>
-                <a href="{% url 'usuarios:quitar_cliente' usuario.id cliente.id_cliente %}" class="text-white bg-red-500 px-2 py-1 rounded hover:bg-red-600">-</a>
-              </div>
-            {% empty %}
-              <span class="text-neutral-400">Ninguno</span>
-            {% endfor %}
-          </td>
-          <td class="px-6 py-4">
-            {% for cliente in todos_clientes %}
-              {% if cliente not in usuario.clientes.all %}
-                <div class="flex items-center justify-between mb-1 bg-neutral-50 rounded px-2 py-1">
-                  <span>{{ cliente.nombre }}</span>
-                  <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}" class="text-white bg-green-500 px-2 py-1 rounded hover:bg-green-600">+</a>
-                </div>
+        <tr class="border-t border-neutral-200">
+          <td class="py-3 px-4">
+            <div class="font-semibold">
+              {% if usuario.first_name or usuario.last_name %}
+                {{ usuario.first_name }} {{ usuario.last_name }}
+              {% else %}
+                (Sin nombre)
               {% endif %}
-            {% endfor %}
+            </div>
+            <div class="text-xs text-neutral-500">ID: {{ usuario.id }}</div>
           </td>
+          <td class="py-3 px-4">{{ usuario.email }}</td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full {% if usuario.is_active %}bg-emerald-500{% else %}bg-red-500{% endif %}"></span>
+              <span class="text-sm">{% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}</span>
+            </span><br>
+            <span class="inline-flex items-center gap-2 mt-1">
+              <span class="h-2 w-2 rounded-full {% if usuario.is_verified %}bg-emerald-500{% else %}bg-yellow-500{% endif %}"></span>
+              <span class="text-sm">{% if usuario.is_verified %}Verificado{% else %}No verificado{% endif %}</span>
+            </span>
+          </td>
+
+          <td class="py-3 px-4">
+            {% if usuario.clientes.all %}
+              <div class="flex flex-wrap gap-2">
+                {% for c in usuario.clientes.all %}
+                  <span class="inline-flex items-center gap-2 bg-neutral-100 border border-neutral-200 rounded-lg px-2 py-1">
+                    <span class="font-semibold">{{ c.nombre }}</span>
+                    <a href="{% url 'usuarios:quitar_cliente' usuario.id c.id_cliente %}"
+                       class="text-red-600 hover:text-red-700" title="Quitar">✕</a>
+                  </span>
+                {% endfor %}
+              </div>
+            {% else %}
+              <span class="text-neutral-500">Sin clientes</span>
+            {% endif %}
+          </td>
+
+          <td class="py-3 px-4">
+            <div class="grid gap-2 max-w-xs">
+              <details class="rounded-lg border border-neutral-200 bg-neutral-50 open:bg-white">
+                <summary class="px-3 py-2 cursor-pointer font-semibold">Seleccionar cliente</summary>
+                <div class="p-2 max-h-56 overflow-y-auto">
+                  {% for cliente in todos_clientes %}
+                    {% if cliente not in usuario.clientes.all %}
+                      <div class="flex items-center justify-between mb-1 bg-neutral-50 rounded px-2 py-1">
+                        <span class="text-sm">{{ cliente.nombre }}</span>
+                        <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}"
+                           class="btn-secondary" title="Agregar">Agregar</a>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <div class="text-sm text-neutral-500 px-2 py-1">No hay clientes disponibles.</div>
+                  {% endfor %}
+                </div>
+              </details>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="py-6 text-center text-neutral-500">No hay usuarios.</td>
         </tr>
         {% endfor %}
       </tbody>

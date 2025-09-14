@@ -1,21 +1,17 @@
 {% extends "base.html" %}
+
 {% block content %}
-<main class="container container--tight max-w-[720px] mx-auto px-6 py-10">
-  <h1 class="h1 h1--sm">Eliminar Moneda</h1>
-
-  <section class="box box--tight">
-    <p class="lead">
-      ¿Confirmás que querés eliminar la moneda
-      <strong>{{ moneda.nombre }} ({{ moneda.codigo }})</strong>?
-    </p>
-
-    <form method="post" class="form form--compact">
+<section class="container py-10">
+  <h1 class="h1 h1--sm">Eliminar moneda</h1>
+  <div class="box">
+    <p class="muted">¿Seguro que deseas eliminar <strong>{{ object.nombre }}</strong> ({{ object.codigo }})?</p>
+    <form method="post" class="mt-4">
       {% csrf_token %}
       <div class="actions">
-        <button type="submit" class="btn">Sí, eliminar</button>
-        <a href="{% url 'monedas:listar_monedas' %}" class="btn-secondary">Cancelar</a>
+        <button class="btn bg-red-600 w-full" type="submit">Eliminar</button>
+        <a class="btn-ghost" href="{% url 'monedas:listar_monedas' %}">Cancelar</a>
       </div>
     </form>
-  </section>
-</main>
+  </div>
+</section>
 {% endblock %}

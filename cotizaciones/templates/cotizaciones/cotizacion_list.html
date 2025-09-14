@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<main class="container container--tight max-w-[1200px] mx-auto px-6 py-10">
+<main class="container container--tight mx-auto py-10">
   <header class="page-header page-header--tight flex items-center justify-between mb-6">
     <h1 class="h1 h1--sm">Cotizaciones</h1>
     <a href="{% url 'cotizaciones:cotizacion_create' %}" class="btn">Agregar Cotización</a>
@@ -47,7 +47,7 @@
             <td class="total-row">{{ c.total_venta }}</td>
             <td>{{ c.fecha_actualizacion }}</td>
             <td>
-              <div style="display:inline-flex;gap:.5rem">
+              <div class="action-row">
                 <a href="{% url 'cotizaciones:cotizacion_update' c.id %}" class="btn-secondary">Editar</a>
                 <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}" class="btn-ghost">Eliminar</a>
               </div>

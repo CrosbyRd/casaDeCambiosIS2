@@ -1,22 +1,17 @@
 {% extends "base.html" %}
+
 {% block content %}
-<main class="container container--tight max-w-[720px] mx-auto px-6 py-10">
-  <h1 class="h1 h1--sm">Eliminar Cotización</h1>
-
-  <section class="box box--tight">
-    <p class="lead">
-      ¿Confirmás que querés eliminar la cotización de
-      <strong>{{ cotizacion.moneda_base.nombre }} ({{ cotizacion.moneda_base.simbolo }}) a
-      {{ cotizacion.moneda_destino.nombre }} ({{ cotizacion.moneda_destino.simbolo }})</strong>?
-    </p>
-
-    <form method="post" class="form form--compact">
+<section class="container py-10">
+  <h1 class="h1 h1--sm">Eliminar cotización</h1>
+  <div class="box">
+    <p class="muted">¿Confirmás que deseas eliminar esta cotización?</p>
+    <form method="post" class="mt-4">
       {% csrf_token %}
-      <div class="actions" style="display:inline-flex;gap:.5rem">
-        <button type="submit" class="btn btn--danger">Sí, eliminar</button>
-        <a href="{% url 'cotizaciones:cotizacion_list' %}" class="btn-secondary">Cancelar</a>
+      <div class="actions">
+        <button class="btn bg-red-600 w-full" type="submit">Sí, eliminar</button>
+        <a class="btn-ghost" href="{% url 'cotizaciones:cotizacion_list' %}">Cancelar</a>
       </div>
     </form>
-  </section>
-</main>
+  </div>
+</section>
 {% endblock %}

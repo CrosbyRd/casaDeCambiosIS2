@@ -1,44 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="max-w-[1200px] mx-auto px-6 py-8">
-<h1 class="h1 mb-6">Contacto</h1>
+<section class="container py-10">
+  <h1 class="h1">Contacto</h1>
 
-<div class="grid md:grid-cols-2 gap-6">
-  <!-- Formulario -->
-  <form class="border border-neutral-200 rounded-lg p-6" id="contactForm" novalidate>
-    <div class="mb-6">
-      <label class="block mb-3 font-medium" for="name">Nombre</label>
-      <input id="name" name="name" type="text" required
-             class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-             placeholder="Tu nombre" />
-    </div>
-    <div class="mb-6">
-      <label class="block mb-3 font-medium" for="email">Email</label>
-      <input id="email" name="email" type="email" required
-             class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-             placeholder="tu@correo.com" />
-    </div>
-    <div class="mb-6">
-      <label class="block mb-3 font-medium" for="msg">Mensaje</label>
-      <textarea id="msg" name="msg" rows="4" required
-                class="w-full px-4 py-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-                placeholder="Contanos en qué podemos ayudarte"></textarea>
-    </div>
-    <button type="submit" class="btn w-full">Enviar</button>
-  </form>
+  <div class="grid md:grid-cols-2 gap-6">
+    <form method="post" class="box form">
+      {% csrf_token %}
+      {% if form %}
+        {{ form.non_field_errors }}
+        {% for field in form.visible_fields %}
+          <p>
+            {{ field.label_tag }}{{ field }}
+            {% for e in field.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+          </p>
+        {% endfor %}
+      {% else %}
+        <p><label for="id_nombre">Nombre</label><input id="id_nombre" name="nombre" required></p>
+        <p><label for="id_email">Email</label><input id="id_email" name="email" type="email" required></p>
+        <p><label for="id_mensaje">Mensaje</label><textarea id="id_mensaje" name="mensaje" rows="5" required></textarea></p>
+      {% endif %}
+      <div class="actions">
+        <button class="btn w-full" type="submit">Enviar</button>
+      </div>
+    </form>
 
-  <!-- Lateral -->
-  <div class="border border-neutral-200 rounded-lg p-6">
-    <h2 class="h2 mb-3">¿Preferís otro canal?</h2>
-    <ul class="grid gap-3">
-      <li>Chat: Lun–Vie 9:00–18:00</li>
-      <li>Email: <a href="mailto:globalexchangeparaguay@gmail.com" class="underline">globalexchangeparaguay@gmail.com</a></li>
-      <li>Centro de ayuda con artículos y guías</li>
-    </ul>
-    <div class="mt-6">
-      <a href="{% url 'site_faq' %}" class="btn-secondary">Ver FAQ</a>
-    </div>
+    <aside class="box">
+      <h2 class="h2">Soporte por correo</h2>
+      <p class="muted">Respondemos de lunes a viernes, 9–18h. Incluí la mayor cantidad de detalles para ayudarte más rápido.</p>
+    </aside>
   </div>
-</div>
 </section>
 {% endblock %}

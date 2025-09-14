@@ -1,133 +1,36 @@
 {% extends "base.html" %}
 
-{% block extra_head %}
-<style>
-  #id_codigo, #id_simbolo, #id_nombre { background-color: var(--brand-soft, #ede9fe); }
-  #id_codigo:focus, #id_simbolo:focus, #id_nombre:focus {
-    outline: none; box-shadow: 0 0 0 3px rgba(124,58,237,.25);
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<main class="max-w-6xl mx-auto px-6 py-12">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-    <div>
-      <h1 class="text-4xl font-extrabold flex items-center gap-2">
-        <span class="text-brand">💱</span> Crear Moneda
-      </h1>
-      <p class="text-lg leading-relaxed text-neutral-600 max-w-2xl mt-2">
-        Completa el siguiente formulario para registrar una nueva moneda en el sistema.
+<section class="container py-10">
+  <h1 class="h1 h1--sm mb-6">Crear moneda</h1>
+
+  <form method="post" class="box form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-alert" role="alert">
+        {% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <p>
+        {{ form.codigo.label_tag }}{{ form.codigo }}
+        {% for e in form.codigo.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+      <p class="md:col-span-2">
+        {{ form.nombre.label_tag }}{{ form.nombre }}
+        {% for e in form.nombre.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+      <p>
+        {{ form.simbolo.label_tag }}{{ form.simbolo }}
+        {% for e in form.simbolo.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
       </p>
     </div>
-  </div>
 
-  <section class="bg-white rounded-xl border-2 border-purple-900/30 shadow-sm p-8">
-    <form method="post" id="moneda-form"
-          data-currencies='{
-            "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
-            "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
-            "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
-            "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
-            "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
-            "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
-            "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
-            "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
-            "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
-            "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
-            "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
-            "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
-            "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
-            "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
-            "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
-            "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
-          }'>
-      {% csrf_token %}
-
-      {% if form.non_field_errors %}
-        <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-          {{ form.non_field_errors }}
-        </div>
-      {% endif %}
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          {{ form.codigo.label_tag }}{{ form.codigo }}
-        </div>
-        <div>
-          {{ form.simbolo.label_tag }}{{ form.simbolo }}
-        </div>
-        <div class="md:col-span-2">
-          {{ form.nombre.label_tag }}{{ form.nombre }}
-        </div>
-        <div>
-          {{ form.decimales.label_tag }}{{ form.decimales }}
-        </div>
-        <div>
-          {{ form.minima_denominacion.label_tag }}{{ form.minima_denominacion }}
-        </div>
-        <div class="md:col-span-2">
-          {{ form.limite_transaccion.label_tag }}{{ form.limite_transaccion }}
-        </div>
-      </div>
-
-      <div class="mt-8 grid gap-3">
-        <label class="flex items-center gap-3">
-          <input type="checkbox" name="admite_en_linea" id="id_admite_en_linea" class="w-5 h-5 rounded border-gray-300 text-purple-700 focus:ring-purple-700"
-                 {% if form.admite_en_linea.value %}checked{% endif %}>
-          <span class="font-medium">Admite Operaciones en Línea</span>
-        </label>
-        <label class="flex items-center gap-3">
-          <input type="checkbox" name="admite_terminal" id="id_admite_terminal" class="w-5 h-5 rounded border-gray-300 text-purple-700 focus:ring-purple-700"
-                 {% if form.admite_terminal.value %}checked{% endif %}>
-          <span class="font-medium">Admite Terminal de Autoservicio</span>
-        </label>
-      </div>
-
-      <div class="flex items-center gap-2 mt-6 text-lg">
-        <span id="emojiPreview" class="text-2xl">💱</span>
-        <span id="codePreview" class="font-bold"></span>
-        <span id="namePreview" class="text-neutral-500"></span>
-      </div>
-
-      <div class="flex items-center gap-4 mt-8">
-        <button type="submit" class="px-6 py-2 rounded-xl bg-purple-700 text-white font-semibold shadow hover:bg-purple-900 transition">
-          Guardar
-        </button>
-        <a href="{% url 'monedas:listar_monedas' %}" class="px-6 py-2 rounded-xl bg-red-500 text-white font-semibold shadow hover:bg-red-700 transition">
-          Cancelar
-        </a>
-      </div>
-    </form>
-  </section>
-</main>
-
-<script>
-  (function(){
-    const form = document.getElementById('moneda-form');
-    if(!form) return;
-
-    const data = JSON.parse(form.dataset.currencies || "{}");
-    const select  = document.getElementById('id_codigo');
-    const nombre  = document.getElementById('id_nombre');
-    const simbolo = document.getElementById('id_simbolo');
-
-    const emojiEl = document.getElementById('emojiPreview');
-    const codeEl  = document.getElementById('codePreview');
-    const nameEl  = document.getElementById('namePreview');
-
-    function syncFields(code){
-      if(!(code in data)) return;
-      const {name, symbol, emoji} = data[code];
-      if(nombre)  nombre.value  = name;
-      if(simbolo) simbolo.value = symbol;
-      if(emojiEl) emojiEl.textContent = emoji;
-      if(codeEl)  codeEl.textContent  = code;
-      if(nameEl)  nameEl.textContent  = `— ${name}`;
-    }
-
-    if(select && select.value){ syncFields(select.value); }
-    if(select){ select.addEventListener('change', e => syncFields(e.target.value)); }
-  })();
-</script>
+    <div class="actions">
+      <button class="btn w-full" type="submit">Guardar</button>
+      <a href="{% url 'monedas:listar_monedas' %}" class="btn-ghost">Volver</a>
+    </div>
+  </form>
+</section>
 {% endblock %}
