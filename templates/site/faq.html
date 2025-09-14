@@ -1,43 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Preguntas frecuentes{% endblock %}
+
+{% block extra_head %}
+<style>
+  .faq { border: 1px solid #e5e7eb; border-radius: .75rem; overflow: hidden; background: #fff; }
+  .faq details + details { border-top: 1px solid #e5e7eb; }
+  .faq summary { list-style: none; cursor: pointer; padding: .9rem 1rem; display: flex; align-items: center; gap: .5rem; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq .q { font-weight: 800; }
+  .faq .chev { margin-left: auto; transition: transform .2s ease; font-weight: 700; }
+  .faq details[open] .chev { transform: rotate(180deg); }
+  .faq .a { padding: .5rem 1rem 1rem 1rem; color: #374151; }
+</style>
+{% endblock %}
+
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
-<h1 class="h1 mb-6">Preguntas frecuentes</h1>
+<section class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Preguntas frecuentes</h1>
 
-<!-- Acordeón -->
-<div class="border border-neutral-200 rounded-lg" data-accordion>
-  <!-- ABIERTA POR DEFECTO -->
-  <button class="accordion-button" aria-expanded="true" data-open data-accordion-target="#faq1">
-    <span class="font-semibold">¿Cómo se calcula el tipo de cambio?</span>
-    <span class="ml-2" aria-hidden="true">▾</span>
-  </button>
-  <div id="faq1" class="accordion-panel" style="display:block">
-    <p class="text-neutral-700">Usamos proveedores mayoristas y aplicamos un spread dinámico.</p>
+  <div class="faq" aria-label="Preguntas frecuentes">
+    <details open>
+      <summary>
+        <span class="q">¿Cómo se calcula el tipo de cambio?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Usamos proveedores mayoristas y aplicamos un spread dinámico.</div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="q">¿Cuánto tarda una transferencia?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Las transferencias suelen acreditarse el mismo día hábil.</div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="q">¿Puedo simular sin registrarme?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Sí, usá la calculadora pública.</div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="q">¿Qué documentos necesito?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Documento de identidad vigente y, según el caso, comprobantes de origen de fondos.</div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="q">¿Qué medios de pago aceptan?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Transferencias bancarias locales, tarjetas habilitadas y billeteras electrónicas compatibles.</div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="q">¿Es seguro usar Global Exchange?</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="a">Sí. Protegemos el acceso con códigos de un solo uso (OTP) y buenas prácticas de seguridad.</div>
+    </details>
   </div>
 
-  <hr class="border-neutral-200" />
-
-  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq2">
-    <span class="font-semibold">¿Cuánto tarda una transferencia?</span>
-    <span class="ml-2" aria-hidden="true">▸</span>
-  </button>
-  <div id="faq2" class="accordion-panel">
-    <p class="text-neutral-700">Las transferencias suelen acreditarse el mismo día hábil.</p>
+  <div class="mt-8">
+    <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
   </div>
-
-  <hr class="border-neutral-200" />
-
-  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq3">
-    <span class="font-semibold">¿Puedo simular sin registrarme?</span>
-    <span class="ml-2" aria-hidden="true">▸</span>
-  </button>
-  <div id="faq3" class="accordion-panel">
-    <p class="text-neutral-700">Sí, usá la calculadora pública.</p>
-  </div>
-</div>
-
-<div class="mt-8">
-  <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
-</div>
-</main>
+</section>
 {% endblock %}

@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% load form_extras %}
-{% block title %}Global Exchange — Nueva contraseña{% endblock %}
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<section class="max-w-[1200px] mx-auto px-6 py-8">
   <h1 class="h1 mb-6">Crear nueva contraseña</h1>
 
   {% if validlink %}
@@ -41,5 +40,5 @@
       </div>
     </section>
   {% endif %}
-</main>
+</section>
 {% endblock %}

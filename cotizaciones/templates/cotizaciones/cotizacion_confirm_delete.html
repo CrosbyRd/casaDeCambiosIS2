@@ -1,50 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Eliminar Cotización — Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-4xl mx-auto px-6 py-10">
-
-  <!-- Encabezado -->
-  <header class="mb-6">
-    <h1 class="text-4xl font-extrabold mb-2 text-red-600">
-      🗑 Eliminar Cotización
-    </h1>
-    <p class="text-lg leading-relaxed max-w-2xl" style="color:var(--muted)">
-      Esta acción no se puede deshacer. Revisá la información antes de continuar.
-    </p>
-  </header>
-
-  <!-- Tarjeta de confirmación -->
-  <section class="bg-white border rounded-xl shadow-sm p-6 md:p-8" style="border-color:var(--line)">
-    <p class="text-[var(--ink)] text-lg mb-4">
-      ¿Confirmás que querés eliminar la cotización de
-      <strong>{{ cotizacion.moneda_base.nombre }} ({{ cotizacion.moneda_base.simbolo }})</strong>
-      a
-      <strong>{{ cotizacion.moneda_destino.nombre }} ({{ cotizacion.moneda_destino.simbolo }})</strong>?
-    </p>
-
-    <!-- Aviso -->
-    <div class="rounded-lg px-4 py-3 mb-6"
-         style="background:#fff6cc;border:1px solid #ffe08a;color:#7a5b00;">
-      ⚠️ Al eliminar esta cotización se perderán sus datos de manera permanente.
-    </div>
-
-    <form method="post" class="flex items-center gap-3">
+<section class="container py-10">
+  <h1 class="h1 h1--sm">Eliminar cotización</h1>
+  <div class="box">
+    <p class="muted">¿Confirmás que deseas eliminar esta cotización?</p>
+    <form method="post" class="mt-4">
       {% csrf_token %}
-
-      <!-- Botón rojo: eliminar -->
-      <button type="submit"
-              class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
-        🗑 Sí, eliminar
-      </button>
-
-      <!-- Botón lila: cancelar -->
-      <a href="{% url 'cotizaciones:cotizacion_list' %}"
-         class="px-4 py-2 rounded-lg font-semibold text-white hover:brightness-95"
-         style="background:var(--brand)">
-        ✖ Cancelar
-      </a>
+      <div class="actions">
+        <button class="btn bg-red-600 w-full" type="submit">Sí, eliminar</button>
+        <a class="btn-ghost" href="{% url 'cotizaciones:cotizacion_list' %}">Cancelar</a>
+      </div>
     </form>
-  </section>
-</main>
+  </div>
+</section>
 {% endblock %}

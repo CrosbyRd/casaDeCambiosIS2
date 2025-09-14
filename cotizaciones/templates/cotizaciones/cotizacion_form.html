@@ -1,137 +1,75 @@
 {% extends "base.html" %}
-{% block title %}{% if form.instance.pk %}Editar Cotización{% else %}Agregar Cotización{% endif %} — Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-6 py-10">
+<section class="container py-10">
+  <h1 class="h1 h1--sm mb-6">{% if object %}Editar{% else %}Crear{% endif %} cotización</h1>
 
-  <!-- Encabezado -->
-  <header class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
-        💱 {% if form.instance.pk %}Editar Cotización{% else %}Agregar Nueva Cotización{% endif %}
-      </h1>
-      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
-        {% if form.instance.pk %}
-          Modifica la información de la cotización seleccionada y guarda los cambios.
-        {% else %}
-          Completa la información para registrar una nueva cotización en el sistema.
-        {% endif %}
+  <form method="post" class="box form" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-alert" role="alert">
+        {% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <p>
+        {{ form.moneda_base.label_tag }}{{ form.moneda_base }}
+        {% for e in form.moneda_base.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+      <p>
+        {{ form.moneda_destino.label_tag }}{{ form.moneda_destino }}
+        {% for e in form.moneda_destino.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
       </p>
     </div>
-  </header>
 
-  <!-- Formulario -->
-  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-    <form method="post" id="form-cotizacion" class="pb-6">
-      {% csrf_token %}
+    <div class="grid gap-4 md:grid-cols-2">
+      <p>
+        {{ form.valor_compra.label_tag }}{{ form.valor_compra }}
+        {% for e in form.valor_compra.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+      <p>
+        {{ form.comision_compra.label_tag }}{{ form.comision_compra }}
+        {% for e in form.comision_compra.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+    </div>
 
-      <!-- Moneda destino -->
-      <table class="w-full border-collapse">
-        <thead class="bg-[var(--brand)] text-white">
-          <tr><th class="px-4 py-3 text-left">Moneda Destino</th></tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="grid gap-4 md:grid-cols-2">
+      <p>
+        {{ form.valor_venta.label_tag }}{{ form.valor_venta }}
+        {% for e in form.valor_venta.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+      <p>
+        {{ form.comision_venta.label_tag }}{{ form.comision_venta }}
+        {% for e in form.comision_venta.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+    </div>
 
-      <!-- COMPRA -->
-      <table class="w-full border-collapse mt-6">
-        <thead class="bg-[var(--brand)] text-white">
-          <tr>
-            <th class="px-4 py-3 text-left">Valor Compra Base (PYG)</th>
-            <th class="px-4 py-3 text-left">Comisión Compra (PYG)</th>
-            <th class="px-4 py-3 text-left">Total Compra</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.valor_compra }}</td>
-            <td class="px-4 py-3">{{ form.comision_compra }}</td>
-            <td class="px-4 py-3"><span id="total_compra" class="font-bold">0.0000</span> PYG</td>
-          </tr>
-        </tbody>
-      </table>
+    {% if form.fecha_actualizacion %}
+      <p>
+        {{ form.fecha_actualizacion.label_tag }}{{ form.fecha_actualizacion }}
+        {% for e in form.fecha_actualizacion.errors %}<span class="text-red-600 text-sm">{{ e }}</span>{% endfor %}
+      </p>
+    {% endif %}
 
-      <!-- VENTA -->
-      <table class="w-full border-collapse mt-6">
-        <thead class="bg-[var(--brand)] text-white">
-          <tr>
-            <th class="px-4 py-3 text-left">Valor Venta Base (PYG)</th>
-            <th class="px-4 py-3 text-left">Comisión Venta (PYG)</th>
-            <th class="px-4 py-3 text-left">Total Venta</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.valor_venta }}</td>
-            <td class="px-4 py-3">{{ form.comision_venta }}</td>
-            <td class="px-4 py-3"><span id="total_venta" class="font-bold">0.0000</span> PYG</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>
-  </section>
-
-  <!-- Botones (debajo del recuadro) -->
-  <div class="flex justify-end space-x-3 pt-2">
-    <a href="{% url 'cotizaciones:cotizacion_list' %}"
-       class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
-      Cancelar
-    </a>
-    <button type="submit" form="form-cotizacion"
-            class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
-            style="background:var(--brand)">
-      {% if form.instance.pk %}💾 Guardar Cambios{% else %}➕ Agregar{% endif %}
-    </button>
-  </div>
-</main>
-
-<style>
-  /* Select grande (como filtros de clientes) */
-  #id_moneda_destino{
-    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
-    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
-    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
-  }
-  #id_moneda_destino:focus{outline:none;border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);}
-
-  /* Inputs claros para escribir */
-  #id_valor_compra,#id_comision_compra,#id_valor_venta,#id_comision_venta{
-    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
-    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
-    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
-  }
-  #id_valor_compra:focus,#id_comision_compra:focus,#id_valor_venta:focus,#id_comision_venta:focus{
-    outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(115,60,255,.15);}
-  #id_valor_compra::placeholder,#id_comision_compra::placeholder,
-  #id_valor_venta::placeholder,#id_comision_venta::placeholder{color:#9aa3b2;}
-</style>
+    <div class="actions">
+      <button class="btn w-full" type="submit">{% if object %}Actualizar{% else %}Crear{% endif %}</button>
+      <a class="btn-ghost" href="{% url 'cotizaciones:cotizacion_list' %}">Volver</a>
+    </div>
+  </form>
+</section>
 
 <script>
-  function calcularTotales(){
-    const vC=parseFloat(document.getElementById('id_valor_compra')?.value)||0;
-    const cC=parseFloat(document.getElementById('id_comision_compra')?.value)||0;
-    const vV=parseFloat(document.getElementById('id_valor_venta')?.value)||0;
-    const cV=parseFloat(document.getElementById('id_comision_venta')?.value)||0;
-    const tc=document.getElementById('total_compra');
-    const tv=document.getElementById('total_venta');
-    if(tc) tc.textContent=(vC+cC).toFixed(4);
-    if(tv) tv.textContent=(vV+cV).toFixed(4);
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    ['id_valor_compra','id_comision_compra','id_valor_venta','id_comision_venta']
-      .forEach(id=>{const el=document.getElementById(id); if(el) el.addEventListener('input',calcularTotales);});
-    // Placeholders útiles
-    const setPH=(id,ph)=>{const el=document.getElementById(id); if(el&&!el.placeholder) el.placeholder=ph;};
-    setPH('id_valor_compra','Ej: 8900,0000');
-    setPH('id_comision_compra','Ej: 500,0000');
-    setPH('id_valor_venta','Ej: 8000,0000');
-    setPH('id_comision_venta','Ej: 860,0000');
-    calcularTotales();
-  });
+  // Preview simple de totales (si los campos existen)
+  (function(){
+    const $ = id => document.getElementById(id);
+    const v = id => parseFloat(($(id)?.value||'').replace(',', '.')) || 0;
+    const vc = document.getElementById('id_valor_compra');
+    const cc = document.getElementById('id_comision_compra');
+    const vv = document.getElementById('id_valor_venta');
+    const cv = document.getElementById('id_comision_venta');
+    if(!(vc && cc && vv && cv)) return;
+    [vc,cc,vv,cv].forEach(el=>el.addEventListener('input', ()=>{})); // hook si luego querés mostrar totales
+  })();
 </script>
 {% endblock %}

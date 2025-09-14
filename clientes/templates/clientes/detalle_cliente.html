@@ -1,105 +1,120 @@
-{% extends "base.html" %}
-{% block title %}Detalles de {{ cliente.nombre }} — Global Exchange{% endblock %}
+{% extends 'clientes/base.html' %}
 
 {% block content %}
-<main class="max-w-6xl mx-auto px-6 py-10">
-
-  <!-- Encabezado -->
-  <header class="flex items-center justify-between mb-8">
-    <div>
-      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">👤 {{ cliente.nombre }}</h1>
-      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">
-        Aquí puedes ver toda la información del cliente seleccionado.
-      </p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-user"></i> {{ cliente.nombre }}</h1>
+            <div class="btn-group">
+                <a href="{% url 'clientes:editar' cliente.id_cliente %}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <a href="{% url 'clientes:toggle_estado' cliente.id_cliente %}" 
+                   class="btn {% if cliente.activo %}btn-warning{% else %}btn-success{% endif %}">
+                    <i class="fas {% if cliente.activo %}fa-times{% else %}fa-check{% endif %}"></i>
+                    {% if cliente.activo %}Desactivar{% else %}Activar{% endif %}
+                </a>
+                <a href="{% url 'clientes:eliminar' cliente.id_cliente %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+                <a href="{% url 'clientes:lista' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="space-x-3 flex">
-      <a href="{% url 'clientes:lista' %}" 
-         class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600">
-        ⬅ Volver
-      </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Información del Cliente</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th width="30%">Nombre:</th>
+                        <td>{{ cliente.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ cliente.correo_electronico }}</td>
+                    </tr>
+                    <tr>
+                        <th>Categoría:</th>
+                        <td>
+                            <span class="badge bg-info">{{ cliente.get_categoria_display }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Bonificación:</th>
+                        <td>
+                            <span class="badge bg-success">{{ cliente.bonificacion }}%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            <span class="badge {% if cliente.activo %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if cliente.activo %}Activo{% else %}Inactivo{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha Registro:</th>
+                        <td>{{ cliente.fecha_registro|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Última Actualización:</th>
+                        <td>{{ cliente.ultima_modificacion|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
-  </header>
 
-  <!-- Información principal -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Límites de Compra</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>USD:</th>
+                        <td>${{ cliente.limite_compra_usd|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Capacidad de Compra:</th>
+                        <td>
+                            {% with puede_comprar=cliente.puede_comprar %}
+                            <span class="badge bg-{% if puede_comprar.0 %}success{% else %}danger{% endif %}">
+                                {% if puede_comprar.0 %}Puede comprar{% else %}Límite excedido{% endif %}
+                            </span>
+                            {% endwith %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-    <!-- Información del Cliente -->
-    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-      <table class="w-full border-collapse">
-        <thead style="background:var(--brand); color:#fff">
-          <tr>
-            <th class="px-6 py-3 text-left">📌 Información del Cliente</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Nombre:</strong> {{ cliente.nombre }}</td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Categoría:</strong> 
-              <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-sm font-medium">
-                {{ cliente.get_categoria_display }}
-              </span>
-            </td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Bonificación:</strong> <span class="text-green-600 font-semibold">{{ cliente.bonificacion }}%</span></td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Estado:</strong> 
-              {% if cliente.activo %}
-                <span class="text-green-600 font-semibold">Activo</span>
-              {% else %}
-                <span class="text-red-600 font-semibold">Inactivo</span>
-              {% endif %}
-            </td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Fecha Registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y H:i" }}</td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Última Actualización:</strong> {{ cliente.ultima_modificacion|date:"d/m/Y H:i" }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Límites de Compra -->
-    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-      <table class="w-full border-collapse">
-        <thead style="background:var(--brand); color:#fff">
-          <tr>
-            <th class="px-6 py-3 text-left">💰 Límites de Compra</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>USD:</strong> ${{ cliente.limite_compra_usd|floatformat:2 }}</td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Capacidad de Compra:</strong> 
-              {% if cliente.activo %}
-                <span class="text-green-600 font-semibold">Disponible</span>
-              {% else %}
-                <span class="text-red-600 font-semibold">Límite excedido</span>
-              {% endif %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </div>
-
-  <!-- Información de transacciones -->
-  <section class="bg-white border rounded-xl shadow-sm p-6 mt-6" style="border-color:var(--line)">
-    <h2 class="text-lg font-bold mb-4 text-[var(--ink)]">📄 Información de Transacciones</h2>
-    <div class="mb-3 p-3 rounded bg-blue-100 text-blue-800">
-      ℹ️ Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong> en todas sus transacciones.
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Información de Transacciones</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong>
+                    en todas sus transacciones.
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="p-3 rounded bg-yellow-100 text-yellow-800">
-      ⚠️ Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.
-    </div>
-  </section>
-
-</main>
+</div>
 {% endblock %}
