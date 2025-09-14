@@ -1,75 +1,139 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm">
-                <div class="card-body p-5">
-                    <h2 class="card-title text-center mb-4">Simulador de Cambio de Divisas</h2>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <form method="post" action="{% url 'site_calculator' %}">
-                                {% csrf_token %}
-                                
-                                <div class="mb-3">
-                                    <label for="{{ form.monto.id_for_label }}" class="form-label">{{ form.monto.label }}</label>
-                                    {{ form.monto }}
-                                </div>
-                                <div class="mb-3">
-                                    <label for="{{ form.moneda_origen.id_for_label }}" class="form-label">{{ form.moneda_origen.label }}</label>
-                                    {{ form.moneda_origen }}
-                                </div>
-                                <div class="mb-3">
-                                    <label for="{{ form.moneda_destino.id_for_label }}" class="form-label">{{ form.moneda_destino.label }}</label>
-                                    {{ form.moneda_destino }}
-                                </div>
 
-                                {% if form.errors %}
-                                    <div class="alert alert-warning mt-3">
-                                        {{ form.non_field_errors }}
-                                    </div>
-                                {% endif %}
-                                
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-lg">Simular Transacción</button>
-                                </div>
-                            </form>
-                        </div>
-                        
-                        <div class="col-md-6 d-flex align-items-center">
-                            {% if resultado %}
-                                {% if resultado.error %}
-                                    <div class="alert alert-danger w-100">
-                                        <strong>Error:</strong> {{ resultado.error }}
-                                    </div>
-                                {% else %}
-                                    <div class="text-center w-100">
-                                        <h4>Recibirás aproximadamente:</h4>
-                                        <h1 class="display-4 text-success fw-bold">
-                                            {{ resultado.monto_recibido|floatformat:2 }}
-                                        </h1>
-                                        <hr>
-                                        <p class="text-muted mb-1">
-                                            Tasa de cambio final aplicada: <strong>{{ resultado.tasa_aplicada|floatformat:4 }}</strong>
-                                        </p>
-                                        {% if resultado.bonificacion_aplicada > 0 %}
-                                            <small class="text-info">
-                                                Ahorro por segmento: {{ resultado.bonificacion_aplicada|floatformat:4 }}
-                                            </small>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            {% else %}
-                                <div class="text-center text-muted w-100">
-                                    <p>El resultado de tu simulación aparecerá aquí.</p>
-                                </div>
-                            {% endif %}
-                        </div>
+{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" back_url="/" %}
+{% include "partials/messages.html" %}
+
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <form method="post" id="form-simulador"
+          data-currencies='{
+            "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
+            "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
+            "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
+            "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
+            "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
+            "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
+            "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
+            "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
+            "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
+            "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
+            "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
+            "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
+            "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
+            "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
+            "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
+            "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
+          }'>
+      {% csrf_token %}
+
+      <table class="w-full border-collapse">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Tengo esta moneda</th>
+            <th class="px-4 py-3 text-left">Quiero esta moneda</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.moneda_origen }}</td>
+            <td class="px-4 py-3">{{ form.moneda_destino }}</td>
+          </tr>
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">{{ form.monto }}</td>
+            <td class="px-4 py-3">
+              <input class="gx-input" type="text" readonly
+                     value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
+                     placeholder="0,00">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="px-4 py-4">
+<div style="margin-top:18px;">
+  <button class="gx-btn" type="submit">Calcular</button>
+
+            {% if resultado %}
+                {% if resultado.error %}
+                <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
+                {% else %}
+                <div class="gx-result-wrap mt-4">
+                    <div class="gx-result-big">
+                    Recibirás aproximadamente: {{ resultado.monto_recibido }} {{ form.moneda_destino.value }}
                     </div>
+
                 </div>
+                {% endif %}
+            {% endif %}
             </div>
-        </div>
-    </div>
-</div>
+
+      </div>
+    </form>
+  </section>
+</main>
+
+<style>
+  .gx-input, .gx-select {
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    height:48px;
+    font-size:1rem;
+    color:var(--ink);
+    background:#fff;
+    transition:box-shadow .2s ease,border-color .2s ease;
+  }
+  .gx-input:focus, .gx-select:focus {
+    outline:none;
+    border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  }
+  .gx-btn {
+    background: var(--brand);
+    color:#fff;
+    font-weight:800;
+    border:none;
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:16px;
+    width:100%;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+    cursor:pointer;
+  }
+  .gx-result-big { font-size:24px; font-weight:900; color:#22c55e; }
+</style>
+
+<script>
+(function(){
+  const form = document.getElementById('form-simulador');
+  if(!form) return;
+
+  const data = JSON.parse(form.dataset.currencies || "{}");
+
+  function decorateSelect(sel){
+    if(!sel) return;
+    [...sel.options].forEach(opt=>{
+      const code = opt.value;
+      if(data[code]){
+        const {emoji, name} = data[code];
+        opt.textContent = `${emoji} ${code} — ${name}`;
+      }
+    });
+    sel.classList.add('gx-select');
+  }
+
+  decorateSelect(document.getElementById('id_moneda_origen'));
+  decorateSelect(document.getElementById('id_moneda_destino'));
+
+  // 🔥 Forzar clase gx-input al campo de monto
+  const monto = document.getElementById('id_monto');
+  if(monto) monto.classList.add('gx-input');
+})();
+
+</script>
+
 {% endblock %}
