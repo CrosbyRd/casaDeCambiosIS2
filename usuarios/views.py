@@ -36,7 +36,8 @@ def register(request):
             return redirect("usuarios:verify")
     else:
         form = RegistroForm()
-    return render(request, "site/register.html", {"form": form})
+    # Render correcto del formulario de alta
+    return render(request, "site/signup.html", {"form": form})
 
 
 def verify(request):
@@ -147,7 +148,6 @@ def login_otp(request):
 
             next_url = request.session.pop("pending_login_next", None)
             request.session.pop("pending_login_user_id", None)
-            # Mensaje de bienvenida lo dejamos en login_redirect para no duplicar
             return redirect(next_url or "usuarios:login_redirect")
         else:
             messages.error(request, "Código incorrecto o expirado.")
@@ -178,12 +178,10 @@ def login_otp_resend(request):
 # ----------------------------
 
 def logout_view(request):
-    """Cierra sesión aceptando GET o POST y redirige al inicio."""
     if request.method in ("GET", "POST"):
         logout(request)
         messages.info(request, "Sesión cerrada correctamente.")
         return redirect("home")
-    # Cualquier otro método no permitido:
     return redirect("home")
 
 
