@@ -4,14 +4,11 @@
 <section class="container py-10">
   <h1 class="h1 h1--sm">Eliminar cotización</h1>
   <div class="box">
-    <p class="muted">
-      ¿Seguro que deseas eliminar la cotización
-      <strong>{{ object.moneda_base.codigo }}</strong> → <strong>{{ object.moneda_destino.codigo }}</strong>?
-    </p>
+    <p class="muted">¿Confirmás que deseas eliminar esta cotización?</p>
     <form method="post" class="mt-4">
       {% csrf_token %}
       <div class="actions">
-        <button class="btn bg-red-600 w-full" type="submit">Eliminar</button>
+        <button class="btn bg-red-600 w-full" type="submit">Sí, eliminar</button>
         <a class="btn-ghost" href="{% url 'cotizaciones:cotizacion_list' %}">Cancelar</a>
       </div>
     </form>

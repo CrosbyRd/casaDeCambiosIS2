@@ -1,60 +1,46 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <!-- Header -->
-  <header class="max-w-5xl mx-auto px-6 pt-8 pb-2 flex items-start justify-between">
-    <div>
-      <h1 class="text-4xl font-extrabold text-[var(--ink)]">Tipos de cambio</h1>
-      <p class="text-lg text-[var(--muted)] leading-relaxed max-w-xl mt-1">
-        Valores expresados hacia {{ destino_publico }}. Actualizados en tiempo real.
-      </p>
-    </div>
-  </header>
+<section class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Tipos de cambio</h1>
 
-  <main class="max-w-5xl mx-auto px-6 pb-10">
-    {% if cotizaciones %}
-      <section class="box box--tight no-padding">
-        <div class="table-scroll table-wrap--max">
-          <table class="table table--compact">
-            <thead>
-              <tr>
-                <th>Par</th>
-                <th class="text-right">Compra</th>
-                <th class="text-right">Venta</th>
-                <th class="text-right">Actualizado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for r in cotizaciones %}
-                <tr>
-                  <td class="cell-strong">
-                    <span class="currency-emoji" data-code="{{ r.codigo }}"></span>
-                    {{ r.codigo }} →
-                    <span class="currency-emoji" data-code="{{ destino_publico }}"></span>
-                    {{ destino_publico }}
-                  </td>
-                  <td class="text-right">{{ r.valor_compra|floatformat:0 }}</td>
-                  <td class="text-right">{{ r.valor_venta|floatformat:0 }}</td>
-                  <td class="text-right">Hace {{ r.fecha_actualizacion|timesince }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    {% else %}
-      <p class="text-[var(--muted)]">No hay cotizaciones cargadas todavía.</p>
-    {% endif %}
-  </main>
-
-  <script>
-    // Mapeo de banderas (incluye PYG)
-    (function(){
-      const MAP={USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
-      document.querySelectorAll('.currency-emoji').forEach(el=>{
-        const code=String(el.dataset.code||'').toUpperCase();
-        el.textContent=(MAP[code]||"💱")+" ";
-      });
-    })();
-  </script>
+  <!-- Tabla responsive -->
+  <div class="overflow-x-auto border border-neutral-200 rounded-lg">
+    <table class="min-w-[520px] w-full">
+      <thead class="bg-neutral-50">
+        <tr>
+          <th class="text-left py-4 px-6">Par</th>
+          <th class="text-right py-4 px-6">Compra</th>
+          <th class="text-right py-4 px-6">Venta</th>
+          <th class="text-right py-4 px-6">Actualizado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-t border-neutral-200">
+          <td class="py-4 px-6">
+            <span class="emoji">🇺🇸</span> USD
+          </td>
+          <td class="py-4 px-6 text-right">7.280</td>
+          <td class="py-4 px-6 text-right">7.320</td>
+          <td class="py-4 px-6 text-right">Hace 2 min</td>
+        </tr>
+        <tr class="border-t border-neutral-200">
+          <td class="py-4 px-6">
+            <span class="emoji">🇪🇺</span> EUR
+          </td>
+          <td class="py-4 px-6 text-right">7.980</td>
+          <td class="py-4 px-6 text-right">8.020</td>
+          <td class="py-4 px-6 text-right">Hace 3 min</td>
+        </tr>
+        <tr class="border-t border-neutral-200">
+          <td class="py-4 px-6">
+            <span class="emoji">🇧🇷</span> BRL
+          </td>
+          <td class="py-4 px-6 text-right">1.280</td>
+          <td class="py-4 px-6 text-right">1.320</td>
+          <td class="py-4 px-6 text-right">Hace 5 min</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}
