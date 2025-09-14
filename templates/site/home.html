@@ -1,82 +1,79 @@
 {% extends "base.html" %}
-
-{% block meta_description %}Cambia dinero sin complicaciones. Tipos de cambio competitivos, transparencia total y soporte humano.{% endblock %}
-
+{% block title %}Global Exchange — Inicio{% endblock %}
 {% block content %}
 <section class="max-w-[1200px] mx-auto px-6 py-10">
   <div class="grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-start">
-    <div class="self-start">
-      <!-- Único H1 -->
+    <div class="self-start">  {# ← antes tenía class="pt-16" #}
       <h1 class="h1">Cambia dinero sin complicaciones</h1>
       <p class="lead">Global Exchange te ofrece tipos de cambio competitivos, transparencia y soporte humano.</p>
-      <div class="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <div class="mt-8 flex items-center gap-3">
         <a href="{% url 'site_calculator' %}" class="btn">Empezar a cotizar</a>
         <a href="{% url 'site_how_it_works' %}" class="btn-secondary">Ver cómo funciona</a>
       </div>
     </div>
 
-    <!-- Widget tasas accesible -->
-    <section class="bg-neutral-50 rounded-lg p-6" aria-labelledby="ratesTitle">
-      <div class="flex items-center justify-between">
-        <h2 id="ratesTitle" class="h2 mb-0">Tasas destacadas</h2>
-        <small class="text-neutral-500" id="ratesTimestamp">
-          Actualizado hace <span data-mins>2</span> min
-        </small>
-      </div>
-
-      <div class="grid gap-3 mt-4" aria-live="polite" aria-atomic="true">
-        <a href="{% url 'site_rates' %}" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-white focus-visible:ring-4 focus-visible:ring-brand">
-          <span class="font-medium">
-            <span role="img" aria-label="Bandera de Estados Unidos">🇺🇸</span> USD
-            <span aria-hidden="true">→</span>
-            <span role="img" aria-label="Bandera de Paraguay">🇵🇾</span> PYG
-          </span>
+    <div class="bg-neutral-50 rounded-lg p-6">
+      <div class="grid gap-3">
+        <div class="flex items-center justify-between">
+          <span class="font-medium"><span class="emoji">🇺🇸</span> USD → <span class="emoji">🇵🇾</span> PYG</span>
           <span class="text-brand font-semibold">7.300</span>
-        </a>
-
-        <a href="{% url 'site_rates' %}" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-white focus-visible:ring-4 focus-visible:ring-brand">
-          <span class="font-medium">
-            <span role="img" aria-label="Bandera de la Unión Europea">🇪🇺</span> EUR
-            <span aria-hidden="true">→</span>
-            <span role="img" aria-label="Bandera de Paraguay">🇵🇾</span> PYG
-          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="font-medium"><span class="emoji">🇪🇺</span> EUR → <span class="emoji">🇵🇾</span> PYG</span>
           <span class="text-brand font-semibold">8.000</span>
-        </a>
-
-        <a href="{% url 'site_rates' %}" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-white focus-visible:ring-4 focus-visible:ring-brand">
-          <span class="font-medium">
-            <span role="img" aria-label="Bandera de Brasil">🇧🇷</span> BRL
-            <span aria-hidden="true">→</span>
-            <span role="img" aria-label="Bandera de Paraguay">🇵🇾</span> PYG
-          </span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="font-medium"><span class="emoji">🇧🇷</span> BRL → <span class="emoji">🇵🇾</span> PYG</span>
           <span class="text-brand font-semibold">1.300</span>
-        </a>
-
-        <a href="{% url 'site_rates' %}" class="btn-secondary mt-2 inline-flex justify-center">Ver todos los tipos</a>
+        </div>
+        <a href="{% url 'site_rates' %}" class="btn-secondary">Ver todos los tipos</a>
       </div>
-    </section>
+    </div>
   </div>
 </section>
 
 <section class="max-w-[1200px] mx-auto px-6 py-6">
   <h2 class="h2 mb-6">Por qué elegirnos</h2>
   <div class="grid md:grid-cols-3 gap-6">
-    <article class="box" aria-labelledby="t1">
-      <h3 id="t1" class="box-title">Transparencia total</h3>
+    <article class="box">
+      <h3 class="box-title">Transparencia total</h3>
       <p class="muted">Sin costos escondidos. Ves el total antes de confirmar.</p>
     </article>
-    <article class="box" aria-labelledby="t2">
-      <h3 id="t2" class="box-title">Velocidad</h3>
-      <p class="muted">Operaciones rápidas a cuentas locales.</p>
+    <article class="box">
+      <h3 class="box-title">Velocidad</h3>
+      <p class="muted">Operaciones rápidas a cuentas locales e internacionales.</p>
     </article>
-    <article class="box" aria-labelledby="t3">
-      <h3 id="t3" class="box-title">Soporte humano</h3>
-      <p class="muted">Atención por correo cuando lo necesites.</p>
+    <article class="box">
+      <h3 class="box-title">Soporte humano</h3>
+      <p class="muted">Agentes reales por chat y ticket cuando lo necesites.</p>
     </article>
   </div>
 </section>
 
-<!-- Modal info tasas -->
+{# === CTA (del index original) === #}
+<section class="max-w-[1200px] mx-auto px-6 py-8">
+  <div class="rounded-lg p-6 bg-neutral-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div>
+      <div class="grid grid-cols-2 gap-x-8 items-start">
+        <!-- Columna izquierda -->
+        <div>
+          <h2 class="h2 font-bold mb-2">Consulta tipos de cambio en vivo</h2>
+          <p class="text-neutral-600">Simula sin registrarte.</p>
+        </div>
+
+        <!-- Columna derecha -->
+        <div>
+          <h2 class="h2 font-bold mb-2">¿Cómo calculamos la tasa?</h2>
+          <p class="text-neutral-600">
+            Tomamos la tasa de nuestro proveedor mayorista y aplicamos un spread competitivo según el par y el método de pago.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === Modal (markup del index original) === #}
 <div id="ratesModal" class="modal hidden">
   <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
   <div class="w-full h-full flex items-center justify-center p-6">
@@ -93,13 +90,4 @@
   </div>
 </div>
 
-<script defer>
-  // Actualiza el "hace X min" suavemente
-  (function(){
-    const el = document.querySelector('#ratesTimestamp [data-mins]');
-    if(!el) return;
-    let mins = parseInt(el.textContent || '2', 10);
-    setInterval(()=>{ mins += 1; el.textContent = String(mins); }, 60000);
-  })();
-</script>
 {% endblock %}

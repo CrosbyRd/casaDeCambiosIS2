@@ -1,101 +1,103 @@
 {% extends "base.html" %}
+{% block title %}Gestión de Usuarios y Clientes — Global Exchange{% endblock %}
 
 {% block content %}
-<section class="max-w-[1200px] mx-auto px-6 py-8">
-  <div class="mb-4">
-    <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary">← Volver al Panel de Administrador</a>
-  </div>
+<main class="max-w-6xl mx-auto px-6 py-10">
 
-  <h1 class="h1 h1--sm mb-6">Gestión de usuarios</h1>
-
+  <!-- Mensajes -->
   {% if messages %}
-    <div class="mb-4 space-y-2">
-      {% for message in messages %}
-        <div class="form-alert">{{ message }}</div>
-      {% endfor %}
-    </div>
+  <div class="mb-6">
+    {% for message in messages %}
+      <div class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
   {% endif %}
 
-  <div class="overflow-x-auto border border-neutral-200 rounded-xl bg-white">
-    <table class="min-w-[760px] w-full table--compact">
-      <thead class="bg-neutral-50">
-        <tr>
-          <th class="text-left py-3 px-4">Usuario</th>
-          <th class="text-left py-3 px-4">Email</th>
-          <th class="text-left py-3 px-4">Estado</th>
-          <th class="text-left py-3 px-4">Clientes asignados</th>
-          <th class="text-left py-3 px-4">Agregar cliente</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for usuario in usuarios %}
-        <tr class="border-t border-neutral-200">
-          <td class="py-3 px-4">
-            <div class="font-semibold">
-              {% if usuario.first_name or usuario.last_name %}
-                {{ usuario.first_name }} {{ usuario.last_name }}
-              {% else %}
-                (Sin nombre)
-              {% endif %}
-            </div>
-            <div class="text-xs text-neutral-500">ID: {{ usuario.id }}</div>
-          </td>
-          <td class="py-3 px-4">{{ usuario.email }}</td>
-          <td class="py-3 px-4">
-            <span class="inline-flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full {% if usuario.is_active %}bg-emerald-500{% else %}bg-red-500{% endif %}"></span>
-              <span class="text-sm">{% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}</span>
-            </span><br>
-            <span class="inline-flex items-center gap-2 mt-1">
-              <span class="h-2 w-2 rounded-full {% if usuario.is_verified %}bg-emerald-500{% else %}bg-yellow-500{% endif %}"></span>
-              <span class="text-sm">{% if usuario.is_verified %}Verificado{% else %}No verificado{% endif %}</span>
-            </span>
-          </td>
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
+      <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+        Aquí puedes asignar y quitar clientes a cada usuario del sistema.
+      </p>
+    </div>
+    <div>
+      <a href="{% url 'admin_panel:dashboard' %}" 
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">
+        ⬅ Volver al Panel
+      </a>
+    </div>
+  </header>
 
-          <td class="py-3 px-4">
-            {% if usuario.clientes.all %}
-              <div class="flex flex-wrap gap-2">
-                {% for c in usuario.clientes.all %}
-                  <span class="inline-flex items-center gap-2 bg-neutral-100 border border-neutral-200 rounded-lg px-2 py-1">
-                    <span class="font-semibold">{{ c.nombre }}</span>
-                    <a href="{% url 'usuarios:quitar_cliente' usuario.id c.id_cliente %}"
-                       class="text-red-600 hover:text-red-700" title="Quitar">✕</a>
-                  </span>
+  <!-- Tabla -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead style="background:var(--brand); color:#fff">
+          <tr>
+            <th class="px-6 py-3">Usuario</th>
+            <th class="px-6 py-3">Correo Electrónico</th>
+            <th class="px-6 py-3">Rol</th>
+            <th class="px-6 py-3">Clientes Asociados</th>
+            <th class="px-6 py-3">Clientes Disponibles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <!-- Usuario -->
+            <td class="px-6 py-4 font-semibold text-[var(--ink)]">
+              {{ usuario.first_name }} {{ usuario.last_name }}
+            </td>
+            <td class="px-6 py-4 text-neutral-600">
+              {{ usuario.email }}
+            </td>
+            <!-- Rol -->
+            <td class="px-6 py-4 text-neutral-600">
+              {% if usuario.roles.all %}
+                {% for rol in usuario.roles.all %}
+                  <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-sm font-medium">{{ rol.name }}</span>
                 {% endfor %}
-              </div>
-            {% else %}
-              <span class="text-neutral-500">Sin clientes</span>
-            {% endif %}
-          </td>
-
-          <td class="py-3 px-4">
-            <div class="grid gap-2 max-w-xs">
-              <details class="rounded-lg border border-neutral-200 bg-neutral-50 open:bg-white">
-                <summary class="px-3 py-2 cursor-pointer font-semibold">Seleccionar cliente</summary>
-                <div class="p-2 max-h-56 overflow-y-auto">
-                  {% for cliente in todos_clientes %}
-                    {% if cliente not in usuario.clientes.all %}
-                      <div class="flex items-center justify-between mb-1 bg-neutral-50 rounded px-2 py-1">
-                        <span class="text-sm">{{ cliente.nombre }}</span>
-                        <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}"
-                           class="btn-secondary" title="Agregar">Agregar</a>
-                      </div>
-                    {% endif %}
-                  {% empty %}
-                    <div class="text-sm text-neutral-500 px-2 py-1">No hay clientes disponibles.</div>
-                  {% endfor %}
+              {% else %}
+                <span class="text-neutral-400">Sin rol</span>
+              {% endif %}
+            </td>
+            <!-- Clientes asociados -->
+            <td class="px-6 py-4">
+              {% for cliente in usuario.clientes.all %}
+                <div class="flex items-center justify-between mb-1 bg-neutral-100 rounded px-2 py-1">
+                  <span>{{ cliente.nombre }}</span>
+                  <a href="{% url 'usuarios:quitar_cliente' usuario.id cliente.id_cliente %}" 
+                     class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md text-sm">
+                    Quitar
+                  </a>
                 </div>
-              </details>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" class="py-6 text-center text-neutral-500">No hay usuarios.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</section>
+              {% empty %}
+                <span class="text-neutral-400">Ninguno</span>
+              {% endfor %}
+            </td>
+            <!-- Clientes disponibles -->
+            <td class="px-6 py-4">
+              {% for cliente in todos_clientes %}
+                {% if cliente not in usuario.clientes.all %}
+                  <div class="flex items-center justify-between mb-1 bg-neutral-50 rounded px-2 py-1">
+                    <span>{{ cliente.nombre }}</span>
+                    <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}" 
+                       class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-md text-sm">
+                      Agregar
+                    </a>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
 {% endblock %}

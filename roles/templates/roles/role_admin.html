@@ -1,55 +1,117 @@
-{% extends "base.html" %}
-{% block content %}
-<section class="max-w-[1200px] mx-auto px-6 py-10">
-  <div class="mb-6">
-    <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary">← Volver al Panel de Administrador</a>
-  </div>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Administración de Roles — Global Exchange</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand:#7c3aed;        /* morado principal */
+      --brand-soft:#ede9fe;   /* morado suave */
+      --brand-dark:#4c1d95;   /* morado oscuro */
+      --ink:#111827;          /* gris muy oscuro */
+      --muted:#6b7280;        /* gris medio */
+      --line:#e5e7eb;         /* borde suave */
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-[var(--ink)]">
 
-  {% if messages %}
-    <div class="space-y-2 mb-6">
+  <main class="max-w-6xl mx-auto px-6 py-10">
+
+    <!-- Encabezado -->
+    <header class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Roles</h1>
+        <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+          Aquí puedes gestionar los roles disponibles en el sistema: ver su descripción, 
+          asignar permisos y eliminarlos si es necesario.
+        </p>
+      </div>
+      <div class="space-x-3 flex">
+        <a href="{% url 'admin_panel:dashboard' %}" 
+           class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+           style="color:var(--brand-dark)">
+          ⬅ Volver al Panel
+        </a>
+        <!-- Botón Crear Rol -->
+        <a href="#" 
+           onclick="document.getElementById('crearRolForm').classList.toggle('hidden'); return false;"
+           class="px-4 py-2 rounded-lg font-bold text-white"
+           style="background:var(--brand)">
+          ➕ Crear Rol
+        </a>
+      </div>
+    </header>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-6">
       {% for message in messages %}
-        <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm">
+        <div class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2">
           {{ message }}
         </div>
       {% endfor %}
     </div>
-  {% endif %}
+    {% endif %}
 
-  <div class="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-neutral-200">
-      <h1 class="h1 h1--sm">Roles existentes</h1>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead class="bg-neutral-50">
-          <tr>
-            <th class="text-left py-3 px-6">ID</th>
-            <th class="text-left py-3 px-6">Nombre</th>
-            <th class="text-left py-3 px-6">Descripción</th>
-            <th class="text-left py-3 px-6">Acciones</th>
-          </tr>
+    <!-- Formulario oculto para crear rol -->
+    <section id="crearRolForm" class="hidden mb-6 bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="nombre" class="block mb-1 font-semibold">Nombre del Rol</label>
+          <input type="text" id="nombre" name="nombre" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="descripcion" class="block mb-1 font-semibold">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
+        </div>
+        <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">Guardar Rol</button>
+      </form>
+    </section>
+
+    <!-- Tabla de Roles -->
+    <!-- Tabla de Roles -->
+    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <table class="w-full text-left border-collapse">
+        <thead style="background:var(--brand); color:#fff">
+        <tr>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Descripción</th>
+            <th class="px-6 py-3 text-center">Acciones</th>
+        </tr>
         </thead>
         <tbody>
-          {% for rol in roles %}
-          <tr class="border-t border-neutral-200">
-            <td class="py-3 px-6">{{ rol.id }}</td>
-            <td class="py-3 px-6 font-semibold">{{ rol.nombre }}</td>
-            <td class="py-3 px-6">{{ rol.descripcion }}</td>
-            <td class="py-3 px-6">
-              <form action="{% url 'roles:role-delete' rol.pk %}" method="post" onsubmit="return confirm('¿Estás seguro de eliminar este rol?');" class="inline">
+        {% for rol in roles %}
+        <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-4 font-bold text-[var(--brand-dark)]">{{ rol.name }}</td>
+            <td class="px-6 py-4">{{ rol.description|default:"—" }}</td>
+            <td class="px-6 py-4">
+            <div class="flex justify-center gap-2">
+                <form action="{% url 'roles:role-delete' rol.pk %}" method="post" 
+                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar este rol?');">
                 {% csrf_token %}
-                <button type="submit" class="btn-ghost">Eliminar</button>
-              </form>
+                <button type="submit" 
+                        class="w-24 text-center px-4 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
+                    Eliminar
+                </button>
+                </form>
+            </div>
             </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="4" class="py-6 px-6 text-neutral-500">No hay roles registrados.</td>
-          </tr>
-          {% endfor %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="px-6 py-6 text-center" style="color:var(--muted)">
+            No hay roles registrados.
+            </td>
+        </tr>
+        {% endfor %}
         </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-{% endblock %}
+    </table>
+    </section>
+
+  </main>
+</body>
+</html>

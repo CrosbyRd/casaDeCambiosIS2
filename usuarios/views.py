@@ -16,15 +16,16 @@ from clientes.models import Cliente
 # ----------------------------
 
 def register(request):
-    if request.method == "POST":
+    if request.method == "POST":      #si llega un 'POST' procesa el registro
         form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
-            user.password = make_password(form.cleaned_data["password"])
+            user.password = make_password(form.cleaned_data["password"])    #guarda la contrasea encriptada
             user.save()
 
-            user.generate_verification_code()
+            user.generate_verification_code()     #genera codigo de verificacion
+            #envia el codigo de verificacion al correo del usuario
             send_mail(
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
@@ -36,7 +37,6 @@ def register(request):
             return redirect("usuarios:verify")
     else:
         form = RegistroForm()
-    # Render correcto del formulario de alta
     return render(request, "site/signup.html", {"form": form})
 
 
@@ -110,6 +110,12 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
+    # Bypass OTP for superusers
+    if user.is_superuser:
+        login(request, user)
+        next_url = request.session.pop("pending_login_next", None)
+        return redirect(next_url or "usuarios:login_redirect")
+
     user.generate_verification_code()
     send_mail(
         "Tu código de acceso",
@@ -148,6 +154,7 @@ def login_otp(request):
 
             next_url = request.session.pop("pending_login_next", None)
             request.session.pop("pending_login_user_id", None)
+            # Mensaje de bienvenida lo dejamos en login_redirect para no duplicar
             return redirect(next_url or "usuarios:login_redirect")
         else:
             messages.error(request, "Código incorrecto o expirado.")
@@ -178,18 +185,26 @@ def login_otp_resend(request):
 # ----------------------------
 
 def logout_view(request):
+    """Cierra sesión aceptando GET o POST y redirige al inicio."""
     if request.method in ("GET", "POST"):
         logout(request)
         messages.info(request, "Sesión cerrada correctamente.")
         return redirect("home")
+    # Cualquier otro método no permitido:
     return redirect("home")
 
 
 def login_redirect(request):
-    if not request.user.is_authenticated:
+    user = request.user
+
+    if not user.is_authenticated:
         return redirect("login")
-    if request.user.is_staff:
+    
+    #redirige al panel de administrador si es un administrador
+    if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
+
+    #normalmente redirige al dashboard de clientes
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")
 
@@ -209,8 +224,9 @@ def admin_panel(request):
 
 @login_required
 def listar_usuarios(request):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
+    
     usuarios = CustomUser.objects.all().prefetch_related("clientes", "roles")
     todos_clientes = Cliente.objects.all()
     return render(
@@ -222,7 +238,7 @@ def listar_usuarios(request):
 
 @login_required
 def agregar_cliente(request, user_id, cliente_id):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)
@@ -233,7 +249,7 @@ def agregar_cliente(request, user_id, cliente_id):
 
 @login_required
 def quitar_cliente(request, user_id, cliente_id):
-    if not request.user.is_staff:
+    if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
     user = get_object_or_404(CustomUser, id=user_id)
     cliente = get_object_or_404(Cliente, id_cliente=cliente_id)

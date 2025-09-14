@@ -1,6 +1,8 @@
 {% extends "base.html" %}
+{% block title %}Verificar cuenta{% endblock %}
+
 {% block content %}
-<section class="max-w-[600px] mx-auto px-6 py-8">
+<main class="max-w-[600px] mx-auto px-6 py-8">
   <h1 class="h1 mb-6">Verificación de cuenta</h1>
 
   {% if error %}
@@ -34,5 +36,5 @@
       <button class="btn w-full" type="submit">Verificar</button>
     </div>
   </form>
-</section>
+</main>
 {% endblock %}
