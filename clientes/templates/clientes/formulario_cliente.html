@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Crear Cliente — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-4xl mx-auto px-6 py-10">
@@ -12,48 +12,44 @@
         Completa la información para registrar un nuevo cliente en el sistema.
       </p>
     </div>
-    <div class="space-x-3 flex">
-      <a href="{% url 'clientes:lista' %}" 
-         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-         style="color:var(--brand-dark)">
-        ⬅ Volver a Clientes
-      </a>
-    </div>
+    <a href="{% url 'clientes:lista' %}" 
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver a Clientes</a>
   </header>
 
   <!-- Formulario como tabla -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <form method="post" id="form-cliente">
       {% csrf_token %}
-      <table class="w-full border-collapse">
-        <!-- Encabezado -->
-        <thead style="background:var(--brand); color:white">
-          <tr>
-            <th class="px-6 py-3 text-left">Nombre Completo *</th>
-            <th class="px-6 py-3 text-left">Categoría *</th>
-          </tr>
-        </thead>
-        <!-- Campos -->
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-6 py-4">
-              <input type="text" name="nombre" id="id_nombre"
-                     placeholder="Ej: Juan Pérez o Empresa XYZ"
-                     class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition"/>
-            </td>
-            <td class="px-6 py-4">
-              <select name="categoria" id="id_categoria"
-                      class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)]
-                             focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition">
-                <option value="minorista">Minorista</option>
-                <option value="corporativo">Corporativo</option>
-                <option value="vip">VIP</option>
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse min-w-[640px]">
+          <thead style="background:var(--brand); color:white">
+            <tr>
+              <th class="px-6 py-3 text-left">Nombre Completo *</th>
+              <th class="px-6 py-3 text-left">Categoría *</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-[var(--brand-soft)]">
+              <td class="px-6 py-4">
+                <input type="text" name="nombre" id="id_nombre"
+                       placeholder="Ej: Juan Pérez o Empresa XYZ"
+                       class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)] placeholder-gray-400
+                              focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition"/>
+              </td>
+              <td class="px-6 py-4">
+                <select name="categoria" id="id_categoria"
+                        class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)]
+                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition">
+                  <option value="minorista">Minorista</option>
+                  <option value="corporativo">Corporativo</option>
+                  <option value="vip">VIP</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Estado -->
       <div class="px-6 py-4">
@@ -67,7 +63,7 @@
   </section>
 
   <!-- Botones debajo del formulario -->
-  <div class="flex justify-end space-x-3 pt-6">
+  <div class="flex justify-end gap-3 pt-6">
     <a href="{% url 'clientes:lista' %}" 
        class="px-4 py-2 rounded-lg font-semibold text-white bg-gray-500 hover:bg-gray-600">
       Cancelar

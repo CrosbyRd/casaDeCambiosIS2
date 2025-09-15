@@ -1,10 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Gestión de Usuarios y Clientes — Global Exchange{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
 
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
 
-  <!-- Mensajes -->
   {% if messages %}
   <div class="mb-6">
     {% for message in messages %}
@@ -15,11 +18,10 @@
   </div>
   {% endif %}
 
-  <!-- Encabezado -->
-  <header class="flex items-center justify-between mb-8">
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
-      <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+      <h1 class="text-3xl sm:text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
+      <p class="text-base sm:text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
         Aquí puedes asignar y quitar clientes a cada usuario del sistema.
       </p>
     </div>
@@ -32,10 +34,10 @@
     </div>
   </header>
 
-  <!-- Tabla -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+      <table class="w-full min-w-[900px] text-left border-collapse">
+        <caption class="sr-only">Tabla de usuarios y clientes asociados</caption>
         <thead style="background:var(--brand); color:#fff">
           <tr>
             <th class="px-6 py-3">Usuario</th>
@@ -48,14 +50,12 @@
         <tbody>
           {% for usuario in usuarios %}
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
-            <!-- Usuario -->
             <td class="px-6 py-4 font-semibold text-[var(--ink)]">
               {{ usuario.first_name }} {{ usuario.last_name }}
             </td>
             <td class="px-6 py-4 text-neutral-600">
               {{ usuario.email }}
             </td>
-            <!-- Rol -->
             <td class="px-6 py-4 text-neutral-600">
               {% if usuario.roles.all %}
                 {% for rol in usuario.roles.all %}
@@ -65,7 +65,6 @@
                 <span class="text-neutral-400">Sin rol</span>
               {% endif %}
             </td>
-            <!-- Clientes asociados -->
             <td class="px-6 py-4">
               {% for cliente in usuario.clientes.all %}
                 <div class="flex items-center justify-between mb-1 bg-neutral-100 rounded px-2 py-1">
@@ -79,7 +78,6 @@
                 <span class="text-neutral-400">Ninguno</span>
               {% endfor %}
             </td>
-            <!-- Clientes disponibles -->
             <td class="px-6 py-4">
               {% for cliente in todos_clientes %}
                 {% if cliente not in usuario.clientes.all %}
