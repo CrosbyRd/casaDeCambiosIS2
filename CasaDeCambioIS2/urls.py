@@ -25,8 +25,7 @@ urlpatterns = [
     path("clientes/", include(("clientes.urls", "clientes"), namespace="clientes")),
     path("roles/", include(("roles.urls", "roles"), namespace="roles")),
     path("monedas/", include(("monedas.urls", "monedas"), namespace="monedas")),
-    path("cotizaciones/", include("cotizaciones.urls")),  # app_name definido en el módulo
-    # 👇 Registrar namespace explícito para 'pagos'
+    path("cotizaciones/", include("cotizaciones.urls")),
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
     path("admin_panel/", include("admin_panel.urls")),
 
@@ -36,17 +35,39 @@ urlpatterns = [
     path("cuentas/otp/reenviar/", usuarios_views.login_otp_resend, name="login_otp_resend"),
     path("cuentas/logout/", usuarios_views.logout_view, name="logout"),
 
-    path("forgot-password/", auth_views.PasswordResetView.as_view(
-        template_name="site/forgot-password.html",
-        success_url=reverse_lazy("password_reset_done")
-    ), name="site_forgot_password"),
-    path("cuentas/password_reset/done/", auth_views.PasswordResetDoneView.as_view(
-        template_name="site/forgot-password-done.html"), name="password_reset_done"),
-    path("cuentas/reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(
-        template_name="site/reset-confirm.html"), name="password_reset_confirm"),
-    path("cuentas/reset/done/", auth_views.PasswordResetCompleteView.as_view(
-        template_name="site/reset-complete.html"), name="password_reset_complete"),
+    # Password reset (dos nombres por compatibilidad con templates existentes)
+    path(
+        "forgot-password/",
+        auth_views.PasswordResetView.as_view(
+            template_name="site/forgot-password.html",
+            success_url=reverse_lazy("password_reset_done")
+        ),
+        name="password_reset",
+    ),
+    path(  # alias usado por login.html
+        "forgot-password/",
+        auth_views.PasswordResetView.as_view(
+            template_name="site/forgot-password.html",
+            success_url=reverse_lazy("password_reset_done")
+        ),
+        name="site_forgot_password",
+    ),
+    path(
+        "cuentas/password_reset/done/",
+        auth_views.PasswordResetDoneView.as_view(template_name="site/forgot-password-done.html"),
+        name="password_reset_done",
+    ),
+    path(
+        "cuentas/reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(template_name="site/reset-confirm.html"),
+        name="password_reset_confirm",
+    ),
+    path(
+        "cuentas/reset/done/",
+        auth_views.PasswordResetCompleteView.as_view(template_name="site/reset-complete.html"),
+        name="password_reset_complete",
+    ),
 
-    # Admin de Django opcional
+    # Admin de Django
     path("admin/", admin.site.urls),
 ]
