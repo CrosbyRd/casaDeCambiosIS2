@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-10">
+  <h1 class="text-4xl font-bold mb-10 text-center">⚙️ Panel de Administración</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+
+    <!-- Clientes -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-blue-600 text-5xl mb-4">👥</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Clientes</h2>
+      <p class="text-gray-500 mb-4">Crea, edita y administra clientes registrados.</p>
+      <a href="{% url 'clientes:lista' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Roles -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-green-600 text-5xl mb-4">🛡️</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Roles</h2>
+      <p class="text-gray-500 mb-4">Asigna permisos y gestiona roles de usuarios.</p>
+      <a href="{% url 'roles:role-panel' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Asociar Cliente a Usuario -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-purple-600 text-5xl mb-4">🔗</div>
+      <h2 class="text-xl font-bold mb-2">Asociar Cliente a Usuario</h2>
+      <p class="text-gray-500 mb-4">Asociacion de clientes con usuarios específicos.</p>
+      <a href="{% url 'usuarios:listar_usuarios' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Monedas -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-yellow-600 text-5xl mb-4">💱</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Monedas</h2>
+      <p class="text-gray-500 mb-4">Administra las monedas disponibles en el sistema.</p>
+      <a href="{% url 'monedas:listar_monedas' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Tasas -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-red-600 text-5xl mb-4">📈</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Tasas</h2>
+      <p class="text-gray-500 mb-4">Configura las cotizaciones y tasas de cambio.</p>
+      <a href="{% url 'cotizaciones:cotizacion_list' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Métodos de pago -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-indigo-600 text-5xl mb-4">💳</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Métodos de Pago</h2>
+      <p class="text-gray-500 mb-4">Agrega o modifica los métodos de pago habilitados.</p>
+      <a href="{% url 'pagos:listar_tipos_medio_pago' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+  </div>
+</main>
+{% endblock %}

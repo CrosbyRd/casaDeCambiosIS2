@@ -1,0 +1,312 @@
+.
+├── admin_panel
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── views.cpython-312.pyc
+│   ├── templates
+│   │   └── admin_panel
+│   │       └── dashboard.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── CasaDeCambioIS2
+│   ├── asgi.py
+│   ├── docs
+│   │   ├── Chats.txt
+│   │   └── Conversaciones.md
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── settings.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── wsgi.cpython-312.pyc
+│   ├── settings.py
+│   ├── urls.py
+│   ├── views.py
+│   └── wsgi.py
+├── clientes
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       ├── 0002_cliente_user.cpython-312.pyc
+│   │       ├── 0003_remove_cliente_user.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── forms.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── views.cpython-312.pyc
+│   ├── templates
+│   │   └── clientes
+│   │       ├── base.html
+│   │       ├── confirmar_eliminacion.html
+│   │       ├── detalle_cliente.html
+│   │       ├── formulario_cliente.html
+│   │       └── lista_clientes.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── correo
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   ├── register.html
+│   │   └── verificacion_email.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── cotizaciones
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── forms.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── views.cpython-312.pyc
+│   ├── templates
+│   │   └── cotizaciones
+│   │       ├── cotizacion_confirm_delete.html
+│   │       ├── cotizacion_form.html
+│   │       └── cotizacion_list.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── db.sqlite3
+├── lib
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   └── models.cpython-312.pyc
+│   ├── templatetags
+│   │   └── __pycache__
+│   │       └── form_extras.cpython-312.pyc
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── monedas
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_moneda_admite_efectivo_moneda_admite_en_linea_and_more.py
+│   │   ├── 0003_alter_moneda_minima_denominacion.py
+│   │   ├── 0004_remove_moneda_limite_transaccion.py
+│   │   ├── 0005_remove_moneda_admite_efectivo_and_more.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       ├── 0002_moneda_admite_efectivo_moneda_admite_en_linea_and_more.cpython-312.pyc
+│   │       ├── 0003_alter_moneda_minima_denominacion.cpython-312.pyc
+│   │       ├── 0004_remove_moneda_limite_transaccion.cpython-312.pyc
+│   │       ├── 0005_remove_moneda_admite_efectivo_and_more.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── forms.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── views.cpython-312.pyc
+│   ├── templates
+│   │   └── monedas
+│   │       ├── crear.html
+│   │       ├── editar.html
+│   │       ├── eliminar.html
+│   │       └── listar.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── pagos
+│   ├── migrations
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       ├── 0002_alter_tipomediopago_bonificacion_porcentaje_and_more.cpython-312.pyc
+│   │       ├── 0003_alter_tipomediopago_options_and_more.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   └── __pycache__
+│       ├── admin.cpython-312.pyc
+│       ├── apps.cpython-312.pyc
+│       ├── forms.cpython-312.pyc
+│       ├── __init__.cpython-312.pyc
+│       ├── models.cpython-312.pyc
+│       ├── urls.cpython-312.pyc
+│       └── views.cpython-312.pyc
+├── Procfile
+├── q
+├── README.md
+├── repo_structure.txt
+├── requirements.txt
+├── roles
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── 0001_initial.cpython-312.pyc
+│   │       └── __init__.cpython-312.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-312.pyc
+│   │   ├── apps.cpython-312.pyc
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── models.cpython-312.pyc
+│   │   ├── serializers.cpython-312.pyc
+│   │   ├── urls.cpython-312.pyc
+│   │   └── views.cpython-312.pyc
+│   ├── serializers.py
+│   ├── templates
+│   │   └── roles
+│   │       └── role_admin.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── runtime.txt
+├── static
+│   ├── css
+│   │   └── styles.css
+│   └── img
+│       ├── logo-principal.png
+│       └── logo-secundario.png
+├── structurre.txt
+├── templates
+│   ├── base.html
+│   ├── registration
+│   │   ├── login.html
+│   │   └── verify-code.html
+│   └── site
+│       ├── calculator.html
+│       ├── contact.html
+│       ├── faq.html
+│       ├── forgot-password.html
+│       ├── home.html
+│       ├── how-it-works.html
+│       ├── legal.html
+│       ├── rates.html
+│       ├── reenviar_codigo.html
+│       ├── register.html
+│       ├── signup.html
+│       └── verify.html
+└── usuarios
+    ├── admin.py
+    ├── apps.py
+    ├── forms.py
+    ├── __init__.py
+    ├── management
+    │   ├── commands
+    │   │   ├── __init__.py
+    │   │   ├── __pycache__
+    │   │   │   ├── __init__.cpython-312.pyc
+    │   │   │   └── seed_users.cpython-312.pyc
+    │   │   └── seed_users.py
+    │   ├── __init__.py
+    │   └── __pycache__
+    │       └── __init__.cpython-312.pyc
+    ├── migrations
+    │   ├── 0001_initial.py
+    │   ├── 0002_customuser_roles.py
+    │   ├── 0002_permiso_rol_customuser_rol.py
+    │   ├── 0003_auto_20250820_1326.py
+    │   ├── 0004_remove_customuser_tipo_usuario_and_more.py
+    │   ├── 0005_merge_20250821_0105.py
+    │   ├── 0006_remove_rol_permisos_remove_customuser_rol_and_more.py
+    │   ├── 0007_remove_customuser_roles_customuser_tipo_usuario_and_more.py
+    │   ├── 0008_alter_customuser_tipo_usuario.py
+    │   ├── 0009_customuser_clientes.py
+    │   ├── 0009_remove_customuser_username_and_more.py
+    │   ├── 0010_alter_customuser_options_alter_customuser_managers_and_more.py
+    │   ├── 0010_customuser_role.py
+    │   ├── 0011_merge_20250822_1119.py
+    │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.py
+    │   ├── __init__.py
+    │   └── __pycache__
+    │       ├── 0001_initial.cpython-312.pyc
+    │       ├── 0002_customuser_roles.cpython-312.pyc
+    │       ├── 0002_permiso_rol_customuser_rol.cpython-312.pyc
+    │       ├── 0003_auto_20250820_1326.cpython-312.pyc
+    │       ├── 0004_remove_customuser_tipo_usuario_and_more.cpython-312.pyc
+    │       ├── 0005_merge_20250821_0105.cpython-312.pyc
+    │       ├── 0006_remove_rol_permisos_remove_customuser_rol_and_more.cpython-312.pyc
+    │       ├── 0007_remove_customuser_roles_customuser_tipo_usuario_and_more.cpython-312.pyc
+    │       ├── 0008_alter_customuser_tipo_usuario.cpython-312.pyc
+    │       ├── 0009_customuser_clientes.cpython-312.pyc
+    │       ├── 0009_remove_customuser_username_and_more.cpython-312.pyc
+    │       ├── 0010_alter_customuser_options_alter_customuser_managers_and_more.cpython-312.pyc
+    │       ├── 0010_customuser_role.cpython-312.pyc
+    │       ├── 0011_merge_20250822_1119.cpython-312.pyc
+    │       ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.cpython-312.pyc
+    │       └── __init__.cpython-312.pyc
+    ├── models.py
+    ├── __pycache__
+    │   ├── admin.cpython-312.pyc
+    │   ├── apps.cpython-312.pyc
+    │   ├── forms.cpython-312.pyc
+    │   ├── __init__.cpython-312.pyc
+    │   ├── models.cpython-312.pyc
+    │   ├── serializers.cpython-312.pyc
+    │   ├── urls.cpython-312.pyc
+    │   └── views.cpython-312.pyc
+    ├── templates
+    │   └── usuarios
+    │       ├── dashboard.html
+    │       └── listar_usuarios.html
+    ├── tests.py
+    ├── urls.py
+    └── views.py
+
+63 directories, 247 files

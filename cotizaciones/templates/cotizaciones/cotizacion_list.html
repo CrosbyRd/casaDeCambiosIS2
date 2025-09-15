@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static l10n %}
+
+{% block title %}Listado de Cotizaciones — Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10">
+
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Cotizaciones</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Aquí puedes gestionar todas las cotizaciones registradas en el sistema.
+      </p>
+    </div>
+
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'cotizaciones:cotizacion_create' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+        ➕ Agregar Cotización
+      </a>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="max-w-5xl mx-auto px-6 mt-4 space-y-3">
+    {% for message in messages %}
+      <div class="rounded-lg px-4 py-3 border
+           {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+           {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+           {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+           {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Tabla -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[780px] text-left border-collapse">
+        <thead class="text-white" style="background:var(--brand)">
+          <tr>
+            <th class="px-6 py-3">Moneda Destino</th>
+            <th class="px-6 py-3 text-center">Compra</th>
+            <th class="px-6 py-3 text-center">Venta</th>
+            <th class="px-6 py-3 text-center">Última Actualización</th>
+            <th class="px-6 py-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cotizaciones %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-4 truncate whitespace-nowrap">
+              <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+              {{ c.moneda_destino.nombre }} ({{ c.moneda_destino.simbolo }})
+            </td>
+
+            <!-- enteros + símbolo guaraní -->
+            <td class="px-6 py-4 text-center font-bold whitespace-nowrap">
+              {{ c.total_compra|unlocalize|floatformat:0 }} ₲
+            </td>
+            <td class="px-6 py-4 text-center font-bold whitespace-nowrap">
+              {{ c.total_venta|unlocalize|floatformat:0 }} ₲
+            </td>
+
+            <td class="px-6 py-4 text-center whitespace-nowrap">
+              {{ c.fecha_actualizacion|date:"d/m/Y H:i" }}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex justify-center gap-2">
+                <a href="{% url 'cotizaciones:cotizacion_update' c.id %}"
+                   class="px-4 py-2 rounded-md font-semibold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95 text-center">
+                  Editar
+                </a>
+                <a href="{% url 'cotizaciones:cotizacion_delete' c.id %}"
+                   class="px-4 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700 text-center">
+                  Eliminar
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-6 py-6 text-center text-[var(--muted)]">
+              No hay cotizaciones registradas.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+  (function(){
+    const MAP = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",
+                 MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",
+                 CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
+    document.querySelectorAll('.currency-emoji').forEach(el=>{
+      const code = String(el.dataset.code||'').toUpperCase();
+      el.textContent = (MAP[code] || "💱") + " ";
+    });
+  })();
+</script>
+{% endblock %}

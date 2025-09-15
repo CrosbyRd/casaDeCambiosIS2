@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🪙 Editar Moneda</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Modifica la información de la moneda seleccionada y guarda los cambios.
+      </p>
+    </div>
+    <a href="{% url 'monedas:listar_monedas' %}"
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver</a>
+  </header>
+
+  <!-- Formulario -->
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <form method="post" id="moneda-form" class="pb-6"
+          data-currencies='{
+            "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
+            "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
+            "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
+            "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
+            "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
+            "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
+            "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
+            "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
+            "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
+            "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
+            "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
+            "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
+            "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
+            "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
+            "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
+            "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
+          }'>
+      {% csrf_token %}
+
+      <!-- Código (SOLO este bloque con esquinas redondeadas) -->
+      <div class="overflow-x-auto">
+        <div class="w-full min-w-[560px] rounded-xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr><th class="px-4 py-3 text-left">Código</th></tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)] bg-white">
+                <td class="px-4 py-3">
+                  {{ form.codigo }}
+                  <input type="hidden" name="{{ form.codigo.name }}" value="{{ form.codigo.value|default_if_none:'' }}">
+                  <p class="text-sm text-[var(--muted)] mt-2">El código no puede modificarse aquí.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Nombre / Símbolo (ancho unificado) -->
+      <div class="overflow-x-auto mt-6">
+        <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
+          <thead class="bg-[var(--brand)] text-white">
+            <tr>
+              <th class="px-4 py-3 text-left">Nombre</th>
+              <th class="px-4 py-3 text-left">Símbolo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-[var(--brand-soft)]">
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.nombre }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.simbolo }}</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Decimales / Mínima denominación (ancho unificado) -->
+      <div class="overflow-x-auto mt-6">
+        <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
+          <thead class="bg-[var(--brand)] text-white">
+            <tr>
+              <th class="px-4 py-3 text-left">Decimales</th>
+              <th class="px-4 py-3 text-left">Mínima denominación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-[var(--brand-soft)]">
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.decimales }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.minima_denominacion }}</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- (Bloque de flags eliminado como en "Crear Moneda") -->
+
+    </form>
+  </section>
+
+  <!-- Botones fuera del recuadro -->
+  <div class="flex justify-end gap-3 pt-2">
+    <a href="{% url 'monedas:listar_monedas' %}"
+       class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+      Cancelar
+    </a>
+    <button type="submit" form="moneda-form"
+            class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+            style="background:var(--brand)">
+      💾 Guardar Cambios
+    </button>
+  </div>
+</main>
+
+<style>
+  #id_codigo,
+  #id_nombre,
+  #id_simbolo,
+  #id_decimales,
+  #id_minima_denominacion{
+    width:100%;
+    max-width:380px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    height:48px;
+    font-size:1rem;
+    color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+    transition:box-shadow .2s ease,border-color .2s ease;
+  }
+  #id_codigo[disabled]{ opacity:.7; cursor:not-allowed; background:#f7f7fb; }
+  #id_codigo:focus,
+  #id_nombre:focus,
+  #id_simbolo:focus,
+  #id_decimales:focus,
+  #id_minima_denominacion:focus{
+    outline:none; border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  }
+</style>
+
+<script>
+  (function(){
+    const form   = document.getElementById('moneda-form');
+    if(!form) return;
+
+    const data   = JSON.parse(form.dataset.currencies || "{}");
+    const sel    = document.getElementById('id_codigo');
+    const nombre = document.getElementById('id_nombre');
+    const simb   = document.getElementById('id_simbolo');
+
+    if (sel) {
+      sel.setAttribute('disabled', 'disabled');
+      sel.setAttribute('title', 'El código no puede modificarse en edición.');
+    }
+
+    function sync(code){
+      if(!data[code]) return;
+      const {name, symbol} = data[code];
+      if(nombre) nombre.value = name;
+      if(simb)   simb.value   = symbol;
+    }
+
+    if (sel && sel.value) sync(sel.value);
+  })();
+</script>
+{% endblock %}

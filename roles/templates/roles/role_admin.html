@@ -1,89 +1,105 @@
 {% extends "base.html" %}
-
-{% block title %}Administración de Roles{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
-  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panel de Administración de Roles</h1>
+<main class="max-w-6xl mx-auto px-6 py-10">
 
-  <!-- Botón para volver al panel de administrador -->
-  <div class="mb-6 text-center">
-    <a href="{% url 'usuarios:admin_panel' %}" 
-       class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-200">
-       ← Volver al Panel de Administrador
-    </a>
-  </div>
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Roles</h1>
+      <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+        Gestioná los roles del sistema: crear, ver descripción, asignar permisos y eliminar.
+      </p>
+    </div>
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">
+        ⬅ Volver al Panel
+      </a>
+      <button type="button" id="btn-toggle-crear"
+              class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+        ➕ Crear Rol
+      </button>
+    </div>
+  </header>
 
-  <!-- Formulario para crear un nuevo rol -->
-  <form id="createRoleForm" class="flex flex-wrap gap-4 mb-6 justify-center items-center bg-gray-50 p-4 rounded-lg shadow-sm">
-    <input type="text" id="roleName" placeholder="Nombre del rol" required class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none flex-1 min-w-[200px]">
-    <input type="text" id="roleDesc" placeholder="Descripción" class="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none flex-1 min-w-[200px]">
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition duration-200">Crear Rol</button>
-  </form>
+  {% if messages %}
+    <div class="mb-6">
+      {% for message in messages %}
+        <div class="bg-green-500 text-white px-4 py-2 rounded-lg mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-  <!-- Lista de roles -->
-  <div class="overflow-x-auto">
-    <table class="w-full table-auto border-collapse text-left">
-      <thead class="bg-blue-100">
-        <tr>
-          <th class="border px-4 py-2">ID</th>
-          <th class="border px-4 py-2">Nombre</th>
-          <th class="border px-4 py-2">Descripción</th>
-          <th class="border px-4 py-2 text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="rolesTable" class="bg-white">
-        <!-- Aquí se cargan los roles vía JS -->
-      </tbody>
-    </table>
-  </div>
+  <!-- Formulario crear rol -->
+  <section id="crearRolForm" class="hidden mb-6 bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="nombre" class="block mb-1 font-semibold">Nombre del Rol</label>
+        <input type="text" id="nombre" name="nombre"
+               class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
+      </div>
+      <div class="mb-4">
+        <label for="descripcion" class="block mb-1 font-semibold">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3"
+                  class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
+      </div>
+      <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+        Guardar Rol
+      </button>
+    </form>
+  </section>
+
+  <!-- Tabla de Roles -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[640px]">
+        <thead style="background:var(--brand); color:#fff">
+          <tr>
+            <th class="px-6 py-3">Nombre</th>
+            <th class="px-6 py-3">Descripción</th>
+            <th class="px-6 py-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rol in roles %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-4 font-bold text-[var(--brand-dark)]">{{ rol.name }}</td>
+            <td class="px-6 py-4">{{ rol.description|default:"—" }}</td>
+            <td class="px-6 py-4">
+              <div class="flex justify-center gap-2">
+                <form action="{% url 'roles:role-delete' rol.pk %}" method="post"
+                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este rol?');">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="w-24 text-center px-4 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="px-6 py-6 text-center" style="color:var(--muted)">No hay roles registrados.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
 </main>
 
 <script>
-async function fetchRoles() {
-    const res = await fetch('/roles/');
-    const data = await res.json();
-    const table = document.getElementById('rolesTable');
-    table.innerHTML = '';
-    data.forEach(role => {
-        table.innerHTML += `
-        <tr class="hover:bg-gray-50">
-            <td class="border px-4 py-2">${role.id}</td>
-            <td class="border px-4 py-2 font-medium">${role.name}</td>
-            <td class="border px-4 py-2">${role.description || '-'}</td>
-            <td class="border px-4 py-2 text-center">
-                <button onclick="deleteRole(${role.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg shadow-sm transition duration-200">Eliminar</button>
-            </td>
-        </tr>
-        `;
-    });
-}
-
-async function createRole(event) {
-    event.preventDefault();
-    const name = document.getElementById('roleName').value;
-    const description = document.getElementById('roleDesc').value;
-    const res = await fetch('/roles/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name, description})
-    });
-    if (res.ok) {
-        document.getElementById('createRoleForm').reset();
-        fetchRoles();
-    } else {
-        alert('Error al crear rol');
+  (function(){
+    const btn = document.getElementById('btn-toggle-crear');
+    const panel = document.getElementById('crearRolForm');
+    if(btn && panel){
+      btn.addEventListener('click', ()=> panel.classList.toggle('hidden'));
     }
-}
-
-async function deleteRole(id) {
-    if (!confirm('¿Seguro que quieres eliminar este rol?')) return;
-    const res = await fetch(`/roles/${id}/`, {method: 'DELETE'});
-    if (res.ok) fetchRoles();
-    else alert('Error al eliminar rol');
-}
-
-document.getElementById('createRoleForm').addEventListener('submit', createRole);
-window.addEventListener('DOMContentLoaded', fetchRoles);
+  })();
 </script>
 {% endblock %}

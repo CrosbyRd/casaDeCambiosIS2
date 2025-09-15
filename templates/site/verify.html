@@ -1,28 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Verificar cuenta{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
 
 {% block content %}
 <main class="max-w-[600px] mx-auto px-6 py-8">
   <h1 class="h1 mb-6">Verificación de cuenta</h1>
 
   {% if error %}
-  <p class="text-red-600 mb-4">{{ error }}</p>
+    <div class="form-alert">{{ error }}</div>
   {% endif %}
 
+  {% if messages %}
+    {% for message in messages %}
+      <div class="form-alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 
-  <form method="post">
-  {% csrf_token %}
-  <div class="mb-6">
-    <label class="block mb-3 font-medium" for="{{ form.codigo.id_for_label }}">Código de verificación</label>
-    {{ form.codigo }}
-  </div>
-  <button class="btn w-full" type="submit">Verificar</button>
-</form>
-{% if messages %}
-  {% for message in messages %}
-    <p class="text-red-600 mb-4">{{ message }}</p>
-  {% endfor %}
-{% endif %}
+  <form method="post" class="form">
+    {% csrf_token %}
+    <p>
+      <label for="{{ form.codigo.id_for_label }}">Código de verificación</label>
+      {{ form.codigo }}
+      {% if form.codigo.help_text %}
+        <small class="helptext">{{ form.codigo.help_text }}</small>
+      {% endif %}
+      {% if form.codigo.errors %}
+        <ul class="errorlist">
+          {% for e in form.codigo.errors %}
+            <li>{{ e }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </p>
 
+    <div class="actions">
+      <button class="btn w-full" type="submit">Verificar</button>
+    </div>
+  </form>
 </main>
 {% endblock %}

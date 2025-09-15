@@ -134,4 +134,107 @@ body{
   box-shadow: 0 30px 60px -15px rgba(15,23,42,.35);
 }
 
+/* ====== Formularios genéricos ====== */
+.form p{              /* cada fila del form.as_p */
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin: 0 0 1rem;
+}
 
+.form label{
+  font-weight: 700;
+}
+
+.form input[type="text"],
+.form input[type="number"],
+.form input[type="email"],
+.form input[type="password"],
+.form select,
+.form textarea{
+  width: 100%;
+  padding: .85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: .9rem;
+  background: #fff;
+  font: inherit;
+  outline: none;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 20%, transparent);
+}
+
+/* mensajes de ayuda/errores de Django */
+.form .helptext{ color: var(--muted); font-size: .9rem; }
+.form ul.errorlist{ margin: .25rem 0 0; padding: 0 0 0 1rem; color: #b91c1c; }
+.form-alert{
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: .9rem;
+  padding: .75rem 1rem;
+  margin: 0 0 1rem;
+}
+
+/* Alineación de acciones como en login */
+.actions{
+  display: flex; gap: .75rem; margin-top: 1rem;
+}
+
+/* --- Correcciones de botones en tablas/listados --- */
+.table .action-row .btn-ghost,
+.table .action-row .btn-secondary,
+.table td .btn-ghost,
+.table td .btn-secondary{
+  width: auto;         /* que no ocupen todo el ancho */
+  margin-top: 0;       /* sin salto vertical extra */
+  padding: .6rem 1rem; /* tamaño compacto para celdas */
+}
+
+.table .action-row{ gap: .5rem; flex-wrap: wrap; }
+
+/* ====== Variantes compactas para listas y formularios ====== */
+.h1--sm{ font-size: clamp(1.75rem, 2.2vw + 1rem, 2.25rem); line-height:1.2; margin: .5rem 0 .75rem; }
+.container--tight{ padding: 1.25rem; }
+.box--tight{ padding: .75rem; }
+.page-header--tight{ margin-bottom: .5rem; }
+.page-header--tight .btn{ padding: .5rem .85rem; border-radius: .75rem; }
+.table--compact th,
+.table--compact td{ padding: .55rem .75rem; }
+.table--compact thead tr{ height: auto; }
+.table .action-row{ gap: .4rem; }
+.table .action-row .btn-secondary,
+.table .action-row .btn-ghost{
+  padding: .45rem .7rem;
+  font-weight: 600;
+}
+.form--compact p{ margin: 0 0 .75rem; }
+.form--compact input,
+.form--compact select,
+.form--compact textarea{ padding: .7rem .9rem; }
+.table-wrap--max{ max-width: 920px; }
+
+/* ====== Helpers responsive ====== */
+img, svg, video{ max-width:100%; height:auto; }
+
+/* En pantallas pequeñas: pilas acciones, filas de rates y espaciados menores */
+@media (max-width: 640px){
+  .actions{ flex-direction: column; }
+  .rates-row{ flex-direction: column; align-items: flex-start; gap:.25rem; }
+  .container--tight{ padding: 1rem; }
+  .box--tight{ padding: .6rem; }
+}
+
+/* En tablets: reduce padding general en tarjetas/tablas */
+@media (max-width: 768px){
+  .rates-card{ padding: 1rem; }
+  .table--compact th, .table--compact td{ padding: .5rem .6rem; }
+}
+
+/* Utilidad: contenedor con scroll horizontal para tablas anchas (por si no usas Tailwind en algún template) */
+.table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }

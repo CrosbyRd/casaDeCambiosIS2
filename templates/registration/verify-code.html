@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+
+{% block content %}
+<main class="max-w-[600px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Verificación de acceso</h1>
+
+  {% if messages %}
+    <div class="space-y-2 mb-4">
+      {% for message in messages %}
+        <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <label class="block mb-2 font-semibold" for="id_codigo">Código de verificación</label>
+    <input id="id_codigo" name="codigo" type="text" maxlength="6" inputmode="numeric" pattern="[0-9]*"
+           class="w-full rounded-xl border border-neutral-300 px-3 py-3 focus:outline-none focus:ring-4 focus:ring-brand/30 focus:border-brand"
+           required autofocus />
+    <button class="btn w-full mt-4" type="submit">Confirmar</button>
+  </form>
+
+  <form class="mt-3" method="post" action="{% url 'login_otp_resend' %}">
+    {% csrf_token %}
+    <button class="btn-secondary w-full" type="submit">Reenviar código</button>
+  </form>
+</main>
+{% endblock %}

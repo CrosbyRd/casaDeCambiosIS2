@@ -1,43 +1,99 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Preguntas frecuentes{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+
 {% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
-<h1 class="h1 mb-6">Preguntas frecuentes</h1>
+<main class="max-w-[1100px] mx-auto px-6 py-10">
+  <h1 class="text-5xl font-extrabold tracking-tight mb-8">Preguntas frecuentes</h1>
 
-<!-- Acordeón -->
-<div class="border border-neutral-200 rounded-lg" data-accordion>
-  <!-- ABIERTA POR DEFECTO -->
-  <button class="accordion-button" aria-expanded="true" data-open data-accordion-target="#faq1">
-    <span class="font-semibold">¿Cómo se calcula el tipo de cambio?</span>
-    <span class="ml-2" aria-hidden="true">▾</span>
-  </button>
-  <div id="faq1" class="accordion-panel" style="display:block">
-    <p class="text-neutral-700">Usamos proveedores mayoristas y aplicamos un spread dinámico.</p>
+  <section id="faq" class="bg-white border rounded-2xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <!-- Item -->
+    <div class="border-b last:border-0" style="border-color:var(--line)">
+      <button type="button"
+              class="w-full text-left px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-4 hover:bg-neutral-50"
+              aria-expanded="false" aria-controls="faq1" data-accordion-btn>
+        <span class="font-extrabold text-lg md:text-xl">¿Cómo se calcula el tipo de cambio?</span>
+        <span class="transition-transform" data-arrow>▾</span>
+      </button>
+      <div id="faq1" class="hidden px-4 md:px-6 pb-5 text-neutral-700">
+        Usamos precios mayoristas y aplicamos un <em>spread</em> dinámico según mercado y método de pago.
+      </div>
+    </div>
+
+    <!-- Item -->
+    <div class="border-b last:border-0" style="border-color:var(--line)">
+      <button type="button"
+              class="w-full text-left px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-4 hover:bg-neutral-50"
+              aria-expanded="false" aria-controls="faq2" data-accordion-btn>
+        <span class="font-extrabold text-lg md:text-xl">¿Cuánto tarda una transferencia?</span>
+        <span class="transition-transform" data-arrow>▾</span>
+      </button>
+      <div id="faq2" class="hidden px-4 md:px-6 pb-5 text-neutral-700">
+        La mayoría se acreditan el mismo día hábil. Si es interbancaria, puede demorar hasta 24–48 h.
+      </div>
+    </div>
+
+    <!-- Item -->
+    <div class="border-b last:border-0" style="border-color:var(--line)">
+      <button type="button"
+              class="w-full text-left px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-4 hover:bg-neutral-50"
+              aria-expanded="false" aria-controls="faq3" data-accordion-btn>
+        <span class="font-extrabold text-lg md:text-xl">¿Puedo simular sin registrarme?</span>
+        <span class="transition-transform" data-arrow>▾</span>
+      </button>
+      <div id="faq3" class="hidden px-4 md:px-6 pb-5 text-neutral-700">
+        Sí. Usá la <a class="text-brand hover:underline" href="{% url 'site_calculator' %}">calculadora pública</a>.
+      </div>
+    </div>
+
+    <!-- NUEVAS preguntas -->
+    <div class="border-b last:border-0" style="border-color:var(--line)">
+      <button type="button"
+              class="w-full text-left px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-4 hover:bg-neutral-50"
+              aria-expanded="false" aria-controls="faq4" data-accordion-btn>
+        <span class="font-extrabold text-lg md:text-xl">¿Es seguro operar en Global Exchange?</span>
+        <span class="transition-transform" data-arrow>▾</span>
+      </button>
+      <div id="faq4" class="hidden px-4 md:px-6 pb-5 text-neutral-700">
+        Sí. Protegemos tu cuenta con verificación por <strong>código de un solo uso (OTP)</strong> y conexiones cifradas (HTTPS).
+      </div>
+    </div>
+
+    <div class="border-b last:border-0" style="border-color:var(--line)">
+      <button type="button"
+              class="w-full text-left px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-4 hover:bg-neutral-50"
+              aria-expanded="false" aria-controls="faq6" data-accordion-btn>
+        <span class="font-extrabold text-lg md:text-xl">¿Puedo cancelar una operación?</span>
+        <span class="transition-transform" data-arrow>▾</span>
+      </button>
+      <div id="faq6" class="hidden px-4 md:px-6 pb-5 text-neutral-700">
+        Si la operación aún no fue ejecutada, podés cancelarla desde tu panel o contactarnos. Una vez procesada, no es reversible.
+      </div>
+    </div>
+  </section>
+
+  <div class="mt-8">
+    <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
   </div>
-
-  <hr class="border-neutral-200" />
-
-  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq2">
-    <span class="font-semibold">¿Cuánto tarda una transferencia?</span>
-    <span class="ml-2" aria-hidden="true">▸</span>
-  </button>
-  <div id="faq2" class="accordion-panel">
-    <p class="text-neutral-700">Las transferencias locales suelen acreditarse el mismo día hábil.</p>
-  </div>
-
-  <hr class="border-neutral-200" />
-
-  <button class="accordion-button" aria-expanded="false" data-accordion-target="#faq3">
-    <span class="font-semibold">¿Puedo simular sin registrarme?</span>
-    <span class="ml-2" aria-hidden="true">▸</span>
-  </button>
-  <div id="faq3" class="accordion-panel">
-    <p class="text-neutral-700">Sí, usá la calculadora pública.</p>
-  </div>
-</div>
-
-<div class="mt-8">
-  <a href="{% url 'site_contact' %}" class="btn">Aún tengo dudas</a>
-</div>
 </main>
+
+<script>
+  // Acordeón accesible
+  (function() {
+    const btns = document.querySelectorAll('[data-accordion-btn]');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panelId = btn.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+
+        btn.setAttribute('aria-expanded', String(!expanded));
+        panel.classList.toggle('hidden', expanded);
+
+        const arrow = btn.querySelector('[data-arrow]');
+        if (arrow) arrow.classList.toggle('rotate-180', !expanded);
+      });
+    });
+  })();
+</script>
 {% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load form_extras %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Crear nueva contraseña</h1>
+
+  {% if validlink %}
+    <form method="post" class="border border-neutral-200 rounded-lg p-6">
+      {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm mb-4">
+          Corrige los campos marcados.
+        </div>
+      {% endif %}
+
+      <div class="mb-6">
+        <label class="block mb-3 font-medium" for="{{ form.new_password1.id_for_label }}">Nueva contraseña</label>
+        {{ form.new_password1|add_class:"w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" }}
+        {% if form.new_password1.help_text %}
+          <p class="text-sm text-neutral-600 mt-2">{{ form.new_password1.help_text|safe }}</p>
+        {% endif %}
+        {% for err in form.new_password1.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+      </div>
+
+      <div class="mb-6">
+        <label class="block mb-3 font-medium" for="{{ form.new_password2.id_for_label }}">Confirmar contraseña</label>
+        {{ form.new_password2|add_class:"w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" }}
+        {% for err in form.new_password2.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+      </div>
+
+      <button type="submit" class="btn w-full">Guardar contraseña</button>
+    </form>
+  {% else %}
+    <section class="border border-neutral-200 rounded-lg p-6">
+      <h2 class="h2 mb-3">Enlace inválido o vencido</h2>
+      <p class="text-neutral-700">Solicita nuevamente el restablecimiento para generar un enlace válido.</p>
+      <div class="mt-6">
+        <a class="btn" href="{% url 'site_forgot_password' %}">Solicitar nuevo enlace</a>
+      </div>
+    </section>
+  {% endif %}
+</main>
+{% endblock %}

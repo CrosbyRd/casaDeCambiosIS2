@@ -1,47 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Tipos de cambio{% endblock %}
-{% block content %}
-<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
-<h1 class="h1 mb-6">Tipos de cambio</h1>
+{% load l10n %}
+{% block title %}Global Exchange{% endblock %}
 
-<!-- Tabla alineada (números a la derecha) -->
-<div class="overflow-x-auto border border-neutral-200 rounded-lg">
-  <table class="min-w-full">
-    <thead class="bg-neutral-50">
-      <tr>
-        <th class="text-left py-4 px-6">Par</th>
-        <th class="text-right py-4 px-6">Compra</th>
-        <th class="text-right py-4 px-6">Venta</th>
-        <th class="text-right py-4 px-6">Actualizado</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="border-t border-neutral-200">
-        <td class="py-4 px-6">
-          <span class="emoji">🇺🇸</span> USD
-        </td>
-        <td class="py-4 px-6 text-right">7.280</td>
-        <td class="py-4 px-6 text-right">7.320</td>
-        <td class="py-4 px-6 text-right">Hace 2 min</td>
-      </tr>
-      <tr class="border-t border-neutral-200">
-        <td class="py-4 px-6">
-          <span class="emoji">🇪🇺</span> EUR
-        </td>
-        <td class="py-4 px-6 text-right">7.980</td>
-        <td class="py-4 px-6 text-right">8.020</td>
-        <td class="py-4 px-6 text-right">Hace 3 min</td>
-      </tr>
-      <tr class="border-t border-neutral-200">
-        <td class="py-4 px-6">
-          <span class="emoji">🇧🇷</span> BRL
-        </td>
-        <td class="py-4 px-6 text-right">1.280</td>
-        <td class="py-4 px-6 text-right">1.320</td>
-        <td class="py-4 px-6 text-right">Hace 5 min</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-10">
+  <h1 class="h1 mb-6">Tipos de cambio</h1>
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <table class="w-full border-collapse">
+      <thead class="bg-[var(--brand)] text-white">
+        <tr>
+          <th class="px-4 py-3 text-left">Moneda</th>
+          <th class="px-4 py-3 text-right">Compra (PYG)</th>
+          <th class="px-4 py-3 text-right">Venta (PYG)</th>
+          <th class="px-4 py-3 text-right">Actualización</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cotizaciones %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-4 py-3">
+              <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+              {{ c.moneda_destino.codigo }}
+            </td>
+
+            {# sin decimales #}
+            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</td>
+            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</td>
+
+            <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="px-4 py-6 text-center text-neutral-500">Sin cotizaciones.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
 </main>
+
+<script>
+(function(){
+  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
+  document.querySelectorAll('.currency-emoji').forEach(el=>{
+    const code = String(el.dataset.code||'').toUpperCase();
+    el.textContent = (MAP[code] || "💱") + " ";
+  });
+})();
+</script>
 {% endblock %}

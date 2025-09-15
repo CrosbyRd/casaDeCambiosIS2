@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10">
+
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">💳 {{ tipo.nombre }}</h1>
+      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">
+        Aquí puedes ver toda la información del medio de pago seleccionado.
+      </p>
+    </div>
+    <div class="space-x-3 flex">
+      <a href="{% url 'pagos:listar_tipos_medio_pago' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">
+        ⬅ Volver
+      </a>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+      <table class="w-full border-collapse">
+        <thead style="background:var(--brand); color:#fff">
+          <tr><th class="px-6 py-3 text-left">📌 Información del Medio de Pago</th></tr>
+        </thead>
+        <tbody>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Nombre:</strong> {{ tipo.nombre }}</td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Comisión:</strong> <span class="font-semibold">{{ tipo.comision_porcentaje|floatformat:2 }}%</span></td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Bonificación:</strong> <span class="text-green-600 font-semibold">{{ tipo.bonificacion_porcentaje|default_if_none:"0"|floatformat:2 }}%</span></td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Estado:</strong> {% if tipo.activo %}<span class="text-green-600 font-semibold">Activo</span>{% else %}<span class="text-red-600 font-semibold">Inactivo</span>{% endif %}</td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Fecha Registro:</strong> {{ tipo.created_at|date:"d/m/Y H:i" }}</td></tr>
+          <tr><td class="px-6 py-3"><strong>Última Actualización:</strong> {{ tipo.updated_at|date:"d/m/Y H:i" }}</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+      <table class="w-full border-collapse">
+        <thead style="background:var(--brand); color:#fff">
+          <tr><th class="px-6 py-3 text-left">💼 Resumen Operativo</th></tr>
+        </thead>
+        <tbody>
+          <tr class="border-b" style="border-color:var(--line)">
+            <td class="px-6 py-3">
+              <strong>Disponibilidad para operaciones:</strong>
+              {% if tipo.activo %}<span class="text-green-600 font-semibold">Disponible</span>{% else %}<span class="text-red-600 font-semibold">No disponible</span>{% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-6 py-3">
+              <strong>Condiciones:</strong>
+              Se aplica una comisión del <strong>{{ tipo.comision_porcentaje|floatformat:2 }}%</strong>
+              {% if tipo.bonificacion_porcentaje %} y una bonificación del <strong>{{ tipo.bonificacion_porcentaje|floatformat:2 }}%</strong>.{% else %} (sin bonificación configurada).{% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <section class="bg-white border rounded-xl shadow-sm p-6 mt-6" style="border-color:var(--line)">
+    <h2 class="text-lg font-bold mb-4 text-[var(--ink)]">📄 Información Adicional</h2>
+
+    <div class="mb-3 p-3 rounded bg-blue-100 text-blue-800">
+      ℹ️ Este medio de pago aplica una comisión del <strong>{{ tipo.comision_porcentaje|floatformat:2 }}%</strong>
+      {% if tipo.bonificacion_porcentaje %} y una bonificación del <strong>{{ tipo.bonificacion_porcentaje|floatformat:2 }}%</strong>.{% endif %}
+    </div>
+
+    <div class="p-3 rounded bg-yellow-100 text-yellow-800">
+      ⚠️ Si el medio de pago está <strong>inactivo</strong>, no podrá seleccionarse en operaciones.
+    </div>
+  </section>
+
+</main>
+{% endblock %}
