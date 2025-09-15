@@ -1,22 +1,37 @@
-# core/logic.py
+"""
+Módulo de lógica de negocio para cálculos de simulación de cambio de divisas.
+
+Este módulo contiene la función principal para calcular simulaciones de compra y venta de divisas,
+aplicando tasas, comisiones y bonificaciones de cliente.
+"""
 from decimal import Decimal, ROUND_HALF_UP
 from django.contrib.auth import get_user_model
 from cotizaciones.models import Cotizacion
 from monedas.models import Moneda
-from clientes.models import Cliente
+from django.core.exceptions import ObjectDoesNotExist
 
 User = get_user_model()
 
 def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destino: str, user: User = None) -> dict:
     """
-    Calcula el resultado de una simulación de cambio utilizando datos reales de la base de datos,
-    replicando la lógica de negocio original de comisiones y bonificaciones.
+    Calcula una simulación de cambio de divisas entre una moneda de origen y una de destino.
 
-    :param monto_origen: La cantidad de dinero a cambiar.
-    :param moneda_origen: El código de la moneda de origen (ej. 'PYG').
-    :param moneda_destino: El código de la moneda de destino (ej. 'USD').
-    :param user: El usuario que realiza la simulación (opcional).
-    :return: Un diccionario con el resultado del cálculo.
+    La simulación considera la tasa de cambio, comisiones y posibles bonificaciones
+    aplicables a un usuario autenticado. Las transacciones deben involucrar PYG
+    como moneda base o destino.
+
+    :param monto_origen: El monto de la moneda de origen a cambiar.
+    :type monto_origen: Decimal
+    :param moneda_origen: El código de la moneda de origen (ej. 'PYG', 'USD').
+    :type moneda_origen: str
+    :param moneda_destino: El código de la moneda de destino (ej. 'USD', 'PYG').
+    :type moneda_destino: str
+    :param user: El usuario que realiza la simulación, si está autenticado.
+                 Se utiliza para aplicar bonificaciones.
+    :type user: User, optional
+    :returns: Un diccionario con el resultado de la simulación, incluyendo el monto recibido,
+              la tasa aplicada, la bonificación aplicada y cualquier error.
+    :rtype: dict
     """
     resultado = {
         'error': None,
@@ -25,29 +40,45 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         'bonificacion_aplicada': Decimal('0.0')
     }
 
-    try:
-        # 1. Obtener las monedas de origen y destino
-        moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen)
-        moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino)
+    moneda_origen_obj = None
+    moneda_destino_obj = None
+    cotizacion = None
 
-        # 2. Validar el monto mínimo de la moneda de origen
+    try:
+        # --- Búsqueda de Monedas ---
+        try:
+            moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen)
+        except Moneda.DoesNotExist:
+            raise Moneda.DoesNotExist(f"Moneda de origen '{moneda_origen}' no encontrada.")
+
+        try:
+            moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino)
+        except Moneda.DoesNotExist:
+            raise Moneda.DoesNotExist(f"Moneda de destino '{moneda_destino}' no encontrada.")
+
+        # --- Validación de Monto Mínimo ---
         if monto_origen < moneda_origen_obj.minima_denominacion:
             raise ValueError(
                 f"El monto mínimo para cambiar {moneda_origen} es {moneda_origen_obj.minima_denominacion}."
             )
 
-        # 3. Determinar la bonificación del cliente
+        # --- Bonificación del Cliente ---
         bonificacion_pct = Decimal('0')
         if user and user.is_authenticated:
+            # Se asume que user.clientes.first() podría devolver None si no hay cliente asociado.
             cliente = user.clientes.first()
-            if cliente:
+            if cliente: # Verificar si el cliente no es None
                 bonificacion_pct = cliente.bonificacion
+            # No es necesario un try-except ObjectDoesNotExist aquí, ya que .first() devuelve None, no lanza ObjectDoesNotExist.
 
-        # 4. Lógica de cálculo
+        # --- Determinar Tipo de Transacción y Obtener Cotización ---
         if moneda_origen == 'PYG' and moneda_destino != 'PYG':
-            # --- VENTA DE DIVISA (La casa de cambios VENDE USD, EUR, etc.) ---
-            cotizacion = Cotizacion.objects.get(moneda_base__codigo='PYG', moneda_destino__codigo=moneda_destino)
-            
+            # VENTA DE DIVISA (La casa de cambios VENDE USD, EUR, etc. al cliente)
+            try:
+                cotizacion = Cotizacion.objects.get(moneda_base__codigo='PYG', moneda_destino__codigo=moneda_destino)
+            except Cotizacion.DoesNotExist:
+                raise Cotizacion.DoesNotExist(f"No se encontró cotización para PYG -> {moneda_destino}.")
+
             comision_vta = cotizacion.comision_venta
             bonificacion_monto = comision_vta * (bonificacion_pct / Decimal('100'))
             tasa_final = (cotizacion.valor_venta + comision_vta) - bonificacion_monto
@@ -58,15 +89,17 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
             monto_recibido = monto_origen / tasa_final
 
         elif moneda_origen != 'PYG' and moneda_destino == 'PYG':
-            # --- COMPRA DE DIVISA (La casa de cambios COMPRA USD, EUR, etc.) ---
-            cotizacion = Cotizacion.objects.get(moneda_base__codigo='PYG', moneda_destino__codigo=moneda_origen)
-            
+            # COMPRA DE DIVISA (La casa de cambios COMPRA USD, EUR, etc. al cliente)
+            try:
+                cotizacion = Cotizacion.objects.get(moneda_base__codigo='PYG', moneda_destino__codigo=moneda_origen)
+            except Cotizacion.DoesNotExist:
+                raise Cotizacion.DoesNotExist(f"No se encontró cotización para {moneda_origen} -> PYG.")
+
             comision_com = cotizacion.comision_compra
             descuento_comision = comision_com * (bonificacion_pct / Decimal('100'))
             comision_final = comision_com - descuento_comision
             tasa_final = cotizacion.valor_compra - comision_final
             
-            # La bonificación aplicada es el monto que se descontó de la comisión
             bonificacion_monto = descuento_comision
             
             if tasa_final <= 0:
@@ -77,13 +110,12 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         else:
             raise ValueError("La simulación debe ser entre PYG y una moneda extranjera.")
 
-        # Cuantificar monto_recibido basado en los decimales de la moneda de destino
+        # --- Cuantificación Final y Validación ---
         monto_recibido = monto_recibido.quantize(
             Decimal('1') / (Decimal('10') ** moneda_destino_obj.decimales),
             rounding=ROUND_HALF_UP
         )
 
-        # Validar contra la denominación mínima de la moneda de destino
         if monto_recibido < moneda_destino_obj.minima_denominacion:
             raise ValueError(
                 f"El monto a recibir ({monto_recibido} {moneda_destino_obj.codigo}) es menor a la denominación mínima de {moneda_destino_obj.minima_denominacion} {moneda_destino_obj.codigo}."
@@ -95,9 +127,15 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
             'monto_recibido': monto_recibido
         })
 
-    except Cotizacion.DoesNotExist:
-        resultado['error'] = f"No se encontró una cotización para el par de monedas solicitado."
-    except Exception as e:
+    # Capturar errores específicos con mensajes más informativos
+    except Moneda.DoesNotExist as e:
+        resultado['error'] = f"Error en la simulación: {str(e)}" # str(e) ahora incluirá el código de la moneda
+    except Cotizacion.DoesNotExist as e:
+        resultado['error'] = f"Error en la simulación: {str(e)}" # str(e) ahora incluirá el par de monedas
+    except ValueError as e:
         resultado['error'] = f"Error en la simulación: {str(e)}"
+    except Exception as e:
+        # Fallback para cualquier otro error inesperado
+        resultado['error'] = f"Error inesperado en la simulación: {str(e)}"
 
     return resultado
