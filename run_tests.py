@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
 # Configurar settings de Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CasaDeCambioIS2.settings") # Cambia si tu proyecto se llama distinto
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CasaDeCambioIS2.settings")  # Cambia si tu proyecto se llama distinto
 django.setup()
 
 # -----------------------------
@@ -25,7 +25,11 @@ django.setup()
 # -----------------------------
 out = StringIO()
 try:
-    call_command("test", "cotizaciones", verbosity=0, stdout=out, stderr=out)
+    # Lista de apps a testear
+    apps_a_testear = ["cotizaciones", "pagos", "monedas"]
+    
+    # Ejecutar tests
+    call_command("test", *apps_a_testear, verbosity=1, stdout=out, stderr=out)
     result = out.getvalue()
 
     # Detectar número de tests ejecutados

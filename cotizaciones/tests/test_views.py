@@ -209,7 +209,7 @@ class CotizacionViewsTests(TestCase):
         response = self.client.post(url)
         self.assertStatus(
             response, 404, "La eliminación de una cotización inexistente debería devolver 404."
-        )
+        ) # url_error = reverse("cotizaciones:cotizacion_delete", args=[self.cotizacion.id])
 
         # Fallo intencional comentado: ID negativo
         # url_error = reverse("cotizaciones:cotizacion_delete", args=[-5])
