@@ -66,16 +66,25 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-monedas.forms">monedas.forms module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modulo-forms-de-la-app-monedas">Módulo forms de la app monedas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.CHOICES"><code class="docutils literal notranslate"><span class="pre">CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.CURRENCIES"><code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm"><code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.models">monedas.models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">monedas.models module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda"><code class="docutils literal notranslate"><span class="pre">Moneda</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-monedas.tests">monedas.tests module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.urls">monedas.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.urls">monedas.urls module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modulo-urls-de-la-app-monedas">Módulo urls de la app monedas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-monedas.views">monedas.views module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modulo-views-de-la-app-monedas">Módulo views de la app monedas</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.crear_moneda"><code class="docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.editar_moneda"><code class="docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.eliminar_moneda"><code class="docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a></li>
@@ -207,10 +216,71 @@
 </section>
 <section id="module-monedas.forms">
 <span id="monedas-forms-module"></span><h2>monedas.forms module<a class="headerlink" href="#module-monedas.forms" title="Link to this heading"></a></h2>
+<section id="modulo-forms-de-la-app-monedas">
+<h3>Módulo forms de la app monedas<a class="headerlink" href="#modulo-forms-de-la-app-monedas" title="Link to this heading"></a></h3>
+<p>Este módulo define el formulario principal de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
+Incluye la definición del catálogo de monedas basado en el estándar ISO 4217,
+sus símbolos y emojis asociados, así como el formulario para la gestión de
+objetos <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> en el sistema.</p>
+<section id="contenido">
+<h4>Contenido<a class="headerlink" href="#contenido" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Constante <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code> con los códigos de monedas soportadas.</p></li>
+<li><p>Función auxiliar <code class="docutils literal notranslate"><span class="pre">_choice_label</span></code> para generar etiquetas legibles.</p></li>
+<li><p>Lista de opciones <code class="docutils literal notranslate"><span class="pre">CHOICES</span></code> derivada de <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+<li><p>Clase <code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code> para la creación y validación de monedas.</p></li>
+</ul>
+</section>
+<section id="clases">
+<h4>Clases<a class="headerlink" href="#clases" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm" title="monedas.forms.MonedaForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonedaForm</span></code></a>: Formulario de modelo para crear y editar monedas.</p></li>
+</ul>
+</section>
+<section id="funciones">
+<h4>Funciones<a class="headerlink" href="#funciones" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">_choice_label()</span></code>: Retorna la etiqueta de selección de una moneda.</p></li>
+</ul>
+</section>
+<section id="constantes">
+<h4>Constantes<a class="headerlink" href="#constantes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.CURRENCIES" title="monedas.forms.CURRENCIES"><code class="xref py py-data docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a>: Diccionario de monedas con nombre, símbolo y emoji.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.CHOICES" title="monedas.forms.CHOICES"><code class="xref py py-data docutils literal notranslate"><span class="pre">CHOICES</span></code></a>: Lista de tuplas para representar opciones en formularios.</p></li>
+</ul>
+</section>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.forms.CHOICES">
+<span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('USD',</span> <span class="pre">'🇺🇸</span> <span class="pre">USD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">estadounidense'),</span> <span class="pre">('EUR',</span> <span class="pre">'🇪🇺</span> <span class="pre">EUR</span> <span class="pre">—</span> <span class="pre">Euro'),</span> <span class="pre">('ARS',</span> <span class="pre">'🇦🇷</span> <span class="pre">ARS</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">argentino'),</span> <span class="pre">('BRL',</span> <span class="pre">'🇧🇷</span> <span class="pre">BRL</span> <span class="pre">—</span> <span class="pre">Real</span> <span class="pre">brasileño'),</span> <span class="pre">('CLP',</span> <span class="pre">'🇨🇱</span> <span class="pre">CLP</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">chileno'),</span> <span class="pre">('COP',</span> <span class="pre">'🇨🇴</span> <span class="pre">COP</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">colombiano'),</span> <span class="pre">('MXN',</span> <span class="pre">'🇲🇽</span> <span class="pre">MXN</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">mexicano'),</span> <span class="pre">('PEN',</span> <span class="pre">'🇵🇪</span> <span class="pre">PEN</span> <span class="pre">—</span> <span class="pre">Sol</span> <span class="pre">peruano'),</span> <span class="pre">('PYG',</span> <span class="pre">'🇵🇾</span> <span class="pre">PYG</span> <span class="pre">—</span> <span class="pre">Guaraní</span> <span class="pre">paraguayo'),</span> <span class="pre">('UYU',</span> <span class="pre">'🇺🇾</span> <span class="pre">UYU</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">uruguayo'),</span> <span class="pre">('GBP',</span> <span class="pre">'🇬🇧</span> <span class="pre">GBP</span> <span class="pre">—</span> <span class="pre">Libra</span> <span class="pre">esterlina'),</span> <span class="pre">('JPY',</span> <span class="pre">'🇯🇵</span> <span class="pre">JPY</span> <span class="pre">—</span> <span class="pre">Yen</span> <span class="pre">japonés'),</span> <span class="pre">('CNY',</span> <span class="pre">'🇨🇳</span> <span class="pre">CNY</span> <span class="pre">—</span> <span class="pre">Yuan</span> <span class="pre">chino'),</span> <span class="pre">('AUD',</span> <span class="pre">'🇦🇺</span> <span class="pre">AUD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">australiano'),</span> <span class="pre">('CAD',</span> <span class="pre">'🇨🇦</span> <span class="pre">CAD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">canadiense'),</span> <span class="pre">('CHF',</span> <span class="pre">'🇨🇭</span> <span class="pre">CHF</span> <span class="pre">—</span> <span class="pre">Franco</span> <span class="pre">suizo')]</span></em><a class="headerlink" href="#monedas.forms.CHOICES" title="Link to this definition"></a></dt>
+<dd><p>Opciones generadas a partir de CURRENCIES, en formato (código, etiqueta).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.forms.CURRENCIES">
+<span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">CURRENCIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'ARS':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇦🇷',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">argentino',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'AUD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇦🇺',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">australiano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'BRL':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇧🇷',</span> <span class="pre">'name':</span> <span class="pre">'Real</span> <span class="pre">brasileño',</span> <span class="pre">'symbol':</span> <span class="pre">'R$'},</span> <span class="pre">'CAD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇦',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">canadiense',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'CHF':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇭',</span> <span class="pre">'name':</span> <span class="pre">'Franco</span> <span class="pre">suizo',</span> <span class="pre">'symbol':</span> <span class="pre">'Fr'},</span> <span class="pre">'CLP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇱',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">chileno',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'CNY':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇳',</span> <span class="pre">'name':</span> <span class="pre">'Yuan</span> <span class="pre">chino',</span> <span class="pre">'symbol':</span> <span class="pre">'¥'},</span> <span class="pre">'COP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇴',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">colombiano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'EUR':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇪🇺',</span> <span class="pre">'name':</span> <span class="pre">'Euro',</span> <span class="pre">'symbol':</span> <span class="pre">'€'},</span> <span class="pre">'GBP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇬🇧',</span> <span class="pre">'name':</span> <span class="pre">'Libra</span> <span class="pre">esterlina',</span> <span class="pre">'symbol':</span> <span class="pre">'£'},</span> <span class="pre">'JPY':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇯🇵',</span> <span class="pre">'name':</span> <span class="pre">'Yen</span> <span class="pre">japonés',</span> <span class="pre">'symbol':</span> <span class="pre">'¥'},</span> <span class="pre">'MXN':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇲🇽',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">mexicano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'PEN':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇵🇪',</span> <span class="pre">'name':</span> <span class="pre">'Sol</span> <span class="pre">peruano',</span> <span class="pre">'symbol':</span> <span class="pre">'S/'},</span> <span class="pre">'PYG':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇵🇾',</span> <span class="pre">'name':</span> <span class="pre">'Guaraní</span> <span class="pre">paraguayo',</span> <span class="pre">'symbol':</span> <span class="pre">'₲'},</span> <span class="pre">'USD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇺🇸',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">estadounidense',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'UYU':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇺🇾',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">uruguayo',</span> <span class="pre">'symbol':</span> <span class="pre">'$'}}</span></em><a class="headerlink" href="#monedas.forms.CURRENCIES" title="Link to this definition"></a></dt>
+<dd><p>Catálogo ISO 4217 con nombre, símbolo y emoji (bandera).</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="monedas.forms.MonedaForm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">MonedaForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario de modelo para gestionar objetos <code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code>.</p>
+<p>Este formulario:</p>
+<ul class="simple">
+<li><p>Autocompleta nombre y símbolo en base al código de moneda.</p></li>
+<li><p>Valida que la mínima denominación sea positiva.</p></li>
+<li><p>Sobrescribe <code class="docutils literal notranslate"><span class="pre">save</span></code> para garantizar consistencia con <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+</ul>
+<section id="metodos">
+<h3>Métodos<a class="headerlink" href="#metodos" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.clean_minima_denominacion" title="monedas.forms.MonedaForm.clean_minima_denominacion"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clean_minima_denominacion()</span></code></a>: Valida que la mínima denominación sea &gt; 0.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.clean" title="monedas.forms.MonedaForm.clean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clean()</span></code></a>: Completa nombre y símbolo desde <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.save" title="monedas.forms.MonedaForm.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>: Guarda el objeto <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> con datos consistentes.</p></li>
+</ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="monedas.forms.MonedaForm.Meta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.Meta" title="Link to this definition"></a></dt>
@@ -241,16 +311,25 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="monedas.forms.MonedaForm.clean">
 <span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.clean" title="Link to this definition"></a></dt>
-<dd><p>Hook for doing any extra form-wide cleaning after Field.clean() has been
-called on every field. Any ValidationError raised by this method will
-not be associated with a particular field; it will have a special-case
-association with the field named “__all__”.</p>
+<dd><p>Sobrescribe la limpieza del formulario.</p>
+<p>Garantiza que nombre y símbolo se actualicen de acuerdo al código de moneda.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="monedas.forms.MonedaForm.clean_minima_denominacion">
 <span class="sig-name descname"><span class="pre">clean_minima_denominacion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.clean_minima_denominacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.clean_minima_denominacion" title="Link to this definition"></a></dt>
-<dd><p>Validar que sea un entero positivo</p>
+<dd><p>Valida que <code class="docutils literal notranslate"><span class="pre">minima_denominacion</span></code> sea un número entero positivo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Muestra<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>forms.ValidationError</strong> – Si el valor es nulo o menor que 1.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Valor validado de mínima denominación.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -267,20 +346,69 @@ association with the field named “__all__”.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="monedas.forms.MonedaForm.save">
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.save"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.save" title="Link to this definition"></a></dt>
-<dd><p>Save this form’s self.instance object if commit=True. Otherwise, add
-a save_m2m() method to the form which can be called after the instance
-is saved manually at a later time. Return the model instance.</p>
-</dd></dl>
-
+<dd><p>Guarda el objeto <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> con datos consistentes del catálogo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commit</strong> (<em>bool</em>) – Indica si se debe guardar en base de datos inmediatamente.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instancia de <code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code> guardada o no.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#monedas.models.Moneda" title="monedas.models.Moneda">Moneda</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
-<section id="module-monedas.models">
-<span id="monedas-models-module"></span><h2>monedas.models module<a class="headerlink" href="#module-monedas.models" title="Link to this heading"></a></h2>
+</dd></dl>
+
+</section>
+<section id="module-0">
+<span id="monedas-models-module"></span><h2>monedas.models module<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Módulo de modelos de la aplicación <strong>monedas</strong>.</p>
+<p id="module-monedas.models">Este módulo define el modelo <a class="reference internal" href="#monedas.models.Moneda" title="monedas.models.Moneda"><code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code></a>, utilizado como catálogo
+centralizado de monedas con las que opera el sistema. Incluye metadatos
+operativos (p. ej., decimales, mínima denominación) y un permiso de acceso
+a la sección de administración de monedas.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="monedas.models.Moneda">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">Moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codigo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simbolo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fecha_creacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimales</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minima_denominacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultima_actualizacion_tasa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admite_en_linea</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admite_terminal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#Moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.Moneda" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">Moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#Moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.Moneda" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una <strong>moneda</strong> del sistema.</p>
+<p>Se utiliza como catálogo de monedas que pueden participar en operaciones
+(cotizaciones, calculadora, etc.). Además, define un permiso de acceso a
+la sección de administración de monedas.</p>
+<section id="atributos">
+<h3><strong>Atributos</strong><a class="headerlink" href="#atributos" title="Link to this heading"></a></h3>
+<dl>
+<dt>codigo<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Código de la moneda (p. ej. <code class="docutils literal notranslate"><span class="pre">USD</span></code>, <code class="docutils literal notranslate"><span class="pre">EUR</span></code>, <code class="docutils literal notranslate"><span class="pre">PYG</span></code>). Debe ser único.</p>
+</dd>
+<dt>nombre<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Nombre legible de la moneda (p. ej. <em>Dólar estadounidense</em>).</p>
+</dd>
+<dt>simbolo<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Símbolo de la moneda (p. ej. <code class="docutils literal notranslate"><span class="pre">$</span></code>, <code class="docutils literal notranslate"><span class="pre">€</span></code>, <code class="docutils literal notranslate"><span class="pre">₲</span></code>).</p>
+</dd>
+<dt>fecha_creacion<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.DateTimeField</span></code></span></dt><dd><p>Fecha/hora de creación del registro. Se asigna automáticamente.</p>
+</dd>
+<dt>decimales<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.PositiveSmallIntegerField</span></code></span></dt><dd><p>Cantidad de decimales con los que se representa la moneda.
+Útil para formateo y validaciones. Valor por defecto: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</dd>
+<dt>minima_denominacion<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.PositiveIntegerField</span></code></span></dt><dd><p>Mínima unidad operable (p. ej., <code class="docutils literal notranslate"><span class="pre">1</span></code> para monedas enteras, <code class="docutils literal notranslate"><span class="pre">5</span></code> si
+solo se opera en múltiplos de 5). Valor por defecto: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt>ultima_actualizacion_tasa<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.DateTimeField</span></code></span></dt><dd><p>Marca temporal de la última actualización de tasa/cotización conocida.
+Puede ser nula si nunca se actualizó.</p>
+</dd>
+<dt>admite_en_linea<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.BooleanField</span></code></span></dt><dd><p>Indica si la moneda está habilitada para operaciones <strong>en línea</strong>.</p>
+</dd>
+<dt>admite_terminal<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.BooleanField</span></code></span></dt><dd><p>Indica si la moneda está habilitada para operaciones en <strong>terminal</strong>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Nota</p>
+<p>El permiso personalizado <code class="docutils literal notranslate"><span class="pre">monedas.access_monedas_section</span></code> permite
+controlar el acceso a las vistas de administración/listado de monedas.</p>
+</div>
 <dl class="py exception">
 <dt class="sig sig-object py" id="monedas.models.Moneda.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.Moneda.DoesNotExist" title="Link to this definition"></a></dt>
@@ -408,6 +536,7 @@ object the first time, the query is executed.</p>
 object the first time, the query is executed.</p>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -416,33 +545,174 @@ object the first time, the query is executed.</p>
 </section>
 <section id="module-monedas.urls">
 <span id="monedas-urls-module"></span><h2>monedas.urls module<a class="headerlink" href="#module-monedas.urls" title="Link to this heading"></a></h2>
+<section id="modulo-urls-de-la-app-monedas">
+<h3>Módulo urls de la app monedas<a class="headerlink" href="#modulo-urls-de-la-app-monedas" title="Link to this heading"></a></h3>
+<p>Este módulo define las rutas de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
+Cada URL se asocia a una vista correspondiente en <a class="reference internal" href="#module-monedas.views" title="monedas.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monedas.views</span></code></a>.
+Las vistas requieren autenticación para acceder, excepto el detalle de moneda
+que igualmente valida permisos en la vista.</p>
+<section id="id1">
+<h4>Contenido<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">listar_monedas</span></code>: Lista todas las monedas registradas.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crear_moneda</span></code>: Formulario para crear una nueva moneda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">editar_moneda</span></code>: Formulario para editar una moneda existente.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eliminar_moneda</span></code>: Confirma y elimina una moneda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moneda_detalle</span></code>: Muestra la información detallada de una moneda.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h4>Constantes<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.urls.app_name" title="monedas.urls.app_name"><code class="xref py py-data docutils literal notranslate"><span class="pre">app_name</span></code></a>: Define el namespace de la aplicación.</p></li>
+<li><p><a class="reference internal" href="#monedas.urls.urlpatterns" title="monedas.urls.urlpatterns"><code class="xref py py-data docutils literal notranslate"><span class="pre">urlpatterns</span></code></a>: Lista de rutas URL.</p></li>
+</ul>
+</section>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.urls.app_name">
+<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">app_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monedas'</span></em><a class="headerlink" href="#monedas.urls.app_name" title="Link to this definition"></a></dt>
+<dd><p>Namespace de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.urls.urlpatterns">
+<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">urlpatterns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;URLPattern</span> <span class="pre">''</span> <span class="pre">[name='listar_monedas']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'crear/'</span> <span class="pre">[name='crear_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'editar/&lt;int:pk&gt;/'</span> <span class="pre">[name='editar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'eliminar/&lt;int:pk&gt;/'</span> <span class="pre">[name='eliminar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'ver/&lt;int:pk&gt;/'</span> <span class="pre">[name='moneda_detalle']&gt;]</span></em><a class="headerlink" href="#monedas.urls.urlpatterns" title="Link to this definition"></a></dt>
+<dd><p>Definición de patrones de URL para la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
+</dd></dl>
+
 </section>
 <section id="module-monedas.views">
 <span id="monedas-views-module"></span><h2>monedas.views module<a class="headerlink" href="#module-monedas.views" title="Link to this heading"></a></h2>
+<section id="modulo-views-de-la-app-monedas">
+<h3>Módulo views de la app monedas<a class="headerlink" href="#modulo-views-de-la-app-monedas" title="Link to this heading"></a></h3>
+<p>Este módulo contiene las vistas de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
+Permite realizar operaciones CRUD sobre el modelo <code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code>,
+con validación de permisos y protección mediante autenticación.</p>
+<section id="id3">
+<h4>Contenido<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Vistas basadas en funciones protegidas con <code class="docutils literal notranslate"><span class="pre">&#64;login_required</span></code>.</p></li>
+<li><p>Gestión de formularios mediante <code class="xref py py-class docutils literal notranslate"><span class="pre">MonedaForm</span></code>.</p></li>
+<li><p>Uso de mensajes de retroalimentación al usuario.</p></li>
+</ul>
+</section>
+<section id="id4">
+<h4>Funciones<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.views.listar_monedas" title="monedas.views.listar_monedas"><code class="xref py py-func docutils literal notranslate"><span class="pre">listar_monedas()</span></code></a>: Lista todas las monedas.</p></li>
+<li><p><a class="reference internal" href="#monedas.views.crear_moneda" title="monedas.views.crear_moneda"><code class="xref py py-func docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a>: Permite crear una nueva moneda.</p></li>
+<li><p><a class="reference internal" href="#monedas.views.editar_moneda" title="monedas.views.editar_moneda"><code class="xref py py-func docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a>: Permite editar una moneda existente.</p></li>
+<li><p><a class="reference internal" href="#monedas.views.eliminar_moneda" title="monedas.views.eliminar_moneda"><code class="xref py py-func docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a>: Elimina una moneda seleccionada.</p></li>
+<li><p><a class="reference internal" href="#monedas.views.moneda_detalle" title="monedas.views.moneda_detalle"><code class="xref py py-func docutils literal notranslate"><span class="pre">moneda_detalle()</span></code></a>: Muestra el detalle de una moneda específica.</p></li>
+</ul>
+</section>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="monedas.views.crear_moneda">
 <span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">crear_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#crear_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.crear_moneda" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Vista para crear una nueva moneda en el sistema.</p>
+<ul class="simple">
+<li><p>Si el método es <code class="docutils literal notranslate"><span class="pre">POST</span></code> y el formulario es válido, guarda la moneda.</p></li>
+<li><p>Muestra un formulario vacío en caso contrario.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto HttpRequest con los datos de la solicitud.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla <code class="docutils literal notranslate"><span class="pre">monedas/crear.html</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="monedas.views.editar_moneda">
 <span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">editar_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#editar_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.editar_moneda" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Vista para editar una moneda existente.</p>
+<ul class="simple">
+<li><p>Recupera la moneda por <code class="docutils literal notranslate"><span class="pre">pk</span></code>.</p></li>
+<li><p>Si el formulario es válido, actualiza la moneda en la base de datos.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto HttpRequest con los datos de la solicitud.</p></li>
+<li><p><strong>pk</strong> (<em>int</em>) – Identificador primario de la moneda a editar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla <code class="docutils literal notranslate"><span class="pre">monedas/editar.html</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="monedas.views.eliminar_moneda">
 <span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">eliminar_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#eliminar_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.eliminar_moneda" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Vista para eliminar una moneda existente.</p>
+<ul class="simple">
+<li><p>Recupera la moneda por <code class="docutils literal notranslate"><span class="pre">pk</span></code>.</p></li>
+<li><p>Si el método es <code class="docutils literal notranslate"><span class="pre">POST</span></code>, elimina la moneda y redirige al listado.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto HttpRequest con los datos de la solicitud.</p></li>
+<li><p><strong>pk</strong> (<em>int</em>) – Identificador primario de la moneda a eliminar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla <code class="docutils literal notranslate"><span class="pre">monedas/eliminar.html</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="monedas.views.listar_monedas">
 <span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">listar_monedas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#listar_monedas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.listar_monedas" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Vista para listar todas las monedas registradas en el sistema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto HttpRequest con los datos de la solicitud.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla <code class="docutils literal notranslate"><span class="pre">monedas/listar.html</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="monedas.views.moneda_detalle">
 <span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">moneda_detalle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#moneda_detalle"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.moneda_detalle" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Vista para mostrar el detalle de una moneda.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto HttpRequest con los datos de la solicitud.</p></li>
+<li><p><strong>pk</strong> (<em>int</em>) – Identificador primario de la moneda a consultar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla <code class="docutils literal notranslate"><span class="pre">monedas/moneda_detalle.html</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-monedas">

@@ -70,7 +70,29 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para monedas.views</h1><div class="highlight"><pre>
-<span></span><span class="c1"># monedas/views.py</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">==================================</span>
+<span class="sd">Módulo views de la app monedas</span>
+<span class="sd">==================================</span>
+
+<span class="sd">Este módulo contiene las vistas de la aplicación ``monedas``.  </span>
+<span class="sd">Permite realizar operaciones CRUD sobre el modelo :class:`Moneda`, </span>
+<span class="sd">con validación de permisos y protección mediante autenticación.</span>
+
+<span class="sd">Contenido</span>
+<span class="sd">---------</span>
+<span class="sd">- Vistas basadas en funciones protegidas con ``@login_required``.</span>
+<span class="sd">- Gestión de formularios mediante :class:`MonedaForm`.</span>
+<span class="sd">- Uso de mensajes de retroalimentación al usuario.</span>
+
+<span class="sd">Funciones</span>
+<span class="sd">---------</span>
+<span class="sd">- :func:`listar_monedas`: Lista todas las monedas.</span>
+<span class="sd">- :func:`crear_moneda`: Permite crear una nueva moneda.</span>
+<span class="sd">- :func:`editar_moneda`: Permite editar una moneda existente.</span>
+<span class="sd">- :func:`eliminar_moneda`: Elimina una moneda seleccionada.</span>
+<span class="sd">- :func:`moneda_detalle`: Muestra el detalle de una moneda específica.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
@@ -80,11 +102,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">MonedaForm</span>
 
 
-
 <div class="viewcode-block" id="listar_monedas">
 <a class="viewcode-back" href="../../monedas.html#monedas.views.listar_monedas">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">listar_monedas</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para listar todas las monedas registradas en el sistema.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest con los datos de la solicitud.</span>
+<span class="sd">    :type request: HttpRequest</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla ``monedas/listar.html``.</span>
+<span class="sd">    :rtype: HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;monedas.access_monedas_section&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
@@ -97,6 +126,17 @@
 <a class="viewcode-back" href="../../monedas.html#monedas.views.crear_moneda">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">crear_moneda</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para crear una nueva moneda en el sistema.</span>
+
+<span class="sd">    - Si el método es ``POST`` y el formulario es válido, guarda la moneda.</span>
+<span class="sd">    - Muestra un formulario vacío en caso contrario.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest con los datos de la solicitud.</span>
+<span class="sd">    :type request: HttpRequest</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla ``monedas/crear.html``.</span>
+<span class="sd">    :rtype: HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;monedas.access_monedas_section&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
@@ -116,6 +156,19 @@
 <a class="viewcode-back" href="../../monedas.html#monedas.views.editar_moneda">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">editar_moneda</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para editar una moneda existente.</span>
+
+<span class="sd">    - Recupera la moneda por ``pk``.</span>
+<span class="sd">    - Si el formulario es válido, actualiza la moneda en la base de datos.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest con los datos de la solicitud.</span>
+<span class="sd">    :type request: HttpRequest</span>
+<span class="sd">    :param pk: Identificador primario de la moneda a editar.</span>
+<span class="sd">    :type pk: int</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla ``monedas/editar.html``.</span>
+<span class="sd">    :rtype: HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;monedas.access_monedas_section&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
@@ -136,6 +189,19 @@
 <a class="viewcode-back" href="../../monedas.html#monedas.views.eliminar_moneda">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">eliminar_moneda</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para eliminar una moneda existente.</span>
+
+<span class="sd">    - Recupera la moneda por ``pk``.</span>
+<span class="sd">    - Si el método es ``POST``, elimina la moneda y redirige al listado.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest con los datos de la solicitud.</span>
+<span class="sd">    :type request: HttpRequest</span>
+<span class="sd">    :param pk: Identificador primario de la moneda a eliminar.</span>
+<span class="sd">    :type pk: int</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla ``monedas/eliminar.html``.</span>
+<span class="sd">    :rtype: HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;monedas.access_monedas_section&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
@@ -152,10 +218,18 @@
 <a class="viewcode-back" href="../../monedas.html#monedas.views.moneda_detalle">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">moneda_detalle</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para mostrar el detalle de una moneda.</span>
 
+<span class="sd">    :param request: Objeto HttpRequest con los datos de la solicitud.</span>
+<span class="sd">    :type request: HttpRequest</span>
+<span class="sd">    :param pk: Identificador primario de la moneda a consultar.</span>
+<span class="sd">    :type pk: int</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla ``monedas/moneda_detalle.html``.</span>
+<span class="sd">    :rtype: HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;monedas.access_monedas_section&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    
 
     <span class="n">moneda</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;monedas/moneda_detalle.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;moneda&quot;</span><span class="p">:</span> <span class="n">moneda</span><span class="p">})</span></div>

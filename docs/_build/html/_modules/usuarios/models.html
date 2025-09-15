@@ -74,32 +74,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">BaseUserManager</span><span class="p">,</span> <span class="n">PermissionsMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">roles.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span> <span class="c1"># MERGE: Importamos el modelo Cliente de la rama entrante</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
 
 <div class="viewcode-block" id="CustomUserManager">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUserManager">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomUserManager</span><span class="p">(</span><span class="n">BaseUserManager</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Manager para el modelo de usuario personalizado.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CustomUserManager.create_user">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUserManager.create_user">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Crea y guarda un usuario con el email y contraseña dados.</span>
-
-<span class="sd">        :param email: El email del usuario.</span>
-<span class="sd">        :type email: str</span>
-<span class="sd">        :param password: La contraseña del usuario.</span>
-<span class="sd">        :type password: str</span>
-<span class="sd">        :param extra_fields: Campos adicionales para el usuario.</span>
-<span class="sd">        :return: El usuario creado.</span>
-<span class="sd">        :rtype: CustomUser</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;El campo Email es obligatorio&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The Email field must be set&#39;</span><span class="p">)</span>
         <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
         
         <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;is_staff&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -115,30 +101,25 @@
 <div class="viewcode-block" id="CustomUser">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CustomUser</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">PermissionsMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Modelo de usuario personalizado.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Email del usuario.&quot;</span><span class="p">)</span>
-    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Nombre del usuario.&quot;</span><span class="p">)</span>
-    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Apellido del usuario.&quot;</span><span class="p">)</span>
-    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si el usuario está activo.&quot;</span><span class="p">)</span>
-    <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si el usuario puede acceder al sitio de administración.&quot;</span><span class="p">)</span>
-    <span class="n">is_verified</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si el usuario ha verificado su email.&quot;</span><span class="p">)</span>
-    <span class="n">date_joined</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha de registro del usuario.&quot;</span><span class="p">)</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Inicia inactivo hasta verificar</span>
+    <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">is_verified</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">date_joined</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
 
     <span class="c1"># campos para  verificacion con OTP</span>
-    <span class="n">verification_code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Código de verificación OTP.&quot;</span><span class="p">)</span>
-    <span class="n">code_created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha de creación del código de verificación.&quot;</span><span class="p">)</span>
+    <span class="n">verification_code</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">code_created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># relaciona customUser con Role (N:M)</span>
-    <span class="n">roles</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Role</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Roles asignados al usuario.&quot;</span><span class="p">)</span>
+    <span class="n">roles</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Role</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CustomUser.get_all_permissions">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.get_all_permissions">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_all_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Devuelve todos los permisos que tiene el usuario.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># permisos estándar (user_permissions + groups)</span>
         <span class="n">perms</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_all_permissions</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
@@ -153,17 +134,13 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Comprueba si el usuario tiene un permiso específico.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">perm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_all_permissions</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
-    <span class="c1"># Relación ManyToMany con Cliente</span>
+    <span class="c1"># MERGE: Relación ManyToMany con Cliente de la rama entrante</span>
     <span class="n">clientes</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
         <span class="n">Cliente</span><span class="p">,</span>
         <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;usuarios&#39;</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Clientes asociados al usuario.&quot;</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;usuarios&#39;</span>
     <span class="p">)</span>
 
     <span class="n">objects</span> <span class="o">=</span> <span class="n">CustomUserManager</span><span class="p">()</span>
@@ -172,35 +149,23 @@
     <span class="n">REQUIRED_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Representación en cadena del objeto CustomUser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span>
 
+    <span class="c1"># Genera un código de 6 dígitos y marca la hora de creación</span>
 <div class="viewcode-block" id="CustomUser.generate_verification_code">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.generate_verification_code">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_verification_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Genera un código de 6 dígitos y guarda el momento de creación.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Genera un código de 6 dígitos y guarda el momento de creación.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verification_code</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100000</span><span class="p">,</span> <span class="mi">999999</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code_created_at</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 
+    <span class="c1"># verifica que el codigo sea correcto</span>
 <div class="viewcode-block" id="CustomUser.is_code_valid">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.is_code_valid">[documentos]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_code_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">minutes_valid</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Verifica si el código es correcto y no ha expirado.</span>
-
-<span class="sd">        :param code: El código a verificar.</span>
-<span class="sd">        :type code: str</span>
-<span class="sd">        :param minutes_valid: Minutos de validez del código.</span>
-<span class="sd">        :type minutes_valid: int</span>
-<span class="sd">        :return: True si el código es válido, False en caso contrario.</span>
-<span class="sd">        :rtype: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_code_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">minutes_valid</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>     <span class="c1">#el codigo expira en 1 minuto</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifica si el código es correcto y no ha expirado.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verification_code</span> <span class="o">!=</span> <span class="n">code</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_created_at</span><span class="p">:</span>
@@ -212,15 +177,18 @@
 <div class="viewcode-block" id="CustomUser.has_perm">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.has_perm">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Comprueba si el usuario tiene un permiso específico.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;Does the user have a specific permission?&quot;</span>
+        <span class="c1"># Simplest possible answer: Yes, always</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
 
+        <span class="c1"># Primero, revisamos los permisos a nivel de usuario</span>
+        <span class="c1"># Esto es importante para mantener la compatibilidad con los permisos directos</span>
         <span class="k">if</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
+        <span class="c1"># Si no, verificamos si alguno de sus roles tiene el permiso</span>
+        <span class="c1"># &#39;perm&#39; tiene el formato &quot;app_label.codename&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">app_label</span><span class="p">,</span> <span class="n">codename</span> <span class="o">=</span> <span class="n">perm</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -235,9 +203,7 @@
 <div class="viewcode-block" id="CustomUser.has_module_perms">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.has_module_perms">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Comprueba si el usuario tiene permisos para ver una aplicación.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="s2">&quot;Does the user have permissions to view the app `app_label`?&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         
@@ -252,9 +218,6 @@
 <div class="viewcode-block" id="UsuariosPermissions">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.UsuariosPermissions">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UsuariosPermissions</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Modelo para definir permisos personalizados para la aplicación de usuarios.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">managed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">default_permissions</span> <span class="o">=</span> <span class="p">()</span>

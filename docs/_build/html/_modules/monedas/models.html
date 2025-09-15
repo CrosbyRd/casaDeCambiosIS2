@@ -70,44 +70,123 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para monedas.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span></span><span class="c1"># monedas/models.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de modelos de la aplicación **monedas**.</span>
+
+<span class="sd">.. module:: monedas.models</span>
+<span class="sd">   :synopsis: Catálogo de monedas y metadatos asociados.</span>
+
+<span class="sd">Este módulo define el modelo :class:`Moneda`, utilizado como catálogo</span>
+<span class="sd">centralizado de monedas con las que opera el sistema. Incluye metadatos</span>
+<span class="sd">operativos (p. ej., decimales, mínima denominación) y un permiso de acceso</span>
+<span class="sd">a la sección de administración de monedas.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+
 
 <div class="viewcode-block" id="Moneda">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.Moneda">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Moneda</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Representa una moneda utilizada en la casa de cambios.</span>
+<span class="sd">    Representa una **moneda** del sistema.</span>
 
-<span class="sd">    Almacena información esencial sobre cada moneda, como su código, nombre,</span>
-<span class="sd">    símbolo y detalles sobre su uso y configuración.</span>
+<span class="sd">    Se utiliza como catálogo de monedas que pueden participar en operaciones</span>
+<span class="sd">    (cotizaciones, calculadora, etc.). Además, define un permiso de acceso a</span>
+<span class="sd">    la sección de administración de monedas.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    codigo : :class:`django.db.models.CharField`</span>
+<span class="sd">        Código de la moneda (p. ej. ``USD``, ``EUR``, ``PYG``). Debe ser único.</span>
+<span class="sd">    nombre : :class:`django.db.models.CharField`</span>
+<span class="sd">        Nombre legible de la moneda (p. ej. *Dólar estadounidense*).</span>
+<span class="sd">    simbolo : :class:`django.db.models.CharField`</span>
+<span class="sd">        Símbolo de la moneda (p. ej. ``$``, ``€``, ``₲``).</span>
+<span class="sd">    fecha_creacion : :class:`django.db.models.DateTimeField`</span>
+<span class="sd">        Fecha/hora de creación del registro. Se asigna automáticamente.</span>
+<span class="sd">    decimales : :class:`django.db.models.PositiveSmallIntegerField`</span>
+<span class="sd">        Cantidad de decimales con los que se representa la moneda.</span>
+<span class="sd">        Útil para formateo y validaciones. Valor por defecto: ``2``.</span>
+<span class="sd">    minima_denominacion : :class:`django.db.models.PositiveIntegerField`</span>
+<span class="sd">        Mínima unidad operable (p. ej., ``1`` para monedas enteras, ``5`` si</span>
+<span class="sd">        solo se opera en múltiplos de 5). Valor por defecto: ``1``.</span>
+<span class="sd">    ultima_actualizacion_tasa : :class:`django.db.models.DateTimeField`</span>
+<span class="sd">        Marca temporal de la última actualización de tasa/cotización conocida.</span>
+<span class="sd">        Puede ser nula si nunca se actualizó.</span>
+<span class="sd">    admite_en_linea : :class:`django.db.models.BooleanField`</span>
+<span class="sd">        Indica si la moneda está habilitada para operaciones **en línea**.</span>
+<span class="sd">    admite_terminal : :class:`django.db.models.BooleanField`</span>
+<span class="sd">        Indica si la moneda está habilitada para operaciones en **terminal**.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">       El permiso personalizado ``monedas.access_monedas_section`` permite</span>
+<span class="sd">       controlar el acceso a las vistas de administración/listado de monedas.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">codigo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Código de la moneda (ej. USD, EUR, PYG).&quot;</span><span class="p">)</span>
-    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Nombre completo de la moneda.&quot;</span><span class="p">)</span>
-    <span class="n">simbolo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Símbolo de la moneda (ej. $, €, Gs).&quot;</span><span class="p">)</span>
-    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de creación del registro.&quot;</span><span class="p">)</span>
+
+    <span class="n">codigo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Código ISO/corto de la moneda (p. ej. USD, EUR, PYG). Debe ser único.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Nombre legible de la moneda (p. ej. Dólar estadounidense).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">simbolo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Símbolo de la moneda (p. ej. $, €, ₲).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de creación del registro (asignado automáticamente).&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># Requerimientos ERS</span>
-    <span class="n">decimales</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveSmallIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Número de decimales que utiliza la moneda.&quot;</span><span class="p">)</span>
-    <span class="n">minima_denominacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Mínima denominación de la moneda (ej. 1 para billetes, 0.01 para centavos).&quot;</span><span class="p">)</span>
-    <span class="n">ultima_actualizacion_tasa</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de la última actualización de la tasa de cambio.&quot;</span><span class="p">)</span>
+    <span class="n">decimales</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveSmallIntegerField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Cantidad de decimales con los que se representa la moneda (por defecto: 2).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">minima_denominacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Mínima denominación operable (p. ej., 1, 5, 10).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ultima_actualizacion_tasa</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Última fecha/hora en la que se actualizó la tasa/cotización. Puede ser nulo.&quot;</span>
+    <span class="p">)</span>
 
-    <span class="n">admite_en_linea</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si la moneda se puede transaccionar en línea.&quot;</span><span class="p">)</span>
-    <span class="n">admite_terminal</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si la moneda se puede transaccionar en terminales.&quot;</span><span class="p">)</span>
-
+    <span class="n">admite_en_linea</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Si está activo, la moneda puede usarse en operaciones en línea.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">admite_terminal</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Si está activo, la moneda puede usarse en operaciones de terminal.&quot;</span>
+    <span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Metadatos para el modelo Moneda.</span>
+<span class="sd">        Metadatos del modelo :class:`Moneda`.</span>
+
+<span class="sd">        Define un permiso específico para restringir el acceso a la sección de</span>
+<span class="sd">        administración de monedas.</span>
+
+<span class="sd">        **Permisos**</span>
+<span class="sd">        ------------</span>
+<span class="sd">        - ``access_monedas_section``: *Puede acceder a la sección de Monedas*.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;access_monedas_section&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede acceder a la sección de Monedas&quot;</span><span class="p">),</span>
         <span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Representación en cadena del objeto Moneda.</span>
+<span class="sd">        Representación legible de la moneda.</span>
 
-<span class="sd">        :return: Una cadena que identifica la moneda.</span>
+<span class="sd">        :return: Cadena con el formato ``\&quot;{nombre} ({codigo})\&quot;``.</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">)&quot;</span></div>
