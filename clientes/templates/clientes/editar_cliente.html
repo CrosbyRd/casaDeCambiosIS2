@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Editar Cliente — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-4xl mx-auto px-6 py-10">
@@ -12,50 +12,54 @@
         Modifica la información del cliente seleccionado y guarda los cambios.
       </p>
     </div>
+    <a href="{% url 'clientes:lista' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver</a>
   </header>
 
   <!-- Formulario -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <form method="post" id="form-cliente">
       {% csrf_token %}
-      <table class="w-full text-left border-collapse">
-        <!-- Encabezados -->
-        <thead style="background:var(--brand); color:#fff">
-          <tr>
-            <th class="px-6 py-3">Nombre Completo *</th>
-            <th class="px-6 py-3">Categoría *</th>
-          </tr>
-        </thead>
-        <!-- Inputs -->
-        <tbody>
-          <tr>
-            <td class="px-6 py-4">
-              <input type="text" name="nombre" id="id_nombre"
-                     value="{{ form.instance.nombre }}"
-                     placeholder="Ej: Juan Pérez o Empresa XYZ"
-                     class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)] placeholder-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition"/>
-            </td>
-            <td class="px-6 py-4">
-              {{ form.categoria }}
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" class="px-6 py-4">
-              <input type="hidden" name="activo" id="id_activo" value="{{ form.instance.activo|yesno:'true,false' }}">
-              <button type="button" id="toggle-estado"
-                      class="px-4 py-2 rounded-lg font-bold text-white {% if form.instance.activo %}bg-green-600 hover:bg-green-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
-                {% if form.instance.activo %}✅ ACTIVO{% else %}❌ INACTIVO{% endif %}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[640px]">
+          <!-- Encabezados -->
+          <thead style="background:var(--brand); color:#fff">
+            <tr>
+              <th class="px-6 py-3">Nombre Completo *</th>
+              <th class="px-6 py-3">Categoría *</th>
+            </tr>
+          </thead>
+          <!-- Inputs -->
+          <tbody>
+            <tr>
+              <td class="px-6 py-4">
+                <input type="text" name="nombre" id="id_nombre"
+                       value="{{ form.instance.nombre }}"
+                       placeholder="Ej: Juan Pérez o Empresa XYZ"
+                       class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)] placeholder-gray-400
+                              focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition"/>
+              </td>
+              <td class="px-6 py-4">
+                {{ form.categoria }}
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="px-6 py-4">
+                <input type="hidden" name="activo" id="id_activo" value="{{ form.instance.activo|yesno:'true,false' }}">
+                <button type="button" id="toggle-estado"
+                        class="px-4 py-2 rounded-lg font-bold text-white {% if form.instance.activo %}bg-green-600 hover:bg-green-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
+                  {% if form.instance.activo %}✅ ACTIVO{% else %}❌ INACTIVO{% endif %}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </form>
   </section>
 
   <!-- Botones debajo del formulario -->
-  <div class="flex justify-end space-x-3 pt-6">
+  <div class="flex justify-end gap-3 pt-6">
     <a href="{% url 'clientes:lista' %}" 
        class="px-4 py-2 rounded-lg font-semibold text-white bg-gray-500 hover:bg-gray-600">
       Cancelar

@@ -1,6 +1,26 @@
-<div class="mb-6">
-  <label class="block mb-3 font-medium" for="id_codigo">Código de verificación</label>
-  <input id="id_codigo" name="codigo" type="text"
-         class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-         placeholder="Introduce el código que recibiste" />
-</div>
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[800px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Completar registro</h1>
+
+  <form method="post" class="border border-neutral-200 rounded-lg p-6">
+    {% csrf_token %}
+    <div class="mb-6">
+      <label class="block mb-3 font-medium" for="id_codigo">Código de verificación</label>
+      <input id="id_codigo" name="codigo" type="text"
+             class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+             placeholder="Introduce el código que recibiste" />
+    </div>
+
+    <div class="actions">
+      <button class="btn w-full" type="submit">Confirmar</button>
+    </div>
+  </form>
+</main>
+{% endblock %}

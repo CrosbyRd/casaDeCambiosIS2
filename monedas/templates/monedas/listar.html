@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Monedas — Global Exchange{% endblock %}
-
-
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
@@ -28,21 +26,19 @@
     </div>
   </header>
 
-      <!-- Mensajes -->
-    {% if messages %}
-      <div class="max-w-5xl mx-auto px-6 mt-4 space-y-3">
-        {% for message in messages %}
-          <div class="rounded-lg px-4 py-3 border
-               {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
-               {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
-               {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
-               {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
-            {{ message }}
-          </div>
-        {% endfor %}
+  {% if messages %}
+  <div class="max-w-5xl mx-auto px-6 mt-4 space-y-3">
+    {% for message in messages %}
+      <div class="rounded-lg px-4 py-3 border
+           {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+           {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+           {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+           {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+        {{ message }}
       </div>
-    {% endif %}
-
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <!-- Tabla -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
@@ -59,35 +55,24 @@
         <tbody>
           {% for m in monedas %}
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
-            <td class="px-6 py-4 font-semibold text-[var(--ink)]">
-              <span class="currency-emoji" data-code="{{ m.codigo }}"></span>{{ m.codigo }}
-            </td>
+            <td class="px-6 py-4 font-semibold text-[var(--ink)]"><span class="currency-emoji" data-code="{{ m.codigo }}"></span>{{ m.codigo }}</td>
             <td class="px-6 py-4">{{ m.nombre }}</td>
             <td class="px-6 py-4">{{ m.simbolo }}</td>
             <td class="px-6 py-4 space-x-2">
-              <!-- Ver (mismo estilo que en Clientes: pill clara con borde) -->
-              <a href="{% url 'monedas:moneda_detalle' m.id %}"
-                 class="px-3 py-1 rounded-md font-semibold bg-white border hover:bg-gray-50"
-                 style="border-color:var(--line); color:var(--ink)">
+              <a href="{% url 'monedas:moneda_detalle' m.id %}" class="px-3 py-1 rounded-md font-semibold bg-white border hover:bg-gray-50" style="border-color:var(--line); color:var(--ink)">
                 Ver
               </a>
-              <!-- Editar -->
-              <a href="{% url 'monedas:editar_moneda' m.id %}"
-                 class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
+              <a href="{% url 'monedas:editar_moneda' m.id %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
                 Editar
               </a>
-              <!-- Eliminar -->
-              <a href="{% url 'monedas:eliminar_moneda' m.id %}"
-                 class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
+              <a href="{% url 'monedas:eliminar_moneda' m.id %}" class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
                 Eliminar
               </a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4" class="px-6 py-6 text-center text-[var(--muted)]">
-              No hay monedas registradas.
-            </td>
+            <td colspan="4" class="px-6 py-6 text-center text-[var(--muted)]">No hay monedas registradas.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -96,14 +81,9 @@
   </section>
 </main>
 
-<!-- Banderas por código -->
 <script>
   (function(){
-    const MAP = {
-      USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-      MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-      CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
-    };
+    const MAP = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
     document.querySelectorAll('.currency-emoji').forEach(el => {
       const code = String(el.dataset.code || '').toUpperCase();
       el.textContent = (MAP[code] || "💱") + " ";

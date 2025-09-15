@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ accion }} Tipo de Medio de Pago — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
@@ -17,7 +17,6 @@
     <form method="post" novalidate>
       {% csrf_token %}
 
-      <!-- ========== Reglas de estilo locales para inputs (mismo tamaño/estética) ========== -->
       <style>
         .form-slab input[type="text"],
         .form-slab input[type="number"],
@@ -34,102 +33,116 @@
           box-shadow: 0 1px 2px rgba(0,0,0,.03);
           transition: box-shadow .2s ease, border-color .2s ease;
         }
-        .form-slab input[type="checkbox"]{
-          height: 20px; width: 20px; padding: 0; border-radius: 6px;
-        }
+        .form-slab input[type="checkbox"]{ height: 20px; width: 20px; padding: 0; border-radius: 6px; }
         .form-slab input:focus, .form-slab select:focus, .form-slab textarea:focus{
           outline: none; border-color: var(--brand);
           box-shadow: 0 0 0 3px rgba(115,60,255,.15);
         }
+        .form-slab select[disabled]{ background:#f3f4f6; color:#6b7280; cursor:not-allowed; }
         .help { font-size:.9rem; color:var(--muted); margin-top:.35rem }
         .err  { color:#991b1b; background:#fee2e2; border:1px solid #fecaca; padding:.5rem .75rem; border-radius:.5rem; }
       </style>
 
       <div class="form-slab">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr><th class="px-4 py-3 text-left">Nombre</th></tr>
+            </thead>
+            <tbody>
+              <tr class="border-b" style="border-color:var(--line)">
+                <td class="px-4 py-4">
+                  {% with current_name=form.nombre.value|default:form.instance.nombre %}
+                    <!-- Menú desplegable para Nombre (bloqueado en edición) -->
+                    <select name="nombre" id="id_nombre" {% if form.instance.pk %}disabled="disabled"{% endif %}>
+                      <option value="">-- Selecciona una opción --</option>
+                      <option value="Tarjeta de Credito" {% if current_name == "Tarjeta de Credito" %}selected{% endif %}>Tarjeta de Credito</option>
+                      <option value="Transferencia Bancaria" {% if current_name == "Transferencia Bancaria" %}selected{% endif %}>Transferencia Bancaria</option>
+                      <option value="Billetera Electronica" {% if current_name == "Billetera Electronica" %}selected{% endif %}>Billetera Electronica</option>
+                      <option value="Cheque" {% if current_name == "Cheque" %}selected{% endif %}>Cheque</option>
+                      <option value="Cheque Adelantado" {% if current_name == "Cheque Adelantado" %}selected{% endif %}>Cheque Adelantado</option>
+                    </select>
 
-        <!-- Bloque: Nombre -->
-        <table class="w-full border-collapse">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr><th class="px-4 py-3 text-left">Nombre</th></tr>
-          </thead>
-          <tbody>
-            <tr class="border-b" style="border-color:var(--line)">
-              <td class="px-4 py-4">
-                {{ form.nombre }}
-                <div class="help">Ej.: “Tarjeta de Crédito”, “Billetera Electrónica”, “Cheque”.</div>
-                {% if form.nombre.errors %}
-                  <div class="err mt-2">{{ form.nombre.errors|join:", " }}</div>
-                {% endif %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    {% if form.instance.pk %}
+                      <!-- Como el select está deshabilitado en edición, enviamos el valor real con un hidden -->
+                      <input type="hidden" name="nombre" value="{{ current_name }}">
+                      <div class="help">El nombre no puede modificarse en edición.</div>
+                    {% else %}
+                      <div class="help">Selecciona el tipo de medio de pago.</div>
+                    {% endif %}
+                  {% endwith %}
 
-        <!-- Bloque: Parámetros (dos columnas, como en cotización) -->
-        <table class="w-full border-collapse">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Comisión porcentaje (%)</th>
-              <th class="px-4 py-3 text-left">Bonificación porcentaje (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b" style="border-color:var(--line)">
-              <td class="px-4 py-4">
-                {{ form.comision_porcentaje }}
-                <div class="help">Comisión en % del monto total (0–100).</div>
-                {% if form.comision_porcentaje.errors %}
-                  <div class="err mt-2">{{ form.comision_porcentaje.errors|join:", " }}</div>
-                {% endif %}
-              </td>
-              <td class="px-4 py-4">
-                {{ form.bonificacion_porcentaje }}
-                <div class="help">Descuento/bonificación en % aplicado (0–100).</div>
-                {% if form.bonificacion_porcentaje.errors %}
-                  <div class="err mt-2">{{ form.bonificacion_porcentaje.errors|join:", " }}</div>
-                {% endif %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  {% if form.nombre.errors %}<div class="err mt-2">{{ form.nombre.errors|join:", " }}</div>{% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Bloque: Estado -->
-        <table class="w-full border-collapse">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr><th class="px-4 py-3 text-left">Estado</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="px-4 py-4">
-                <label class="flex items-center gap-3">
-                  {{ form.activo }}
-                  <span class="font-semibold text-[var(--ink)]">Activo</span>
-                </label>
-                <div class="help">Si está desactivado no se podrá utilizar en operaciones.</div>
-                {% if form.activo.errors %}
-                  <div class="err mt-2">{{ form.activo.errors|join:", " }}</div>
-                {% endif %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr>
+                <th class="px-4 py-3 text-left">Comisión porcentaje (%)</th>
+                <th class="px-4 py-3 text-left">Bonificación porcentaje (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b" style="border-color:var(--line)">
+                <td class="px-4 py-4">
+                  {{ form.comision_porcentaje }}
+                  <div class="help">Comisión en % del monto total (0–100).</div>
+                  {% if form.comision_porcentaje.errors %}<div class="err mt-2">{{ form.comision_porcentaje.errors|join:", " }}</div>{% endif %}
+                </td>
+                <td class="px-4 py-4">
+                  {{ form.bonificacion_porcentaje }}
+                  <div class="help">Descuento/bonificación en % aplicado (0–100).</div>
+                  {% if form.bonificacion_porcentaje.errors %}<div class="err mt-2">{{ form.bonificacion_porcentaje.errors|join:", " }}</div>{% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr><th class="px-4 py-3 text-left">Estado</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="px-4 py-4">
+                  <label class="flex items-center gap-3">
+                    {{ form.activo }}
+                    <span class="font-semibold text-[var(--ink)]">Activo</span>
+                  </label>
+                  <div class="help">Si está desactivado no se podrá utilizar en operaciones.</div>
+                  {% if form.activo.errors %}<div class="err mt-2">{{ form.activo.errors|join:", " }}</div>{% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
       </div>
 
       <!-- Acciones -->
-      <div class="flex justify-end gap-3 p-4">
-        <a href="{% url 'pagos:listar_tipos_medio_pago' %}"
-           class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+      <div class="flex flex-col sm:flex-row justify-end gap-3 p-4">
+        <a href="{% url 'pagos:listar_tipos_medio_pago' %}" class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
           Cancelar
         </a>
-        <button type="submit"
-                class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
-                style="background:var(--brand)">
-          {{ accion }}
+        <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white shadow-sm" style="background:var(--brand)">
+          {% if accion|lower == 'editar' %}
+            💾 Guardar Cambios
+          {% elif accion|lower == 'agregar' %}
+            ➕ Agregar
+          {% else %}
+            {{ accion }}
+          {% endif %}
         </button>
       </div>
-
     </form>
   </section>
 </main>
 {% endblock %}
+

@@ -1,13 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
 
-{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" back_url="/" %}
+{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" %}
 {% include "partials/messages.html" %}
 
 <main class="max-w-5xl mx-auto px-6 py-10">
   <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-    <form method="post" id="form-simulador"
+    <form method="post"
+          id="form-simulador"
+          data-initial-blank="{% if form.is_bound %}0{% else %}1{% endif %}"
           data-currencies='{
             "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
             "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
@@ -28,155 +34,196 @@
           }'>
       {% csrf_token %}
 
-      <table class="w-full border-collapse">
-        <thead class="bg-[var(--brand)] text-white">
-          <tr>
-            <th class="px-4 py-3 text-left">Tengo esta moneda</th>
-            <th class="px-4 py-3 text-left">Quiero esta moneda</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.moneda_origen }}</td>
-            <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-          </tr>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.monto }}</td>
-            <td class="px-4 py-3">
-              <input class="gx-input" type="text" readonly
-                     value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
-                     placeholder="0,00">
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <!-- tabla con borde redondeado -->
+        <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse min-w-[520px]">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr>
+                <th class="px-4 py-3 text-left">Tengo esta moneda</th>
+                <th class="px-4 py-3 text-left">Quiero esta moneda</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)]">
+                <td class="px-4 py-3">{{ form.moneda_origen }}</td>
+                <td class="px-4 py-3">{{ form.moneda_destino }}</td>
+              </tr>
+              <tr class="hover:bg-[var(--brand-soft)]">
+                <td class="px-4 py-3">{{ form.monto }}</td>
+                <td class="px-4 py-3">
+                  <input id="out-amount" class="gx-input" type="text" readonly
+                         value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
+                         placeholder="0,00">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div class="px-4 py-4">
-        <!-- Aviso si no hay PYG en el par -->
-        <div id="pair-error" class="gx-error mb-2" style="display:none;">
-          Las operaciones se deben realizar con la moneda base (Guaraní).
-        </div>
-        <!-- Aviso si las dos monedas son iguales -->
-        <div id="same-error" class="gx-error mb-4" style="display:none;">
-          No se pueden realizar conversiones con la misma moneda.
-        </div>
-
-        <div style="margin-top:18px;">
+        <div class="btn-row" style="margin-top:18px;">
           <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
-
-          {% if resultado %}
-            {% if resultado.error %}
-              <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
-            {% else %}
-              <div class="gx-result-wrap mt-4">
-                <div class="gx-result-big">
-                  Recibirás aproximadamente: {{ resultado.monto_recibido }} {{ form.moneda_destino.value }}
-                </div>
-              </div>
-            {% endif %}
-          {% endif %}
+          <button id="btn-clear" class="gx-btn gx-btn--ghost" type="button">Borrar</button>
         </div>
+
+        {% if resultado %}
+          {% if resultado.error %}
+            <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
+          {% else %}
+            <div class="gx-result-wrap mt-4 w-full" id="result-wrap">
+              <div class="gx-result-big">
+                Recibirás aproximadamente:
+                <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">{{ resultado.monto_recibido }}</span>
+                <span id="res-flag" aria-hidden="true"></span>
+                <span id="res-code">{{ form.moneda_destino.value }}</span>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
       </div>
     </form>
   </section>
 </main>
 
 <style>
-  .gx-input, .gx-select {
-    width:100%;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    height:48px;
-    font-size:1rem;
-    color:var(--ink);
-    background:#fff;
+  .gx-input, .gx-select{
+    width:100%; border:1.5px solid var(--line); border-radius:12px;
+    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
     transition:box-shadow .2s ease,border-color .2s ease;
   }
-  .gx-input:focus, .gx-select:focus {
-    outline:none;
-    border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);
-  }
-  .gx-btn {
-    background: var(--brand);
-    color:#fff;
-    font-weight:800;
-    border:none;
-    border-radius:12px;
-    padding:12px 16px;
-    font-size:16px;
-    width:100%;
+  .gx-input:focus, .gx-select:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(115,60,255,.15); }
+
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
+    padding:12px 16px; font-size:16px; width:100%;
     box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
     cursor:pointer;
   }
-  .gx-btn[disabled] {
-    opacity:.55;
-    cursor:not-allowed;
-    box-shadow:none;
+  .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
+
+  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
+  .gx-error{ background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
+
+  .gx-result-wrap{
+    background:var(--brand-soft);
+    border:1px solid color-mix(in oklab, var(--brand) 35%, white);
+    padding:14px 16px; border-radius:14px;
   }
-  .gx-error {
-    background:#fee2e2;
-    color:#991b1b;
-    border:1px solid #fecaca;
-    padding:12px 14px;
-    border-radius:12px;
-  }
-  .gx-result-big { font-size:24px; font-weight:900; color:#22c55e; }
+  .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
+  #res-flag{ margin:0 .35rem; } /* pequeño espacio alrededor de la banderita */
+
+  .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
+  @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
 </style>
 
 <script>
-(function(){
-  const form  = document.getElementById('form-simulador');
-  if(!form) return;
+(function () {
+  const form   = document.getElementById('form-simulador');
+  if (!form) return;
 
-  const data = JSON.parse(form.dataset.currencies || "{}");
+  function toNumber(raw){
+    if (raw == null) return NaN;
+    const s = String(raw).replace(/\./g,'').replace(',','.');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  function fmt(n){
+    const num = typeof n === 'number' ? n : toNumber(n);
+    if (!Number.isFinite(num)) return n;
+    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
+  }
+
+  const out   = document.getElementById('out-amount');
+  const res   = document.getElementById('res-num');
+  const wrap  = document.getElementById('result-wrap');
+  const resFlag = document.getElementById('res-flag');
+  const resCode = document.getElementById('res-code');
+
+  if (out && out.value) out.value = fmt(out.value);
+  if (res) { const raw = res.dataset.raw || res.textContent; res.textContent = fmt(raw); }
+
+  const data   = JSON.parse(form.dataset.currencies || "{}");
+  const selOri = document.getElementById('id_moneda_origen');
+  const selDst = document.getElementById('id_moneda_destino');
+  const monto  = document.getElementById('id_monto');
+  const btn    = document.getElementById('btn-calcular');
+  const btnClr = document.getElementById('btn-clear');
+
+  const isPYG     = (v) => String(v || '').toUpperCase() === 'PYG';
+  const isForeign = (v) => v && !isPYG(v);
 
   function decorateSelect(sel){
     if(!sel) return;
     [...sel.options].forEach(opt=>{
-      const code = opt.value;
-      if(data[code]){
+      const code = opt.value; if (code && data[code]) {
         const {emoji, name} = data[code];
         opt.textContent = `${emoji} ${code} — ${name}`;
       }
     });
     sel.classList.add('gx-select');
   }
-
-  const selOri = document.getElementById('id_moneda_origen');
-  const selDst = document.getElementById('id_moneda_destino');
-  decorateSelect(selOri);
-  decorateSelect(selDst);
-
-  const monto = document.getElementById('id_monto');
-  if(monto) monto.classList.add('gx-input');
-
-  // === Validaciones: requiere PYG y no permitir monedas iguales ===
-  const btn    = document.getElementById('btn-calcular');
-  const errPYG = document.getElementById('pair-error');
-  const errEQ  = document.getElementById('same-error');
-
-  function checkRules(){
-    const o = (selOri?.value || '').toUpperCase();
-    const d = (selDst?.value || '').toUpperCase();
-
-    const hasBase = (o === 'PYG' || d === 'PYG');     // al menos una PYG
-    const same    = (o && d && o === d);              // monedas iguales
-
-    // Mostrar/ocultar avisos
-    errPYG.style.display = hasBase ? 'none' : 'block';
-    errEQ.style.display  = same    ? 'block' : 'none';
-
-    // Deshabilitar botón si falta PYG o si son iguales
-    btn.disabled = (!hasBase || same);
+  function ensurePlaceholder(sel){
+    if(!sel) return;
+    if(!sel.querySelector('option[value=""]')){
+      const ph = document.createElement('option');
+      ph.value = ''; ph.textContent = 'Seleccioná una moneda…'; ph.disabled = true; ph.hidden = true;
+      sel.insertBefore(ph, sel.firstChild);
+    }
   }
 
-  selOri?.addEventListener('change', checkRules);
-  selDst?.addEventListener('change', checkRules);
+  decorateSelect(selOri); decorateSelect(selDst);
+  ensurePlaceholder(selOri); ensurePlaceholder(selDst);
+  if (monto) monto.classList.add('gx-input');
 
-  // Evaluación inicial
-  checkRules();
+  if (form.dataset.initialBlank === '1') {
+    selOri.value = '';
+    selDst.value = '';
+  }
+
+  function updateResultFlag(){
+    if (!resFlag || !selDst) return;
+    const code = selDst.value || (resCode ? resCode.textContent.trim() : '');
+    resFlag.textContent = (data[code] && data[code].emoji) ? data[code].emoji : '';
+  }
+
+  function enforceRules(changed){
+    const o = selOri?.value || '';
+    const d = selDst?.value || '';
+
+    if (changed === 'ori' && isForeign(o)) { if (!isPYG(d)) selDst.value = 'PYG'; }
+    if (changed === 'dst' && isForeign(d)) { if (!isPYG(o)) selOri.value = 'PYG'; }
+
+    if (isPYG(selOri.value) && isPYG(selDst.value)) {
+      if (changed === 'ori') selDst.value = '';
+      else if (changed === 'dst') selOri.value = '';
+      else selDst.value = '';
+    }
+
+    const ready = selOri.value && selDst.value && selOri.value !== selDst.value &&
+                  (!monto || (toNumber(monto.value) > 0));
+    btn.disabled = !ready;
+
+    updateResultFlag();
+  }
+
+  selOri?.addEventListener('change', () => enforceRules('ori'));
+  selDst?.addEventListener('change', () => enforceRules('dst'));
+  monto?.addEventListener('input', () => enforceRules('amount'));
+  enforceRules();          // estado inicial
+  updateResultFlag();      // y bandera inicial
+
+  // BORRAR
+  btnClr?.addEventListener('click', () => {
+    if (monto) { monto.value = ''; monto.focus(); }
+    if (out) out.value = '';
+    if (res) res.textContent = '';
+    if (wrap) wrap.style.display = 'none';
+    enforceRules('amount');
+  });
 })();
 </script>
 

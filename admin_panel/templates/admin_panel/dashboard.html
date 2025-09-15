@@ -1,106 +1,84 @@
 {% extends "base.html" %}
-{% block title %}Panel de Administrador — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-[1200px] mx-auto px-6 py-10">
-    <h1 class="text-4xl font-bold mb-10 text-center">⚙️ Panel de Administración</h1>
+  <h1 class="text-4xl font-bold mb-10 text-center">⚙️ Panel de Administración</h1>
 
-    <!-- Grid de módulos -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        
-        <!-- Clientes -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-blue-600 text-5xl mb-4">👥</div>
-            <h2 class="text-xl font-bold mb-2">Gestionar Clientes</h2>
-            <p class="text-gray-500 mb-4">Crea, edita y administra clientes registrados.</p>
-            <button id="btn-gestionar-clientes"
-                    class="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
-                Acceder
-            </button>
-        </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
 
-        <!-- Roles -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-green-600 text-5xl mb-4">🛡️</div>
-            <h2 class="text-xl font-bold mb-2">Gestionar Roles</h2>
-            <p class="text-gray-500 mb-4">Asigna permisos y gestiona roles de usuarios.</p>
-            <button id="btn-gestionar-roles"
-                    class="w-full py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">
-                Acceder
-            </button>
-        </div>
+    <!-- Clientes -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-blue-600 text-5xl mb-4">👥</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Clientes</h2>
+      <p class="text-gray-500 mb-4">Crea, edita y administra clientes registrados.</p>
+      <a href="{% url 'clientes:lista' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
 
-        <!-- Asociar Cliente a Usuario -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-purple-600 text-5xl mb-4">🔗</div>
-            <h2 class="text-xl font-bold mb-2">Asociar Cliente a Usuario</h2>
-            <p class="text-gray-500 mb-4">Vincula clientes con usuarios específicos.</p>
-            <button id="btn-agregar-cliente"
-                    class="w-full py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700">
-                Acceder
-            </button>
-        </div>
+    <!-- Roles -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-green-600 text-5xl mb-4">🛡️</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Roles</h2>
+      <p class="text-gray-500 mb-4">Asigna permisos y gestiona roles de usuarios.</p>
+      <a href="{% url 'roles:role-panel' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
 
-        <!-- Monedas -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-yellow-600 text-5xl mb-4">💱</div>
-            <h2 class="text-xl font-bold mb-2">Gestionar Monedas</h2>
-            <p class="text-gray-500 mb-4">Administra las monedas disponibles en el sistema.</p>
-            <button id="btn-gestionar-monedas"
-                    class="w-full py-2 bg-yellow-600 text-white font-semibold rounded-lg hover:bg-yellow-700">
-                Acceder
-            </button>
-        </div>
+    <!-- Asociar Cliente a Usuario -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-purple-600 text-5xl mb-4">🔗</div>
+      <h2 class="text-xl font-bold mb-2">Asociar Cliente a Usuario</h2>
+      <p class="text-gray-500 mb-4">Asociacion de clientes con usuarios específicos.</p>
+      <a href="{% url 'usuarios:listar_usuarios' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
 
-        <!-- Tasas -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-red-600 text-5xl mb-4">📈</div>
-            <h2 class="text-xl font-bold mb-2">Gestionar Tasas</h2>
-            <p class="text-gray-500 mb-4">Configura las cotizaciones y tasas de cambio.</p>
-            <button id="btn-gestionar-tasas"
-                    class="w-full py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
-                Acceder
-            </button>
-        </div>
+    <!-- Monedas -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-yellow-600 text-5xl mb-4">💱</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Monedas</h2>
+      <p class="text-gray-500 mb-4">Administra las monedas disponibles en el sistema.</p>
+      <a href="{% url 'monedas:listar_monedas' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
 
-        <!-- Métodos de pago -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-            <div class="text-indigo-600 text-5xl mb-4">💳</div>
-            <h2 class="text-xl font-bold mb-2">Gestionar Métodos de Pago</h2>
-            <p class="text-gray-500 mb-4">Agrega o modifica los métodos de pago habilitados.</p>
-            <button id="btn-gestionar-pagos"
-                    class="w-full py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700">
-                Acceder
-            </button>
-        </div>
-    </div>
+    <!-- Tasas -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-red-600 text-5xl mb-4">📈</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Tasas</h2>
+      <p class="text-gray-500 mb-4">Configura las cotizaciones y tasas de cambio.</p>
+      <a href="{% url 'cotizaciones:cotizacion_list' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Métodos de pago -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-indigo-600 text-5xl mb-4">💳</div>
+      <h2 class="text-xl font-bold mb-2">Gestionar Métodos de Pago</h2>
+      <p class="text-gray-500 mb-4">Agrega o modifica los métodos de pago habilitados.</p>
+      <a href="{% url 'pagos:listar_tipos_medio_pago' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+  </div>
 </main>
-
-<script>
-    // Redirecciones existentes
-    document.getElementById('btn-gestionar-clientes').addEventListener('click', () => {
-        window.location.href = "{% url 'clientes:lista' %}";
-    });
-
-    document.getElementById('btn-gestionar-roles').addEventListener('click', () => {
-        window.location.href = "{% url 'roles:role-panel' %}";
-    });
-
-    document.getElementById('btn-agregar-cliente').addEventListener('click', () => {
-        window.location.href = "{% url 'usuarios:listar_usuarios' %}";
-    });
-
-    // Nuevos botones (aún sin URL asignada)
-    document.getElementById('btn-gestionar-monedas').addEventListener('click', () => {
-        window.location.href = "{% url 'monedas:listar_monedas' %}";
-    });
-
-    document.getElementById('btn-gestionar-tasas').addEventListener('click', () => {
-        window.location.href = "{% url 'cotizaciones:cotizacion_list' %}";
-    });
-
-    document.getElementById('btn-gestionar-pagos').addEventListener('click', () => {
-        window.location.href = "{% url 'pagos:listar_tipos_medio_pago' %}";
-    });
-</script>
 {% endblock %}

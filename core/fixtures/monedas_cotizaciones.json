@@ -1,0 +1,71 @@
+
+[
+  {
+    "model": "monedas.moneda",
+    "pk": "1", 
+    "fields": {
+      "codigo": "PYG",
+      "nombre": "Guaraní Paraguayo",
+      "simbolo": "Gs.",
+      "decimales": 0,
+      "minima_denominacion": 1,
+      "admite_en_linea": true,
+      "admite_terminal": true,
+      "fecha_creacion": "2023-01-01T10:00:00Z"  
+    }
+  },
+  {
+    "model": "monedas.moneda",
+    "pk": "2",
+    "fields": {
+      "codigo": "USD",
+      "nombre": "Dólar Estadounidense",
+      "simbolo": "$",
+      "decimales": 2,
+      "minima_denominacion": 1, 
+      "admite_en_linea": true,
+      "admite_terminal": true,
+      "fecha_creacion": "2023-01-01T10:00:00Z"  
+    }
+  },
+  {
+    "model": "monedas.moneda",
+    "pk": "3",
+    "fields": {
+      "codigo": "EUR",
+      "nombre": "Euro",
+      "simbolo": "€",
+      "decimales": 2,
+      "minima_denominacion": 1, 
+      "admite_en_linea": true,
+      "admite_terminal": true,
+      "fecha_creacion": "2023-01-01T10:00:00Z"  
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "pk": "1",
+    "fields": {
+      "moneda_base": "1",
+      "moneda_destino": "2",
+      "valor_compra": "7400.0000",
+      "valor_venta": "7450.0000",
+      "comision_compra": "100.0000",
+      "comision_venta": "100.0000",
+      "fecha_actualizacion": "2023-01-01T10:00:00Z"  
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "pk": "2",
+    "fields": {
+      "moneda_base": "1",
+      "moneda_destino": "3",
+      "valor_compra": "8100.0000",
+      "valor_venta": "8150.0000",
+      "comision_compra": "60.0000",
+      "comision_venta": "60.0000",
+      "fecha_actualizacion": "2023-01-01T10:00:00Z"  
+    }
+  }
+]

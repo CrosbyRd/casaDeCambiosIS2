@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Inicio{% endblock %}
+{% load l10n %}
+{% block title %}Global Exchange{% endblock %}
+
 {% block content %}
 <section class="max-w-[1200px] mx-auto px-6 py-10">
   <div class="grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-start">
-    <div class="self-start">  {# ← antes tenía class="pt-16" #}
+    <div class="self-start">
       <h1 class="h1">Cambia dinero sin complicaciones</h1>
       <p class="lead">Global Exchange te ofrece tipos de cambio competitivos, transparencia y soporte humano.</p>
       <div class="mt-8 flex items-center gap-3">
@@ -12,22 +14,36 @@
       </div>
     </div>
 
+    <!-- Cotizaciones destacadas (dinámicas) -->
     <div class="bg-neutral-50 rounded-lg p-6">
-      <div class="grid gap-3">
-        <div class="flex items-center justify-between">
-          <span class="font-medium"><span class="emoji">🇺🇸</span> USD → <span class="emoji">🇵🇾</span> PYG</span>
-          <span class="text-brand font-semibold">7.300</span>
+      {% if cotizaciones_destacadas %}
+        <div class="grid gap-5">
+          {% for c in cotizaciones_destacadas %}
+            <div class="flex items-center justify-between">
+              <span class="font-medium">
+                <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                {{ c.moneda_destino.codigo }}
+              </span>
+
+              <!-- Compra / Venta en línea -->
+              <div class="flex items-baseline gap-6 text-right">
+                <div class="flex items-baseline gap-2">
+                  <span class="text-sm text-neutral-500">Compra</span>
+                  <span class="text-brand font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-sm text-neutral-500">Venta</span>
+                  <span class="font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+          <a href="{% url 'site_rates' %}" class="btn-secondary">Ver todos los tipos</a>
         </div>
-        <div class="flex items-center justify-between">
-          <span class="font-medium"><span class="emoji">🇪🇺</span> EUR → <span class="emoji">🇵🇾</span> PYG</span>
-          <span class="text-brand font-semibold">8.000</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="font-medium"><span class="emoji">🇧🇷</span> BRL → <span class="emoji">🇵🇾</span> PYG</span>
-          <span class="text-brand font-semibold">1.300</span>
-        </div>
-        <a href="{% url 'site_rates' %}" class="btn-secondary">Ver todos los tipos</a>
-      </div>
+      {% else %}
+        <p class="muted">Aún no hay cotizaciones cargadas.</p>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -50,44 +66,15 @@
   </div>
 </section>
 
-{# === CTA (del index original) === #}
-<section class="max-w-[1200px] mx-auto px-6 py-8">
-  <div class="rounded-lg p-6 bg-neutral-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-    <div>
-      <div class="grid grid-cols-2 gap-x-8 items-start">
-        <!-- Columna izquierda -->
-        <div>
-          <h2 class="h2 font-bold mb-2">Consulta tipos de cambio en vivo</h2>
-          <p class="text-neutral-600">Simula sin registrarte.</p>
-        </div>
-
-        <!-- Columna derecha -->
-        <div>
-          <h2 class="h2 font-bold mb-2">¿Cómo calculamos la tasa?</h2>
-          <p class="text-neutral-600">
-            Tomamos la tasa de nuestro proveedor mayorista y aplicamos un spread competitivo según el par y el método de pago.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{# === Modal (markup del index original) === #}
-<div id="ratesModal" class="modal hidden">
-  <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
-  <div class="w-full h-full flex items-center justify-center p-6">
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle" class="h2 mb-4">Cómo calculamos la tasa</h2>
-      <p class="text-neutral-700 mb-6">
-        Tomamos la tasa de nuestro proveedor mayorista y aplicamos un spread competitivo según el par y el método de pago.
-      </p>
-      <div class="flex gap-3 justify-end">
-        <button class="btn-secondary" data-modal-close="ratesModal">Cerrar</button>
-        <a class="btn" href="{% url 'site_rates' %}">Ver tabla</a>
-      </div>
-    </div>
-  </div>
-</div>
-
+<script>
+(function(){
+  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
+  document.querySelectorAll('.currency-emoji').forEach(el=>{
+    const code = String(el.dataset.code||'').toUpperCase();
+    el.textContent = (MAP[code] || "💱") + " ";
+  });
+})();
+</script>
 {% endblock %}

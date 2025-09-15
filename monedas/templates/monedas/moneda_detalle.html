@@ -49,42 +49,16 @@
       </div>
     </section>
 
-    <!-- Operatividad y trazabilidad -->
+    <!-- Operatividad y trazabilidad (solo fecha de creación) -->
     <section class="rounded-xl border shadow-sm overflow-hidden" style="border-color:var(--line)">
       <div class="bg-[var(--brand)] text-white px-5 py-3 text-lg font-bold">
         📈 Operatividad y Trazabilidad
       </div>
       <div class="p-5 divide-y" style="--tw-divide-opacity:1; divide-color:var(--line)">
-        <div class="py-3 flex items-center justify-between">
-          <span class="font-semibold text-[var(--muted)]">Admite operaciones en línea:</span>
-          {% if moneda.admite_en_linea %}
-            <span class="px-2 py-1 rounded-md text-green-700 bg-green-100 font-semibold">Sí</span>
-          {% else %}
-            <span class="px-2 py-1 rounded-md text-gray-700 bg-gray-200 font-semibold">No</span>
-          {% endif %}
-        </div>
-        <div class="py-3 flex items-center justify-between">
-          <span class="font-semibold text-[var(--muted)]">Admite terminal de autoservicio:</span>
-          {% if moneda.admite_terminal %}
-            <span class="px-2 py-1 rounded-md text-green-700 bg-green-100 font-semibold">Sí</span>
-          {% else %}
-            <span class="px-2 py-1 rounded-md text-gray-700 bg-gray-200 font-semibold">No</span>
-          {% endif %}
-        </div>
         <div class="py-3 flex justify-between">
           <span class="font-semibold text-[var(--muted)]">Fecha de creación:</span>
           <span class="font-medium">
             {{ moneda.fecha_creacion|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}
-          </span>
-        </div>
-        <div class="py-3 flex justify-between">
-          <span class="font-semibold text-[var(--muted)]">Última actualización de tasa:</span>
-          <span class="font-medium">
-            {% if moneda.ultima_actualizacion_tasa %}
-              {{ moneda.ultima_actualizacion_tasa|date:"j \\d\\e F \\d\\e Y \\a \\l\\a\\s H:i" }}
-            {% else %}
-              — 
-            {% endif %}
           </span>
         </div>
       </div>

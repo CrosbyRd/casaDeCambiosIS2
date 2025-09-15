@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Gestión de Clientes — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
@@ -20,18 +20,15 @@
     <div>
       <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👤 Clientes</h1>
       <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
-        Aquí puedes gestionar los clientes del sistema: crear, editar, activar/desactivar o eliminar.
+        Gestioná clientes: crear, editar, activar/desactivar o eliminar.
       </p>
     </div>
-    <div class="space-x-3 flex">
+    <div class="flex gap-3">
       <a href="{% url 'admin_panel:dashboard' %}" 
          class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-         style="color:var(--brand-dark)">
-        ⬅ Volver al Panel
-      </a>
+         style="color:var(--brand-dark)">⬅ Volver al Panel</a>
       <a href="{% url 'clientes:crear' %}" 
-         class="px-4 py-2 rounded-lg font-bold text-white"
-         style="background:var(--brand)">
+         class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
         ➕ Crear Cliente
       </a>
     </div>
@@ -71,7 +68,7 @@
   <!-- Tabla -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+      <table class="w-full text-left border-collapse min-w-[880px]">
         <thead style="background:var(--brand); color:#fff">
           <tr>
             <th class="px-6 py-3">Nombre</th>
