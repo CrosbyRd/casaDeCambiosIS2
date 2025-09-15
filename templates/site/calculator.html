@@ -35,7 +35,7 @@
       {% csrf_token %}
 
       <div class="overflow-x-auto">
-        <!-- 👇 contenedor redondeado que recorta la tabla -->
+        <!-- tabla con borde redondeado -->
         <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
           <table class="w-full border-collapse min-w-[520px]">
             <thead class="bg-[var(--brand)] text-white">
@@ -76,7 +76,8 @@
               <div class="gx-result-big">
                 Recibirás aproximadamente:
                 <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">{{ resultado.monto_recibido }}</span>
-                {{ form.moneda_destino.value }}
+                <span id="res-flag" aria-hidden="true"></span>
+                <span id="res-code">{{ form.moneda_destino.value }}</span>
               </div>
             </div>
           {% endif %}
@@ -102,10 +103,7 @@
   }
   .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
 
-  .gx-btn--ghost{
-    background:#fff; color:var(--ink); border:1.5px solid var(--line);
-    box-shadow:none;
-  }
+  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
   .gx-btn--ghost:hover{ background:var(--brand-soft); }
 
   .gx-error{ background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
@@ -116,8 +114,8 @@
     padding:14px 16px; border-radius:14px;
   }
   .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
+  #res-flag{ margin:0 .35rem; } /* pequeño espacio alrededor de la banderita */
 
-  /* Botones en fila */
   .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
   @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
 </style>
@@ -142,6 +140,8 @@
   const out   = document.getElementById('out-amount');
   const res   = document.getElementById('res-num');
   const wrap  = document.getElementById('result-wrap');
+  const resFlag = document.getElementById('res-flag');
+  const resCode = document.getElementById('res-code');
 
   if (out && out.value) out.value = fmt(out.value);
   if (res) { const raw = res.dataset.raw || res.textContent; res.textContent = fmt(raw); }
@@ -184,6 +184,12 @@
     selDst.value = '';
   }
 
+  function updateResultFlag(){
+    if (!resFlag || !selDst) return;
+    const code = selDst.value || (resCode ? resCode.textContent.trim() : '');
+    resFlag.textContent = (data[code] && data[code].emoji) ? data[code].emoji : '';
+  }
+
   function enforceRules(changed){
     const o = selOri?.value || '';
     const d = selDst?.value || '';
@@ -200,14 +206,17 @@
     const ready = selOri.value && selDst.value && selOri.value !== selDst.value &&
                   (!monto || (toNumber(monto.value) > 0));
     btn.disabled = !ready;
+
+    updateResultFlag();
   }
 
   selOri?.addEventListener('change', () => enforceRules('ori'));
   selDst?.addEventListener('change', () => enforceRules('dst'));
   monto?.addEventListener('input', () => enforceRules('amount'));
-  enforceRules();
+  enforceRules();          // estado inicial
+  updateResultFlag();      // y bandera inicial
 
-  // BORRAR: limpia monto, salida y oculta el bloque de resultado
+  // BORRAR
   btnClr?.addEventListener('click', () => {
     if (monto) { monto.value = ''; monto.focus(); }
     if (out) out.value = '';

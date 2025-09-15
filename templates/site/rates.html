@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load l10n %} {# <-- añade esto #}
-
+{% load l10n %}
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
@@ -11,7 +10,7 @@
     <table class="w-full border-collapse">
       <thead class="bg-[var(--brand)] text-white">
         <tr>
-          <th class="px-4 py-3 text-left">Par</th>
+          <th class="px-4 py-3 text-left">Moneda</th>
           <th class="px-4 py-3 text-right">Compra (PYG)</th>
           <th class="px-4 py-3 text-right">Venta (PYG)</th>
           <th class="px-4 py-3 text-right">Actualización</th>
@@ -22,9 +21,7 @@
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
             <td class="px-4 py-3">
               <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-              {{ c.moneda_destino.codigo }} →
-              <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
-              {{ c.moneda_base.codigo }}
+              {{ c.moneda_destino.codigo }}
             </td>
 
             {# sin decimales #}

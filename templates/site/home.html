@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load l10n %} {# <-- añade esto #}
+{% load l10n %}
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
@@ -22,9 +22,7 @@
             <div class="flex items-center justify-between">
               <span class="font-medium">
                 <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-                {{ c.moneda_destino.codigo }} →
-                <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
-                {{ c.moneda_base.codigo }}
+                {{ c.moneda_destino.codigo }}
               </span>
 
               <!-- Compra / Venta en línea -->

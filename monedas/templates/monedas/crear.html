@@ -40,30 +40,36 @@
           }'>
       {% csrf_token %}
 
-      <!-- Código -->
+      <!-- Código (bloque superior redondeado) -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse min-w-[560px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr><th class="px-4 py-3 text-left">Código</th></tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">
-                {{ form.codigo }}
-                {% if form.codigo.errors %}
-                  <div class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
-                    ⚠️ Ya existe una moneda con ese código.
-                  </div>
-                {% endif %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="w-full min-w-[560px] rounded-xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr><th class="px-4 py-3 text-left">Código</th></tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)] bg-white">
+                <td class="px-4 py-3">
+                  {{ form.codigo }}
+                  {% if form.codigo.errors %}
+                    <div class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
+                      ⚠️ Ya existe una moneda con ese código.
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Nombre / Símbolo -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Nombre</th>
@@ -72,8 +78,8 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.nombre }}</td>
-              <td class="px-4 py-3">{{ form.simbolo }}</td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.nombre }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.simbolo }}</div></td>
             </tr>
           </tbody>
         </table>
@@ -82,6 +88,10 @@
       <!-- Decimales / Mínima denominación -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Decimales</th>
@@ -90,30 +100,15 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.decimales }}</td>
-              <td class="px-4 py-3">{{ form.minima_denominacion }}</td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.decimales }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.minima_denominacion }}</div></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Flags -->
-      <div class="overflow-x-auto mt-6">
-        <table class="w-full border-collapse min-w-[560px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Admite en línea</th>
-              <th class="px-4 py-3 text-left">Admite terminal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.admite_en_linea }}</td>
-              <td class="px-4 py-3">{{ form.admite_terminal }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- (Bloque de flags eliminado a pedido) -->
+
     </form>
   </section>
 
@@ -132,30 +127,13 @@
 </main>
 
 <style>
-  #id_codigo,
-  #id_nombre,
-  #id_simbolo,
-  #id_decimales,
-  #id_minima_denominacion{
-    width:100%;
-    max-width:380px;
-    background:#fff;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    height:48px;
-    font-size:1rem;
-    color:var(--ink);
-    box-shadow:0 1px 2px rgba(0,0,0,.03);
-    transition:box-shadow .2s ease,border-color .2s ease;
+  #id_codigo,#id_nombre,#id_simbolo,#id_decimales,#id_minima_denominacion{
+    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
   }
-  #id_codigo:focus,
-  #id_nombre:focus,
-  #id_simbolo:focus,
-  #id_decimales:focus,
-  #id_minima_denominacion:focus{
-    outline:none; border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  #id_codigo:focus,#id_nombre:focus,#id_simbolo:focus,#id_decimales:focus,#id_minima_denominacion:focus{
+    outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(115,60,255,.15);
   }
 </style>
 
