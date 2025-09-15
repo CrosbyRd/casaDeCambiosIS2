@@ -67,12 +67,12 @@
                   Editar
                 </a>
 
-                <!-- Toggle activo (form con esquinas redondeadas) -->
+                <!-- Toggle activo -->
                 <form method="post" action="{% url 'pagos:toggle_activo' tipo.pk %}"
                       class="inline-block rounded-lg overflow-hidden">
                   {% csrf_token %}
                   {% if tipo.activo %}
-                    <button type="submit" class="px-3 py-1 font-semibold text-[var(--ink)] bg-yellow-400 hover:bg-yellow-500">
+                    <button type="submit" class="px-3 py-1 font-semibold text-white bg-yellow-400 hover:bg-yellow-500">
                       Desactivar
                     </button>
                   {% else %}
@@ -82,15 +82,11 @@
                   {% endif %}
                 </form>
 
-                <!-- Eliminar (form con esquinas redondeadas) -->
-                <form method="post" action="{% url 'pagos:eliminar_tipo_medio_pago' tipo.pk %}"
-                      class="inline-block rounded-lg overflow-hidden"
-                      onsubmit="return confirm('¿Eliminar {{ tipo.nombre }}?');">
-                  {% csrf_token %}
-                  <button type="submit" class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700">
-                    Eliminar
-                  </button>
-                </form>
+                <!-- Eliminar -> ir a la vista que muestra la confirmación -->
+                <a href="{% url 'pagos:eliminar_tipo_medio_pago' tipo.pk %}"
+                   class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg inline-block">
+                  Eliminar
+                </a>
               </div>
             </td>
           </tr>

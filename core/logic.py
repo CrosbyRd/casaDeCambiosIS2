@@ -64,7 +64,7 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
             comision_com = cotizacion.comision_compra
             descuento_comision = comision_com * (bonificacion_pct / Decimal('100'))
             comision_final = comision_com - descuento_comision
-            tasa_final = cotizacion.valor_compra - comision_final
+            tasa_final = cotizacion.valor_compra + comision_final
             
             # La bonificación aplicada es el monto que se descontó de la comisión
             bonificacion_monto = descuento_comision
