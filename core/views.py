@@ -48,3 +48,5 @@ def site_rates(request):
           .order_by('moneda_destino__codigo'))
     context = {'cotizaciones': qs}
     return render(request, 'site/rates.html', context)
+
+

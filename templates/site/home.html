@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load l10n %} {# <-- añade esto #}
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
@@ -30,11 +31,11 @@
               <div class="flex items-baseline gap-6 text-right">
                 <div class="flex items-baseline gap-2">
                   <span class="text-sm text-neutral-500">Compra</span>
-                  <span class="text-brand font-semibold">{{ c.total_compra }}</span>
+                  <span class="text-brand font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
                 </div>
                 <div class="flex items-baseline gap-2">
                   <span class="text-sm text-neutral-500">Venta</span>
-                  <span class="font-semibold">{{ c.total_venta }}</span>
+                  <span class="font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
                 </div>
               </div>
             </div>
@@ -67,16 +68,13 @@
   </div>
 </section>
 
-<!-- Banderas por código -->
 <script>
 (function(){
-  const MAP = {
-    USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-    MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-    CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
-  };
+  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
   document.querySelectorAll('.currency-emoji').forEach(el=>{
-    const code = String(el.dataset.code || '').toUpperCase();
+    const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
   });
 })();

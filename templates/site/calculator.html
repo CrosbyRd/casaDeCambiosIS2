@@ -1,15 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}Global Exchange{% endblock %}
-{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
 
 {% block content %}
-{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" back_url="/" %}
+
+{# Encabezado sin back_url para no mostrar “Volver” #}
+{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" %}
+
 {% include "partials/messages.html" %}
 
 <main class="max-w-5xl mx-auto px-6 py-10">
+
   <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-    <form method="post" id="form-simulador"
+
+    <form method="post"
+          id="form-simulador"
+          data-initial-blank="{% if form.is_bound %}0{% else %}1{% endif %}"
           data-currencies='{
             "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
             "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
@@ -46,7 +56,7 @@
             <tr class="hover:bg-[var(--brand-soft)]">
               <td class="px-4 py-3">{{ form.monto }}</td>
               <td class="px-4 py-3">
-                <input class="gx-input" type="text" readonly
+                <input id="out-amount" class="gx-input" type="text" readonly
                        value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
                        placeholder="0,00">
               </td>
@@ -56,13 +66,6 @@
       </div>
 
       <div class="px-4 py-4">
-        <div id="pair-error" class="gx-error mb-2" style="display:none;">
-          Las operaciones se deben realizar con la moneda base (Guaraní).
-        </div>
-        <div id="same-error" class="gx-error mb-4" style="display:none;">
-          No se pueden realizar conversiones con la misma moneda.
-        </div>
-
         <div style="margin-top:18px;">
           <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
 
@@ -72,95 +75,140 @@
             {% else %}
               <div class="gx-result-wrap mt-4">
                 <div class="gx-result-big">
-                  Recibirás aproximadamente: {{ resultado.monto_recibido }} {{ form.moneda_destino.value }}
+                  Recibirás aproximadamente:
+                  <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">
+                    {{ resultado.monto_recibido }}
+                  </span>
+                  {{ form.moneda_destino.value }}
                 </div>
               </div>
             {% endif %}
           {% endif %}
         </div>
       </div>
+
     </form>
   </section>
 </main>
 
 <style>
-  .gx-input, .gx-select {
-    width:100%;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    height:48px;
-    font-size:1rem;
-    color:var(--ink);
-    background:#fff;
+  .gx-input, .gx-select{
+    width:100%; border:1.5px solid var(--line); border-radius:12px;
+    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
     transition:box-shadow .2s ease,border-color .2s ease;
   }
-  .gx-input:focus, .gx-select:focus {
-    outline:none;
-    border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);
-  }
-  .gx-btn {
-    background: var(--brand);
-    color:#fff;
-    font-weight:800;
-    border:none;
-    border-radius:12px;
-    padding:12px 16px;
-    font-size:16px;
-    width:100%;
+  .gx-input:focus, .gx-select:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(115,60,255,.15); }
+
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
+    padding:12px 16px; font-size:16px; width:100%;
     box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
     cursor:pointer;
   }
-  .gx-btn[disabled] { opacity:.55; cursor:not-allowed; box-shadow:none; }
-  .gx-error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
-  .gx-result-big { font-size:24px; font-weight:900; color:#22c55e; }
+  .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
+
+  .gx-error{ background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
+
+  .gx-result-wrap{
+    background:var(--brand-soft);
+    border:1px solid color-mix(in oklab, var(--brand) 35%, white);
+    padding:14px 16px; border-radius:14px;
+  }
+  .gx-result-big{
+    font-size:24px; font-weight:900; color:var(--brand);
+  }
 </style>
 
 <script>
-(function(){
-  const form  = document.getElementById('form-simulador');
-  if(!form) return;
+(function () {
+  const form   = document.getElementById('form-simulador');
+  if (!form) return;
 
-  const data = JSON.parse(form.dataset.currencies || "{}");
+  /* ====== helpers de formato ====== */
+  function toNumber(raw){
+    if (raw == null) return NaN;
+    const s = String(raw).replace(/\./g,'').replace(',','.');
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  function fmt(n){
+    const num = typeof n === 'number' ? n : toNumber(n);
+    if (!Number.isFinite(num)) return n;
+    // miles con punto, decimales con coma
+    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
+  }
+
+  // Formateo de preview / resultado (si existe)
+  const out = document.getElementById('out-amount');
+  if (out && out.value) out.value = fmt(out.value);
+  const res = document.getElementById('res-num');
+  if (res) { const raw = res.dataset.raw || res.textContent; res.textContent = fmt(raw); }
+
+  /* ====== selects y reglas ====== */
+  const data   = JSON.parse(form.dataset.currencies || "{}");
+  const selOri = document.getElementById('id_moneda_origen');
+  const selDst = document.getElementById('id_moneda_destino');
+  const monto  = document.getElementById('id_monto');
+  const btn    = document.getElementById('btn-calcular');
+
+  const isPYG     = (v) => String(v || '').toUpperCase() === 'PYG';
+  const isForeign = (v) => v && !isPYG(v);
 
   function decorateSelect(sel){
     if(!sel) return;
     [...sel.options].forEach(opt=>{
-      const code = opt.value;
-      if(data[code]){
+      const code = opt.value; if (code && data[code]) {
         const {emoji, name} = data[code];
         opt.textContent = `${emoji} ${code} — ${name}`;
       }
     });
     sel.classList.add('gx-select');
   }
-
-  const selOri = document.getElementById('id_moneda_origen');
-  const selDst = document.getElementById('id_moneda_destino');
-  decorateSelect(selOri);
-  decorateSelect(selDst);
-
-  const monto = document.getElementById('id_monto');
-  if(monto) monto.classList.add('gx-input');
-
-  const btn    = document.getElementById('btn-calcular');
-  const errPYG = document.getElementById('pair-error');
-  const errEQ  = document.getElementById('same-error');
-
-  function checkRules(){
-    const o = (selOri?.value || '').toUpperCase();
-    const d = (selDst?.value || '').toUpperCase();
-    const hasBase = (o === 'PYG' || d === 'PYG');
-    const same    = (o && d && o === d);
-    errPYG.style.display = hasBase ? 'none' : 'block';
-    errEQ.style.display  = same    ? 'block' : 'none';
-    btn.disabled = (!hasBase || same);
+  function ensurePlaceholder(sel){
+    if(!sel) return;
+    if(!sel.querySelector('option[value=""]')){
+      const ph = document.createElement('option');
+      ph.value = ''; ph.textContent = 'Seleccioná una moneda…'; ph.disabled = true; ph.hidden = true;
+      sel.insertBefore(ph, sel.firstChild);
+    }
   }
 
-  selOri?.addEventListener('change', checkRules);
-  selDst?.addEventListener('change', checkRules);
-  checkRules();
+  decorateSelect(selOri); decorateSelect(selDst);
+  ensurePlaceholder(selOri); ensurePlaceholder(selDst);
+  if (monto) monto.classList.add('gx-input');
+
+  // Dejar vacíos al entrar por primera vez (solo GET, sin datos)
+  if (form.dataset.initialBlank === '1') {
+    selOri.value = '';
+    selDst.value = '';
+  }
+
+  function enforceRules(changed){
+    const o = selOri?.value || '';
+    const d = selDst?.value || '';
+
+    // Si una es extranjera, la otra debe ser PYG
+    if (changed === 'ori' && isForeign(o)) { if (!isPYG(d)) selDst.value = 'PYG'; }
+    if (changed === 'dst' && isForeign(d)) { if (!isPYG(o)) selOri.value = 'PYG'; }
+
+    // Nunca ambas PYG simultáneamente
+    if (isPYG(selOri.value) && isPYG(selDst.value)) {
+      if (changed === 'ori') selDst.value = '';
+      else if (changed === 'dst') selOri.value = '';
+      else selDst.value = '';
+    }
+
+    // Habilitar botón solo cuando se puede calcular
+    const ready = selOri.value && selDst.value && selOri.value !== selDst.value &&
+                  (!monto || (toNumber(monto.value) > 0));
+    btn.disabled = !ready;
+  }
+
+  selOri?.addEventListener('change', () => enforceRules('ori'));
+  selDst?.addEventListener('change', () => enforceRules('dst'));
+  monto?.addEventListener('input', () => enforceRules('amount'));
+  enforceRules(); // estado inicial
 })();
 </script>
+
 {% endblock %}
