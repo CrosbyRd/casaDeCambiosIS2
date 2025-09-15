@@ -1,105 +1,56 @@
 {% extends "base.html" %}
-{% block title %}Detalles de {{ cliente.nombre }} — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
-
-  <!-- Encabezado -->
   <header class="flex items-center justify-between mb-8">
     <div>
       <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">👤 {{ cliente.nombre }}</h1>
-      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">
-        Aquí puedes ver toda la información del cliente seleccionado.
-      </p>
+      <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">Aquí puedes ver toda la información del cliente seleccionado.</p>
     </div>
     <div class="space-x-3 flex">
-      <a href="{% url 'clientes:lista' %}" 
-         class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600">
-        ⬅ Volver
-      </a>
+      <a href="{% url 'clientes:lista' %}" class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600">⬅ Volver</a>
     </div>
   </header>
 
-  <!-- Información principal -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <!-- Información del Cliente -->
     <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
       <table class="w-full border-collapse">
         <thead style="background:var(--brand); color:#fff">
-          <tr>
-            <th class="px-6 py-3 text-left">📌 Información del Cliente</th>
-          </tr>
+          <tr><th class="px-6 py-3 text-left">📌 Información del Cliente</th></tr>
         </thead>
         <tbody>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Nombre:</strong> {{ cliente.nombre }}</td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Categoría:</strong> 
-              <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-sm font-medium">
-                {{ cliente.get_categoria_display }}
-              </span>
-            </td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Bonificación:</strong> <span class="text-green-600 font-semibold">{{ cliente.bonificacion }}%</span></td>
-          </tr>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>Estado:</strong> 
-              {% if cliente.activo %}
-                <span class="text-green-600 font-semibold">Activo</span>
-              {% else %}
-                <span class="text-red-600 font-semibold">Inactivo</span>
-              {% endif %}
-            </td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Fecha Registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y H:i" }}</td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Última Actualización:</strong> {{ cliente.ultima_modificacion|date:"d/m/Y H:i" }}</td>
-          </tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Nombre:</strong> {{ cliente.nombre }}</td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Categoría:</strong>
+            <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-sm font-medium">{{ cliente.get_categoria_display }}</span>
+          </td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Bonificación:</strong> <span class="text-green-600 font-semibold">{{ cliente.bonificacion }}%</span></td></tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>Estado:</strong>
+            {% if cliente.activo %}<span class="text-green-600 font-semibold">Activo</span>{% else %}<span class="text-red-600 font-semibold">Inactivo</span>{% endif %}
+          </td></tr>
+          <tr><td class="px-6 py-3"><strong>Fecha Registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y H:i" }}</td></tr>
+          <tr><td class="px-6 py-3"><strong>Última Actualización:</strong> {{ cliente.ultima_modificacion|date:"d/m/Y H:i" }}</td></tr>
         </tbody>
       </table>
     </section>
 
-    <!-- Límites de Compra -->
     <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
       <table class="w-full border-collapse">
         <thead style="background:var(--brand); color:#fff">
-          <tr>
-            <th class="px-6 py-3 text-left">💰 Límites de Compra</th>
-          </tr>
+          <tr><th class="px-6 py-3 text-left">💰 Límites de Compra</th></tr>
         </thead>
         <tbody>
-          <tr class="border-b" style="border-color:var(--line)">
-            <td class="px-6 py-3"><strong>USD:</strong> ${{ cliente.limite_compra_usd|floatformat:2 }}</td>
-          </tr>
-          <tr>
-            <td class="px-6 py-3"><strong>Capacidad de Compra:</strong> 
-              {% if cliente.activo %}
-                <span class="text-green-600 font-semibold">Disponible</span>
-              {% else %}
-                <span class="text-red-600 font-semibold">Límite excedido</span>
-              {% endif %}
-            </td>
-          </tr>
+          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>USD:</strong> ${{ cliente.limite_compra_usd|floatformat:2 }}</td></tr>
+          <tr><td class="px-6 py-3"><strong>Capacidad de Compra:</strong> {% if cliente.activo %}<span class="text-green-600 font-semibold">Disponible</span>{% else %}<span class="text-red-600 font-semibold">Límite excedido</span>{% endif %}</td></tr>
         </tbody>
       </table>
     </section>
   </div>
 
-  <!-- Información de transacciones -->
   <section class="bg-white border rounded-xl shadow-sm p-6 mt-6" style="border-color:var(--line)">
     <h2 class="text-lg font-bold mb-4 text-[var(--ink)]">📄 Información de Transacciones</h2>
-    <div class="mb-3 p-3 rounded bg-blue-100 text-blue-800">
-      ℹ️ Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong> en todas sus transacciones.
-    </div>
-    <div class="p-3 rounded bg-yellow-100 text-yellow-800">
-      ⚠️ Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.
-    </div>
+    <div class="mb-3 p-3 rounded bg-blue-100 text-blue-800">ℹ️ Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong> en todas sus transacciones.</div>
+    <div class="p-3 rounded bg-yellow-100 text-yellow-800">⚠️ Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.</div>
   </section>
-
 </main>
 {% endblock %}

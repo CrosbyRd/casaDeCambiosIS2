@@ -1,33 +1,58 @@
 {% extends "base.html" %}
-{% block title %}Crear cuenta — Global Exchange{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
 {% block header_auth %}{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
 
 {% block content %}
 <main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
   <h1 class="h1 mb-6">Crear cuenta</h1>
 
-  <!-- Alineación con el panel derecho -->
   <div class="grid md:grid-cols-2 gap-6 items-start">
     <form id="signupForm" class="border border-neutral-200 rounded-lg p-6"
           method="post" action="{% url 'usuarios:register' %}" novalidate>
       {% csrf_token %}
 
-      <div class="mb-6">
-        <label class="block mb-3 font-medium" for="id_email">Email</label>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium" for="id_first_name">Nombre</label>
+          <input id="id_first_name" name="first_name" type="text"
+                 value="{{ form.first_name.value|default_if_none:'' }}"
+                 autocomplete="given-name"
+                 class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                 placeholder="Tu nombre" />
+        </div>
+
+        <div>
+          <label class="block mb-2 font-medium" for="id_last_name">Apellido</label>
+          <input id="id_last_name" name="last_name" type="text"
+                 value="{{ form.last_name.value|default_if_none:'' }}"
+                 autocomplete="family-name"
+                 class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                 placeholder="Tu apellido" />
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <label class="block mb-2 font-medium" for="id_email">Email</label>
         <input id="id_email" name="email" type="email"
                value="{{ form.email.value|default_if_none:'' }}"
+               autocomplete="email"
                class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-               placeholder="tu@correo.com" autofocus />
+               placeholder="tu@correo.com" />
       </div>
 
-      <div class="mb-6">
-        <label class="block mb-3 font-medium" for="id_password">Contraseña</label>
+      <div class="mt-6">
+        <label class="block mb-2 font-medium" for="id_password">Contraseña</label>
         <input id="id_password" name="password" type="password"
+               autocomplete="new-password"
                class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
-               placeholder="Ingresa tu contraseña" />
+               placeholder="Mínimo 8 caracteres" />
       </div>
 
-      <div class="mb-6">
+      <div class="mt-6">
         <label class="inline-flex items-center gap-3">
           <input id="id_terms" name="terms" type="checkbox" class="h-5 w-5"
                  {% if form.terms.value %}checked{% endif %} />
@@ -35,39 +60,28 @@
         </label>
       </div>
 
-      <button class="btn w-full" type="submit">Registrarme</button>
-      <a href="{% url 'login' %}" class="btn-secondary mt-6 w-full inline-flex justify-center">Ya tengo cuenta</a>
+      <button class="btn w-full mt-6" type="submit">Registrarme</button>
+      <a href="{% url 'login' %}" class="btn-secondary mt-3 w-full inline-flex justify-center">Ya tengo cuenta</a>
     </form>
 
-    <!-- Panel informativo al estilo del login -->
     <aside class="border border-neutral-200 rounded-lg p-6 bg-white self-start">
       <h2 class="h2 mb-3">Verificación por correo electrónico</h2>
       <p class="text-neutral-700">
-        Para activar tu cuenta, te enviaremos un <strong>enlace de verificación</strong> al email que registres.
+        Para activar tu cuenta, te enviaremos un <strong>código de verificación</strong> al email que registres.
       </p>
 
       <ul class="mt-4 space-y-2 text-neutral-700">
-        <li class="flex gap-3">
-          <span class="select-none">✉️</span>
-          Recibirás un mensaje en tu bandeja de entrada con el enlace.
-        </li>
-        <li class="flex gap-3">
-          <span class="select-none">🔗</span>
-          El enlace es de <strong>un solo uso</strong> y sirve para confirmar tu dirección.
-        </li>
-        <li class="flex gap-3">
-          <span class="select-none">🧭</span>
-          Asegúrate de escribir bien tu dirección antes de registrarte.
-        </li>
+        <li class="flex gap-3"><span class="select-none">✉️</span> Recibirás un mensaje con el código.</li>
+        <li class="flex gap-3"><span class="select-none">🔗</span> El código es de <strong>un solo uso</strong> y vence en minutos.</li>
+        <li class="flex gap-3"><span class="select-none">🧭</span> Escribe bien tu dirección antes de registrarte.</li>
       </ul>
 
       <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
-        Si no te llega el código, revisa tu carpeta de spam o solicita reenviar desde la pantalla de verificación.
+        Si no te llega, revisa spam o solicita reenviar desde la pantalla de verificación.
       </div>
     </aside>
   </div>
 
-  <!-- Modal de error -->
   <div id="signupError" class="modal {% if form.errors %}block{% else %}hidden{% endif %}">
     <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
     <div class="w-full h-full flex items-center justify-center p-6">
@@ -85,25 +99,10 @@
             {% endfor %}
           </ul>
         {% else %}
-          <p class="text-neutral-700 mb-6">Email, contraseña y aceptación de términos son obligatorios.</p>
+          <p class="text-neutral-700 mb-6">Nombre, apellido, email, contraseña y aceptar términos son obligatorios.</p>
         {% endif %}
         <div class="flex gap-3 justify-end">
           <button class="btn" data-modal-close="signupError">Entendido</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de registro pendiente o éxito -->
-  <div id="signupOK" class="modal hidden">
-    <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
-    <div class="w-full h-full flex items-center justify-center p-6">
-      <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="signupOkTitle">
-        <h2 id="signupOkTitle" class="h2 mb-4">Registro pendiente</h2>
-        <p class="text-neutral-700 mb-6">Se ha enviado un código de verificación a tu correo. Revisa tu bandeja de entrada para activar la cuenta.</p>
-        <div class="flex gap-3 justify-end">
-          <a class="btn-secondary" href="{% url 'usuarios:verify' %}">Verificar ahora</a>
-          <button class="btn" data-modal-close="signupOK">Cerrar</button>
         </div>
       </div>
     </div>
@@ -114,22 +113,20 @@
 <script>
   const form = document.getElementById('signupForm');
   const modalErr = document.getElementById('signupError');
-  const modalOK  = document.getElementById('signupOK');
 
   form.addEventListener('submit', function(e){
+    const first = document.getElementById('id_first_name').value.trim();
+    const last  = document.getElementById('id_last_name').value.trim();
     const email = document.getElementById('id_email').value.trim();
     const pass  = document.getElementById('id_password').value.trim();
     const terms = document.getElementById('id_terms').checked;
 
-    if (!email || !pass || !terms) {
+    if (!first || !last || !email || !pass || !terms) {
       e.preventDefault();
       modalErr.classList.remove('hidden');
-    } else {
-      // Envío normal al backend
     }
   });
 
-  // Cierre de modales
   document.addEventListener('click', (e) => {
     const overlay = e.target?.closest('[data-modal-overlay]');
     const closeId = e.target?.closest('[data-modal-close]')?.getAttribute('data-modal-close');
