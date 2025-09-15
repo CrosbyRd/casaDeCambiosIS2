@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Eliminar Moneda — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
   <!-- Encabezado -->
   <header class="mb-8">
-    <h1 class="text-4xl font-extrabold text-red-600 flex items-center gap-2">
-      🗑️ Eliminar Moneda
-    </h1>
+    <h1 class="text-4xl font-extrabold text-red-600 flex items-center gap-2">🗑️ Eliminar Moneda</h1>
     <p class="text-lg text-[var(--muted)] mt-2">
       Esta acción no se puede deshacer. Revisá la información antes de continuar.
     </p>
@@ -21,16 +19,10 @@
       <p class="text-lg">
         ¿Confirmás que querés eliminar la moneda
         <span class="font-semibold">
-          {% if moneda %}
-            {{ moneda.nombre }} ({{ moneda.codigo }})
-          {% elif object %}
-            {{ object.nombre }} ({{ object.codigo }})
-          {% elif monedas %}
-            {{ monedas.nombre }} ({{ monedas.codigo }})
-          {% else %}
-            <!-- fallback por si no llega nada -->
-            —
-          {% endif %}
+          {% if moneda %}{{ moneda.nombre }} ({{ moneda.codigo }})
+          {% elif object %}{{ object.nombre }} ({{ object.codigo }})
+          {% elif monedas %}{{ monedas.nombre }} ({{ monedas.codigo }})
+          {% else %}—{% endif %}
         </span>?
       </p>
 
@@ -39,14 +31,11 @@
         <span>Al eliminar esta moneda se perderán sus datos de manera permanente.</span>
       </div>
 
-      <div class="flex justify-center gap-4 mt-6">
-        <button type="submit"
-                class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700 flex items-center gap-2">
+      <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+        <button type="submit" class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700 flex items-center gap-2">
           🗑️ <span>Sí, eliminar</span>
         </button>
-        <a href="{% url 'monedas:listar_monedas' %}"
-           class="px-5 py-2 rounded-lg font-semibold text-white flex items-center gap-2"
-           style="background:var(--brand)">
+        <a href="{% url 'monedas:listar_monedas' %}" class="px-5 py-2 rounded-lg font-semibold text-white flex items-center gap-2" style="background:var(--brand)">
           ✖ <span>Cancelar</span>
         </a>
       </div>

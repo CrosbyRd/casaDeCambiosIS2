@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
-
 {% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" back_url="/" %}
 {% include "partials/messages.html" %}
 
@@ -28,35 +30,35 @@
           }'>
       {% csrf_token %}
 
-      <table class="w-full border-collapse">
-        <thead class="bg-[var(--brand)] text-white">
-          <tr>
-            <th class="px-4 py-3 text-left">Tengo esta moneda</th>
-            <th class="px-4 py-3 text-left">Quiero esta moneda</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.moneda_origen }}</td>
-            <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-          </tr>
-          <tr class="hover:bg-[var(--brand-soft)]">
-            <td class="px-4 py-3">{{ form.monto }}</td>
-            <td class="px-4 py-3">
-              <input class="gx-input" type="text" readonly
-                     value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
-                     placeholder="0,00">
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse min-w-[520px]">
+          <thead class="bg-[var(--brand)] text-white">
+            <tr>
+              <th class="px-4 py-3 text-left">Tengo esta moneda</th>
+              <th class="px-4 py-3 text-left">Quiero esta moneda</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-[var(--brand-soft)]">
+              <td class="px-4 py-3">{{ form.moneda_origen }}</td>
+              <td class="px-4 py-3">{{ form.moneda_destino }}</td>
+            </tr>
+            <tr class="hover:bg-[var(--brand-soft)]">
+              <td class="px-4 py-3">{{ form.monto }}</td>
+              <td class="px-4 py-3">
+                <input class="gx-input" type="text" readonly
+                       value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
+                       placeholder="0,00">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div class="px-4 py-4">
-        <!-- Aviso si no hay PYG en el par -->
         <div id="pair-error" class="gx-error mb-2" style="display:none;">
           Las operaciones se deben realizar con la moneda base (Guaraní).
         </div>
-        <!-- Aviso si las dos monedas son iguales -->
         <div id="same-error" class="gx-error mb-4" style="display:none;">
           No se pueden realizar conversiones con la misma moneda.
         </div>
@@ -110,18 +112,8 @@
     box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
     cursor:pointer;
   }
-  .gx-btn[disabled] {
-    opacity:.55;
-    cursor:not-allowed;
-    box-shadow:none;
-  }
-  .gx-error {
-    background:#fee2e2;
-    color:#991b1b;
-    border:1px solid #fecaca;
-    padding:12px 14px;
-    border-radius:12px;
-  }
+  .gx-btn[disabled] { opacity:.55; cursor:not-allowed; box-shadow:none; }
+  .gx-error { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
   .gx-result-big { font-size:24px; font-weight:900; color:#22c55e; }
 </style>
 
@@ -152,7 +144,6 @@
   const monto = document.getElementById('id_monto');
   if(monto) monto.classList.add('gx-input');
 
-  // === Validaciones: requiere PYG y no permitir monedas iguales ===
   const btn    = document.getElementById('btn-calcular');
   const errPYG = document.getElementById('pair-error');
   const errEQ  = document.getElementById('same-error');
@@ -160,24 +151,16 @@
   function checkRules(){
     const o = (selOri?.value || '').toUpperCase();
     const d = (selDst?.value || '').toUpperCase();
-
-    const hasBase = (o === 'PYG' || d === 'PYG');     // al menos una PYG
-    const same    = (o && d && o === d);              // monedas iguales
-
-    // Mostrar/ocultar avisos
+    const hasBase = (o === 'PYG' || d === 'PYG');
+    const same    = (o && d && o === d);
     errPYG.style.display = hasBase ? 'none' : 'block';
     errEQ.style.display  = same    ? 'block' : 'none';
-
-    // Deshabilitar botón si falta PYG o si son iguales
     btn.disabled = (!hasBase || same);
   }
 
   selOri?.addEventListener('change', checkRules);
   selDst?.addEventListener('change', checkRules);
-
-  // Evaluación inicial
   checkRules();
 })();
 </script>
-
 {% endblock %}

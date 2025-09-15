@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Iniciar sesión — Global Exchange{% endblock %}
+{% block title %}Global Exchange{% endblock %}
 {% block header_auth %}{% endblock %}
 
 {% block content %}
@@ -25,7 +25,6 @@
         .api-login label{display:block;margin:.5rem 0 .25rem;font-weight:600}
         .api-login input{width:100%;padding:.7rem;border:1px solid #d1d5db;border-radius:.5rem}
         .api-login button{padding:.75rem 1rem;border-radius:.9rem;background:var(--brand);color:#fff;border:0;cursor:pointer;font-weight:800}
-        /* 🔧 Alineación: sin margen superior en la tarjeta del formulario */
         .api-login .box{border:1px solid #e5e7eb;border-radius:.9rem;padding:1rem;margin-top:0;background:#fff}
       </style>
 
@@ -46,7 +45,6 @@
 
           <button type="submit" class="mt-4 w-full">Ingresar</button>
 
-          <!-- Botón Crear cuenta -> landing pública -->
           <a class="btn-secondary mt-3 w-full inline-flex justify-center" href="{% url 'site_signup' %}">
             Crear cuenta
           </a>
@@ -63,22 +61,13 @@
       </p>
 
       <ul class="mt-4 space-y-2 text-neutral-700">
-        <li class="flex gap-3">
-          <span class="select-none">🔐</span>
-          Código de <strong>6 dígitos</strong> válido por tiempo limitado.
-        </li>
-        <li class="flex gap-3">
-          <span class="select-none">✉️</span>
-          Lo recibirás en el email asociado a tu cuenta.
-        </li>
-        <li class="flex gap-3">
-          <span class="select-none">🚫</span>
-          No compartas tu código con nadie.
-        </li>
+        <li class="flex gap-3"><span class="select-none">🔐</span> Código de <strong>6 dígitos</strong> válido por tiempo limitado.</li>
+        <li class="flex gap-3"><span class="select-none">✉️</span> Lo recibirás en el email asociado a tu cuenta.</li>
+        <li class="flex gap-3"><span class="select-none">🚫</span> No compartas tu código con nadie.</li>
       </ul>
 
       <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
-        Si no te llega el código, revisa tu carpeta de spam  o solicita reenviar desde la pantalla de verificación.
+        Si no te llega el código, revisa tu carpeta de spam o solicita reenviar desde la pantalla de verificación.
       </div>
     </aside>
   </div>

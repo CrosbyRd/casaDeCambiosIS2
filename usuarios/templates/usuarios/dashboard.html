@@ -1,10 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
 
-{# Ocultar completamente el header en el dashboard #}
-{% block site_header %}{% endblock %}
+{# Acciones del header: Inicio + Cerrar sesión #}
+{% block header_auth %}
+<div class="hidden md:flex items-center gap-3">
+  <a href="{% url 'home' %}" class="btn-secondary">Inicio</a>
+  <a href="{% url 'logout' %}" class="btn">Cerrar sesión</a>
+</div>
+{% endblock %}
+
+{% block header_auth_mobile %}
+<a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'home' %}">Inicio</a>
+<a class="py-3 px-4 rounded-md hover:bg-neutral-100" href="{% url 'logout' %}">Cerrar sesión</a>
+{% endblock %}
 
 {% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
 <style>.gx-aside{backdrop-filter:saturate(120%);}</style>
 {% endblock %}
 
@@ -43,16 +55,6 @@
           <span>Transacciones</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
       </div>
-
-      <div class="pt-2">
-        <!-- Logout por POST en el sidebar -->
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="w-full text-left px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-            Cerrar sesión
-          </button>
-        </form>
-      </div>
     </nav>
   </aside>
 
@@ -69,11 +71,14 @@
       </div>
     {% endif %}
 
-    <!-- Encabezado usuario -->
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
       <div>
         <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
-          {{ request.user.get_full_name|default:request.user.email }}
+          {% if request.user.first_name or request.user.last_name %}
+            {{ request.user.first_name }} {{ request.user.last_name }}
+          {% else %}
+            {{ request.user.email }}
+          {% endif %}
         </h1>
         <p class="text-neutral-500">{{ request.user.email }}</p>
       </div>
@@ -88,7 +93,6 @@
       </div>
     </div>
 
-    <!-- Bloque: Cuentas + Últimas transacciones -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
         <h2 class="text-xl font-extrabold mb-4">Mis cuentas</h2>
@@ -142,7 +146,6 @@
       </div>
     </div>
 
-    <!-- Métodos de pago -->
     <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
       <h2 class="text-xl font-extrabold mb-6">Métodos de pago</h2>
 

@@ -16,16 +16,18 @@ from clientes.models import Cliente
 # ----------------------------
 
 def register(request):
-    if request.method == "POST":      #si llega un 'POST' procesa el registro
+    if request.method == "POST":
         form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
-            user.password = make_password(form.cleaned_data["password"])    #guarda la contrasea encriptada
+            user.email = form.cleaned_data["email"].lower().strip()
+            user.first_name = form.cleaned_data["first_name"].strip()
+            user.last_name = form.cleaned_data["last_name"].strip()
+            user.password = make_password(form.cleaned_data["password"])
             user.save()
 
-            user.generate_verification_code()     #genera codigo de verificacion
-            #envia el codigo de verificacion al correo del usuario
+            user.generate_verification_code()
             send_mail(
                 "Código de verificación",
                 f"Tu código de verificación es: {user.verification_code}",
@@ -110,7 +112,7 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
-    # Bypass OTP for superusers
+    # Bypass OTP para staff con superprivilegios (mantener compatibilidad interna)
     if user.is_superuser:
         login(request, user)
         next_url = request.session.pop("pending_login_next", None)
@@ -154,7 +156,6 @@ def login_otp(request):
 
             next_url = request.session.pop("pending_login_next", None)
             request.session.pop("pending_login_user_id", None)
-            # Mensaje de bienvenida lo dejamos en login_redirect para no duplicar
             return redirect(next_url or "usuarios:login_redirect")
         else:
             messages.error(request, "Código incorrecto o expirado.")
@@ -185,12 +186,10 @@ def login_otp_resend(request):
 # ----------------------------
 
 def logout_view(request):
-    """Cierra sesión aceptando GET o POST y redirige al inicio."""
     if request.method in ("GET", "POST"):
         logout(request)
         messages.info(request, "Sesión cerrada correctamente.")
         return redirect("home")
-    # Cualquier otro método no permitido:
     return redirect("home")
 
 
@@ -200,11 +199,9 @@ def login_redirect(request):
     if not user.is_authenticated:
         return redirect("login")
     
-    #redirige al panel de administrador si es un administrador
     if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
 
-    #normalmente redirige al dashboard de clientes
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")
 
