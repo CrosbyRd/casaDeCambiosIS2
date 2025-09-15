@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+#NUEVO
+from django.core.exceptions import ValidationError
 class TipoMedioPago(models.Model):
     """
     Tipos de medios de pago: Tarjeta de crédito, Billetera electrónica, Cheque, etc.
@@ -46,3 +48,19 @@ class TipoMedioPago(models.Model):
         verbose_name = "Tipo de Medio de Pago"
         verbose_name_plural = "Tipos de Medios de Pago"
         ordering = ("-activo", "nombre")
+    def clean(self):
+        # Validar nombre
+        if not self.nombre:
+            raise ValidationError({'nombre': "El nombre no puede estar vacío."})
+
+        # Validar comisiones
+        if self.comision_porcentaje < 0 or self.comision_porcentaje > 100:
+            raise ValidationError({'comision_porcentaje': "Debe estar entre 0 y 100."})
+
+        if self.bonificacion_porcentaje < 0 or self.bonificacion_porcentaje > 100:
+            raise ValidationError({'bonificacion_porcentaje': "Debe estar entre 0 y 100."})
+
+    def save(self, *args, **kwargs):
+        # Llamar a clean antes de guardar para validar
+        self.full_clean()
+        super().save(*args, **kwargs)
