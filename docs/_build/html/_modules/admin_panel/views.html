@@ -42,7 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Módulos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
 
         </div>
@@ -70,20 +70,53 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para admin_panel.views</h1><div class="highlight"><pre>
-<span></span><span class="c1"># admin_panel/views.py</span>
+<span></span><span class="sd">&quot;&quot;&quot;Admin Panel — vistas</span>
+<span class="sd">======================</span>
+
+<span class="sd">Vistas protegidas del panel de administración propio.</span>
+
+<span class="sd">Requisitos de acceso</span>
+<span class="sd">--------------------</span>
+<span class="sd">Todas las vistas deben estar autenticadas con :func:`django.contrib.auth.decorators.login_required`</span>
+<span class="sd">y, en el caso del *dashboard*, además requieren el permiso</span>
+<span class="sd">``admin_panel.access_admin_dashboard``.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
 
 
-<span class="c1"># --- Vista protegida ---</span>
 <div class="viewcode-block" id="dashboard">
-<a class="viewcode-back" href="../../source/admin_panel.html#admin_panel.views.dashboard">[documentos]</a>
+<a class="viewcode-back" href="../../admin_panel.html#admin_panel.views.dashboard">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dashboard</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dashboard del Admin Panel.</span>
+
+<span class="sd">    Vista principal del panel. Verifica que el usuario autenticado cuente con el</span>
+<span class="sd">    permiso ``admin_panel.access_admin_dashboard`` antes de renderizar la</span>
+<span class="sd">    plantilla.</span>
+
+<span class="sd">    :param request: Objeto de la petición HTTP.</span>
+<span class="sd">    :type request: :class:`django.http.HttpRequest`</span>
+<span class="sd">    :returns: Si el usuario posee el permiso, renderiza ``admin_panel/dashboard.html``.</span>
+<span class="sd">              En caso contrario, redirige a la página ``home``.</span>
+<span class="sd">    :rtype: :class:`django.http.HttpResponse` | :class:`django.http.HttpResponseRedirect`</span>
+
+<span class="sd">    **Permisos necesarios**</span>
+
+<span class="sd">    - ``admin_panel.access_admin_dashboard``</span>
+
+<span class="sd">    **Plantilla**</span>
+
+<span class="sd">    - ``admin_panel/dashboard.html``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;admin_panel.access_admin_dashboard&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>   <span class="c1"># o cualquier otra página</span>
+        <span class="c1"># Redirige si el usuario no tiene el permiso requerido.</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;admin_panel/dashboard.html&quot;</span><span class="p">)</span></div>
 
 </pre></div>

@@ -69,6 +69,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-core.views">core.views module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#core.views.pagina_inicio_y_simulador"><code class="docutils literal notranslate"><span class="pre">pagina_inicio_y_simulador()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.site_home"><code class="docutils literal notranslate"><span class="pre">site_home()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.site_rates"><code class="docutils literal notranslate"><span class="pre">site_rates()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-core">Module contents</a></li>
@@ -175,25 +177,32 @@ association with the field named “__all__”.</p>
 </section>
 <section id="module-core.logic">
 <span id="core-logic-module"></span><h2>core.logic module<a class="headerlink" href="#module-core.logic" title="Link to this heading"></a></h2>
+<p>Módulo de lógica de negocio para cálculos de simulación de cambio de divisas.</p>
+<p>Este módulo contiene la función principal para calcular simulaciones de compra y venta de divisas,
+aplicando tasas, comisiones y bonificaciones de cliente.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="core.logic.calcular_simulacion">
 <span class="sig-prename descclassname"><span class="pre">core.logic.</span></span><span class="sig-name descname"><span class="pre">calcular_simulacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">monto_origen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_origen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_destino</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/logic.html#calcular_simulacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.logic.calcular_simulacion" title="Link to this definition"></a></dt>
-<dd><p>Calcula el resultado de una simulación de cambio utilizando datos reales de la base de datos,
-replicando la lógica de negocio original de comisiones y bonificaciones.</p>
+<dd><p>Calcula una simulación de cambio de divisas entre una moneda de origen y una de destino.</p>
+<p>La simulación considera la tasa de cambio, comisiones y posibles bonificaciones
+aplicables a un usuario autenticado. Las transacciones deben involucrar PYG
+como moneda base o destino.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parámetros<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>monto_origen</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></span>) – La cantidad de dinero a cambiar.</p></li>
-<li><p><strong>moneda_origen</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – El código de la moneda de origen (ej. “PYG”).</p></li>
-<li><p><strong>moneda_destino</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – El código de la moneda de destino (ej. “USD”).</p></li>
-<li><p><strong>user</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="usuarios.html#usuarios.models.CustomUser" title="usuarios.models.CustomUser"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomUser</span></code></a>]</span>) – El usuario que realiza la simulación (opcional).</p></li>
+<li><p><strong>monto_origen</strong> (<em>Decimal</em>) – El monto de la moneda de origen a cambiar.</p></li>
+<li><p><strong>moneda_origen</strong> (<em>str</em>) – El código de la moneda de origen (ej. “PYG”, “USD”).</p></li>
+<li><p><strong>moneda_destino</strong> (<em>str</em>) – El código de la moneda de destino (ej. “USD”, “PYG”).</p></li>
+<li><p><strong>user</strong> (<em>User</em><em>, </em><em>optional</em>) – El usuario que realiza la simulación, si está autenticado.
+Se utiliza para aplicar bonificaciones.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Un diccionario con el resultado de la simulación, incluyendo el monto recibido,
+la tasa aplicada, la bonificación aplicada y cualquier error.</p>
 </dd>
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Un diccionario con el resultado del cálculo.</p>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -201,32 +210,52 @@ replicando la lógica de negocio original de comisiones y bonificaciones.</p>
 </section>
 <section id="module-core.tests">
 <span id="core-tests-module"></span><h2>core.tests module<a class="headerlink" href="#module-core.tests" title="Link to this heading"></a></h2>
+<p>Módulo de pruebas unitarias para la lógica de simulación de cambio de divisas.</p>
+<p>Este módulo contiene pruebas para la función <cite>calcular_simulacion</cite> en <cite>core.logic</cite>,
+asegurando que los cálculos de compra/venta, la aplicación de bonificaciones y
+el manejo de errores funcionen como se espera.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.tests.</span></span><span class="sig-name descname"><span class="pre">SimulacionLogicTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Conjunto de pruebas para la función <cite>calcular_simulacion</cite> en <cite>core.logic</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.SimulacionLogicTest.setUpTestData">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setUpTestData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.setUpTestData"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.setUpTestData" title="Link to this definition"></a></dt>
+<dd><p>Configura los datos de prueba iniciales para todas las pruebas de la clase.
+Asegura que los objetos Moneda esenciales existan en la base de datos de prueba.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest.test_compra_eur_vip">
-<span class="sig-name descname"><span class="pre">test_compra_eur_vip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_compra_eur_vip"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_compra_eur_vip" title="Link to this definition"></a></dt>
-<dd><p>Prueba la compra de EUR (EUR -&gt; PYG) para un cliente VIP (10% bonif).</p>
+<span class="sig-name descname"><span class="pre">test_compra_eur_vip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_cotizacion_get</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_compra_eur_vip"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_compra_eur_vip" title="Link to this definition"></a></dt>
+<dd><p>Prueba la compra de EUR (EUR -&gt; PYG) para un cliente VIP con 10% de bonificación.</p>
+<p>Verifica que el monto recibido, la bonificación aplicada y la tasa sean correctos
+cuando un cliente VIP compra PYG con EUR, aplicando la bonificación sobre la comisión.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest.test_error_moneda_invalida">
-<span class="sig-name descname"><span class="pre">test_error_moneda_invalida</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_error_moneda_invalida"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_error_moneda_invalida" title="Link to this definition"></a></dt>
-<dd><p>Prueba que la función devuelve un error si la moneda no existe.</p>
+<span class="sig-name descname"><span class="pre">test_error_moneda_invalida</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_cliente_first</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mock_cotizacion_get</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mock_moneda_get</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_error_moneda_invalida"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_error_moneda_invalida" title="Link to this definition"></a></dt>
+<dd><p>Prueba que la función devuelve un error si la moneda de destino no existe.</p>
+<p>Configura mocks para que la moneda de origen (PYG) sea válida, pero la de destino (BTC)
+genere un error de Moneda.DoesNotExist.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg">
 <span class="sig-name descname"><span class="pre">test_error_transaccion_no_pyg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_error_transaccion_no_pyg"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg" title="Link to this definition"></a></dt>
-<dd><p>Prueba que la función devuelve un error si no se involucra PYG.</p>
+<dd><p>Prueba que la función devuelve un error si la simulación no involucra PYG.</p>
+<p>Verifica que se genere un ValueError cuando se intenta una transacción
+directa entre dos monedas extranjeras (USD a EUR).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest.test_venta_usd_minorista">
-<span class="sig-name descname"><span class="pre">test_venta_usd_minorista</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_venta_usd_minorista"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_venta_usd_minorista" title="Link to this definition"></a></dt>
-<dd><p>Prueba la venta de USD (PYG -&gt; USD) para un cliente minorista.</p>
+<span class="sig-name descname"><span class="pre">test_venta_usd_minorista</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_cotizacion_get</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mock_cliente_first</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest.test_venta_usd_minorista"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest.test_venta_usd_minorista" title="Link to this definition"></a></dt>
+<dd><p>Prueba la venta de USD (PYG -&gt; USD) para un cliente minorista sin bonificación.</p>
+<p>Verifica que el monto recibido, la tasa aplicada y la bonificación sean correctos
+cuando un cliente minorista vende PYG para comprar USD.</p>
 </dd></dl>
 
 </dd></dl>
@@ -237,21 +266,17 @@ replicando la lógica de negocio original de comisiones y bonificaciones.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="core.views.pagina_inicio_y_simulador">
 <span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">pagina_inicio_y_simulador</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#pagina_inicio_y_simulador"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.pagina_inicio_y_simulador" title="Link to this definition"></a></dt>
-<dd><p>Muestra la página de inicio y el simulador de conversión de divisas.</p>
-<p>Esta vista maneja tanto la visualización inicial del simulador como el procesamiento
-de la solicitud POST cuando el usuario intenta realizar una simulación.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta HTTP que renderiza la plantilla “site/calculator.html” con el formulario y el resultado de la simulación.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.views.site_home">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">site_home</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#site_home"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.site_home" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.views.site_rates">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">site_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#site_rates"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.site_rates" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-core">

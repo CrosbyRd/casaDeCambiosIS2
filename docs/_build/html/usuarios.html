@@ -323,7 +323,7 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="usuarios.forms.RegistroForm.Meta.fields">
-<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('email',</span> <span class="pre">'password')</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.Meta.fields" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('first_name',</span> <span class="pre">'last_name',</span> <span class="pre">'email',</span> <span class="pre">'password',</span> <span class="pre">'terms')</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.Meta.fields" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -336,18 +336,36 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="usuarios.forms.RegistroForm.base_fields">
-<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'terms':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.base_fields" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'terms':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="usuarios.forms.RegistroForm.clean_email">
+<span class="sig-name descname"><span class="pre">clean_email</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/forms.html#RegistroForm.clean_email"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.forms.RegistroForm.clean_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="usuarios.forms.RegistroForm.clean_terms">
+<span class="sig-name descname"><span class="pre">clean_terms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/forms.html#RegistroForm.clean_terms"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.forms.RegistroForm.clean_terms" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="usuarios.forms.RegistroForm.declared_fields">
-<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'password':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'terms':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.declared_fields" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'terms':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#usuarios.forms.RegistroForm.declared_fields" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="usuarios.forms.RegistroForm.media">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#usuarios.forms.RegistroForm.media" title="Link to this definition"></a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="usuarios.forms.RegistroForm.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/forms.html#RegistroForm.save"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.forms.RegistroForm.save" title="Link to this definition"></a></dt>
+<dd><p>Save this form’s self.instance object if commit=True. Otherwise, add
+a save_m2m() method to the form which can be called after the instance
+is saved manually at a later time. Return the model instance.</p>
 </dd></dl>
 
 </dd></dl>
@@ -379,9 +397,8 @@
 <span id="usuarios-models-module"></span><h2>usuarios.models module<a class="headerlink" href="#module-usuarios.models" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.models.</span></span><span class="sig-name descname"><span class="pre">CustomUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.models.</span></span><span class="sig-name descname"><span class="pre">CustomUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_superuser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_active</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_staff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_verified</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_joined</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verification_code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_created_at</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractBaseUser</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionsMixin</span></code></p>
-<p>Modelo de usuario personalizado.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#usuarios.models.CustomUser.DoesNotExist" title="Link to this definition"></a></dt>
@@ -457,8 +474,7 @@ object the first time, the query is executed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.get_all_permissions">
 <span class="sig-name descname"><span class="pre">get_all_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser.get_all_permissions"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser.get_all_permissions" title="Link to this definition"></a></dt>
-<dd><p>Devuelve todos los permisos que tiene el usuario.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.get_next_by_date_joined">
@@ -489,13 +505,13 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.has_module_perms">
 <span class="sig-name descname"><span class="pre">has_module_perms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser.has_module_perms"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser.has_module_perms" title="Link to this definition"></a></dt>
-<dd><p>Comprueba si el usuario tiene permisos para ver una aplicación.</p>
+<dd><p>Does the user have permissions to view the app <cite>app_label</cite>?</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.has_perm">
 <span class="sig-name descname"><span class="pre">has_perm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser.has_perm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser.has_perm" title="Link to this definition"></a></dt>
-<dd><p>Comprueba si el usuario tiene un permiso específico.</p>
+<dd><p>Does the user have a specific permission?</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -516,20 +532,6 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.is_code_valid">
 <span class="sig-name descname"><span class="pre">is_code_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes_valid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser.is_code_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser.is_code_valid" title="Link to this definition"></a></dt>
 <dd><p>Verifica si el código es correcto y no ha expirado.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>code</strong> (<em>str</em>) – El código a verificar.</p></li>
-<li><p><strong>minutes_valid</strong> (<em>int</em>) – Minutos de validez del código.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>True si el código es válido, False en caso contrario.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -639,35 +641,17 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="usuarios.models.CustomUserManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.models.</span></span><span class="sig-name descname"><span class="pre">CustomUserManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUserManager"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUserManager" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseUserManager</span></code></p>
-<p>Manager para el modelo de usuario personalizado.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUserManager.create_user">
 <span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUserManager.create_user"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUserManager.create_user" title="Link to this definition"></a></dt>
-<dd><p>Crea y guarda un usuario con el email y contraseña dados.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>email</strong> (<em>str</em>) – El email del usuario.</p></li>
-<li><p><strong>password</strong> (<em>str</em>) – La contraseña del usuario.</p></li>
-<li><p><strong>extra_fields</strong> – Campos adicionales para el usuario.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>El usuario creado.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#usuarios.models.CustomUser" title="usuarios.models.CustomUser">CustomUser</a></p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="usuarios.models.UsuariosPermissions">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.models.</span></span><span class="sig-name descname"><span class="pre">UsuariosPermissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#UsuariosPermissions"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.UsuariosPermissions" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.models.</span></span><span class="sig-name descname"><span class="pre">UsuariosPermissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#UsuariosPermissions"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.UsuariosPermissions" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
-<p>Modelo para definir permisos personalizados para la aplicación de usuarios.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="usuarios.models.UsuariosPermissions.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#usuarios.models.UsuariosPermissions.DoesNotExist" title="Link to this definition"></a></dt>
@@ -746,8 +730,7 @@ object the first time, the query is executed.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="usuarios.views.logout_view">
 <span class="sig-prename descclassname"><span class="pre">usuarios.views.</span></span><span class="sig-name descname"><span class="pre">logout_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/views.html#logout_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.views.logout_view" title="Link to this definition"></a></dt>
-<dd><p>Cierra sesión aceptando GET o POST y redirige al inicio.</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="usuarios.views.quitar_cliente">

@@ -181,6 +181,8 @@
 </li>
       <li><a href="usuarios.html#usuarios.views.agregar_cliente">agregar_cliente() (en el módulo usuarios.views)</a>
 </li>
+      <li><a href="admin_panel.html#admin_panel.urls.app_name">app_name (en el módulo admin_panel.urls)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -265,9 +267,13 @@
         <li><a href="monedas.html#monedas.forms.MonedaForm.clean">(método de monedas.forms.MonedaForm)</a>
 </li>
       </ul></li>
+      <li><a href="usuarios.html#usuarios.forms.RegistroForm.clean_email">clean_email() (método de usuarios.forms.RegistroForm)</a>
+</li>
       <li><a href="monedas.html#monedas.forms.MonedaForm.clean_minima_denominacion">clean_minima_denominacion() (método de monedas.forms.MonedaForm)</a>
 </li>
       <li><a href="core.html#core.forms.SimulacionForm.clean_monto">clean_monto() (método de core.forms.SimulacionForm)</a>
+</li>
+      <li><a href="usuarios.html#usuarios.forms.RegistroForm.clean_terms">clean_terms() (método de usuarios.forms.RegistroForm)</a>
 </li>
       <li><a href="clientes.html#clientes.models.Cliente">Cliente (clase en clientes.models)</a>
 </li>
@@ -411,6 +417,8 @@
         <li><a href="core.html#module-core.apps">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     core.forms
 
@@ -418,8 +426,6 @@
         <li><a href="core.html#module-core.forms">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     core.logic
 
@@ -485,13 +491,6 @@
 
       <ul>
         <li><a href="correo.html#module-correo.tests">module</a>
-</li>
-      </ul></li>
-      <li>
-    correo.urls
-
-      <ul>
-        <li><a href="correo.html#module-correo.urls">module</a>
 </li>
       </ul></li>
       <li>
@@ -905,8 +904,6 @@
       <ul>
         <li><a href="cotizaciones.html#cotizaciones.models.Cotizacion.id">(atributo de cotizaciones.models.Cotizacion)</a>
 </li>
-        <li><a href="lib.html#lib.models.LibModel.id">(atributo de lib.models.LibModel)</a>
-</li>
         <li><a href="monedas.html#monedas.models.Moneda.id">(atributo de monedas.models.Moneda)</a>
 </li>
         <li><a href="roles.html#roles.models.Role.id">(atributo de roles.models.Role)</a>
@@ -1000,6 +997,8 @@
         <li><a href="lib.html#module-lib.tests">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     lib.urls
 
@@ -1007,8 +1006,6 @@
         <li><a href="lib.html#module-lib.urls">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     lib.views
 
@@ -1017,12 +1014,6 @@
 </li>
       </ul></li>
       <li><a href="lib.html#lib.apps.LibConfig">LibConfig (clase en lib.apps)</a>
-</li>
-      <li><a href="lib.html#lib.models.LibModel">LibModel (clase en lib.models)</a>
-</li>
-      <li><a href="lib.html#lib.models.LibModel.DoesNotExist">LibModel.DoesNotExist</a>
-</li>
-      <li><a href="lib.html#lib.models.LibModel.MultipleObjectsReturned">LibModel.MultipleObjectsReturned</a>
 </li>
       <li><a href="clientes.html#clientes.models.Cliente.limite_compra_usd">limite_compra_usd (clientes.models.Cliente propiedad)</a>
 </li>
@@ -1250,8 +1241,6 @@
         <li><a href="correo.html#module-correo.models">correo.models</a>
 </li>
         <li><a href="correo.html#module-correo.tests">correo.tests</a>
-</li>
-        <li><a href="correo.html#module-correo.urls">correo.urls</a>
 </li>
         <li><a href="correo.html#module-correo.views">correo.views</a>
 </li>
@@ -1586,8 +1575,6 @@
 </li>
         <li><a href="cotizaciones.html#cotizaciones.models.Cotizacion.objects">(atributo de cotizaciones.models.Cotizacion)</a>
 </li>
-        <li><a href="lib.html#lib.models.LibModel.objects">(atributo de lib.models.LibModel)</a>
-</li>
         <li><a href="monedas.html#monedas.models.Moneda.objects">(atributo de monedas.models.Moneda)</a>
 </li>
         <li><a href="roles.html#roles.models.Role.objects">(atributo de roles.models.Role)</a>
@@ -1829,6 +1816,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="monedas.html#monedas.forms.MonedaForm.save">save() (método de monedas.forms.MonedaForm)</a>
+
+      <ul>
+        <li><a href="usuarios.html#usuarios.forms.RegistroForm.save">(método de usuarios.forms.RegistroForm)</a>
+</li>
+      </ul></li>
+      <li><a href="core.html#core.tests.SimulacionLogicTest.setUpTestData">setUpTestData() (método de clase de core.tests.SimulacionLogicTest)</a>
 </li>
       <li><a href="monedas.html#monedas.models.Moneda.simbolo">simbolo (atributo de monedas.models.Moneda)</a>
 </li>
@@ -1837,6 +1830,10 @@
       <li><a href="core.html#core.forms.SimulacionForm">SimulacionForm (clase en core.forms)</a>
 </li>
       <li><a href="core.html#core.tests.SimulacionLogicTest">SimulacionLogicTest (clase en core.tests)</a>
+</li>
+      <li><a href="core.html#core.views.site_home">site_home() (en el módulo core.views)</a>
+</li>
+      <li><a href="core.html#core.views.site_rates">site_rates() (en el módulo core.views)</a>
 </li>
       <li><a href="clientes.html#clientes.views.ClienteDeleteView.success_url">success_url (atributo de clientes.views.ClienteDeleteView)</a>
 </li>
@@ -1883,6 +1880,8 @@
       <li><a href="monedas.html#monedas.models.Moneda.ultima_actualizacion_tasa">ultima_actualizacion_tasa (atributo de monedas.models.Moneda)</a>
 </li>
       <li><a href="clientes.html#clientes.models.Cliente.ultima_modificacion">ultima_modificacion (atributo de clientes.models.Cliente)</a>
+</li>
+      <li><a href="admin_panel.html#admin_panel.urls.urlpatterns">urlpatterns (en el módulo admin_panel.urls)</a>
 </li>
       <li><a href="usuarios.html#usuarios.models.CustomUser.user_permissions">user_permissions (atributo de usuarios.models.CustomUser)</a>
 </li>

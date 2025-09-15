@@ -195,10 +195,6 @@
 <dt class="sig sig-object py" id="clientes.forms.ClienteForm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.forms.</span></span><span class="sig-name descname"><span class="pre">ClienteForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/forms.html#ClienteForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.forms.ClienteForm" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
-<p>Formulario para la creación y edición de clientes.</p>
-<p>Incluye campos para nombre, categoría, estado activo, y campos de solo lectura
-para mostrar la bonificación y el límite de compra en USD, calculados
-basados en la categoría seleccionada.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clientes.forms.ClienteForm.Meta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/clientes/forms.html#ClienteForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.forms.ClienteForm.Meta" title="Link to this definition"></a></dt>
@@ -248,8 +244,6 @@ basados en la categoría seleccionada.</p>
 <dt class="sig sig-object py" id="clientes.forms.ClienteSearchForm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.forms.</span></span><span class="sig-name descname"><span class="pre">ClienteSearchForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_order=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound_field_class=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/forms.html#ClienteSearchForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.forms.ClienteSearchForm" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Form</span></code></p>
-<p>Formulario de búsqueda para clientes.</p>
-<p>Permite buscar clientes por nombre, filtrar por categoría y estado (activo/inactivo).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.forms.ClienteSearchForm.base_fields">
 <span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'categoria':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'q':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#clientes.forms.ClienteSearchForm.base_fields" title="Link to this definition"></a></dt>
@@ -273,16 +267,12 @@ basados en la categoría seleccionada.</p>
 <span id="clientes-models-module"></span><h2>clientes.models module<a class="headerlink" href="#module-clientes.models" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="clientes.models.Cliente">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.models.</span></span><span class="sig-name descname"><span class="pre">Cliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.models.</span></span><span class="sig-name descname"><span class="pre">Cliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_cliente</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categoria</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fecha_registro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ultima_modificacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
-<p>Representa a un cliente de la casa de cambios.</p>
-<p>Almacena información básica del cliente, su categoría y estado.
-También define propiedades y métodos para calcular beneficios y límites.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clientes.models.Cliente.Categoria">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Categoria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente.Categoria"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente.Categoria" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Categoria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente.Categoria"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente.Categoria" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextChoices</span></code></p>
-<p>Define las categorías de clientes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.models.Cliente.Categoria.CORPORATIVO">
 <span class="sig-name descname"><span class="pre">CORPORATIVO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'corporativo'</span></em><a class="headerlink" href="#clientes.models.Cliente.Categoria.CORPORATIVO" title="Link to this definition"></a></dt>
@@ -323,14 +313,6 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="clientes.models.Cliente.bonificacion">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bonificacion</span></span><a class="headerlink" href="#clientes.models.Cliente.bonificacion" title="Link to this definition"></a></dt>
 <dd><p>Devuelve el porcentaje de bonificación según la categoría del cliente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>El porcentaje de bonificación.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>Decimal</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -343,16 +325,7 @@ object the first time, the query is executed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.models.Cliente.esta_activo">
 <span class="sig-name descname"><span class="pre">esta_activo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente.esta_activo"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente.esta_activo" title="Link to this definition"></a></dt>
-<dd><p>Verifica si el cliente está activo.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True si el cliente está activo, False en caso contrario.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.models.Cliente.fecha_registro">
@@ -397,14 +370,6 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="clientes.models.Cliente.limite_compra_usd">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">limite_compra_usd</span></span><a class="headerlink" href="#clientes.models.Cliente.limite_compra_usd" title="Link to this definition"></a></dt>
 <dd><p>Devuelve el límite de compra en USD según la categoría del cliente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>El límite de compra en USD.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>Decimal</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -423,37 +388,12 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="clientes.models.Cliente.obtener_limite_compra">
 <span class="sig-name descname"><span class="pre">obtener_limite_compra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moneda</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente.obtener_limite_compra"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente.obtener_limite_compra" title="Link to this definition"></a></dt>
 <dd><p>Devuelve el límite de compra para una moneda específica.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>moneda</strong> (<em>str</em>) – El código de la moneda (ej. «USD»).</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>El límite de compra para la moneda especificada.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Decimal</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.models.Cliente.puede_comprar">
 <span class="sig-name descname"><span class="pre">puede_comprar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moneda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monto</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/models.html#Cliente.puede_comprar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.models.Cliente.puede_comprar" title="Link to this definition"></a></dt>
 <dd><p>Verifica si el cliente puede realizar una compra del monto especificado.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>moneda</strong> (<em>str</em>) – El código de la moneda de la compra.</p></li>
-<li><p><strong>monto</strong> (<em>Decimal</em>) – El monto de la compra.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una tupla con un booleano y un mensaje.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -494,18 +434,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">ClienteCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteCreateView" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
-<p>Crea un nuevo cliente.</p>
-<p>Esta vista requiere que el usuario esté autenticado y tenga el permiso
-“clientes.access_clientes_panel”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>LoginRequiredMixin</strong> (<em>class</em>) – Mixin para requerir autenticación.</p></li>
-<li><p><strong>PermissionRequiredMixin</strong> (<em>class</em>) – Mixin para requerir un permiso específico.</p></li>
-<li><p><strong>CreateView</strong> (<em>class</em>) – Vista genérica para crear un objeto.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView.form_class">
 <span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#clientes.views.ClienteCreateView.form_class" title="Link to this definition"></a></dt>
@@ -515,47 +443,19 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView.form_valid">
 <span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteCreateView.form_valid" title="Link to this definition"></a></dt>
-<dd><p>Procesa el formulario válido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>form</strong> (<a class="reference internal" href="#clientes.forms.ClienteForm" title="clientes.forms.ClienteForm"><em>ClienteForm</em></a>) – El formulario válido.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>La respuesta HTTP.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse</p>
-</dd>
-</dl>
+<dd><p>If the form is valid, save the associated model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView.get_success_url">
 <span class="sig-name descname"><span class="pre">get_success_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteCreateView.get_success_url"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteCreateView.get_success_url" title="Link to this definition"></a></dt>
-<dd><p>Redirige a la lista de clientes después de crear un cliente exitosamente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>La URL de la lista de clientes.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
+<dd><p>Return the URL to redirect to after processing a valid form.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView.handle_no_permission">
 <span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteCreateView.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteCreateView.handle_no_permission" title="Link to this definition"></a></dt>
-<dd><p>Redirige al usuario a la página de inicio si no tiene el permiso requerido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Redirige a la página de inicio.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteCreateView.model">
@@ -579,69 +479,25 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="clientes.views.ClienteDeleteView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">ClienteDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDeleteView" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
-<p>Elimina un cliente existente.</p>
-<p>Esta vista requiere que el usuario esté autenticado y tenga el permiso
-“clientes.access_clientes_panel”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>LoginRequiredMixin</strong> (<em>class</em>) – Mixin para requerir autenticación.</p></li>
-<li><p><strong>PermissionRequiredMixin</strong> (<em>class</em>) – Mixin para requerir un permiso específico.</p></li>
-<li><p><strong>DeleteView</strong> (<em>class</em>) – Vista genérica para eliminar un objeto.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteDeleteView.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDeleteView.delete" title="Link to this definition"></a></dt>
-<dd><p>Elimina el objeto y muestra un mensaje de éxito.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p></li>
-<li><p><strong>args</strong> (<em>tuple</em>) – Argumentos posicionales.</p></li>
-<li><p><strong>kwargs</strong> (<em>dict</em>) – Argumentos de palabra clave.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>La respuesta HTTP.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse</p>
-</dd>
-</dl>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteDeleteView.get_object">
 <span class="sig-name descname"><span class="pre">get_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDeleteView.get_object"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDeleteView.get_object" title="Link to this definition"></a></dt>
-<dd><p>Obtiene el objeto Cliente basado en la clave primaria (pk) de la URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>queryset</strong> (<em>QuerySet</em><em>, </em><em>optional</em>) – El queryset a utilizar (opcional).</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>El objeto Cliente.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#clientes.models.Cliente" title="clientes.models.Cliente">Cliente</a></p>
-</dd>
-</dl>
+<dd><p>Return the object the view is displaying.</p>
+<p>Require <cite>self.queryset</cite> and a <cite>pk</cite> or <cite>slug</cite> argument in the URLconf.
+Subclasses can override this to return any object.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteDeleteView.handle_no_permission">
 <span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDeleteView.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDeleteView.handle_no_permission" title="Link to this definition"></a></dt>
-<dd><p>Redirige al usuario a la página de inicio si no tiene el permiso requerido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Redirige a la página de inicio.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteDeleteView.model">
@@ -670,18 +526,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="clientes.views.ClienteDetailView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">ClienteDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDetailView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDetailView" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DetailView</span></code></p>
-<p>Muestra los detalles de un cliente específico.</p>
-<p>Esta vista requiere que el usuario esté autenticado y tenga el permiso
-“clientes.access_clientes_panel”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>LoginRequiredMixin</strong> (<em>class</em>) – Mixin para requerir autenticación.</p></li>
-<li><p><strong>PermissionRequiredMixin</strong> (<em>class</em>) – Mixin para requerir un permiso específico.</p></li>
-<li><p><strong>DetailView</strong> (<em>class</em>) – Vista genérica para mostrar los detalles de un objeto.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteDetailView.context_object_name">
 <span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cliente'</span></em><a class="headerlink" href="#clientes.views.ClienteDetailView.context_object_name" title="Link to this definition"></a></dt>
@@ -690,33 +534,15 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteDetailView.get_object">
 <span class="sig-name descname"><span class="pre">get_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDetailView.get_object"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDetailView.get_object" title="Link to this definition"></a></dt>
-<dd><p>Obtiene el objeto Cliente basado en la clave primaria (pk) de la URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>queryset</strong> (<em>QuerySet</em><em>, </em><em>optional</em>) – El queryset a utilizar (opcional).</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>El objeto Cliente.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#clientes.models.Cliente" title="clientes.models.Cliente">Cliente</a></p>
-</dd>
-</dl>
+<dd><p>Return the object the view is displaying.</p>
+<p>Require <cite>self.queryset</cite> and a <cite>pk</cite> or <cite>slug</cite> argument in the URLconf.
+Subclasses can override this to return any object.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteDetailView.handle_no_permission">
 <span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteDetailView.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteDetailView.handle_no_permission" title="Link to this definition"></a></dt>
-<dd><p>Redirige al usuario a la página de inicio si no tiene el permiso requerido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Redirige a la página de inicio.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteDetailView.model">
@@ -740,18 +566,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="clientes.views.ClienteListView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">ClienteListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteListView" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
-<p>Muestra una lista de clientes, con opciones de filtrado y paginación.</p>
-<p>Esta vista requiere que el usuario esté autenticado y tenga el permiso
-“clientes.access_clientes_panel”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>LoginRequiredMixin</strong> (<em>class</em>) – Mixin para requerir autenticación.</p></li>
-<li><p><strong>PermissionRequiredMixin</strong> (<em>class</em>) – Mixin para requerir un permiso específico.</p></li>
-<li><p><strong>ListView</strong> (<em>class</em>) – Vista genérica para listar objetos.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteListView.context_object_name">
 <span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clientes'</span></em><a class="headerlink" href="#clientes.views.ClienteListView.context_object_name" title="Link to this definition"></a></dt>
@@ -760,49 +574,21 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteListView.get_context_data">
 <span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteListView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteListView.get_context_data" title="Link to this definition"></a></dt>
-<dd><p>Agrega información al contexto de la plantilla.</p>
-<p>Agrega el formulario de búsqueda, la consulta de búsqueda, el filtro de categoría y el filtro de estado activo al contexto.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> (<em>dict</em>) – Diccionario de argumentos de contexto.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Un diccionario de contexto actualizado.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<dd><p>Get the context for this view.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteListView.get_queryset">
 <span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteListView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteListView.get_queryset" title="Link to this definition"></a></dt>
-<dd><p>Personaliza la consulta para filtrar los clientes.</p>
-<p>Permite filtrar por nombre, correo electrónico, categoría y estado de activo.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Un queryset filtrado y ordenado por nombre.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>QuerySet</p>
-</dd>
-</dl>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteListView.handle_no_permission">
 <span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteListView.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteListView.handle_no_permission" title="Link to this definition"></a></dt>
-<dd><p>Redirige al usuario a la página de inicio si no tiene el permiso requerido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Redirige a la página de inicio.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteListView.model">
@@ -831,18 +617,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">ClienteUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteUpdateView" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
-<p>Actualiza un cliente existente.</p>
-<p>Esta vista requiere que el usuario esté autenticado y tenga el permiso
-“clientes.access_clientes_panel”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>LoginRequiredMixin</strong> (<em>class</em>) – Mixin para requerir autenticación.</p></li>
-<li><p><strong>PermissionRequiredMixin</strong> (<em>class</em>) – Mixin para requerir un permiso específico.</p></li>
-<li><p><strong>UpdateView</strong> (<em>class</em>) – Vista genérica para actualizar un objeto.</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView.form_class">
 <span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#clientes.views.ClienteUpdateView.form_class" title="Link to this definition"></a></dt>
@@ -852,47 +626,21 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView.get_object">
 <span class="sig-name descname"><span class="pre">get_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteUpdateView.get_object"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteUpdateView.get_object" title="Link to this definition"></a></dt>
-<dd><p>Obtiene el objeto Cliente basado en la clave primaria (pk) de la URL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>queryset</strong> (<em>QuerySet</em><em>, </em><em>optional</em>) – El queryset a utilizar (opcional).</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>El objeto Cliente.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#clientes.models.Cliente" title="clientes.models.Cliente">Cliente</a></p>
-</dd>
-</dl>
+<dd><p>Return the object the view is displaying.</p>
+<p>Require <cite>self.queryset</cite> and a <cite>pk</cite> or <cite>slug</cite> argument in the URLconf.
+Subclasses can override this to return any object.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView.get_success_url">
 <span class="sig-name descname"><span class="pre">get_success_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteUpdateView.get_success_url"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteUpdateView.get_success_url" title="Link to this definition"></a></dt>
-<dd><p>Redirige a la lista de clientes después de actualizar un cliente exitosamente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>La URL de la lista de clientes.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
+<dd><p>Return the URL to redirect to after processing a valid form.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView.handle_no_permission">
 <span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#ClienteUpdateView.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.ClienteUpdateView.handle_no_permission" title="Link to this definition"></a></dt>
-<dd><p>Redirige al usuario a la página de inicio si no tiene el permiso requerido.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Redirige a la página de inicio.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.views.ClienteUpdateView.model">
@@ -915,39 +663,12 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py function">
 <dt class="sig sig-object py" id="clientes.views.es_admin">
 <span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">es_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#es_admin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.es_admin" title="Link to this definition"></a></dt>
-<dd><p>Verifica si el usuario es un administrador.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>user</strong> (<em>User</em>) – El usuario a verificar.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>True si el usuario es administrador, False en caso contrario.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clientes.views.toggle_cliente_estado">
 <span class="sig-prename descclassname"><span class="pre">clientes.views.</span></span><span class="sig-name descname"><span class="pre">toggle_cliente_estado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/views.html#toggle_cliente_estado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.views.toggle_cliente_estado" title="Link to this definition"></a></dt>
-<dd><p>Cambia el estado de activo/inactivo de un cliente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p></li>
-<li><p><strong>pk</strong> (<em>int</em>) – La clave primaria del cliente.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Redirige a la lista de clientes.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 <section id="module-clientes">
