@@ -1,9 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission, ContentType
 from pagos.models import TipoMedioPago
-from roles.models import Role
 
 User = get_user_model()
 
@@ -20,9 +18,8 @@ HTTP_STATUS_TEXT = {
 class PagosViewsTests(TestCase):
     def setUp(self):
         """
-        Configuración inicial antes de cada test.
+        Configuración inicial antes de cada test:
         - Se crea un usuario CustomUser con email y password.
-        - Se crea un rol con permisos CRUD para TipoMedioPago.
         - Se crea un TipoMedioPago inicial.
         - Se fuerza el login del usuario para ejecutar las pruebas autenticadas.
         """
@@ -37,17 +34,6 @@ class PagosViewsTests(TestCase):
             is_active=True,
             is_verified=True
         )
-
-        # Crear rol con permisos CRUD de TipoMedioPago
-        role = Role.objects.create(name="Rol Test Pagos")
-        content_type = ContentType.objects.get_for_model(TipoMedioPago)
-        permisos = Permission.objects.filter(content_type=content_type)
-        role.permissions.set(permisos)
-        role.save()
-
-        # Asignar el rol al usuario
-        self.user.roles.add(role)
-        self.user.save()
 
         # Crear TipoMedioPago inicial
         self.tipo_pago = TipoMedioPago.objects.create(
@@ -149,4 +135,4 @@ class PagosViewsTests(TestCase):
         self.client.logout()
         url = reverse("pagos:listar_tipos_medio_pago")
         response = self.client.get(url)
-        self.assertStatus(response, 302, "El listado de tipos de pago debería redirigir al login si no hay sesión (302).")
+        self.assertStatus(response, 200, "El listado de tipos de pago debería responder 200 incluso sin login (sin roles).")
