@@ -17,9 +17,8 @@
 
     <div class="flex gap-3">
       <a href="{% url 'admin_panel:dashboard' %}"
-         class="px-4 py-2 rounded-lg font-semibold border text-[var(--ink)] hover:bg-[var(--brand-soft)]"
-         style="border-color:var(--line)">
-        ← Volver al Panel
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
       </a>
 
       <a href="{% url 'pagos:agregar_tipo_medio_pago' %}"
@@ -31,7 +30,7 @@
   </header>
 
   <!-- Tabla -->
-  <section class="bg-white border rounded-xl shadow-sm" style="border-color:var(--line)">
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
       <table class="w-full border-collapse">
         <thead class="bg-[var(--brand)] text-white">
@@ -68,23 +67,27 @@
                   Editar
                 </a>
 
-                <form method="post" action="{% url 'pagos:toggle_activo' tipo.pk %}" class="inline-block">
+                <!-- Toggle activo (form con esquinas redondeadas) -->
+                <form method="post" action="{% url 'pagos:toggle_activo' tipo.pk %}"
+                      class="inline-block rounded-lg overflow-hidden">
                   {% csrf_token %}
                   {% if tipo.activo %}
-                    <button type="submit" class="px-3 py-1 rounded-md font-semibold text-[var(--ink)] bg-yellow-400 hover:bg-yellow-500">
+                    <button type="submit" class="px-3 py-1 font-semibold text-[var(--ink)] bg-yellow-400 hover:bg-yellow-500">
                       Desactivar
                     </button>
                   {% else %}
-                    <button type="submit" class="px-3 py-1 rounded-md font-semibold text-white bg-green-600 hover:bg-green-700">
+                    <button type="submit" class="px-3 py-1 font-semibold text-white bg-green-600 hover:bg-green-700">
                       Activar
                     </button>
                   {% endif %}
                 </form>
 
-                <form method="post" action="{% url 'pagos:eliminar_tipo_medio_pago' tipo.pk %}" class="inline-block"
-                      onsubmit="return confirm('¿Eliminar \{{ tipo.nombre }}\?');">
+                <!-- Eliminar (form con esquinas redondeadas) -->
+                <form method="post" action="{% url 'pagos:eliminar_tipo_medio_pago' tipo.pk %}"
+                      class="inline-block rounded-lg overflow-hidden"
+                      onsubmit="return confirm('¿Eliminar {{ tipo.nombre }}?');">
                   {% csrf_token %}
-                  <button type="submit" class="px-3 py-1 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
+                  <button type="submit" class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700">
                     Eliminar
                   </button>
                 </form>

@@ -2,21 +2,15 @@
 {% load static %}
 
 {% block title %}Global Exchange{% endblock %}
-{% block extra_head %}
-<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
-{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
 
-{# Encabezado sin back_url para no mostrar “Volver” #}
 {% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" %}
-
 {% include "partials/messages.html" %}
 
 <main class="max-w-5xl mx-auto px-6 py-10">
-
   <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-
     <form method="post"
           id="form-simulador"
           data-initial-blank="{% if form.is_bound %}0{% else %}1{% endif %}"
@@ -41,52 +35,53 @@
       {% csrf_token %}
 
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse min-w-[520px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Tengo esta moneda</th>
-              <th class="px-4 py-3 text-left">Quiero esta moneda</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.moneda_origen }}</td>
-              <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-            </tr>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.monto }}</td>
-              <td class="px-4 py-3">
-                <input id="out-amount" class="gx-input" type="text" readonly
-                       value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
-                       placeholder="0,00">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="px-4 py-4">
-        <div style="margin-top:18px;">
-          <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
-
-          {% if resultado %}
-            {% if resultado.error %}
-              <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
-            {% else %}
-              <div class="gx-result-wrap mt-4">
-                <div class="gx-result-big">
-                  Recibirás aproximadamente:
-                  <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">
-                    {{ resultado.monto_recibido }}
-                  </span>
-                  {{ form.moneda_destino.value }}
-                </div>
-              </div>
-            {% endif %}
-          {% endif %}
+        <!-- 👇 contenedor redondeado que recorta la tabla -->
+        <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse min-w-[520px]">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr>
+                <th class="px-4 py-3 text-left">Tengo esta moneda</th>
+                <th class="px-4 py-3 text-left">Quiero esta moneda</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)]">
+                <td class="px-4 py-3">{{ form.moneda_origen }}</td>
+                <td class="px-4 py-3">{{ form.moneda_destino }}</td>
+              </tr>
+              <tr class="hover:bg-[var(--brand-soft)]">
+                <td class="px-4 py-3">{{ form.monto }}</td>
+                <td class="px-4 py-3">
+                  <input id="out-amount" class="gx-input" type="text" readonly
+                         value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
+                         placeholder="0,00">
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
+      <div class="px-4 py-4">
+        <div class="btn-row" style="margin-top:18px;">
+          <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
+          <button id="btn-clear" class="gx-btn gx-btn--ghost" type="button">Borrar</button>
+        </div>
+
+        {% if resultado %}
+          {% if resultado.error %}
+            <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
+          {% else %}
+            <div class="gx-result-wrap mt-4 w-full" id="result-wrap">
+              <div class="gx-result-big">
+                Recibirás aproximadamente:
+                <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">{{ resultado.monto_recibido }}</span>
+                {{ form.moneda_destino.value }}
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
     </form>
   </section>
 </main>
@@ -107,6 +102,12 @@
   }
   .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
 
+  .gx-btn--ghost{
+    background:#fff; color:var(--ink); border:1.5px solid var(--line);
+    box-shadow:none;
+  }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
   .gx-error{ background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
 
   .gx-result-wrap{
@@ -114,9 +115,11 @@
     border:1px solid color-mix(in oklab, var(--brand) 35%, white);
     padding:14px 16px; border-radius:14px;
   }
-  .gx-result-big{
-    font-size:24px; font-weight:900; color:var(--brand);
-  }
+  .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
+
+  /* Botones en fila */
+  .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
+  @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
 </style>
 
 <script>
@@ -124,7 +127,6 @@
   const form   = document.getElementById('form-simulador');
   if (!form) return;
 
-  /* ====== helpers de formato ====== */
   function toNumber(raw){
     if (raw == null) return NaN;
     const s = String(raw).replace(/\./g,'').replace(',','.');
@@ -134,22 +136,22 @@
   function fmt(n){
     const num = typeof n === 'number' ? n : toNumber(n);
     if (!Number.isFinite(num)) return n;
-    // miles con punto, decimales con coma
     return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
   }
 
-  // Formateo de preview / resultado (si existe)
-  const out = document.getElementById('out-amount');
+  const out   = document.getElementById('out-amount');
+  const res   = document.getElementById('res-num');
+  const wrap  = document.getElementById('result-wrap');
+
   if (out && out.value) out.value = fmt(out.value);
-  const res = document.getElementById('res-num');
   if (res) { const raw = res.dataset.raw || res.textContent; res.textContent = fmt(raw); }
 
-  /* ====== selects y reglas ====== */
   const data   = JSON.parse(form.dataset.currencies || "{}");
   const selOri = document.getElementById('id_moneda_origen');
   const selDst = document.getElementById('id_moneda_destino');
   const monto  = document.getElementById('id_monto');
   const btn    = document.getElementById('btn-calcular');
+  const btnClr = document.getElementById('btn-clear');
 
   const isPYG     = (v) => String(v || '').toUpperCase() === 'PYG';
   const isForeign = (v) => v && !isPYG(v);
@@ -177,7 +179,6 @@
   ensurePlaceholder(selOri); ensurePlaceholder(selDst);
   if (monto) monto.classList.add('gx-input');
 
-  // Dejar vacíos al entrar por primera vez (solo GET, sin datos)
   if (form.dataset.initialBlank === '1') {
     selOri.value = '';
     selDst.value = '';
@@ -187,18 +188,15 @@
     const o = selOri?.value || '';
     const d = selDst?.value || '';
 
-    // Si una es extranjera, la otra debe ser PYG
     if (changed === 'ori' && isForeign(o)) { if (!isPYG(d)) selDst.value = 'PYG'; }
     if (changed === 'dst' && isForeign(d)) { if (!isPYG(o)) selOri.value = 'PYG'; }
 
-    // Nunca ambas PYG simultáneamente
     if (isPYG(selOri.value) && isPYG(selDst.value)) {
       if (changed === 'ori') selDst.value = '';
       else if (changed === 'dst') selOri.value = '';
       else selDst.value = '';
     }
 
-    // Habilitar botón solo cuando se puede calcular
     const ready = selOri.value && selDst.value && selOri.value !== selDst.value &&
                   (!monto || (toNumber(monto.value) > 0));
     btn.disabled = !ready;
@@ -207,7 +205,16 @@
   selOri?.addEventListener('change', () => enforceRules('ori'));
   selDst?.addEventListener('change', () => enforceRules('dst'));
   monto?.addEventListener('input', () => enforceRules('amount'));
-  enforceRules(); // estado inicial
+  enforceRules();
+
+  // BORRAR: limpia monto, salida y oculta el bloque de resultado
+  btnClr?.addEventListener('click', () => {
+    if (monto) { monto.value = ''; monto.focus(); }
+    if (out) out.value = '';
+    if (res) res.textContent = '';
+    if (wrap) wrap.style.display = 'none';
+    enforceRules('amount');
+  });
 })();
 </script>
 
