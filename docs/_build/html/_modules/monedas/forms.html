@@ -70,10 +70,41 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para monedas.forms</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">==================================</span>
+<span class="sd">Módulo forms de la app monedas</span>
+<span class="sd">==================================</span>
+
+<span class="sd">Este módulo define el formulario principal de la aplicación ``monedas``.  </span>
+<span class="sd">Incluye la definición del catálogo de monedas basado en el estándar ISO 4217, </span>
+<span class="sd">sus símbolos y emojis asociados, así como el formulario para la gestión de </span>
+<span class="sd">objetos ``Moneda`` en el sistema.</span>
+
+<span class="sd">Contenido</span>
+<span class="sd">---------</span>
+<span class="sd">- Constante ``CURRENCIES`` con los códigos de monedas soportadas.</span>
+<span class="sd">- Función auxiliar ``_choice_label`` para generar etiquetas legibles.</span>
+<span class="sd">- Lista de opciones ``CHOICES`` derivada de ``CURRENCIES``.</span>
+<span class="sd">- Clase ``MonedaForm`` para la creación y validación de monedas.</span>
+
+<span class="sd">Clases</span>
+<span class="sd">------</span>
+<span class="sd">- :class:`MonedaForm`: Formulario de modelo para crear y editar monedas.</span>
+
+<span class="sd">Funciones</span>
+<span class="sd">---------</span>
+<span class="sd">- :func:`_choice_label`: Retorna la etiqueta de selección de una moneda.</span>
+
+<span class="sd">Constantes</span>
+<span class="sd">----------</span>
+<span class="sd">- :data:`CURRENCIES`: Diccionario de monedas con nombre, símbolo y emoji.</span>
+<span class="sd">- :data:`CHOICES`: Lista de tuplas para representar opciones en formularios.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
 
-<span class="c1"># Catálogo ISO 4217 con nombre, símbolo y emoji (bandera)</span>
+<span class="c1">#: Catálogo ISO 4217 con nombre, símbolo y emoji (bandera).</span>
 <span class="n">CURRENCIES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;USD&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Dólar estadounidense&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;$&quot;</span><span class="p">,</span>  <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;🇺🇸&quot;</span><span class="p">},</span>
     <span class="s2">&quot;EUR&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Euro&quot;</span><span class="p">,</span>                  <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;€&quot;</span><span class="p">,</span>  <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;🇪🇺&quot;</span><span class="p">},</span>
@@ -93,16 +124,43 @@
     <span class="s2">&quot;CHF&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Franco suizo&quot;</span><span class="p">,</span>          <span class="s2">&quot;symbol&quot;</span><span class="p">:</span> <span class="s2">&quot;Fr&quot;</span><span class="p">,</span> <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="s2">&quot;🇨🇭&quot;</span><span class="p">},</span>
 <span class="p">}</span>
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_choice_label</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Genera la etiqueta para mostrar una moneda en listas desplegables.</span>
+
+<span class="sd">    :param code: Código ISO 4217 de la moneda.</span>
+<span class="sd">    :type code: str</span>
+<span class="sd">    :return: Etiqueta formateada con emoji, código y nombre de la moneda.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">CURRENCIES</span><span class="p">[</span><span class="n">code</span><span class="p">]</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;emoji&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 
+
+<span class="c1">#: Opciones generadas a partir de CURRENCIES, en formato (código, etiqueta).</span>
 <span class="n">CHOICES</span> <span class="o">=</span> <span class="p">[(</span><span class="n">code</span><span class="p">,</span> <span class="n">_choice_label</span><span class="p">(</span><span class="n">code</span><span class="p">))</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">CURRENCIES</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
 
 
 <div class="viewcode-block" id="MonedaForm">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.MonedaForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MonedaForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario de modelo para gestionar objetos :class:`Moneda`.</span>
+
+<span class="sd">    Este formulario:</span>
+<span class="sd">    </span>
+<span class="sd">    - Autocompleta nombre y símbolo en base al código de moneda.</span>
+<span class="sd">    - Valida que la mínima denominación sea positiva.</span>
+<span class="sd">    - Sobrescribe ``save`` para garantizar consistencia con ``CURRENCIES``.</span>
+
+<span class="sd">    Métodos</span>
+<span class="sd">    -------</span>
+<span class="sd">    - :meth:`clean_minima_denominacion`: Valida que la mínima denominación sea &gt; 0.</span>
+<span class="sd">    - :meth:`clean`: Completa nombre y símbolo desde ``CURRENCIES``.</span>
+<span class="sd">    - :meth:`save`: Guarda el objeto ``Moneda`` con datos consistentes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="MonedaForm.Meta">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.MonedaForm.Meta">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
@@ -143,6 +201,12 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa el formulario ``MonedaForm``.</span>
+
+<span class="sd">        Si se proporciona un código válido, autocompleta nombre y símbolo</span>
+<span class="sd">        desde el catálogo ``CURRENCIES``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># Autocompletar nombre y símbolo si hay código seleccionado</span>
@@ -160,7 +224,13 @@
 <div class="viewcode-block" id="MonedaForm.clean_minima_denominacion">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.MonedaForm.clean_minima_denominacion">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_minima_denominacion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validar que sea un entero positivo&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Valida que ``minima_denominacion`` sea un número entero positivo.</span>
+
+<span class="sd">        :raises forms.ValidationError: Si el valor es nulo o menor que 1.</span>
+<span class="sd">        :return: Valor validado de mínima denominación.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;minima_denominacion&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;La mínima denominación debe ser un número entero positivo.&quot;</span><span class="p">)</span>
@@ -170,6 +240,11 @@
 <div class="viewcode-block" id="MonedaForm.clean">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.MonedaForm.clean">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sobrescribe la limpieza del formulario.</span>
+
+<span class="sd">        Garantiza que nombre y símbolo se actualicen de acuerdo al código de moneda.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codigo&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">CURRENCIES</span><span class="p">:</span>
@@ -182,6 +257,14 @@
 <div class="viewcode-block" id="MonedaForm.save">
 <a class="viewcode-back" href="../../monedas.html#monedas.forms.MonedaForm.save">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Guarda el objeto ``Moneda`` con datos consistentes del catálogo.</span>
+
+<span class="sd">        :param commit: Indica si se debe guardar en base de datos inmediatamente.</span>
+<span class="sd">        :type commit: bool</span>
+<span class="sd">        :return: Instancia de :class:`Moneda` guardada o no.</span>
+<span class="sd">        :rtype: Moneda</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codigo&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">CURRENCIES</span><span class="p">:</span>

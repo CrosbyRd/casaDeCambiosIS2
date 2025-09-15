@@ -123,6 +123,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html#module-admin_panel.models">admin_panel.models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin-panel-modelos">Admin Panel — modelos</a></li>
 <li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin_panel.models.AdminPanelPermissions"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="admin_panel.html#admin_panel.models.AdminPanelPermissions.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="admin_panel.html#admin_panel.models.AdminPanelPermissions.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.MultipleObjectsReturned</span></code></a></li>
@@ -133,8 +134,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html#module-admin_panel.tests">admin_panel.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="admin_panel.html#module-admin_panel.urls">admin_panel.urls module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html#module-admin_panel.urls">admin_panel.urls module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin-panel-enrutamiento">Admin Panel — enrutamiento</a></li>
+<li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin_panel.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin_panel.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html#module-admin_panel.views">admin_panel.views module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin-panel-vistas">Admin Panel — vistas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="admin_panel.html#requisitos-de-acceso">Requisitos de acceso</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="admin_panel.html#admin_panel.views.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
 </ul>
 </li>
@@ -294,6 +304,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#module-core.tests">core.tests module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.setUpTestData()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_compra_eur_vip"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_compra_eur_vip()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_error_moneda_invalida"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_moneda_invalida()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_transaccion_no_pyg()</span></code></a></li>
@@ -304,6 +315,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#module-core.views">core.views module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="core.html#core.views.pagina_inicio_y_simulador"><code class="docutils literal notranslate"><span class="pre">pagina_inicio_y_simulador()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.site_home"><code class="docutils literal notranslate"><span class="pre">site_home()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.site_rates"><code class="docutils literal notranslate"><span class="pre">site_rates()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#module-core">Module contents</a></li>
@@ -329,7 +342,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="correo.html#module-correo.models">correo.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correo.html#module-correo.tests">correo.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="correo.html#module-correo.urls">correo.urls module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html#correo-urls-module">correo.urls module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correo.html#module-correo.views">correo.views module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correo.html#module-correo">Module contents</a></li>
 </ul>
@@ -422,16 +435,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="lib.html#module-lib.models">lib.models module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="lib.html#lib.models.LibModel"><code class="docutils literal notranslate"><span class="pre">LibModel</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="lib.html#lib.models.LibModel.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">LibModel.DoesNotExist</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="lib.html#lib.models.LibModel.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">LibModel.MultipleObjectsReturned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="lib.html#lib.models.LibModel.id"><code class="docutils literal notranslate"><span class="pre">LibModel.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="lib.html#lib.models.LibModel.objects"><code class="docutils literal notranslate"><span class="pre">LibModel.objects</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html#module-lib.models">lib.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lib.html#module-lib.tests">lib.tests module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lib.html#module-lib.urls">lib.urls module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lib.html#module-lib.views">lib.views module</a><ul>
@@ -472,6 +476,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.forms">monedas.forms module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#modulo-forms-de-la-app-monedas">Módulo forms de la app monedas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#contenido">Contenido</a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#clases">Clases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#funciones">Funciones</a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#constantes">Constantes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.forms.CHOICES"><code class="docutils literal notranslate"><span class="pre">CHOICES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.forms.CURRENCIES"><code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.forms.MonedaForm"><code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.forms.MonedaForm.Meta"><code class="docutils literal notranslate"><span class="pre">MonedaForm.Meta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.forms.MonedaForm.base_fields"><code class="docutils literal notranslate"><span class="pre">MonedaForm.base_fields</span></code></a></li>
@@ -484,7 +497,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.models">monedas.models module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html#module-0">monedas.models module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.models.Moneda"><code class="docutils literal notranslate"><span class="pre">Moneda</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Moneda.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Moneda.MultipleObjectsReturned</span></code></a></li>
@@ -508,8 +521,22 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.tests">monedas.tests module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.urls">monedas.urls module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.urls">monedas.urls module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#modulo-urls-de-la-app-monedas">Módulo urls de la app monedas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#id1">Contenido</a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#id2">Constantes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="monedas.html#module-monedas.views">monedas.views module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#modulo-views-de-la-app-monedas">Módulo views de la app monedas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#id3">Contenido</a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#id4">Funciones</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.views.crear_moneda"><code class="docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.views.editar_moneda"><code class="docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#monedas.views.eliminar_moneda"><code class="docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a></li>
@@ -616,8 +643,11 @@
 <li class="toctree-l3"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm"><code class="docutils literal notranslate"><span class="pre">RegistroForm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.Meta"><code class="docutils literal notranslate"><span class="pre">RegistroForm.Meta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.base_fields"><code class="docutils literal notranslate"><span class="pre">RegistroForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.clean_email"><code class="docutils literal notranslate"><span class="pre">RegistroForm.clean_email()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.clean_terms"><code class="docutils literal notranslate"><span class="pre">RegistroForm.clean_terms()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">RegistroForm.declared_fields</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.media"><code class="docutils literal notranslate"><span class="pre">RegistroForm.media</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.forms.RegistroForm.save"><code class="docutils literal notranslate"><span class="pre">RegistroForm.save()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="usuarios.html#usuarios.forms.VerificacionForm"><code class="docutils literal notranslate"><span class="pre">VerificacionForm</span></code></a><ul>

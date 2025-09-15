@@ -28,23 +28,43 @@
     <form method="post" id="form-cotizacion" class="pb-6">
       {% csrf_token %}
 
-      <!-- Moneda destino -->
+      <!-- Moneda destino (bloque superior redondeado) -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse min-w-[560px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr><th class="px-4 py-3 text-left">Moneda Destino</th></tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="w-full min-w-[560px] rounded-xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr>
+                <th class="px-4 py-3 text-left">Moneda Destino</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)] bg-white">
+                <td class="px-4 py-3">
+                  {{ form.moneda_destino }}
+
+                  {% if form.instance.pk %}
+                    <input type="hidden" name="moneda_destino"
+                           value="{{ form.moneda_destino.value|default:form.instance.moneda_destino.pk }}">
+                    <div class="text-sm text-[var(--muted)] mt-2">
+                      La moneda destino no puede modificarse en edición.
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- COMPRA -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[720px]">
+          <!-- mismas proporciones en ambas tablas -->
+          <colgroup>
+            <col style="width:40%">
+            <col style="width:40%">
+            <col style="width:20%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Valor Compra Base (PYG)</th>
@@ -54,9 +74,18 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.valor_compra }}</td>
-              <td class="px-4 py-3">{{ form.comision_compra }}</td>
-              <td class="px-4 py-3"><span id="total_compra" class="font-bold">0.0000</span> PYG</td>
+              <td class="px-4 py-3 align-middle">
+                <div class="w-[380px]">{{ form.valor_compra }}</div>
+              </td>
+              <td class="px-4 py-3 align-middle">
+                <div class="w-[380px]">{{ form.comision_compra }}</div>
+              </td>
+              <td class="px-4 py-3 align-middle">
+                <div class="h-[48px] flex items-center">
+                  <span id="total_compra" class="font-bold">0.0000</span>
+                  <span class="ml-1">PYG</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -65,6 +94,11 @@
       <!-- VENTA -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[720px]">
+          <colgroup>
+            <col style="width:40%">
+            <col style="width:40%">
+            <col style="width:20%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Valor Venta Base (PYG)</th>
@@ -74,9 +108,18 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.valor_venta }}</td>
-              <td class="px-4 py-3">{{ form.comision_venta }}</td>
-              <td class="px-4 py-3"><span id="total_venta" class="font-bold">0.0000</span> PYG</td>
+              <td class="px-4 py-3 align-middle">
+                <div class="w-[380px]">{{ form.valor_venta }}</div>
+              </td>
+              <td class="px-4 py-3 align-middle">
+                <div class="w-[380px]">{{ form.comision_venta }}</div>
+              </td>
+              <td class="px-4 py-3 align-middle">
+                <div class="h-[48px] flex items-center">
+                  <span id="total_venta" class="font-bold">0.0000</span>
+                  <span class="ml-1">PYG</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -99,44 +142,60 @@
 </main>
 
 <style>
-  #id_moneda_destino{
-    width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
-    border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
-    box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
-  }
-  #id_moneda_destino:focus{outline:none;border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);}
-
+  /* Inputs */
+  #id_moneda_destino,
   #id_valor_compra,#id_comision_compra,#id_valor_venta,#id_comision_venta{
     width:100%;max-width:380px;background:#fff;border:1.5px solid var(--line);
     border-radius:12px;padding:12px 14px;height:48px;font-size:1rem;color:var(--ink);
     box-shadow:0 1px 2px rgba(0,0,0,.03);transition:box-shadow .2s,border-color .2s;
   }
+  #id_moneda_destino:focus,
   #id_valor_compra:focus,#id_comision_compra:focus,#id_valor_venta:focus,#id_comision_venta:focus{
-    outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(115,60,255,.15);}
+    outline:none;border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  }
   #id_valor_compra::placeholder,#id_comision_compra::placeholder,
   #id_valor_venta::placeholder,#id_comision_venta::placeholder{color:#9aa3b2;}
+
+  #id_moneda_destino[disabled]{background:#f3f4f6;color:#6b7280;cursor:not-allowed;}
 </style>
 
 <script>
   function calcularTotales(){
-    const vC=parseFloat(document.getElementById('id_valor_compra')?.value)||0;
-    const cC=parseFloat(document.getElementById('id_comision_compra')?.value)||0;
-    const vV=parseFloat(document.getElementById('id_valor_venta')?.value)||0;
-    const cV=parseFloat(document.getElementById('id_comision_venta')?.value)||0;
-    const tc=document.getElementById('total_compra');
-    const tv=document.getElementById('total_venta');
-    if(tc) tc.textContent=(vC+cC).toFixed(4);
-    if(tv) tv.textContent=(vV+cV).toFixed(4);
+    const vC = parseFloat(document.getElementById('id_valor_compra')?.value) || 0;
+    const cC = parseFloat(document.getElementById('id_comision_compra')?.value) || 0;
+    const vV = parseFloat(document.getElementById('id_valor_venta')?.value) || 0;
+    const cV = parseFloat(document.getElementById('id_comision_venta')?.value) || 0;
+
+    const tc = document.getElementById('total_compra');
+    const tv = document.getElementById('total_venta');
+
+    if (tc) tc.textContent = (vC + cC).toFixed(4);
+    if (tv) tv.textContent = (vV + cV).toFixed(4);
   }
-  document.addEventListener('DOMContentLoaded',()=>{
+
+  document.addEventListener('DOMContentLoaded', ()=>{
     ['id_valor_compra','id_comision_compra','id_valor_venta','id_comision_venta']
-      .forEach(id=>{const el=document.getElementById(id); if(el) el.addEventListener('input',calcularTotales);});
-    const setPH=(id,ph)=>{const el=document.getElementById(id); if(el&&!el.placeholder) el.placeholder=ph;};
+      .forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener('input',calcularTotales);
+      });
+
+    const setPH=(id,ph)=>{
+      const el=document.getElementById(id);
+      if(el && !el.placeholder) el.placeholder=ph;
+    };
     setPH('id_valor_compra','Ej: 8900,0000');
     setPH('id_comision_compra','Ej: 500,0000');
     setPH('id_valor_venta','Ej: 8000,0000');
     setPH('id_comision_venta','Ej: 860,0000');
+
+    const editing = "{{ form.instance.pk|yesno:'true,false' }}" === "true";
+    if (editing) {
+      const sel = document.getElementById('id_moneda_destino');
+      if (sel) sel.setAttribute('disabled','disabled');
+    }
+
     calcularTotales();
   });
 </script>

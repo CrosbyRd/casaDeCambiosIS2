@@ -241,11 +241,8 @@
 <span id="cotizaciones-models-module"></span><h2>cotizaciones.models module<a class="headerlink" href="#module-cotizaciones.models" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="cotizaciones.models.Cotizacion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cotizaciones.models.</span></span><span class="sig-name descname"><span class="pre">Cotizacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/models.html#Cotizacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.models.Cotizacion" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cotizaciones.models.</span></span><span class="sig-name descname"><span class="pre">Cotizacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_destino</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valor_compra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valor_venta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comision_compra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comision_venta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fecha_actualizacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/models.html#Cotizacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.models.Cotizacion" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
-<p>Representa la cotización entre un par de monedas en una fecha específica.</p>
-<p>Almacena el valor de compra y venta, así como las comisiones asociadas
-para una transacción entre una moneda base y una moneda de destino.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="cotizaciones.models.Cotizacion.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#cotizaciones.models.Cotizacion.DoesNotExist" title="Link to this definition"></a></dt>
@@ -340,30 +337,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="cotizaciones.models.Cotizacion.total_compra">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_compra</span></span><a class="headerlink" href="#cotizaciones.models.Cotizacion.total_compra" title="Link to this definition"></a></dt>
-<dd><p>Calcula el valor total de compra, incluyendo la comisión.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>El valor de compra más la comisión de compra.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>Decimal</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="cotizaciones.models.Cotizacion.total_venta">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_venta</span></span><a class="headerlink" href="#cotizaciones.models.Cotizacion.total_venta" title="Link to this definition"></a></dt>
-<dd><p>Calcula el valor total de venta, incluyendo la comisión.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
-<dd class="field-odd"><p>El valor de venta más la comisión de venta.</p>
-</dd>
-<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-even"><p>Decimal</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="cotizaciones.models.Cotizacion.valor_compra">
@@ -393,110 +372,34 @@ object the first time, the query is executed.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.cotizacion_create">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">cotizacion_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#cotizacion_create"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.cotizacion_create" title="Link to this definition"></a></dt>
-<dd><p>Crea una nueva cotización.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta HTTP que renderiza la plantilla “cotizacion_form.html” o redirige a la lista de cotizaciones.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse o HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.cotizacion_delete">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">cotizacion_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#cotizacion_delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.cotizacion_delete" title="Link to this definition"></a></dt>
-<dd><p>Elimina una cotización existente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p></li>
-<li><p><strong>pk</strong> (<em>int</em>) – La clave primaria de la cotización a eliminar.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta HTTP que renderiza la plantilla “cotizacion_confirm_delete.html” o redirige a la lista de cotizaciones.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse o HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.cotizacion_list">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">cotizacion_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#cotizacion_list"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.cotizacion_list" title="Link to this definition"></a></dt>
-<dd><p>Muestra la lista de cotizaciones.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta HTTP que renderiza la plantilla “cotizacion_list.html” con la lista de cotizaciones.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.cotizacion_update">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">cotizacion_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#cotizacion_update"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.cotizacion_update" title="Link to this definition"></a></dt>
-<dd><p>Actualiza una cotización existente.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p></li>
-<li><p><strong>pk</strong> (<em>int</em>) – La clave primaria de la cotización a actualizar.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta HTTP que renderiza la plantilla “cotizacion_form.html” o redirige a la lista de cotizaciones.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>HttpResponse o HttpResponseRedirect</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.obtener_cotizacion_api">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">obtener_cotizacion_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moneda_destino_codigo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#obtener_cotizacion_api"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.obtener_cotizacion_api" title="Link to this definition"></a></dt>
-<dd><p>Obtiene valor de compra y venta desde currency-api (sin necesidad de clave)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>moneda_destino_codigo</strong> (<em>str</em>) – Código de la moneda destino (ej. «USD»).</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Un diccionario: {“valor_compra”: float, “valor_venta”: float} o None si falla.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict or None</p>
-</dd>
-</dl>
+<dd><p>Obtiene valor de compra y venta desde currency-api (sin necesidad de clave)
+Devuelve un diccionario: {“valor_compra”: float, “valor_venta”: float} o None si falla.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.obtener_valores_api">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">obtener_valores_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#obtener_valores_api"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.obtener_valores_api" title="Link to this definition"></a></dt>
-<dd><p>Obtiene valores de cotización desde una API externa.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> (<em>HttpRequest</em>) – La petición HTTP.</p>
-</dd>
-<dt class="field-even">Devuelve<span class="colon">:</span></dt>
-<dd class="field-even"><p>Una respuesta JSON con los valores de la cotización o un error.</p>
-</dd>
-<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
-<dd class="field-odd"><p>JsonResponse</p>
-</dd>
-</dl>
-</dd></dl>
+<dd></dd></dl>
 
 </section>
 <section id="module-cotizaciones">

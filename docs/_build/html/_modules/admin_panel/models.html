@@ -70,22 +70,52 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para admin_panel.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span></span><span class="sd">&quot;&quot;&quot;Admin Panel — modelos</span>
+<span class="sd">=======================</span>
+
+<span class="sd">Modelos mínimos para declarar permisos a nivel de aplicación del panel de</span>
+<span class="sd">administración propio. No crea tablas en la base de datos: únicamente</span>
+<span class="sd">registra *Django permissions* mediante ``Meta.permissions``.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">   Este módulo no define tablas reales; se usa únicamente para registrar</span>
+<span class="sd">   permisos personalizados en el sistema de autenticación de Django.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+
 
 <div class="viewcode-block" id="AdminPanelPermissions">
 <a class="viewcode-back" href="../../admin_panel.html#admin_panel.models.AdminPanelPermissions">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AdminPanelPermissions</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Modelo para definir permisos personalizados para el panel de administración.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Contenedor “virtual” de permisos del Admin Panel.</span>
+
+<span class="sd">    Esta clase **no** se persiste (``managed = False``) y solo existe para</span>
+<span class="sd">    declarar permisos a través de :class:`~django.db.models.Options.permissions`.</span>
+
+<span class="sd">    **Permisos registrados**</span>
+
+<span class="sd">    * ``admin_panel.access_admin_dashboard`` — *Puede acceder al dashboard del Admin Panel*.</span>
+
+<span class="sd">    .. important::</span>
+<span class="sd">       Al tener ``managed = False`` no habrá migraciones para esta clase.</span>
+<span class="sd">       Aun así, el permiso queda disponible en la tabla de *auth* porque</span>
+<span class="sd">       Django lee la opción ``Meta.permissions`` y lo registra.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Metadatos para el modelo AdminPanelPermissions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">managed</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># No se guarda en la base de datos</span>
+        <span class="c1">#: Evita que Django cree/gestione una tabla para este modelo.</span>
+        <span class="n">managed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1">#: Desactiva permisos por defecto (add/change/delete/view).</span>
         <span class="n">default_permissions</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="c1">#: Declaración explícita de permisos del app.</span>
         <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;access_admin_dashboard&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede acceder al dashboard del Admin Panel&quot;</span><span class="p">),</span>  <span class="c1"># Crea un permiso django permissions llamado access_admin_dashboard</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;access_admin_dashboard&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Puede acceder al dashboard del Admin Panel&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">]</span></div>
 
 </pre></div>

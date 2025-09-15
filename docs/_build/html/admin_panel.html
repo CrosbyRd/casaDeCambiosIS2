@@ -59,12 +59,19 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.models">admin_panel.models module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#admin-panel-modelos">Admin Panel — modelos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.tests">admin_panel.tests module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.urls">admin_panel.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.urls">admin_panel.urls module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#admin-panel-enrutamiento">Admin Panel — enrutamiento</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.views">admin_panel.views module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#admin-panel-vistas">Admin Panel — vistas</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#admin_panel.views.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
 </ul>
 </li>
@@ -159,11 +166,34 @@
 </section>
 <section id="module-admin_panel.models">
 <span id="admin-panel-models-module"></span><h2>admin_panel.models module<a class="headerlink" href="#module-admin_panel.models" title="Link to this heading"></a></h2>
+<section id="admin-panel-modelos">
+<h3>Admin Panel — modelos<a class="headerlink" href="#admin-panel-modelos" title="Link to this heading"></a></h3>
+<p>Modelos mínimos para declarar permisos a nivel de aplicación del panel de
+administración propio. No crea tablas en la base de datos: únicamente
+registra <em>Django permissions</em> mediante <code class="docutils literal notranslate"><span class="pre">Meta.permissions</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Nota</p>
+<p>Este módulo no define tablas reales; se usa únicamente para registrar
+permisos personalizados en el sistema de autenticación de Django.</p>
+</div>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="admin_panel.models.AdminPanelPermissions">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">admin_panel.models.</span></span><span class="sig-name descname"><span class="pre">AdminPanelPermissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/admin_panel/models.html#AdminPanelPermissions"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#admin_panel.models.AdminPanelPermissions" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
-<p>Modelo para definir permisos personalizados para el panel de administración.</p>
+<p>Contenedor “virtual” de permisos del Admin Panel.</p>
+<p>Esta clase <strong>no</strong> se persiste (<code class="docutils literal notranslate"><span class="pre">managed</span> <span class="pre">=</span> <span class="pre">False</span></code>) y solo existe para
+declarar permisos a través de <code class="xref py py-class docutils literal notranslate"><span class="pre">permissions</span></code>.</p>
+<p><strong>Permisos registrados</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">admin_panel.access_admin_dashboard</span></code> — <em>Puede acceder al dashboard del Admin Panel</em>.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Importante</p>
+<p>Al tener <code class="docutils literal notranslate"><span class="pre">managed</span> <span class="pre">=</span> <span class="pre">False</span></code> no habrá migraciones para esta clase.
+Aun así, el permiso queda disponible en la tabla de <em>auth</em> porque
+Django lee la opción <code class="docutils literal notranslate"><span class="pre">Meta.permissions</span></code> y lo registra.</p>
+</div>
 <dl class="py exception">
 <dt class="sig sig-object py" id="admin_panel.models.AdminPanelPermissions.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#admin_panel.models.AdminPanelPermissions.DoesNotExist" title="Link to this definition"></a></dt>
@@ -196,13 +226,68 @@ object the first time, the query is executed.</p>
 </section>
 <section id="module-admin_panel.urls">
 <span id="admin-panel-urls-module"></span><h2>admin_panel.urls module<a class="headerlink" href="#module-admin_panel.urls" title="Link to this heading"></a></h2>
+<section id="admin-panel-enrutamiento">
+<h3>Admin Panel — enrutamiento<a class="headerlink" href="#admin-panel-enrutamiento" title="Link to this heading"></a></h3>
+<p>Puntos de entrada del panel de administración propio.</p>
+<p>El <em>namespace</em> del app es <code class="docutils literal notranslate"><span class="pre">admin_panel</span></code> para poder referenciar
+URLs como <code class="docutils literal notranslate"><span class="pre">reverse('admin_panel:dashboard')</span></code>.</p>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="admin_panel.urls.app_name">
+<span class="sig-prename descclassname"><span class="pre">admin_panel.urls.</span></span><span class="sig-name descname"><span class="pre">app_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'admin_panel'</span></em><a class="headerlink" href="#admin_panel.urls.app_name" title="Link to this definition"></a></dt>
+<dd><p>Espacio de nombres del app para <em>URL reversing</em>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="admin_panel.urls.urlpatterns">
+<span class="sig-prename descclassname"><span class="pre">admin_panel.urls.</span></span><span class="sig-name descname"><span class="pre">urlpatterns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;URLPattern</span> <span class="pre">''</span> <span class="pre">[name='dashboard']&gt;]</span></em><a class="headerlink" href="#admin_panel.urls.urlpatterns" title="Link to this definition"></a></dt>
+<dd><p>Lista de rutas públicas del módulo.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> → <a class="reference internal" href="#admin_panel.views.dashboard" title="admin_panel.views.dashboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">admin_panel.views.dashboard()</span></code></a></p></li>
+</ul>
+</dd></dl>
+
 </section>
 <section id="module-admin_panel.views">
 <span id="admin-panel-views-module"></span><h2>admin_panel.views module<a class="headerlink" href="#module-admin_panel.views" title="Link to this heading"></a></h2>
+<section id="admin-panel-vistas">
+<h3>Admin Panel — vistas<a class="headerlink" href="#admin-panel-vistas" title="Link to this heading"></a></h3>
+<p>Vistas protegidas del panel de administración propio.</p>
+<section id="requisitos-de-acceso">
+<h4>Requisitos de acceso<a class="headerlink" href="#requisitos-de-acceso" title="Link to this heading"></a></h4>
+<p>Todas las vistas deben estar autenticadas con <code class="xref py py-func docutils literal notranslate"><span class="pre">django.contrib.auth.decorators.login_required()</span></code>
+y, en el caso del <em>dashboard</em>, además requieren el permiso
+<code class="docutils literal notranslate"><span class="pre">admin_panel.access_admin_dashboard</span></code>.</p>
+</section>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="admin_panel.views.dashboard">
 <span class="sig-prename descclassname"><span class="pre">admin_panel.views.</span></span><span class="sig-name descname"><span class="pre">dashboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/admin_panel/views.html#dashboard"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#admin_panel.views.dashboard" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Dashboard del Admin Panel.</p>
+<p>Vista principal del panel. Verifica que el usuario autenticado cuente con el
+permiso <code class="docutils literal notranslate"><span class="pre">admin_panel.access_admin_dashboard</span></code> antes de renderizar la
+plantilla.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">django.http.HttpRequest</span></code>) – Objeto de la petición HTTP.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Si el usuario posee el permiso, renderiza <code class="docutils literal notranslate"><span class="pre">admin_panel/dashboard.html</span></code>.
+En caso contrario, redirige a la página <code class="docutils literal notranslate"><span class="pre">home</span></code>.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">django.http.HttpResponse</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">django.http.HttpResponseRedirect</span></code></p>
+</dd>
+</dl>
+<p><strong>Permisos necesarios</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">admin_panel.access_admin_dashboard</span></code></p></li>
+</ul>
+<p><strong>Plantilla</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">admin_panel/dashboard.html</span></code></p></li>
+</ul>
+</dd></dl>
 
 </section>
 <section id="module-admin_panel">

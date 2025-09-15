@@ -40,27 +40,33 @@
           }'>
       {% csrf_token %}
 
-      <!-- Código (bloqueado) -->
+      <!-- Código (SOLO este bloque con esquinas redondeadas) -->
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse min-w-[560px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr><th class="px-4 py-3 text-left">Código</th></tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">
-                {{ form.codigo }}
-                <input type="hidden" name="{{ form.codigo.name }}" value="{{ form.codigo.value|default_if_none:'' }}">
-                <p class="text-sm text-[var(--muted)] mt-2">El código no puede modificarse aquí.</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="w-full min-w-[560px] rounded-xl overflow-hidden border" style="border-color:var(--line)">
+          <table class="w-full border-collapse">
+            <thead class="bg-[var(--brand)] text-white">
+              <tr><th class="px-4 py-3 text-left">Código</th></tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-[var(--brand-soft)] bg-white">
+                <td class="px-4 py-3">
+                  {{ form.codigo }}
+                  <input type="hidden" name="{{ form.codigo.name }}" value="{{ form.codigo.value|default_if_none:'' }}">
+                  <p class="text-sm text-[var(--muted)] mt-2">El código no puede modificarse aquí.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- Nombre / Símbolo -->
+      <!-- Nombre / Símbolo (ancho unificado) -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Nombre</th>
@@ -69,16 +75,20 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.nombre }}</td>
-              <td class="px-4 py-3">{{ form.simbolo }}</td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.nombre }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.simbolo }}</div></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Decimales / Mínima denominación -->
+      <!-- Decimales / Mínima denominación (ancho unificado) -->
       <div class="overflow-x-auto mt-6">
         <table class="w-full border-collapse min-w-[560px]">
+          <colgroup>
+            <col style="width:50%">
+            <col style="width:50%">
+          </colgroup>
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-3 text-left">Decimales</th>
@@ -87,30 +97,15 @@
           </thead>
           <tbody>
             <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.decimales }}</td>
-              <td class="px-4 py-3">{{ form.minima_denominacion }}</td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.decimales }}</div></td>
+              <td class="px-4 py-3 align-middle"><div class="w-[380px]">{{ form.minima_denominacion }}</div></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Flags -->
-      <div class="overflow-x-auto mt-6">
-        <table class="w-full border-collapse min-w-[560px]">
-          <thead class="bg-[var(--brand)] text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Admite en línea</th>
-              <th class="px-4 py-3 text-left">Admite terminal</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-[var(--brand-soft)]">
-              <td class="px-4 py-3">{{ form.admite_en_linea }}</td>
-              <td class="px-4 py-3">{{ form.admite_terminal }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- (Bloque de flags eliminado como en "Crear Moneda") -->
+
     </form>
   </section>
 

@@ -1,7 +1,38 @@
+"""
+==================================
+Módulo forms de la app monedas
+==================================
+
+Este módulo define el formulario principal de la aplicación ``monedas``.  
+Incluye la definición del catálogo de monedas basado en el estándar ISO 4217, 
+sus símbolos y emojis asociados, así como el formulario para la gestión de 
+objetos ``Moneda`` en el sistema.
+
+Contenido
+---------
+- Constante ``CURRENCIES`` con los códigos de monedas soportadas.
+- Función auxiliar ``_choice_label`` para generar etiquetas legibles.
+- Lista de opciones ``CHOICES`` derivada de ``CURRENCIES``.
+- Clase ``MonedaForm`` para la creación y validación de monedas.
+
+Clases
+------
+- :class:`MonedaForm`: Formulario de modelo para crear y editar monedas.
+
+Funciones
+---------
+- :func:`_choice_label`: Retorna la etiqueta de selección de una moneda.
+
+Constantes
+----------
+- :data:`CURRENCIES`: Diccionario de monedas con nombre, símbolo y emoji.
+- :data:`CHOICES`: Lista de tuplas para representar opciones en formularios.
+"""
+
 from django import forms
 from .models import Moneda
 
-# Catálogo ISO 4217 con nombre, símbolo y emoji (bandera)
+#: Catálogo ISO 4217 con nombre, símbolo y emoji (bandera).
 CURRENCIES = {
     "USD": {"name": "Dólar estadounidense", "symbol": "$",  "emoji": "🇺🇸"},
     "EUR": {"name": "Euro",                  "symbol": "€",  "emoji": "🇪🇺"},
@@ -21,14 +52,41 @@ CURRENCIES = {
     "CHF": {"name": "Franco suizo",          "symbol": "Fr", "emoji": "🇨🇭"},
 }
 
+
 def _choice_label(code: str) -> str:
+    """
+    Genera la etiqueta para mostrar una moneda en listas desplegables.
+
+    :param code: Código ISO 4217 de la moneda.
+    :type code: str
+    :return: Etiqueta formateada con emoji, código y nombre de la moneda.
+    :rtype: str
+    """
     d = CURRENCIES[code]
     return f"{d['emoji']} {code} — {d['name']}"
 
+
+#: Opciones generadas a partir de CURRENCIES, en formato (código, etiqueta).
 CHOICES = [(code, _choice_label(code)) for code in CURRENCIES.keys()]
 
 
 class MonedaForm(forms.ModelForm):
+    """
+    Formulario de modelo para gestionar objetos :class:`Moneda`.
+
+    Este formulario:
+    
+    - Autocompleta nombre y símbolo en base al código de moneda.
+    - Valida que la mínima denominación sea positiva.
+    - Sobrescribe ``save`` para garantizar consistencia con ``CURRENCIES``.
+
+    Métodos
+    -------
+    - :meth:`clean_minima_denominacion`: Valida que la mínima denominación sea > 0.
+    - :meth:`clean`: Completa nombre y símbolo desde ``CURRENCIES``.
+    - :meth:`save`: Guarda el objeto ``Moneda`` con datos consistentes.
+    """
+
     class Meta:
         model = Moneda
         fields = [
@@ -66,6 +124,12 @@ class MonedaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Inicializa el formulario ``MonedaForm``.
+
+        Si se proporciona un código válido, autocompleta nombre y símbolo
+        desde el catálogo ``CURRENCIES``.
+        """
         super().__init__(*args, **kwargs)
 
         # Autocompletar nombre y símbolo si hay código seleccionado
@@ -81,13 +145,24 @@ class MonedaForm(forms.ModelForm):
             self.initial.setdefault("simbolo", d["symbol"])
 
     def clean_minima_denominacion(self):
-        """Validar que sea un entero positivo"""
+        """
+        Valida que ``minima_denominacion`` sea un número entero positivo.
+
+        :raises forms.ValidationError: Si el valor es nulo o menor que 1.
+        :return: Valor validado de mínima denominación.
+        :rtype: int
+        """
         value = self.cleaned_data.get("minima_denominacion")
         if value is None or value < 1:
             raise forms.ValidationError("La mínima denominación debe ser un número entero positivo.")
         return value
 
     def clean(self):
+        """
+        Sobrescribe la limpieza del formulario.
+
+        Garantiza que nombre y símbolo se actualicen de acuerdo al código de moneda.
+        """
         cleaned = super().clean()
         code = cleaned.get("codigo")
         if code in CURRENCIES:
@@ -97,6 +172,14 @@ class MonedaForm(forms.ModelForm):
         return cleaned
 
     def save(self, commit=True):
+        """
+        Guarda el objeto ``Moneda`` con datos consistentes del catálogo.
+
+        :param commit: Indica si se debe guardar en base de datos inmediatamente.
+        :type commit: bool
+        :return: Instancia de :class:`Moneda` guardada o no.
+        :rtype: Moneda
+        """
         instance = super().save(commit=False)
         code = self.cleaned_data.get("codigo")
         if code in CURRENCIES:

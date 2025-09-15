@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load l10n %}
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
@@ -9,7 +10,7 @@
     <table class="w-full border-collapse">
       <thead class="bg-[var(--brand)] text-white">
         <tr>
-          <th class="px-4 py-3 text-left">Par</th>
+          <th class="px-4 py-3 text-left">Moneda</th>
           <th class="px-4 py-3 text-right">Compra (PYG)</th>
           <th class="px-4 py-3 text-right">Venta (PYG)</th>
           <th class="px-4 py-3 text-right">Actualización</th>
@@ -20,12 +21,13 @@
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
             <td class="px-4 py-3">
               <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-              {{ c.moneda_destino.codigo }} →
-              <span class="currency-emoji" data-code="{{ c.moneda_base.codigo }}"></span>
-              {{ c.moneda_base.codigo }}
+              {{ c.moneda_destino.codigo }}
             </td>
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra }}</td>
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta }}</td>
+
+            {# sin decimales #}
+            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</td>
+            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</td>
+
             <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
           </tr>
         {% empty %}
@@ -36,16 +38,13 @@
   </section>
 </main>
 
-<!-- Banderas por código -->
 <script>
 (function(){
-  const MAP = {
-    USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-    MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-    CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
-  };
+  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
   document.querySelectorAll('.currency-emoji').forEach(el=>{
-    const code = String(el.dataset.code || '').toUpperCase();
+    const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
   });
 })();
