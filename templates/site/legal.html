@@ -1,5 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange — Legal{% endblock %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
 {% block content %}
 <main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
 <h1 class="h1 mb-6">Legal</h1>
@@ -36,7 +40,7 @@
       <li>Base legal: contrato, obligación legal, interés legítimo y consentimiento.</li>
       <li>Cesiones: proveedores de pago, hosting y correo bajo acuerdos; transferencias con garantías.</li>
       <li>Derechos: acceso, rectificación, supresión, oposición y portabilidad.</li>
-      <li>Contacto: <a href="mailto:privacidad@globalexchange.__" class="underline">globalexchangeparaguay@gmail.com</a></li>
+      <li>Contacto: <a href="mailto:globalexchangeparaguay@gmail.com" class="underline">globalexchangeparaguay@gmail.com</a></li>
     </ul>
   </article>
 
