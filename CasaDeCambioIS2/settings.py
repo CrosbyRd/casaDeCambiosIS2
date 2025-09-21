@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "admin_panel",
     "core.apps.CoreConfig",
     'pagos',
+    "medios_acreditacion",
 ]
 
 # --- Middleware ---
