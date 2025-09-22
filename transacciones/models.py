@@ -37,9 +37,10 @@ class Transaccion(models.Model):
         ('procesando_acreditacion', 'Procesando Acreditación a Cliente (PYG)'),
 
         # Estados comunes
-        ('completada', 'Completada'),
-        ('cancelada', 'Cancelada'),
-        ('error', 'Error'),
+        ('completada', 'Completada'),   # Éxito
+        ('cancelada', 'Cancelada'),     # Interrumpida antes del pago/deposito del cliente
+        ('anulada', 'Anulada'),         # Revertida después del pago/deposito del cliente
+        ('error', 'Error'),             # Error técnico/inesperado             
     ]
 
     # --- CAMPOS DEL MODELO ---

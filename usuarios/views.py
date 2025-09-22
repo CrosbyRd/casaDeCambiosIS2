@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
+from roles.models import Role # Importar el modelo Role
 
 
 # ----------------------------
@@ -112,8 +113,9 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
-    # Bypass OTP para staff con superprivilegios (mantener compatibilidad interna)
-    if user.is_superuser:
+    # Bypass OTP para superusuarios (mantener compatibilidad interna)
+    # Y bypass para usuarios con el rol 'Cliente_Dev_OTP_Bypass' en entorno de desarrollo
+    if user.is_superuser or (settings.DEBUG and user.roles.filter(name="Cliente_Dev_OTP_Bypass").exists()):
         login(request, user)
         next_url = request.session.pop("pending_login_next", None)
         return redirect(next_url or "usuarios:login_redirect")

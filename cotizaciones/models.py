@@ -23,8 +23,10 @@ class Cotizacion(models.Model):
     
     @property
     def total_compra(self):
-        return self.valor_compra + self.comision_compra
+        # La casa de cambios compra la divisa al cliente, la comisión se resta del valor base.
+        return self.valor_compra - self.comision_compra
     
     @property
     def total_venta(self):
+        # La casa de cambios vende la divisa al cliente, la comisión se suma al valor base.
         return self.valor_venta + self.comision_venta
