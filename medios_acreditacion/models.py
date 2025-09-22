@@ -1,40 +1,24 @@
-# medios_acreditacion/models.py
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 
-class TipoMedioAcreditacion(models.Model):
-    class Nombre(models.TextChoices):
-        CUENTA_SIPAP = "CUENTA_SIPAP", "Cuenta bancaria (SIPAP)"
-        BILLETERA    = "BILLETERA",    "Billetera electrónica"
-
-    nombre = models.CharField(
-        max_length=40,
-        choices=Nombre.choices,
-        help_text="Selecciona el tipo de medio de acreditación permitido en el sistema."
+class CategoriaMedio(models.Model):
+    codigo = models.SlugField(
+        max_length=50,
+        unique=True,
+        help_text="Código interno (ej: transferencia, billetera, pickup)"
     )
-
-    # Si querés replicar la forma de pagos 1:1, mantenemos estos campos (opcionales)
-    comision_porcentaje = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Comisión en % del monto total (0–100)."
+    requiere_datos_extra = models.BooleanField(
+        default=True,
+        help_text="Si el cliente debe cargar datos adicionales (número de cuenta, alias, etc.)"
     )
-    bonificacion_porcentaje = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Descuento/bonificación en % aplicado (0–100)."
-    )
-
-    activo = models.BooleanField(default=True, help_text="Si está desactivado, no se podrá usar en operaciones.")
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    activo = models.BooleanField(default=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    ultima_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Tipo de Medio de Acreditación"
-        verbose_name_plural = "Tipos de Medio de Acreditación"
-        ordering = ["nombre"]
-        unique_together = [("nombre",)]  # evita duplicados del mismo tipo
+        verbose_name = "Medio de Acreditación"
+        verbose_name_plural = "Medios de Acreditación"
+        ordering = ["-ultima_modificacion"]
 
-    def __str__(self) -> str:
-        return self.get_nombre_display()
+    def __str__(self):
+        # Se muestra el código tal cual como nombre
+        return self.codigo.capitalize()

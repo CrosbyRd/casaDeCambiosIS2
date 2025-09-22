@@ -1,51 +1,47 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
-from django.contrib import messages
-from .models import MedioAcreditacion
-from .forms import MedioAcreditacionForm
+from .models import CategoriaMedio
+from .forms import CategoriaMedioForm
 
-def listar_medios_acreditacion(request: HttpRequest) -> HttpResponse:
-    qs = MedioAcreditacion.objects.all().order_by("nombre")
-    return render(request, "acreditaciones/listar_medios_acreditacion.html", {"medios": qs})
+def listar_categorias(request: HttpRequest) -> HttpResponse:
+    categorias = CategoriaMedio.objects.all()
+    return render(request, "medios_acreditacion/listar.html", {"categorias": categorias})
 
-def agregar_medio_acreditacion(request: HttpRequest) -> HttpResponse:
+def agregar_categoria(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = MedioAcreditacionForm(request.POST)
+        form = CategoriaMedioForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Medio de acreditación agregado.")
-            return redirect("acreditaciones:listar_medios")
+            return redirect("medios_acreditacion:listar_categorias")
     else:
-        form = MedioAcreditacionForm()
-    return render(request, "acreditaciones/form_medio_acreditacion.html", {"form": form, "accion": "Agregar"})
+        form = CategoriaMedioForm()
+    return render(request, "medios_acreditacion/form.html", {"form": form, "accion": "Agregar"})
 
-def editar_medio_acreditacion(request: HttpRequest, pk: int) -> HttpResponse:
-    medio = get_object_or_404(MedioAcreditacion, pk=pk)
+def editar_categoria(request: HttpRequest, pk: int) -> HttpResponse:
+    categoria = get_object_or_404(CategoriaMedio, pk=pk)
     if request.method == "POST":
-        form = MedioAcreditacionForm(request.POST, instance=medio)
+        form = CategoriaMedioForm(request.POST, instance=categoria)
         if form.is_valid():
             form.save()
-            messages.success(request, "Cambios guardados.")
-            return redirect("acreditaciones:listar_medios")
+            return redirect("medios_acreditacion:listar_categorias")
     else:
-        form = MedioAcreditacionForm(instance=medio)
-    return render(request, "acreditaciones/form_medio_acreditacion.html", {"form": form, "accion": "Editar"})
+        form = CategoriaMedioForm(instance=categoria)
+    return render(request, "medios_acreditacion/form.html", {"form": form, "accion": "Editar"})
 
-def ver_medio_acreditacion(request: HttpRequest, pk: int) -> HttpResponse:
-    medio = get_object_or_404(MedioAcreditacion, pk=pk)
-    return render(request, "acreditaciones/ver_medio_acreditacion.html", {"medio": medio})
-
-def eliminar_medio_acreditacion(request: HttpRequest, pk: int) -> HttpResponse:
-    medio = get_object_or_404(MedioAcreditacion, pk=pk)
+def eliminar_categoria(request: HttpRequest, pk: int) -> HttpResponse:
+    categoria = get_object_or_404(CategoriaMedio, pk=pk)
     if request.method == "POST":
-        medio.delete()
-        messages.success(request, "Medio de acreditación eliminado.")
-        return redirect("acreditaciones:listar_medios")
-    return render(request, "acreditaciones/confirmar_eliminacion.html", {"medio": medio})
+        categoria.delete()
+        return redirect("medios_acreditacion:listar_categorias")
+    return render(request, "medios_acreditacion/confirmar_eliminacion.html", {"categoria": categoria})
 
 def toggle_activo(request: HttpRequest, pk: int) -> HttpResponse:
-    medio = get_object_or_404(MedioAcreditacion, pk=pk)
+    categoria = get_object_or_404(CategoriaMedio, pk=pk)
     if request.method == "POST":
-        medio.activo = not medio.activo
-        medio.save(update_fields=["activo", "updated_at"])
-    return redirect("acreditaciones:listar_medios")
+        categoria.activo = not categoria.activo
+        categoria.save(update_fields=["activo", "ultima_modificacion"])
+    return redirect("medios_acreditacion:listar_categorias")
+
+def ver_categoria(request: HttpRequest, pk: int) -> HttpResponse:
+    categoria = get_object_or_404(CategoriaMedio, pk=pk)
+    return render(request, "medios_acreditacion/ver.html", {"categoria": categoria})

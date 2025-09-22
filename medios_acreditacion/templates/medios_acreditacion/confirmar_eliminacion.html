@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-3xl mx-auto px-6 py-10 text-center">
+  <h1 class="text-3xl font-extrabold mb-4 text-[var(--ink)]">⚠️ Eliminar Tipo de Medio</h1>
+  <p class="mb-6 text-[var(--muted)]">¿Estás seguro que deseas eliminar el tipo <span class="font-semibold">{{ tipo.nombre }}</span>? Esta acción no se puede deshacer.</p>
+
+  <form method="post" class="flex justify-center gap-4">
+    {% csrf_token %}
+    <a href="{% url 'medios_acreditacion:listar_tipos' %}" class="px-5 py-2 rounded-lg font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Cancelar</a>
+    <button type="submit" class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">Eliminar</button>
+  </form>
+</main>
+{% endblock %}

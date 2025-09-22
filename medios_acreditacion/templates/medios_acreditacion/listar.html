@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Medios de Acreditación - Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10">
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🏦 Medios de Acreditación</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Define los medios disponibles para que los clientes acrediten sus fondos (ej.: transferencia bancaria, billetera electrónica, pickup en caja).
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'admin_panel:dashboard' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'medios_acreditacion:agregar_categoria' %}" class="px-4 py-2 rounded-lg font-bold text-white shadow-sm" style="background:var(--brand)">
+        ➕ Crear Medio
+      </a>
+    </div>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Nombre</th>
+            <th class="px-4 py-3 text-left">Código</th>
+            <th class="px-4 py-3 text-left">Estado</th>
+            <th class="px-4 py-3 text-left whitespace-nowrap">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in categorias %}
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3 font-medium">{{ c.nombre }}</td>
+            <td class="px-4 py-3">{{ c.codigo }}</td>
+            <td class="px-4 py-3">
+              {% if c.activo %}
+                <span class="px-2 py-1 rounded-md text-green-700 bg-green-100 font-semibold">Activo</span>
+              {% else %}
+                <span class="px-2 py-1 rounded-md text-red-700 bg-red-100 font-semibold">Inactivo</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap flex gap-2">
+              <a href="{% url 'medios_acreditacion:ver_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--ink)] bg-white border hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">Ver</a>
+              <a href="{% url 'medios_acreditacion:editar_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Editar</a>
+              <a href="{% url 'medios_acreditacion:eliminar_categoria' c.pk %}" class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg">Eliminar</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-[var(--muted)]">
+              No hay medios de acreditación registrados.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ accion }} Medio de Acreditación - Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-6">
+    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+      {% if accion == "Agregar" %}➕ Crear{% else %}✏️ Editar{% endif %} Medio de Acreditación
+    </h1>
+    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+      Completa la información para definir un medio de acreditación.
+    </p>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden p-6" style="border-color:var(--line)">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="grid gap-6">
+        <div>
+          <label class="font-semibold">Nombre</label>
+          {{ form.nombre }}
+        </div>
+        <div>
+          <label class="font-semibold">Código</label>
+          {{ form.codigo }}
+          <p class="help text-sm text-[var(--muted)]">Ej.: transferencia, billetera, pickup</p>
+        </div>
+        <div>
+          <label class="flex items-center gap-3">
+            {{ form.activo }} <span class="font-semibold text-[var(--ink)]">Activo</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <a href="{% url 'medios_acreditacion:listar_categorias' %}" class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">Cancelar</a>
+        <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white shadow-sm" style="background:var(--brand)">
+          {% if accion == "Editar" %}💾 Guardar Cambios{% else %}➕ Agregar{% endif %}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
