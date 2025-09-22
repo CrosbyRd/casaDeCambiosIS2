@@ -1,10 +1,23 @@
 from django.db import models
 
 class CategoriaMedio(models.Model):
-    codigo = models.SlugField(
+    CODIGO_CHOICES = [
+        ("transferencia", "Transferencia Bancaria"),
+        ("billetera", "Billetera Electrónica"),
+        ("pickup", "Retiro en Ventanilla (Pickup)"),
+    ]
+
+    codigo = models.CharField(
         max_length=50,
+        choices=CODIGO_CHOICES,  # 🔹 lista fija
         unique=True,
-        help_text="Código interno (ej: transferencia, billetera, pickup)"
+        help_text="Seleccione el tipo de medio (ej: transferencia, billetera, pickup)"
+    )
+    # Moneda fija, NO editable
+    moneda_predeterminada = models.CharField(
+        max_length=10,
+        default="PYG",
+        editable=False,  # <- no aparece en forms
     )
     requiere_datos_extra = models.BooleanField(
         default=True,
@@ -20,5 +33,4 @@ class CategoriaMedio(models.Model):
         ordering = ["-ultima_modificacion"]
 
     def __str__(self):
-        # Se muestra el código tal cual como nombre
-        return self.codigo.capitalize()
+        return self.get_codigo_display()

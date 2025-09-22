@@ -6,7 +6,7 @@
     <div>
       <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🏦 Medios de Acreditación</h1>
       <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
-        Define los medios disponibles para que los clientes acrediten sus fondos (ej.: transferencia bancaria, billetera electrónica, pickup en caja).
+        Configura los medios disponibles para acreditar fondos en PYG (transferencia, billetera, pickup).
       </p>
     </div>
     <div class="flex gap-3">
@@ -26,6 +26,7 @@
           <tr>
             <th class="px-4 py-3 text-left">Nombre</th>
             <th class="px-4 py-3 text-left">Código</th>
+            <th class="px-4 py-3 text-left">Requiere datos extra</th>
             <th class="px-4 py-3 text-left">Estado</th>
             <th class="px-4 py-3 text-left whitespace-nowrap">Acciones</th>
           </tr>
@@ -34,7 +35,10 @@
           {% for c in categorias %}
           <tr class="hover:bg-[var(--brand-soft)]">
             <td class="px-4 py-3 font-medium">{{ c.nombre }}</td>
-            <td class="px-4 py-3">{{ c.codigo }}</td>
+            <td class="px-4 py-3">{{ c.get_codigo_display }}</td>
+            <td class="px-4 py-3">
+              {% if c.requiere_datos_extra %}✅ Sí{% else %}❌ No{% endif %}
+            </td>
             <td class="px-4 py-3">
               {% if c.activo %}
                 <span class="px-2 py-1 rounded-md text-green-700 bg-green-100 font-semibold">Activo</span>
@@ -42,15 +46,27 @@
                 <span class="px-2 py-1 rounded-md text-red-700 bg-red-100 font-semibold">Inactivo</span>
               {% endif %}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap flex gap-2">
-              <a href="{% url 'medios_acreditacion:ver_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--ink)] bg-white border hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">Ver</a>
-              <a href="{% url 'medios_acreditacion:editar_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Editar</a>
-              <a href="{% url 'medios_acreditacion:eliminar_categoria' c.pk %}" class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg">Eliminar</a>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="flex flex-nowrap items-center gap-2">
+                <a href="{% url 'medios_acreditacion:ver_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--ink)] bg-white border hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">Ver</a>
+                <a href="{% url 'medios_acreditacion:editar_categoria' c.pk %}" class="px-3 py-1 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Editar</a>
+
+                <form method="post" action="{% url 'medios_acreditacion:toggle_activo' c.pk %}" class="inline-block rounded-lg overflow-hidden">
+                  {% csrf_token %}
+                  {% if c.activo %}
+                    <button type="submit" class="px-3 py-1 font-semibold text-white bg-yellow-500 hover:bg-yellow-600">Desactivar</button>
+                  {% else %}
+                    <button type="submit" class="px-3 py-1 font-semibold text-white bg-green-600 hover:bg-green-700">Activar</button>
+                  {% endif %}
+                </form>
+
+                <a href="{% url 'medios_acreditacion:eliminar_categoria' c.pk %}" class="px-3 py-1 font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg">Eliminar</a>
+              </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4" class="px-4 py-6 text-center text-[var(--muted)]">
+            <td colspan="5" class="px-4 py-6 text-center text-[var(--muted)]">
               No hay medios de acreditación registrados.
             </td>
           </tr>

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Detalle del Medio de Acreditación - Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-4xl mx-auto px-6 py-10">
+  <header class="mb-6">
+    <h1 class="text-3xl font-extrabold text-[var(--ink)]">🪪 Detalle del Medio de Acreditación</h1>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <dt class="text-[var(--muted)]">Nombre</dt>
+        <dd class="font-semibold text-[var(--ink)]">{{ categoria.nombre }}</dd>
+      </div>
+      <div>
+        <dt class="text-[var(--muted)]">Código</dt>
+        <dd class="font-semibold text-[var(--ink)]">{{ categoria.get_codigo_display }}</dd>
+      </div>
+      <div>
+        <dt class="text-[var(--muted)]">Moneda</dt>
+        <dd class="font-semibold text-[var(--ink)]">{{ categoria.moneda_predeterminada }}</dd>
+      </div>
+      <div>
+        <dt class="text-[var(--muted)]">Requiere datos extra</dt>
+        <dd class="font-semibold text-[var(--ink)]">
+          {% if categoria.requiere_datos_extra %}Sí{% else %}No{% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-[var(--muted)]">Estado</dt>
+        <dd class="font-semibold">
+          {% if categoria.activo %}
+            <span class="px-2 py-1 rounded-md text-green-700 bg-green-100">Activo</span>
+          {% else %}
+            <span class="px-2 py-1 rounded-md text-red-700 bg-red-100">Inactivo</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-[var(--muted)]">Última modificación</dt>
+        <dd class="font-semibold text-[var(--ink)]">{{ categoria.ultima_modificacion|date:"d/m/Y H:i" }}</dd>
+      </div>
+    </dl>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="{% url 'medios_acreditacion:listar_categorias' %}" class="px-4 py-2 rounded-lg font-semibold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95">⬅ Volver</a>
+      <a href="{% url 'medios_acreditacion:editar_categoria' categoria.pk %}" class="px-4 py-2 rounded-lg font-semibold text-white" style="background:var(--brand)">✏️ Editar</a>
+      <a href="{% url 'medios_acreditacion:eliminar_categoria' categoria.pk %}" class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">🗑 Eliminar</a>
+    </div>
+  </section>
+</main>
+{% endblock %}
