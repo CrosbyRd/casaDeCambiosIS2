@@ -208,9 +208,13 @@ def login_redirect(request):
     return redirect("usuarios:dashboard")
 
 
+from transacciones.models import Transaccion
+
 @login_required
 def dashboard(request):
-    return render(request, "usuarios/dashboard.html")
+    # Obtener las últimas transacciones del usuario
+    transacciones = Transaccion.objects.filter(cliente=request.user).order_by('-fecha_creacion')[:5]
+    return render(request, "usuarios/dashboard.html", {'transacciones': transacciones})
 
 
 @login_required

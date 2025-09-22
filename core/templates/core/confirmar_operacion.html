@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block title %}Confirmar Operación{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  {% include "partials/page_header.html" with title="Confirmar Operación" subtitle="Revisa los detalles y confirma tu transacción" %}
+  {% include "partials/messages.html" %}
+
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <div class="px-4 py-4">
+      <h2 class="text-2xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <p class="text-sm text-gray-500">Tipo de Operación:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">
+            {% if operacion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}
+          </p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Moneda de Origen:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">{{ operacion.moneda_origen_codigo }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Monto de Origen:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">{{ operacion.monto_origen|unlocalize }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Moneda de Destino:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">{{ operacion.moneda_destino_codigo }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Monto a Recibir:</p>
+          <p class="text-2xl font-bold text-[var(--brand)]">{{ operacion.monto_recibido|unlocalize }} {{ operacion.moneda_destino_codigo }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Tasa de Cambio Aplicada:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">{{ operacion.tasa_aplicada|unlocalize }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Bonificación Aplicada:</p>
+          <p class="text-lg font-semibold text-[var(--ink)]">{{ operacion.comision_aplicada|unlocalize }} PYG</p>
+        </div>
+      </div>
+
+      <form method="post" id="form-confirmar">
+        {% csrf_token %}
+        <div class="btn-row" style="margin-top:18px;">
+          <button id="btn-confirmar" class="gx-btn" type="submit">Confirmar Operación</button>
+          <a href="{% url 'core:iniciar_operacion' %}" class="gx-btn gx-btn--ghost">Volver y Modificar</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<style>
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
+    padding:12px 16px; font-size:16px; width:100%;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+    cursor:pointer;
+  }
+  .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
+
+  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
+  .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
+  @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
+</style>
+{% endblock %}
