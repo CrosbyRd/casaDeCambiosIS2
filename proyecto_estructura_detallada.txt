@@ -1,0 +1,267 @@
+.
+├── admin_panel
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── admin_panel
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── CasaDeCambioIS2
+│   ├── asgi.py
+│   ├── docs
+│   │   ├── Chats.txt
+│   │   └── Conversaciones.md
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── views.py
+│   └── wsgi.py
+├── clientes
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── clientes
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── core
+│   ├── apps.py
+│   ├── fixtures
+│   │   └── monedas_cotizaciones.json
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── logic.py
+│   ├── management
+│   │   └── commands
+│   ├── tests.py
+│   └── views.py
+├── correo
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   ├── register.html
+│   │   └── verificacion_email.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── cotizaciones
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── cotizaciones
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
+│   ├── urls.py
+│   └── views.py
+├── docs
+│   ├── admin_panel.migrations.rst
+│   ├── admin_panel.rst
+│   ├── _build
+│   │   ├── doctrees
+│   │   ├── gtml
+│   │   └── html
+│   ├── CasaDeCambioIS2.rst
+│   ├── clientes.migrations.rst
+│   ├── clientes.rst
+│   ├── conf.py
+│   ├── core.rst
+│   ├── correo.migrations.rst
+│   ├── correo.rst
+│   ├── cotizaciones.migrations.rst
+│   ├── cotizaciones.rst
+│   ├── index.rst
+│   ├── lib.migrations.rst
+│   ├── lib.rst
+│   ├── make.bat
+│   ├── Makefile
+│   ├── manage.rst
+│   ├── modules.rst
+│   ├── monedas.migrations.rst
+│   ├── monedas.rst
+│   ├── roles.migrations.rst
+│   ├── roles.rst
+│   ├── _static
+│   ├── _templates
+│   ├── usuarios.management.commands.rst
+│   ├── usuarios.management.rst
+│   ├── usuarios.migrations.rst
+│   └── usuarios.rst
+├── lib
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templatetags
+│   │   └── form_extras.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── mi_modelo_datos.dot
+├── models.dot
+├── monedas
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── monedas
+│   ├── test
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── output.png
+├── pagos
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── pagos
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
+│   ├── urls.py
+│   └── views.py
+├── Procfile
+├── proyecto_estructura_detallada.txt
+├── q
+├── README.md
+├── repo_structure.txt
+├── requirements-dev.txt
+├── requirements.txt
+├── roles
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── management
+│   │   └── commands
+│   ├── models.py
+│   ├── serializers.py
+│   ├── templates
+│   │   └── roles
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── run_tests.py
+├── runtime.txt
+├── static
+│   ├── css
+│   │   └── styles.css
+│   └── img
+│       ├── logo.ico
+│       ├── logo-principal.png
+│       └── logo-secundario.png
+├── structurre.txt
+├── templates
+│   ├── base.html
+│   ├── partials
+│   │   ├── messages.html
+│   │   └── page_header.html
+│   ├── registration
+│   │   ├── login.html
+│   │   ├── password_reset_email.html
+│   │   ├── password_reset_subject.txt
+│   │   └── verify-code.html
+│   └── site
+│       ├── calculator.html
+│       ├── contact.html
+│       ├── faq.html
+│       ├── forgot-password-done.html
+│       ├── forgot-password.html
+│       ├── home.html
+│       ├── how-it-works.html
+│       ├── legal.html
+│       ├── rates.html
+│       ├── reenviar_codigo.html
+│       ├── register.html
+│       ├── reset-complete.html
+│       ├── reset-confirm.html
+│       ├── signup.html
+│       └── verify.html
+├── usuarios
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── management
+│   │   ├── commands
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── usuarios
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+└── venv
+    ├── bin
+    │   ├── activate
+    │   ├── activate.csh
+    │   ├── activate.fish
+    │   ├── Activate.ps1
+    │   ├── django-admin
+    │   ├── docutils
+    │   ├── dotenv
+    │   ├── ghp-import
+    │   ├── griffe
+    │   ├── gunicorn
+    │   ├── markdown_py
+    │   ├── mkdocs
+    │   ├── mkdocs-get-deps
+    │   ├── normalizer
+    │   ├── pip
+    │   ├── pip3
+    │   ├── pip3.10
+    │   ├── pybabel
+    │   ├── pygmentize
+    │   ├── python -> python3
+    │   ├── python3 -> /usr/bin/python3
+    │   ├── python3.10 -> python3
+    │   ├── rst2html
+    │   ├── rst2html4
+    │   ├── rst2html5
+    │   ├── rst2latex
+    │   ├── rst2man
+    │   ├── rst2odt
+    │   ├── rst2pseudoxml
+    │   ├── rst2s5
+    │   ├── rst2xetex
+    │   ├── rst2xml
+    │   ├── sphinx-apidoc
+    │   ├── sphinx-autogen
+    │   ├── sphinx-build
+    │   ├── sphinx-quickstart
+    │   ├── sqlformat
+    │   └── watchmedo
+    ├── include
+    ├── lib
+    │   └── python3.10
+    ├── lib64 -> lib
+    └── pyvenv.cfg
+
+58 directories, 206 files

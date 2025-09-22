@@ -1,7 +1,9 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
+from operaciones.models import CanalFinanciero
 
 
 class Cliente(models.Model):
@@ -97,3 +99,27 @@ class Cliente(models.Model):
         """Verifica si el cliente puede realizar una compra del monto especificado."""
         limite = self.obtener_limite_compra(moneda)
         return monto <= limite, f"Límite: {limite} {moneda}"
+
+
+class MedioAcreditacion(models.Model):
+    """
+    Almacena un medio de acreditación de un cliente.
+    Está directamente vinculado a un CanalFinanciero que la empresa soporta.
+    """
+    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='medios_acreditacion')
+    
+    # El cliente debe elegir entre los canales que la empresa tiene configurados.
+    canal = models.ForeignKey(CanalFinanciero, on_delete=models.PROTECT, help_text="Entidad financiera soportada por la casa de cambio.")
+    
+    identificador = models.CharField(max_length=100, help_text="Ej: Número de cuenta, CBU, Número de Teléfono, etc.")
+    alias = models.CharField(max_length=50, blank=True, null=True, help_text="Un nombre fácil de recordar para este medio.")
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.cliente.username} - {self.canal.nombre} ({self.alias or self.identificador})"
+
+    class Meta:
+        verbose_name = "Medio de Acreditación"
+        verbose_name_plural = "Medios de Acreditación"
+        # Un cliente no puede tener el mismo identificador dos veces para el mismo canal.
+        unique_together = ('cliente', 'canal', 'identificador')
