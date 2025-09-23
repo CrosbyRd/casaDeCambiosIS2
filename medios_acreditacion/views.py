@@ -1,5 +1,3 @@
-# medios_acreditacion/views.py
-
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -24,10 +22,9 @@ CampoFormSet = inlineformset_factory(
     parent_model=TipoMedioAcreditacion,
     model=CampoMedioAcreditacion,
     form=CampoMedioForm,
-    extra=1,           # cuántas filas vacías mostrar por defecto
-    can_delete=True    # permitir marcar para eliminar
+    extra=1,
+    can_delete=True
 )
-
 
 # =====================================================
 # VISTAS PARA TIPOS DE MEDIO (admin) — unificado con campos
@@ -39,9 +36,6 @@ class TipoMedioListView(ListView):
 
 
 class TipoMedioCreateView(CreateView):
-    """
-    Crea un Tipo de medio y, en el mismo formulario, sus Campos (formset).
-    """
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -49,36 +43,36 @@ class TipoMedioCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Si viene por POST, hay que bindear el formset con los datos enviados
         if self.request.method == "POST":
-            context["formset"] = CampoFormSet(self.request.POST)
+            context["formset"] = CampoFormSet(self.request.POST, self.request.FILES)
         else:
             context["formset"] = CampoFormSet()
+        context["accion"] = "crear"
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context["formset"]
 
-        # Validamos ambos: form + formset
         if not formset.is_valid():
             messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
-            # Re-render del template con los errores del formset
             return self.render_to_response(self.get_context_data(form=form))
 
-        # Guardar Tipo primero, luego los Campos con instance
         self.object = form.save()
         formset.instance = self.object
-        formset.save()
+
+        # Depuración: ver si DELETE llega
+        for f in formset.forms:
+            if f.is_valid():
+                print(f.cleaned_data)
+
+        formset.save(commit=True)
 
         messages.success(self.request, "Tipo de medio y campos creados correctamente ✅")
         return redirect(self.success_url)
 
 
 class TipoMedioUpdateView(UpdateView):
-    """
-    Edita un Tipo de medio y sus Campos (formset).
-    """
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -87,9 +81,10 @@ class TipoMedioUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.method == "POST":
-            context["formset"] = CampoFormSet(self.request.POST, instance=self.object)
+            context["formset"] = CampoFormSet(self.request.POST, self.request.FILES, instance=self.object)
         else:
             context["formset"] = CampoFormSet(instance=self.object)
+        context["accion"] = "editar"
         return context
 
     def form_valid(self, form):
@@ -100,10 +95,15 @@ class TipoMedioUpdateView(UpdateView):
             messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
             return self.render_to_response(self.get_context_data(form=form))
 
-        # Guardar ambos
         self.object = form.save()
         formset.instance = self.object
-        formset.save()
+
+        # Depuración: ver si DELETE llega
+        for f in formset.forms:
+            if f.is_valid():
+                print(f.cleaned_data)
+
+        formset.save(commit=True)
 
         messages.success(self.request, "Tipo de medio y campos actualizados correctamente ✏️")
         return redirect(self.success_url)
@@ -118,7 +118,6 @@ class TipoMedioDeleteView(DeleteView):
         messages.success(self.request, "Tipo de medio eliminado correctamente ❌")
         return super().delete(request, *args, **kwargs)
 
-
 # =====================================================
 # VISTAS PARA MEDIOS DE CLIENTES
 # =====================================================
@@ -129,9 +128,7 @@ class MedioClienteListView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        # Si es admin -> todos. Si es cliente -> solo los suyos
         if not self.request.user.is_superuser:
-            # Ajustá esto a tu relación User->Cliente
             qs = qs.filter(cliente__id_cliente=self.request.user.cliente.id_cliente)
         return qs
 
@@ -143,7 +140,6 @@ class MedioClienteCreateView(CreateView):
     success_url = reverse_lazy("medios_acreditacion:clientes_list")
 
     def form_valid(self, form):
-        # Asignar cliente automáticamente si no es admin
         if not self.request.user.is_superuser:
             form.instance.cliente = self.request.user.cliente
         messages.success(self.request, "Medio de acreditación agregado correctamente ✅")

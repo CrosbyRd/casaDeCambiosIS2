@@ -8,10 +8,10 @@
   <header class="flex items-center justify-between mb-8">
     <div>
       <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
-        🏦 {% if form.instance.pk %}Editar Tipo de Medio{% else %}Crear Nuevo Tipo de Medio{% endif %}
+        🏦 {% if accion == "editar" %}Editar Tipo de Medio{% else %}Crear Nuevo Tipo de Medio{% endif %}
       </h1>
       <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
-        {% if form.instance.pk %}
+        {% if accion == "editar" %}
           Modifica los detalles y campos de este tipo de medio de acreditación.
         {% else %}
           Completa la información para registrar un nuevo tipo y sus campos.
@@ -43,31 +43,37 @@
       </div>
     </section>
 
-
     <!-- Campos del Tipo -->
     <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
       <h2 class="text-2xl font-bold mb-4 text-[var(--ink)]">Campos del Tipo</h2>
       {{ formset.management_form }}
 
       <div class="overflow-x-auto">
-        <table id="tabla-campos" class="w-full border-collapse min-w-[720px]">
+        <table class="w-full border-collapse min-w-[720px]">
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-2 text-left">Nombre del Campo</th>
               <th class="px-4 py-2 text-left">Tipo de Dato</th>
               <th class="px-4 py-2 text-left">Obligatorio</th>
               <th class="px-4 py-2 text-left">Regex</th>
-              <th class="px-4 py-2 text-left">Eliminar</th>
+              <th class="px-4 py-2 text-left">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="campos-tbody">
             {% for subform in formset %}
               <tr class="hover:bg-[var(--brand-soft)] campo-row">
+                {{ subform.id }}
                 <td class="px-4 py-2">{{ subform.nombre }}</td>
                 <td class="px-4 py-2">{{ subform.tipo_dato }}</td>
                 <td class="px-4 py-2 text-center">{{ subform.obligatorio }}</td>
                 <td class="px-4 py-2">{{ subform.regex }}</td>
-                <td class="px-4 py-2 text-center eliminar-cell">{{ subform.DELETE }}</td>
+                <td class="px-4 py-2 text-center">
+                  {{ subform.DELETE }} <!-- checkbox real -->
+                  <button type="button"
+                          class="btn-eliminar px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700">
+                    Eliminar
+                  </button>
+                </td>
               </tr>
             {% empty %}
               <tr>
@@ -80,6 +86,24 @@
         </table>
       </div>
 
+      <!-- Plantilla fila vacía -->
+      <template id="empty-form-template">
+        <tr class="hover:bg-[var(--brand-soft)] campo-row">
+          {{ formset.empty_form.id }}
+          <td class="px-4 py-2">{{ formset.empty_form.nombre }}</td>
+          <td class="px-4 py-2">{{ formset.empty_form.tipo_dato }}</td>
+          <td class="px-4 py-2 text-center">{{ formset.empty_form.obligatorio }}</td>
+          <td class="px-4 py-2">{{ formset.empty_form.regex }}</td>
+          <td class="px-4 py-2 text-center">
+            {{ formset.empty_form.DELETE }} <!-- checkbox real -->
+            <button type="button"
+                    class="btn-eliminar px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </template>
+
       <!-- Botón agregar -->
       <div class="mt-4">
         <button type="button" id="add-campo"
@@ -90,8 +114,6 @@
       </div>
     </section>
 
-
-
     <!-- Botones -->
     <div class="flex justify-end gap-3 mt-6">
       <a href="{% url 'medios_acreditacion:tipos_list' %}"
@@ -101,14 +123,13 @@
       <button type="submit"
               class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
               style="background:var(--brand)">
-        {% if form.instance.pk %}💾 Guardar Cambios{% else %}➕ Crear{% endif %}
+        {% if accion == "editar" %}💾 Guardar Cambios{% else %}➕ Crear{% endif %}
       </button>
     </div>
   </form>
 </main>
 
 <style>
-  /* Estilo inputs */
   input, select, textarea {
     width: 100%;
     background: #fff;
@@ -125,51 +146,60 @@
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(115,60,255,.15);
   }
+  /* Ocultar los checkboxes DELETE */
+  input[type=checkbox][name$="-DELETE"] {
+    display: none;
+  }
 </style>
 
-
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const addBtn = document.getElementById("add-campo");
-    const tabla = document.getElementById("tabla-campos").querySelector("tbody");
-    const totalForms = document.getElementById("id_campos-TOTAL_FORMS"); // Django genera este id
+document.addEventListener("DOMContentLoaded", () => {
+  const prefix = "{{ formset.prefix }}";
+  const totalInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+  const initialForms = parseInt(document.getElementById(`id_${prefix}-INITIAL_FORMS`).value, 10);
+  const tbody = document.getElementById("campos-tbody");
+  const tmpl = document.getElementById("empty-form-template");
 
-    // ➕ Agregar nueva fila
-    addBtn.addEventListener("click", () => {
-      const formIdx = parseInt(totalForms.value);
-      const newRow = tabla.querySelector("tr.campo-row").cloneNode(true);
+  function wireRow(row, index) {
+    const delCheckbox = row.querySelector(`input[name^="${prefix}-"][name$="-DELETE"]`);
+    const btn = row.querySelector(".btn-eliminar");
 
-      // limpiar valores
-      newRow.querySelectorAll("input, select").forEach(el => {
-        if (el.type === "checkbox") {
-          el.checked = false;
-        } else {
-          el.value = "";
-        }
-        // actualizar nombres/index
-        if (el.name) {
-          el.name = el.name.replace(/-\d+-/, `-${formIdx}-`);
-          el.id = el.id.replace(/-\d+-/, `-${formIdx}-`);
-        }
-      });
-
-      tabla.appendChild(newRow);
-      totalForms.value = formIdx + 1;
-    });
-
-    // 🔒 Deshabilitar "Eliminar" mientras se edita
-    tabla.addEventListener("input", (e) => {
-      const row = e.target.closest("tr");
-      if (row) {
-        const delCheckbox = row.querySelector(".eliminar-cell input[type=checkbox]");
-        if (delCheckbox) {
-          delCheckbox.disabled = true;
-          setTimeout(() => { delCheckbox.disabled = false; }, 1500); // se habilita de nuevo luego de 1.5s
-        }
+    if (btn && delCheckbox) {
+      if (index < initialForms) {
+        // Campos existentes → botón visible
+        btn.style.visibility = "visible";
+      } else {
+        // Campos nuevos → ocultar hasta escribir
+        btn.style.visibility = "hidden";
+        row.addEventListener("input", () => {
+          btn.style.visibility = "visible";
+        });
       }
-    });
+
+      btn.addEventListener("click", () => {
+        delCheckbox.checked = true;  // marcar para borrar
+        row.style.display = "none";  // ocultar fila
+      });
+    }
+  }
+
+  // Wirear filas iniciales
+  [...tbody.querySelectorAll("tr.campo-row")].forEach((row, idx) => wireRow(row, idx));
+
+  // Agregar nueva fila
+  document.getElementById("add-campo").addEventListener("click", () => {
+    const idx = parseInt(totalInput.value, 10);
+    let html = tmpl.innerHTML.replace(/__prefix__/g, idx);
+
+    const tempWrap = document.createElement("tbody");
+    tempWrap.innerHTML = html.trim();
+    const newRow = tempWrap.firstElementChild;
+
+    tbody.appendChild(newRow);
+    totalInput.value = idx + 1;
+
+    wireRow(newRow, idx);
   });
+});
 </script>
-
-
 {% endblock %}
