@@ -4,10 +4,19 @@ from . import views
 app_name = "medios_acreditacion"
 
 urlpatterns = [
-    path("", views.listar_categorias, name="listar_categorias"),
-    path("agregar/", views.agregar_categoria, name="agregar_categoria"),
-    path("editar/<int:pk>/", views.editar_categoria, name="editar_categoria"),
-    path("eliminar/<int:pk>/", views.eliminar_categoria, name="eliminar_categoria"),
-    path("ver/<int:pk>/", views.ver_categoria, name="ver_categoria"),
-    path("toggle/<int:pk>/", views.toggle_activo, name="toggle_activo"),
+    # -----------------------------
+    # Tipos de medios (admin gestiona)
+    # -----------------------------
+    path("tipos/", views.TipoMedioListView.as_view(), name="tipos_list"),
+    path("tipos/crear/", views.TipoMedioCreateView.as_view(), name="tipos_create"),
+    path("tipos/<uuid:pk>/editar/", views.TipoMedioUpdateView.as_view(), name="tipos_update"),
+    path("tipos/<uuid:pk>/eliminar/", views.TipoMedioDeleteView.as_view(), name="tipos_delete"),
+
+    # -----------------------------
+    # Medios de clientes (CRUD)
+    # -----------------------------
+    path("clientes/", views.MedioClienteListView.as_view(), name="clientes_list"),
+    path("clientes/crear/", views.MedioClienteCreateView.as_view(), name="clientes_create"),
+    path("clientes/<uuid:pk>/editar/", views.MedioClienteUpdateView.as_view(), name="clientes_update"),
+    path("clientes/<uuid:pk>/eliminar/", views.MedioClienteDeleteView.as_view(), name="clientes_delete"),
 ]
