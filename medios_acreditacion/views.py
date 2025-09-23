@@ -17,17 +17,18 @@ from .forms import (
 
 # =====================================================
 # Formset inline: Campos dentro de un Tipo de Medio
+# (UN SOLO FORMSET para crear y editar; siempre con can_delete=True)
 # =====================================================
 CampoFormSet = inlineformset_factory(
     parent_model=TipoMedioAcreditacion,
     model=CampoMedioAcreditacion,
     form=CampoMedioForm,
-    extra=1,
-    can_delete=True
+    extra=0,
+    can_delete=True,
 )
 
 # =====================================================
-# VISTAS PARA TIPOS DE MEDIO (admin) — unificado con campos
+# VISTAS PARA TIPOS DE MEDIO (admin)
 # =====================================================
 class TipoMedioListView(ListView):
     model = TipoMedioAcreditacion
@@ -43,10 +44,7 @@ class TipoMedioCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.method == "POST":
-            context["formset"] = CampoFormSet(self.request.POST, self.request.FILES)
-        else:
-            context["formset"] = CampoFormSet()
+        context["formset"] = CampoFormSet(self.request.POST or None, self.request.FILES or None)
         context["accion"] = "crear"
         return context
 
@@ -58,15 +56,12 @@ class TipoMedioCreateView(CreateView):
             messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
             return self.render_to_response(self.get_context_data(form=form))
 
+        # Guardar Tipo primero
         self.object = form.save()
         formset.instance = self.object
 
-        # Depuración: ver si DELETE llega
-        for f in formset.forms:
-            if f.is_valid():
-                print(f.cleaned_data)
-
-        formset.save(commit=True)
+        # En creación, dejamos que Django borre realmente lo marcado (o ignore si eran nuevos)
+        formset.save()
 
         messages.success(self.request, "Tipo de medio y campos creados correctamente ✅")
         return redirect(self.success_url)
@@ -80,14 +75,20 @@ class TipoMedioUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.method == "POST":
-            context["formset"] = CampoFormSet(self.request.POST, self.request.FILES, instance=self.object)
-        else:
-            context["formset"] = CampoFormSet(instance=self.object)
+        context["formset"] = CampoFormSet(
+            self.request.POST or None,
+            self.request.FILES or None,
+            instance=self.object,
+        )
         context["accion"] = "editar"
         return context
 
     def form_valid(self, form):
+        """
+        Opción rápida: si en la edición marcan DELETE en una fila,
+        NO la borramos: la marcamos como inactiva (activo=False).
+        El resto se guarda normal.
+        """
         context = self.get_context_data()
         formset = context["formset"]
 
@@ -95,15 +96,28 @@ class TipoMedioUpdateView(UpdateView):
             messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
             return self.render_to_response(self.get_context_data(form=form))
 
+        # Guardar Tipo primero
         self.object = form.save()
         formset.instance = self.object
 
-        # Depuración: ver si DELETE llega
-        for f in formset.forms:
-            if f.is_valid():
-                print(f.cleaned_data)
+        # Guardar / crear cambios sin aplicar deletes todavía
+        instances = formset.save(commit=False)
 
-        formset.save(commit=True)
+        # 1) Desactivar los que vinieron marcados para borrar
+        #    (si no tienen pk, eran nuevos en la vista y no llegaron a BD: se ignoran)
+        for obj in formset.deleted_objects:
+            if obj.pk:
+                obj.activo = False
+                obj.save()
+
+        # 2) Guardar/crear los demás normalmente (nuevo activo=True por default del modelo)
+        for inst in instances:
+            # Por si acaso, aseguramos el FK
+            inst.tipo_medio = self.object
+            inst.save()
+
+        # 3) Relaciones many-to-many si existieran (no aplica acá, pero es seguro)
+        formset.save_m2m()
 
         messages.success(self.request, "Tipo de medio y campos actualizados correctamente ✏️")
         return redirect(self.success_url)

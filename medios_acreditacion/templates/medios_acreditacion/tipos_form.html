@@ -3,8 +3,21 @@
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
-  
-  <!-- Encabezado -->
+
+  {% if messages %}
+    <div class="mb-6">
+      {% for message in messages %}
+        <div class="p-3 mb-2 rounded-lg 
+                    {% if 'success' in message.tags %}bg-green-100 text-green-800 border border-green-300{% endif %}
+                    {% if 'error' in message.tags %}bg-red-100 text-red-800 border border-red-300{% endif %}
+                    {% if 'warning' in message.tags %}bg-yellow-100 text-yellow-800 border border-yellow-300{% endif %}
+                    {% if 'info' in message.tags %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   <header class="flex items-center justify-between mb-8">
     <div>
       <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
@@ -23,62 +36,81 @@
        style="color:var(--brand-dark)">⬅ Volver</a>
   </header>
 
-  <!-- Formulario principal -->
   <form method="post" novalidate>
     {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
 
     <!-- Datos del Tipo -->
     <section class="bg-white border rounded-xl shadow-sm p-6 mb-8" style="border-color:var(--line)">
       <h2 class="text-2xl font-bold mb-4 text-[var(--ink)]">Datos del Tipo</h2>
+
       <div class="mb-4">
-        <label for="id_nombre" class="block font-semibold text-[var(--ink)]">Nombre</label>
+        <label for="{{ form.nombre.id_for_label }}" class="block font-semibold text-[var(--ink)]">Nombre</label>
         {{ form.nombre }}
       </div>
+
       <div class="mb-4">
-        <label for="id_descripcion" class="block font-semibold text-[var(--ink)]">Descripción</label>
+        <label for="{{ form.descripcion.id_for_label }}" class="block font-semibold text-[var(--ink)]">Descripción</label>
         {{ form.descripcion }}
       </div>
+
       <div class="flex items-center gap-2">
-        {{ form.activo }} <label for="id_activo" class="text-[var(--ink)]">Activo</label>
+        {{ form.activo }}
+        <label for="{{ form.activo.id_for_label }}" class="text-[var(--ink)]">Activo</label>
       </div>
     </section>
 
     <!-- Campos del Tipo -->
     <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
-      <h2 class="text-2xl font-bold mb-4 text-[var(--ink)]">Campos del Tipo</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-[var(--ink)]">Campos del Tipo</h2>
+        <button type="button" id="add-campo"
+                class="px-4 py-2 rounded-lg font-semibold text-white shadow-sm"
+                style="background:var(--brand)">
+          ➕ Agregar campo
+        </button>
+      </div>
+
+      {% if accion == "editar" %}
+        <p class="text-sm text-[var(--muted)] mb-2">
+          ⚠️ Al desactivar un campo, ya no se pedirá en los medios de acreditación de clientes, pero no se borrará de la base de datos.
+        </p>
+      {% endif %}
+
       {{ formset.management_form }}
 
       <div class="overflow-x-auto">
-        <table class="w-full border-collapse min-w-[720px]">
+        <table class="w-full border-collapse min-w-[760px]">
           <thead class="bg-[var(--brand)] text-white">
             <tr>
               <th class="px-4 py-2 text-left">Nombre del Campo</th>
               <th class="px-4 py-2 text-left">Tipo de Dato</th>
-              <th class="px-4 py-2 text-left">Obligatorio</th>
+              <th class="px-4 py-2 text-center">Obligatorio</th>
               <th class="px-4 py-2 text-left">Regex</th>
-              <th class="px-4 py-2 text-left">Acciones</th>
+              <th class="px-4 py-2 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody id="campos-tbody">
             {% for subform in formset %}
-              <tr class="hover:bg-[var(--brand-soft)] campo-row">
+              <tr class="campo-row transition-colors">
                 {{ subform.id }}
                 <td class="px-4 py-2">{{ subform.nombre }}</td>
                 <td class="px-4 py-2">{{ subform.tipo_dato }}</td>
                 <td class="px-4 py-2 text-center">{{ subform.obligatorio }}</td>
                 <td class="px-4 py-2">{{ subform.regex }}</td>
                 <td class="px-4 py-2 text-center">
-                  {{ subform.DELETE }} <!-- checkbox real -->
+                  <!-- SIEMPRE usamos DELETE; en editar la vista lo transforma en activo=False -->
+                  <span class="hidden delete-input">{{ subform.DELETE }}</span>
                   <button type="button"
-                          class="btn-eliminar px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700">
-                    Eliminar
+                          class="btn-toggle-delete px-3 py-1 rounded-lg text-white
+                          {% if accion == 'editar' %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
+                    {% if accion == "editar" %}🚫 Desactivar{% else %}🗑️ Eliminar{% endif %}
                   </button>
-                </td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td colspan="5" class="text-center py-4 text-[var(--muted)]">
-                  No hay campos definidos todavía.
                 </td>
               </tr>
             {% endfor %}
@@ -86,35 +118,26 @@
         </table>
       </div>
 
-      <!-- Plantilla fila vacía -->
+      <!-- Plantilla para nuevas filas -->
       <template id="empty-form-template">
-        <tr class="hover:bg-[var(--brand-soft)] campo-row">
+        <tr class="campo-row transition-colors">
           {{ formset.empty_form.id }}
           <td class="px-4 py-2">{{ formset.empty_form.nombre }}</td>
           <td class="px-4 py-2">{{ formset.empty_form.tipo_dato }}</td>
           <td class="px-4 py-2 text-center">{{ formset.empty_form.obligatorio }}</td>
           <td class="px-4 py-2">{{ formset.empty_form.regex }}</td>
           <td class="px-4 py-2 text-center">
-            {{ formset.empty_form.DELETE }} <!-- checkbox real -->
+            <span class="hidden delete-input">{{ formset.empty_form.DELETE }}</span>
             <button type="button"
-                    class="btn-eliminar px-3 py-1 rounded-lg text-white bg-red-600 hover:bg-red-700">
-              Eliminar
+                    class="btn-toggle-delete px-3 py-1 rounded-lg text-white
+                    {% if accion == 'editar' %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
+              {% if accion == "editar" %}🚫 Desactivar{% else %}🗑️ Eliminar{% endif %}
             </button>
           </td>
         </tr>
       </template>
-
-      <!-- Botón agregar -->
-      <div class="mt-4">
-        <button type="button" id="add-campo"
-                class="px-4 py-2 rounded-lg font-semibold text-white shadow-sm"
-                style="background:var(--brand)">
-          ➕ Agregar campo
-        </button>
-      </div>
     </section>
 
-    <!-- Botones -->
     <div class="flex justify-end gap-3 mt-6">
       <a href="{% url 'medios_acreditacion:tipos_list' %}"
          class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
@@ -130,75 +153,76 @@
 </main>
 
 <style>
-  input, select, textarea {
-    width: 100%;
-    background: #fff;
-    border: 1.5px solid var(--line);
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 1rem;
-    color: var(--ink);
-    box-shadow: 0 1px 2px rgba(0,0,0,.03);
-    transition: box-shadow .2s, border-color .2s;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(115,60,255,.15);
-  }
-  /* Ocultar los checkboxes DELETE */
-  input[type=checkbox][name$="-DELETE"] {
-    display: none;
+  input, select, textarea { width:100%; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; }
+  .row-deactivated { background:#fef3c7; opacity:.9; }
+  .delete-input input[type="checkbox"] { position:absolute; left:-9999px; }
+  /* estilo para inputs deshabilitados al desactivar */
+  .campo-row input:disabled,
+  .campo-row select:disabled,
+  .campo-row textarea:disabled {
+    background-color: #f5f5f5;
+    opacity: .9;
+    cursor: not-allowed;
   }
 </style>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const prefix = "{{ formset.prefix }}";
-  const totalInput = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
-  const initialForms = parseInt(document.getElementById(`id_${prefix}-INITIAL_FORMS`).value, 10);
   const tbody = document.getElementById("campos-tbody");
   const tmpl = document.getElementById("empty-form-template");
+  const totalInput = document.getElementById("id_{{ formset.prefix }}-TOTAL_FORMS");
 
-  function wireRow(row, index) {
-    const delCheckbox = row.querySelector(`input[name^="${prefix}-"][name$="-DELETE"]`);
-    const btn = row.querySelector(".btn-eliminar");
-
-    if (btn && delCheckbox) {
-      if (index < initialForms) {
-        // Campos existentes → botón visible
-        btn.style.visibility = "visible";
-      } else {
-        // Campos nuevos → ocultar hasta escribir
-        btn.style.visibility = "hidden";
-        row.addEventListener("input", () => {
-          btn.style.visibility = "visible";
-        });
+  // Deshabilita/habilita inputs de la fila (excepto id y DELETE)
+  const setRowEnabled = (row, enabled) => {
+    const inputs = row.querySelectorAll('input, select, textarea');
+    inputs.forEach(el => {
+      const name = el.getAttribute('name') || '';
+      const isId = name.endsWith('-id');
+      const isDelete = name.endsWith('-DELETE');
+      if (!isId && !isDelete) {
+        el.disabled = !enabled;
       }
+    });
+  };
 
-      btn.addEventListener("click", () => {
-        delCheckbox.checked = true;  // marcar para borrar
-        row.style.display = "none";  // ocultar fila
-      });
-    }
-  }
+  // Toggle basado en DELETE (crear = borrar; editar = desactivar en la vista)
+  const attachToggle = (row) => {
+    const btn = row.querySelector(".btn-toggle-delete");
+    const checkbox = row.querySelector('.delete-input input[type="checkbox"]');
+    if (!btn || !checkbox) return;
 
-  // Wirear filas iniciales
-  [...tbody.querySelectorAll("tr.campo-row")].forEach((row, idx) => wireRow(row, idx));
+    const update = () => {
+      const marcado = checkbox.checked;
+      row.classList.toggle("row-deactivated", marcado);
+      setRowEnabled(row, !marcado); // 👈 clave para evitar duplicaciones
+      {% if accion == "editar" %}
+        btn.textContent = marcado ? "↩️ Reactivar" : "🚫 Desactivar";
+      {% else %}
+        btn.textContent = marcado ? "↩️ Deshacer" : "🗑️ Eliminar";
+      {% endif %}
+    };
 
-  // Agregar nueva fila
+    btn.addEventListener("click", () => {
+      checkbox.checked = !checkbox.checked;
+      update();
+    });
+
+    // estado inicial coherente (si el servidor marcó DELETE, etc.)
+    update();
+  };
+
+  // Wirear filas ya presentes
+  [...tbody.querySelectorAll("tr.campo-row")].forEach(attachToggle);
+
+  // Agregar nuevas filas desde empty_form
   document.getElementById("add-campo").addEventListener("click", () => {
     const idx = parseInt(totalInput.value, 10);
-    let html = tmpl.innerHTML.replace(/__prefix__/g, idx);
-
-    const tempWrap = document.createElement("tbody");
-    tempWrap.innerHTML = html.trim();
-    const newRow = tempWrap.firstElementChild;
-
+    const tmp = document.createElement("tbody");
+    tmp.innerHTML = tmpl.innerHTML.replace(/__prefix__/g, idx).trim();
+    const newRow = tmp.firstElementChild;
     tbody.appendChild(newRow);
     totalInput.value = idx + 1;
-
-    wireRow(newRow, idx);
+    attachToggle(newRow);
   });
 });
 </script>

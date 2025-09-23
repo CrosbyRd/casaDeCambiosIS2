@@ -19,11 +19,11 @@ class TipoMedioForm(forms.ModelForm):
 
 # -----------------------------
 # Formulario para Campos de medios (admin)
-# -----------------------------
 class CampoMedioForm(forms.ModelForm):
     class Meta:
         model = CampoMedioAcreditacion
-        fields = ["nombre", "tipo_dato", "obligatorio", "regex"]
+        fields = ["nombre", "tipo_dato", "obligatorio", "regex"]  # activo no es necesario para esta opción
+
 
 # -----------------------------
 # Formulario para Medios de clientes (dinámico)
