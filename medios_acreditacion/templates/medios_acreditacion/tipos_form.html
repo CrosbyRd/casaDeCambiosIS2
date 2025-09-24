@@ -66,7 +66,9 @@
     </section>
 
     <!-- Campos del Tipo -->
-    <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+    <section id="campos-section" class="bg-white border rounded-xl shadow-sm p-6"
+             style="border-color:var(--line)"
+             data-mode="{{ accion|default:'crear' }}">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold text-[var(--ink)]">Campos del Tipo</h2>
         <button type="button" id="add-campo"
@@ -97,45 +99,43 @@
           </thead>
           <tbody id="campos-tbody">
             {% for subform in formset %}
-              <tr class="campo-row transition-colors">
-                {{ subform.id }}
+              <tr class="campo-row transition-colors"
+                  data-activo="{{ subform.instance.activo|yesno:'1,0' }}"
+                  data-haspk="{{ subform.instance.pk|yesno:'1,0' }}">
+                {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
                 <td class="px-4 py-2">{{ subform.nombre }}</td>
                 <td class="px-4 py-2">{{ subform.tipo_dato }}</td>
                 <td class="px-4 py-2 text-center">{{ subform.obligatorio }}</td>
                 <td class="px-4 py-2">{{ subform.regex }}</td>
                 <td class="px-4 py-2 text-center">
-                  <!-- SIEMPRE usamos DELETE; en editar la vista lo transforma en activo=False -->
                   <span class="hidden delete-input">{{ subform.DELETE }}</span>
-                  <button type="button"
-                          class="btn-toggle-delete px-3 py-1 rounded-lg text-white
-                          {% if accion == 'editar' %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
-                    {% if accion == "editar" %}🚫 Desactivar{% else %}🗑️ Eliminar{% endif %}
-                  </button>
+                  <button type="button" class="btn-toggle-delete px-3 py-1 rounded-lg text-white"></button>
                 </td>
               </tr>
             {% endfor %}
           </tbody>
+
+
         </table>
       </div>
 
       <!-- Plantilla para nuevas filas -->
       <template id="empty-form-template">
-        <tr class="campo-row transition-colors">
-          {{ formset.empty_form.id }}
+        <tr class="campo-row transition-colors"
+            data-activo="1" data-haspk="0">
+          {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
           <td class="px-4 py-2">{{ formset.empty_form.nombre }}</td>
           <td class="px-4 py-2">{{ formset.empty_form.tipo_dato }}</td>
           <td class="px-4 py-2 text-center">{{ formset.empty_form.obligatorio }}</td>
           <td class="px-4 py-2">{{ formset.empty_form.regex }}</td>
           <td class="px-4 py-2 text-center">
             <span class="hidden delete-input">{{ formset.empty_form.DELETE }}</span>
-            <button type="button"
-                    class="btn-toggle-delete px-3 py-1 rounded-lg text-white
-                    {% if accion == 'editar' %}bg-yellow-600 hover:bg-yellow-700{% else %}bg-red-600 hover:bg-red-700{% endif %}">
-              {% if accion == "editar" %}🚫 Desactivar{% else %}🗑️ Eliminar{% endif %}
-            </button>
+            <button type="button" class="btn-toggle-delete px-3 py-1 rounded-lg text-white"></button>
           </td>
         </tr>
       </template>
+
+
     </section>
 
     <div class="flex justify-end gap-3 mt-6">
@@ -155,67 +155,119 @@
 <style>
   input, select, textarea { width:100%; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; }
   .row-deactivated { background:#fef3c7; opacity:.9; }
+  .row-removed { display:none; } /* para filas nuevas "quitadas" */
   .delete-input input[type="checkbox"] { position:absolute; left:-9999px; }
-  /* estilo para inputs deshabilitados al desactivar */
-  .campo-row input:disabled,
-  .campo-row select:disabled,
-  .campo-row textarea:disabled {
-    background-color: #f5f5f5;
-    opacity: .9;
-    cursor: not-allowed;
-  }
 </style>
+
+
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const tbody = document.getElementById("campos-tbody");
-  const tmpl = document.getElementById("empty-form-template");
+  const section    = document.getElementById("campos-section");
+  const mode       = (section.dataset.mode || "crear").toLowerCase();
+  const tbody      = document.getElementById("campos-tbody");
+  const tmpl       = document.getElementById("empty-form-template");
   const totalInput = document.getElementById("id_{{ formset.prefix }}-TOTAL_FORMS");
+  const prefix     = "{{ formset.prefix }}";
 
-  // Deshabilita/habilita inputs de la fila (excepto id y DELETE)
-  const setRowEnabled = (row, enabled) => {
-    const inputs = row.querySelectorAll('input, select, textarea');
-    inputs.forEach(el => {
-      const name = el.getAttribute('name') || '';
-      const isId = name.endsWith('-id');
-      const isDelete = name.endsWith('-DELETE');
-      if (!isId && !isDelete) {
-        el.disabled = !enabled;
-      }
-    });
+  // ---------- utilidades ----------
+  const qsa = (root, sel) => Array.from(root.querySelectorAll(sel));
+
+  const getPkInput = (row) =>
+    row.querySelector('input[type="hidden"][name$="-id"], input[type="hidden"][name$="-id_campo"]');
+
+  const hasPk = (row) => {
+    const pk = getPkInput(row);
+    return !!(pk && pk.value && pk.value.trim() !== "");
   };
 
-  // Toggle basado en DELETE (crear = borrar; editar = desactivar en la vista)
-  const attachToggle = (row) => {
-    const btn = row.querySelector(".btn-toggle-delete");
-    const checkbox = row.querySelector('.delete-input input[type="checkbox"]');
-    if (!btn || !checkbox) return;
+  const setBtnStyle = (btn, variant) => {
+    btn.className = "btn-toggle-delete px-3 py-1 rounded-lg text-white " +
+      (variant === "green" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700");
+  };
 
-    const update = () => {
-      const marcado = checkbox.checked;
-      row.classList.toggle("row-deactivated", marcado);
-      setRowEnabled(row, !marcado); // 👈 clave para evitar duplicaciones
-      {% if accion == "editar" %}
-        btn.textContent = marcado ? "↩️ Reactivar" : "🚫 Desactivar";
-      {% else %}
-        btn.textContent = marcado ? "↩️ Deshacer" : "🗑️ Eliminar";
-      {% endif %}
+  // Reemplaza ...-<n>- por ...-<newIndex>- en name/id/for
+  const replaceIndex = (str, newIndex) =>
+    str.replace(new RegExp(`${prefix}-(\\d+)-`,'g'), `${prefix}-${newIndex}-`);
+
+  // Reindexa TODAS las filas visibles tras agregar/quitar
+  const reindexRows = () => {
+    const rows = qsa(tbody, "tr.campo-row:not(.row-removed)");
+    rows.forEach((row, i) => {
+      // actualizar dataset (por si esta fila es nueva)
+      if (!hasPk(row)) row.dataset.haspk = "0";
+
+      // inputs/selects/labels
+      qsa(row, "input, select, textarea, label").forEach(el => {
+        if (el.name) el.name = replaceIndex(el.name, i);
+        if (el.id)   el.id   = replaceIndex(el.id,   i);
+        if (el.htmlFor) el.htmlFor = replaceIndex(el.htmlFor, i);
+      });
+    });
+    totalInput.value = rows.length; // MUY IMPORTANTE
+  };
+
+  const attachToggle = (row) => {
+    // asegurar dataset.haspk esté correcto
+    row.dataset.haspk = row.dataset.haspk || (hasPk(row) ? "1" : "0");
+
+    const btn = row.querySelector(".btn-toggle-delete");
+    const del = row.querySelector('.delete-input input[type="checkbox"]');
+    if (!btn || !del) return;
+
+    // Inicialización: si estamos en editar y la fila tiene PK, reflejar estado actual
+    if (mode === "editar" && (row.dataset.haspk === "1" || hasPk(row))) {
+      const activo = row.dataset.activo === "1";
+      del.checked = !activo; // inactivo => DELETE marcado
+    }
+
+    const refreshUI = () => {
+      if (mode === "editar") {
+        // Activo <=> no está marcado DELETE (para filas con PK)
+        const activo = !(del.checked && (row.dataset.haspk === "1" || hasPk(row)));
+        row.classList.toggle("row-deactivated", !activo);
+        if (activo) { btn.textContent = "Desactivar"; setBtnStyle(btn, "red"); }
+        else        { btn.textContent = "Reactivar";  setBtnStyle(btn, "green"); }
+      } else {
+        btn.textContent = "Eliminar";
+        setBtnStyle(btn, "red");
+      }
     };
 
-    btn.addEventListener("click", () => {
-      checkbox.checked = !checkbox.checked;
-      update();
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      if (mode === "editar") {
+        if (row.dataset.haspk === "1" || hasPk(row)) {
+          // Fila existente: alterna desactivación
+          del.checked = !del.checked;
+          refreshUI();
+        } else {
+          // Fila nueva en editar: quitarla y reindexar
+          row.remove();
+          reindexRows();
+        }
+      } else {
+        // Crear: si es nueva, eliminarla; si por algún motivo trae PK, marcar DELETE
+        if (row.dataset.haspk === "0" && !hasPk(row)) {
+          row.remove();
+          reindexRows();
+        } else {
+          del.checked = !del.checked;
+          refreshUI();
+        }
+      }
     });
 
-    // estado inicial coherente (si el servidor marcó DELETE, etc.)
-    update();
+    refreshUI();
   };
 
-  // Wirear filas ya presentes
-  [...tbody.querySelectorAll("tr.campo-row")].forEach(attachToggle);
+  // Wirear filas actuales
+  qsa(tbody, "tr.campo-row").forEach(attachToggle);
 
-  // Agregar nuevas filas desde empty_form
-  document.getElementById("add-campo").addEventListener("click", () => {
+  // Agregar fila nueva
+  document.getElementById("add-campo").addEventListener("click", (e) => {
+    e.preventDefault();
     const idx = parseInt(totalInput.value, 10);
     const tmp = document.createElement("tbody");
     tmp.innerHTML = tmpl.innerHTML.replace(/__prefix__/g, idx).trim();
@@ -223,7 +275,11 @@ document.addEventListener("DOMContentLoaded", () => {
     tbody.appendChild(newRow);
     totalInput.value = idx + 1;
     attachToggle(newRow);
+    reindexRows(); // mantenemos índices contiguos
   });
 });
 </script>
+
+
+
 {% endblock %}
