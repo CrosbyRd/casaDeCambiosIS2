@@ -179,3 +179,104 @@ class SimulacionLogicTest(TestCase):
         self.assertIn('La simulación debe ser entre PYG', resultado['error'])
         
 # To run tests: python manage.py test core
+
+
+class SimulacionLogicConcrectTest(TestCase):
+    """
+    Conjunto de pruebas para la función `calcular_simulacion` utilizando
+    datos reales en la base de datos de prueba para verificar los cálculos
+    específicos de la lógica de negocio.
+    """
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Configura los datos de prueba necesarios para los escenarios de negocio.
+        """
+        # Crear Monedas
+        cls.pyg = Moneda.objects.create(codigo='PYG', nombre='Guaraní', decimales=0)
+        cls.usd = Moneda.objects.create(codigo='USD', nombre='Dólar', decimales=2)
+
+        # Crear Usuarios
+        cls.user_vip = User.objects.create_user(
+            email='vip@example.com',
+            password='password',
+            first_name='Vip',
+            last_name='User'
+        )
+        cls.user_corp = User.objects.create_user(
+            email='corp@example.com',
+            password='password',
+            first_name='Corp',
+            last_name='User'
+        )
+
+        # Crear Clientes y asociarlos a los usuarios
+        cls.cliente_vip = Cliente.objects.create(
+            nombre='Cliente VIP de Prueba',
+            categoria=Cliente.Categoria.VIP
+        )
+        cls.user_vip.clientes.add(cls.cliente_vip)
+
+        cls.cliente_corp = Cliente.objects.create(
+            nombre='Cliente Corporativo de Prueba',
+            categoria=Cliente.Categoria.CORPORATIVO
+        )
+        cls.user_corp.clientes.add(cls.cliente_corp)
+
+        # Crear Cotización con los valores del ejemplo
+        # PB_DOLAR = 7.300, COMISION_VTA = 100, COMISION_COM = 50
+        Cotizacion.objects.create(
+            moneda_base=cls.pyg,
+            moneda_destino=cls.usd,
+            valor_venta=Decimal('7300'),
+            comision_venta=Decimal('100'),
+            valor_compra=Decimal('7300'),
+            comision_compra=Decimal('50')
+        )
+
+    def test_venta_a_cliente_vip(self):
+        """
+        Verifica el cálculo de venta de 1000 USD a un cliente VIP.
+        Fórmula: DOLARES = GUARANIES / (PB_DOLAR + COMISION_VTA - (COMISION_VTA * 10%))
+        TC_VTA_VIP = 7300 + 100 - (100 * 0.10) = 7390
+        GUARANIES para 1000 USD = 1000 * 7390 = 7,390,000
+        """
+        monto_pyg = Decimal('7390000')
+        resultado = calcular_simulacion(
+            monto_origen=monto_pyg,
+            moneda_origen='PYG',
+            moneda_destino='USD',
+            user=self.user_vip
+        )
+
+        self.assertIsNone(resultado['error'])
+        # La bonificación es el 10% de la comisión de 100 = 10
+        self.assertEqual(resultado['bonificacion_aplicada'], Decimal('10.0'))
+        # La tasa aplicada es 7300 + 100 - 10 = 7390
+        self.assertEqual(resultado['tasa_aplicada'], Decimal('7390.0'))
+        # El monto recibido debe ser 7,390,000 / 7390 = 1000
+        self.assertEqual(resultado['monto_recibido'], Decimal('1000.00'))
+
+    def test_compra_a_cliente_corporativo(self):
+        """
+        Verifica el cálculo de compra de 1000 USD a un cliente Corporativo.
+        Fórmula: GUARANIES = DOLARES * (PB_DOLAR - (COMISION_COM - (COMISION_COM * 5%)))
+        COMISION_FINAL = 50 - (50 * 0.05) = 50 - 2.5 = 47.5
+        TC_COMP_CORP = 7300 - 47.5 = 7252.5
+        GUARANIES por 1000 USD = 1000 * 7252.5 = 7,252,500
+        """
+        monto_usd = Decimal('1000')
+        resultado = calcular_simulacion(
+            monto_origen=monto_usd,
+            moneda_origen='USD',
+            moneda_destino='PYG',
+            user=self.user_corp
+        )
+
+        self.assertIsNone(resultado['error'])
+        # La bonificación (descuento en comisión) es 5% de 50 = 2.5
+        self.assertEqual(resultado['bonificacion_aplicada'], Decimal('2.5'))
+        # La tasa aplicada es 7300 - (50 - 2.5) = 7252.5
+        self.assertEqual(resultado['tasa_aplicada'], Decimal('7252.5'))
+        # El monto recibido debe ser 1000 * 7252.5 = 7,252,500
+        self.assertEqual(resultado['monto_recibido'], Decimal('7252500'))

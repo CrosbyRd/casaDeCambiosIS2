@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     'pagos',
     "medios_acreditacion",
+    'operaciones',
+    'transacciones',
 ]
 
 # --- Middleware ---
@@ -120,4 +122,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "usuarios:login_redirect"
 LOGOUT_REDIRECT_URL = "/"
-
