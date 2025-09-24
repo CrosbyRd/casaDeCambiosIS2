@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="max-w-xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Seleccionar cliente</h1>
+
+  {% if clientes %}
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <label class="block">
+      <span class="font-semibold">Cliente</span>
+      <select name="cliente_id" class="form-select w-full">
+        {% for c in clientes %}
+          <option value="{{ c.pk }}">{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="btn">Usar este cliente</button>
+  </form>
+  {% else %}
+    <p>No tenés clientes asociados todavía.</p>
+  {% endif %}
+</main>
+{% endblock %}

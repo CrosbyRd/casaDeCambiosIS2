@@ -23,4 +23,5 @@ urlpatterns = [
 
     # Rutas del módulo admin_panel (si existe)
     path("admin_panel/", include("admin_panel.urls")),
+    path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
 ]

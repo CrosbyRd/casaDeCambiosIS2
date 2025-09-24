@@ -1,8 +1,8 @@
 from django import forms
-from django.core.exceptions import ValidationError
 from .models import TipoMedioAcreditacion, CampoMedioAcreditacion, MedioAcreditacionCliente
-
-
+from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
+from django.core.validators import RegexValidator
 # -----------------------------
 # Formulario para Tipos de medios (admin)
 # -----------------------------
@@ -28,74 +28,89 @@ class CampoMedioForm(forms.ModelForm):
 # -----------------------------
 # Formulario para Medios de clientes (dinámico)
 # -----------------------------
-class MedioAcreditacionClienteForm(forms.ModelForm):
-    """
-    Este form construye dinámicamente los campos según el tipo de medio elegido.
-    Los campos definidos por el admin en CampoMedioAcreditacion se transforman en inputs reales.
-    """
+# medios_acreditacion/forms.py
 
+class MedioAcreditacionClienteForm(forms.ModelForm):
     class Meta:
         model = MedioAcreditacionCliente
-        fields = ["tipo", "activo"]  # "datos" se maneja aparte
-        widgets = {
-            "tipo": forms.Select(attrs={"class": "form-select"}),
-            "activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
-        }
+        fields = ("tipo", "alias", "activo")  # más los dinámicos…
 
     def __init__(self, *args, **kwargs):
+        # No necesitamos 'user' aquí
+        kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        # Si ya tenemos un tipo seleccionado, agregamos dinámicamente los campos
-        tipo = self.instance.tipo if self.instance.pk else self.initial.get("tipo")
+        # 1) Intentar tomar el tipo del POST o del initial (?tipo=…)
+        tipo_obj = None
+        raw_tipo = self.data.get("tipo") or (
+            self.initial.get("tipo") if isinstance(self.initial, dict) else None
+        )
 
-        if tipo:
-            campos = tipo.campos.all()
-            for campo in campos:
-                field_name = f"campo_{campo.nombre}"
+        if isinstance(raw_tipo, TipoMedioAcreditacion):
+            tipo_obj = raw_tipo
+        elif raw_tipo:
+            try:
+                tipo_obj = TipoMedioAcreditacion.objects.get(pk=raw_tipo)
+            except TipoMedioAcreditacion.DoesNotExist:
+                tipo_obj = None
 
-                if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO:
-                    field = forms.IntegerField(required=campo.obligatorio, label=campo.nombre)
+        # 2) Si no vino de POST/initial y estamos EDITANDO, usar tipo_id
+        if not tipo_obj and getattr(self.instance, "pk", None):
+            # Esta línea es SEGURA: no usa el descriptor, solo el FK crudo
+            if getattr(self.instance, "tipo_id", None):
+                # Ahora sí es seguro resolver el objeto
+                tipo_obj = self.instance.tipo
 
-                elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
-                    field = forms.CharField(
-                        required=campo.obligatorio,
-                        label=campo.nombre,
-                        min_length=9,
-                        max_length=15
-                    )
+        # 3) En crear, si ya resolví tipo, lo coloco en la instancia
+        if tipo_obj and not getattr(self.instance, "pk", None):
+            self.instance.tipo = tipo_obj
 
-                elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL:
-                    field = forms.EmailField(required=campo.obligatorio, label=campo.nombre)
+        # 4) Si todavía no hay tipo, no creo campos dinámicos (se crearán
+        #    cuando el usuario seleccione uno y se envíe el POST)
+        if not tipo_obj:
+            return
 
-                elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
-                    field = forms.RegexField(
-                        regex=r"^\d{6,8}-\d{1}$",
-                        required=campo.obligatorio,
-                        label=campo.nombre,
-                        error_messages={"invalid": "El RUC debe tener el formato ########-#"}
-                    )
+        # === A partir de aquí, tu lógica actual de campos dinámicos ===
+        # Por ejemplo:
+        for campo in tipo_obj.campos.filter(activo=True):
+            field_name = f"campo_{campo.nombre}"
 
-                else:  # TEXTO
-                    field = forms.CharField(required=campo.obligatorio, label=campo.nombre)
+            if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO:
+                field = forms.IntegerField(required=campo.obligatorio, label=campo.nombre)
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
+                field = forms.CharField(
+                    required=campo.obligatorio, label=campo.nombre, min_length=9, max_length=15
+                )
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL:
+                field = forms.EmailField(required=campo.obligatorio, label=campo.nombre)
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
+                field = forms.RegexField(
+                    regex=r"^\d{6,8}-\d{1}$",
+                    required=campo.obligatorio,
+                    label=campo.nombre,
+                    error_messages={"invalid": "El RUC debe tener el formato ########-#"},
+                )
+            else:
+                field = forms.CharField(required=campo.obligatorio, label=campo.nombre)
 
-                # Aplicar regex custom si está definido
-                if campo.regex:
-                    field.validators.append(forms.RegexField(regex=campo.regex).validators[0])
+            if campo.regex:
+                field.validators.append(
+                    forms.RegexField(regex=campo.regex).validators[0]
+                )
 
-                self.fields[field_name] = field
+            self.fields[field_name] = field
 
     def clean(self):
-        """Guarda los datos dinámicos en el campo JSON 'datos'"""
-        cleaned_data = super().clean()
-        tipo = cleaned_data.get("tipo")
+        cleaned = super().clean()
+        tipo = cleaned.get("tipo") or getattr(self.instance, "tipo", None)
+        if not tipo:
+            # sin tipo no empaquetamos datos dinámicos
+            return cleaned
 
-        if tipo:
-            datos = {}
-            for campo in tipo.campos.all():
-                field_name = f"campo_{campo.nombre}"
-                valor = cleaned_data.get(field_name)
-                if valor is not None:
-                    datos[campo.nombre] = valor
-            self.instance.datos = datos
-
-        return cleaned_data
+        datos = {}
+        for campo in tipo.campos.filter(activo=True):
+            valor = cleaned.get(f"campo_{campo.nombre}", None)
+            if valor is not None:
+                datos[campo.nombre] = valor
+        self.instance.datos = datos
+        return cleaned

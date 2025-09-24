@@ -2,6 +2,9 @@ import uuid
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
+import re
+from django.core.exceptions import ValidationError
 
 
 class TipoMedioAcreditacion(models.Model):
@@ -72,17 +75,32 @@ class MedioAcreditacionCliente(models.Model):
         on_delete=models.PROTECT,
         related_name="medios_cliente"
     )
+
+    # 👇 nuevo campo
+    alias = models.CharField(max_length=100, blank=True, default="")
+
     datos = models.JSONField(default=dict, verbose_name=_("Datos del medio"))
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        # ← evita disparar el descriptor de FK cuando todavía no hay tipo/cliente
+        t = self.tipo.nombre if getattr(self, "tipo_id", None) else "—"
+        c = self.cliente.nombre if getattr(self, "cliente_id", None) else "—"
+        return f"{t} - {c}"
+
+
+
     def clean(self):
-        """Valida que los datos cargados coincidan con lo definido por el admin"""
+        """Valida que los datos cargados coincidan con lo definido por el admin."""
+        if not self.tipo_id:
+            return
+    
+        
         errores = {}
-        # ✅ ahora solo validamos campos activos
         for campo in self.tipo.campos.filter(activo=True):
-            valor = self.datos.get(campo.nombre)
+            valor = (self.datos or {}).get(campo.nombre)
 
             if campo.obligatorio and not valor:
                 errores[campo.nombre] = _("Este campo es obligatorio.")
@@ -112,5 +130,7 @@ class MedioAcreditacionCliente(models.Model):
         if errores:
             raise ValidationError(errores)
 
-    def __str__(self):
-        return f"{self.tipo.nombre} - {self.cliente.nombre}"
+        
+
+
+

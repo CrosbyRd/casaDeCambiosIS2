@@ -5,6 +5,8 @@ from django.forms import inlineformset_factory
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from usuarios.mixins import RequireClienteMixin
 
 from .models import (
     TipoMedioAcreditacion,
@@ -164,48 +166,87 @@ class TipoMedioDeleteView(AccessMediosAcreditacionMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 # =====================================================
-# VISTAS PARA MEDIOS DE CLIENTES
+# VISTAS PARA MEDIOS DE CLIENTES (lado cliente)
 # =====================================================
-class MedioClienteListView(ListView):
+class MedioClienteListView(RequireClienteMixin, ListView):
     model = MedioAcreditacionCliente
     template_name = "medios_acreditacion/clientes_list.html"
     context_object_name = "medios"
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        if not self.request.user.is_superuser:
-            qs = qs.filter(cliente__id_cliente=self.request.user.cliente.id_cliente)
-        return qs
+        return (super().get_queryset()
+                .filter(cliente=self.cliente)
+                .select_related("tipo"))
 
-
-class MedioClienteCreateView(CreateView):
+class MedioClienteCreateView(RequireClienteMixin, CreateView):
     model = MedioAcreditacionCliente
     form_class = MedioAcreditacionClienteForm
     template_name = "medios_acreditacion/clientes_form.html"
     success_url = reverse_lazy("medios_acreditacion:clientes_list")
 
+
+
+    def get_initial(self):
+        initial = super().get_initial()
+        tipo = self.request.GET.get("tipo")
+        if tipo:
+            initial["tipo"] = tipo
+        return initial
+
     def form_valid(self, form):
-        if not self.request.user.is_superuser:
-            form.instance.cliente = self.request.user.cliente
-        messages.success(self.request, "Medio de acreditación agregado correctamente ✅")
+        form.instance.cliente = self.request.user.cliente_en_uso
         return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user   # ahora el form lo acepta
+        # Para que al cambiar el select muestre campos dinámicos
+        tipo_id = self.request.GET.get("tipo")
+        if tipo_id:
+            try:
+                kwargs.setdefault("initial", {})
+                kwargs["initial"]["tipo"] = TipoMedioAcreditacion.objects.get(pk=tipo_id)
+            except TipoMedioAcreditacion.DoesNotExist:
+                pass
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["accion"] = "crear"
+        return ctx
 
 
-class MedioClienteUpdateView(UpdateView):
+class MedioClienteUpdateView(RequireClienteMixin, UpdateView):
     model = MedioAcreditacionCliente
     form_class = MedioAcreditacionClienteForm
     template_name = "medios_acreditacion/clientes_form.html"
     success_url = reverse_lazy("medios_acreditacion:clientes_list")
 
+    def get_queryset(self):
+        return super().get_queryset().filter(cliente=self.cliente)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["accion"] = "editar"
+        return ctx
+
     def form_valid(self, form):
+        form.instance.cliente = self.cliente
         messages.success(self.request, "Medio de acreditación actualizado correctamente ✏️")
         return super().form_valid(form)
 
-
-class MedioClienteDeleteView(DeleteView):
+class MedioClienteDeleteView(RequireClienteMixin, DeleteView):
     model = MedioAcreditacionCliente
     template_name = "medios_acreditacion/clientes_confirm_delete.html"
     success_url = reverse_lazy("medios_acreditacion:clientes_list")
+
+    def get_queryset(self):
+        return super().get_queryset().filter(cliente=self.cliente)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Medio de acreditación eliminado correctamente ❌")
