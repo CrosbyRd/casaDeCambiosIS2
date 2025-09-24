@@ -10,6 +10,13 @@ class TipoMedioAcreditacion(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     activo = models.BooleanField(default=True)
 
+
+    class Meta:
+        permissions = [
+            # 👉 Permiso “de acceso” para la sección admin de Tipos/ Campos
+            ("access_medios_acreditacion", "Puede gestionar métodos de pago (Tipos de Medio y Campos)"),
+        ]
+
     def __str__(self):
         return self.nombre
 

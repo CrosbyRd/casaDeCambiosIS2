@@ -75,6 +75,7 @@ class Command(BaseCommand):
                 "delete_roles",             # NUEVO: eliminar Roles
                 "access_user_client_management",  # NUEVO:  acceso a asociacion cliente a usuario
                 "access_clientes_panel",   #accede al menu de administracion de clientes
+                "access_medios_acreditacion"   #accede al modulo de gestion de medios de acreditacion del cliente
             ]
 
         permisos = []

@@ -3,6 +3,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from .models import (
     TipoMedioAcreditacion,
@@ -14,6 +16,19 @@ from .forms import (
     CampoMedioForm,
     MedioAcreditacionClienteForm,
 )
+
+
+
+# ===== Mixin de acceso solo admin de esta sección =====
+class AccessMediosAcreditacionMixin:
+    required_permission = "medios_acreditacion.access_medios_acreditacion"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm(self.required_permission):
+            # mismo comportamiento que tus otras apps: fuera -> home
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
 
 # =====================================================
 # Formset inline: Campos dentro de un Tipo de Medio
@@ -30,13 +45,13 @@ CampoFormSet = inlineformset_factory(
 # =====================================================
 # VISTAS PARA TIPOS DE MEDIO (admin)
 # =====================================================
-class TipoMedioListView(ListView):
+class TipoMedioListView(AccessMediosAcreditacionMixin, ListView):
     model = TipoMedioAcreditacion
     template_name = "medios_acreditacion/tipos_list.html"
     context_object_name = "tipos"
 
 
-class TipoMedioCreateView(CreateView):
+class TipoMedioCreateView(AccessMediosAcreditacionMixin, CreateView):
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -80,7 +95,7 @@ class TipoMedioCreateView(CreateView):
     
     
 
-class TipoMedioUpdateView(UpdateView):
+class TipoMedioUpdateView(AccessMediosAcreditacionMixin, UpdateView):
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -139,7 +154,7 @@ class TipoMedioUpdateView(UpdateView):
         return redirect(self.success_url)
 
 
-class TipoMedioDeleteView(DeleteView):
+class TipoMedioDeleteView(AccessMediosAcreditacionMixin, DeleteView):
     model = TipoMedioAcreditacion
     template_name = "medios_acreditacion/tipos_confirm_delete.html"
     success_url = reverse_lazy("medios_acreditacion:tipos_list")
