@@ -7,16 +7,15 @@ El *namespace* del app es ``admin_panel`` para poder referenciar
 URLs como ``reverse('admin_panel:dashboard')``.
 
 """
-
-from django.urls import path
+# admin_panel/urls.py
+from django.urls import path, include
 from . import views
 
-#: Espacio de nombres del app para *URL reversing*.
 app_name = "admin_panel"
 
-#: Lista de rutas públicas del módulo.
-#: 
-#: - ``""`` → :func:`admin_panel.views.dashboard`
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
+    # monta TED bajo /admin_panel/ted/ con namespace "tedavs"
+    path("ted/", include(("ted.urls", "ted"), namespace="ted")),
 ]
+

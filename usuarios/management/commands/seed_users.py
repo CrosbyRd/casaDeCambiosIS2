@@ -12,90 +12,92 @@ class Command(BaseCommand):
         User = get_user_model()
         self.stdout.write(self.style.SUCCESS("Iniciando creación de usuario Administrador..."))
 
-        # --- Crear usuario admin de la app ---
+        # --- Crear/actualizar usuario admin de la app (sin superusuario) ---
         email = "globalexchangea2@gmail.com"
         password = "password123"
+
         user, created = User.objects.get_or_create(
             email=email,
             defaults={
                 "first_name": "Admin",
                 "last_name": "Principal",
-                "is_staff": True,     # puede loguearse como staff
-                "is_superuser": False, # no es superusuario global
+                "is_staff": True,
+                "is_superuser": False,
                 "is_active": True,
                 "is_verified": True,
             },
         )
-
-        if created:
-            user.set_password(password)
+        # asegurar/actualizar campos base
+        changed = False
+        for k, v in {
+            "first_name": "Admin",
+            "last_name": "Principal",
+            "is_staff": True,
+            "is_superuser": False,
+            "is_active": True,
+            "is_verified": True,
+        }.items():
+            if getattr(user, k) != v:
+                setattr(user, k, v)
+                changed = True
+        if changed:
             user.save()
-            self.stdout.write(self.style.SUCCESS(f"Usuario creado: {email}"))
-        else:
-            self.stdout.write(self.style.WARNING(f"Usuario ya existía: {email}"))
 
-        # --- Usar update_or_create para simplificar y asegurar la actualización
-        defaults = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "is_staff": user.is_staff,
-            "is_superuser": user.is_superuser,
-            "is_active": user.is_active,
-            "is_verified": user.is_verified,
-        }
-
-        user, created = User.objects.update_or_create(
-            email=email,
-            defaults=defaults
-        )
-
-        # Siempre establecer/actualizar la contraseña
+        # (re)establecer contraseña
         if password:
             user.set_password(password)
             user.save()
 
-        if created:
-            self.stdout.write(self.style.SUCCESS(f"Creado y contraseña establecida para: {email}"))
-        else:
-            self.stdout.write(self.style.WARNING(f"Actualizado y contraseña re-establecida para: {email}"))
+        self.stdout.write(self.style.SUCCESS(f"Usuario preparado: {email}"))
 
-        # --- Crear Rol Administrador ---
+        # --- Crear/actualizar Rol Administrador ---
         rol_admin, _ = Role.objects.get_or_create(
             name="Administrador",
             defaults={"description": "Rol de Administrador"}
         )
 
-        # --- Buscar permisos personalizados ---
+        # --- Permisos requeridos por el panel + TED ---
+        # Usamos (app_label, codename) para evitar colisiones entre apps.
+        permisos_requeridos = [
+            ("admin_panel", "access_admin_dashboard"),
+            ("cotizaciones", "access_cotizaciones"),
+            ("monedas", "access_monedas_section"),
+            ("roles", "access_roles_panel"),
+            ("roles", "delete_roles"),
+            ("usuarios", "access_user_client_management"),
+            ("clientes", "access_clientes_panel"),
+            # NUEVOS
+            ("ted", "puede_operar_terminal"),
+            ("monedas", "access_ted_inventory"),
+        ]
 
-        permisos_codenames = [
-                "access_admin_dashboard",   # Panel Admin
-                "access_cotizaciones",      # Cotizaciones
-                "access_monedas_section",   # Monedas
-                "access_roles_panel",       # NUEVO: acceso a Roles
-                "delete_roles",             # NUEVO: eliminar Roles
-                "access_user_client_management",  # NUEVO:  acceso a asociacion cliente a usuario
-                "access_clientes_panel",   #accede al menu de administracion de clientes
-            ]
-
-        permisos = []
-        for codename in permisos_codenames:
+        permisos_ok = []
+        faltantes = []
+        for app_label, codename in permisos_requeridos:
             try:
-                perm = Permission.objects.get(codename=codename)
-                permisos.append(perm)
+                perm = Permission.objects.get(
+                    codename=codename,
+                    content_type__app_label=app_label
+                )
+                permisos_ok.append(perm)
             except Permission.DoesNotExist:
-                self.stdout.write(self.style.ERROR(
-                    f"El permiso '{codename}' no existe. "
-                    f"Ejecuta 'makemigrations' y 'migrate' en la app correspondiente primero."
-                ))
+                faltantes.append(f"{app_label}.{codename}")
 
-        # Asignar permisos al rol
-        if permisos:
-            rol_admin.permissions.add(*permisos)
+        if faltantes:
+            self.stdout.write(self.style.ERROR(
+                "Faltan permisos (probablemente migraciones no aplicadas):\n  - " +
+                "\n  - ".join(faltantes) +
+                "\nEjecuta: python manage.py makemigrations monedas ted && python manage.py migrate"
+            ))
+
+        if permisos_ok:
+            rol_admin.permissions.add(*permisos_ok)
             rol_admin.save()
 
-        # Asignar rol al usuario
+        # --- Asignar rol al usuario (idempotente) ---
         user.roles.add(rol_admin)
 
         self.stdout.write(self.style.SUCCESS(
-            f"Usuario {email} asignado al rol Administrador con permisos {[p.codename for p in permisos]}."
+            f"Usuario {email} asignado al rol Administrador con permisos: "
+            + ", ".join([f"{p.content_type.app_label}.{p.codename}" for p in permisos_ok])
         ))

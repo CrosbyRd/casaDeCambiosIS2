@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}TED Cheques (Mock) | Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-[800px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-4">Depósito de Cheques (Mock)</h1>
+  <div class="box">
+    <div class="grid sm:grid-cols-2 gap-4 form form--compact">
+      <p>
+        <label>Moneda</label>
+        <select class="w-full h-11 px-4 border border-neutral-300 rounded-md">
+          {% for m in monedas %}<option>{{ m.codigo }} — {{ m.nombre }}</option>{% endfor %}
+        </select>
+      </p>
+      <p>
+        <label>Importe</label>
+        <input type="number" min="0" step="1" placeholder="Monto del cheque">
+      </p>
+      <p>
+        <label>N° de cheque</label>
+        <input type="text" placeholder="00000000">
+      </p>
+      <p>
+        <label>Banco</label>
+        <input type="text" placeholder="Nombre del banco">
+      </p>
+    </div>
+    <div class="actions">
+      <button class="btn" type="button" onclick="alert('Mock: Cheque depositado');">Depositar</button>
+      <a href="{% url 'admin_panel:ted:panel' %}" class="btn-secondary">Volver</a>
+    </div>
+  </div>
+</main>
+{% endblock %}

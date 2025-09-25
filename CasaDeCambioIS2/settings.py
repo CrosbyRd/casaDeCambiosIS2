@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'pagos',
     'operaciones',
     'transacciones',
+    'ted',
 ]
 
 # --- Middleware ---

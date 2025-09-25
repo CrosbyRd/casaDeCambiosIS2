@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}TED | Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Terminal TED</h1>
+
+  <div class="grid sm:grid-cols-2 gap-6">
+    <section class="box">
+      <h2 class="h2 mb-2">Operar compra/venta</h2>
+      <p class="muted mb-4">PYG ↔ Moneda extranjera (billetes).</p>
+      <form action="{% url 'admin_panel:ted:operar' %}" method="get" class="flex gap-3">
+        <select name="moneda" class="w-full h-11 px-4 border border-neutral-300 rounded-md">
+          <option value="">Selecciona moneda…</option>
+          {% for m in monedas %}
+            <option value="{{ m.id }}">{{ m.codigo }} — {{ m.nombre }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn" type="submit">Continuar</button>
+      </form>
+    </section>
+
+    <section class="box">
+      <h2 class="h2 mb-2">Depósito de cheques (mock)</h2>
+      <p class="muted mb-4">Solo interfaz de demostración.</p>
+      <a href="{% url 'admin_panel:ted:cheque' %}" class="btn">Abrir</a>
+    </section>
+  </div>
+</main>
+{% endblock %}

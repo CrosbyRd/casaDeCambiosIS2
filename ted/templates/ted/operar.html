@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}TED Operar | Global Exchange{% endblock %}
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-3">Operar en TED</h1>
+
+  <form method="get" class="mb-4 flex gap-3">
+    <select name="moneda" class="w-full h-11 px-4 border border-neutral-300 rounded-md">
+      <option value="">Selecciona moneda…</option>
+      {% for m in monedas %}
+        <option value="{{ m.id }}" {% if moneda and moneda.id == m.id %}selected{% endif %}>{{ m.codigo }} — {{ m.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">Cargar</button>
+  </form>
+
+  {% if moneda %}
+    <div class="box mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="h2">Moneda: {{ moneda.codigo }} — {{ moneda.nombre }}</h2>
+          {% if cotiz %}
+            <p class="muted m-0">
+              Compra: <strong>{{ cotiz.compra }}</strong> |
+              Venta: <strong>{{ cotiz.venta }}</strong> |
+              {{ cotiz.created_at|date:"d/m/Y H:i" }}
+              {% if cotiz.vigente %}
+                <span class="ml-2 px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-sm font-semibold">vigente</span>
+              {% else %}
+                <span class="ml-2 px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-sm font-semibold">vencida</span>
+              {% endif %}
+            </p>
+          {% else %}
+            <p class="form-alert m-0">No hay cotización disponible para esta moneda.</p>
+          {% endif %}
+        </div>
+        <form method="post" action="{% url 'admin_panel:ted:operar' %}?moneda={{ moneda.id }}" class="flex items-center gap-3">
+          {% csrf_token %}
+          <input type="hidden" name="moneda" value="{{ moneda.id }}">
+          <select name="operacion" class="h-11 px-3 border border-neutral-300 rounded-md">
+            <option value="COMPRA" {% if operacion == 'COMPRA' %}selected{% endif %}>Compra (cliente compra extranjera)</option>
+            <option value="VENTA"  {% if operacion == 'VENTA' %}selected{% endif %}>Venta (cliente vende extranjera)</option>
+          </select>
+          <button class="btn" type="submit">Confirmar movimiento</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3 class="h2 mb-3">Billetes</h3>
+      <form method="post" action="{% url 'admin_panel:ted:operar' %}?moneda={{ moneda.id }}">
+        {% csrf_token %}
+        <input type="hidden" name="moneda" value="{{ moneda.id }}">
+        <input type="hidden" name="operacion" value="{{ operacion }}">
+
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {% for den in denominaciones %}
+            <label class="block">
+              <span class="font-semibold"> {{ moneda.codigo }} {{ den.valor }} </span>
+              <input type="number" min="0" step="1" name="den_{{ den.id }}" value="0"
+                     class="w-full h-11 px-4 border border-neutral-300 rounded-md mt-1" />
+            </label>
+          {% empty %}
+            <p class="muted">No hay denominaciones configuradas para {{ moneda.codigo }}.</p>
+          {% endfor %}
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Procesar</button>
+          <a href="{% url 'admin_panel:ted:panel' %}" class="btn-secondary">Volver</a>
+        </div>
+      </form>
+    </div>
+  {% else %}
+    <div class="box">
+      <p class="muted m-0">Selecciona una moneda y pulsa <strong>Cargar</strong>.</p>
+    </div>
+  {% endif %}
+</main>
+{% endblock %}
