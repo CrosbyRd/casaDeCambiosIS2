@@ -78,6 +78,36 @@
         Acceder
       </a>
     </section>
+        <!-- Configuración -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-gray-700 text-5xl mb-4">⚙️</div>
+      <h2 class="text-xl font-bold mb-2">Configuración</h2>
+      <p class="text-gray-500 mb-4">Administra los límites de transacion del sistema.</p>
+      <a href="{% url 'configuracion:configuracion-panel' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+
+        <!-- admin_panel/dashboard.html -->
+    <div class="...">
+      <div class="...">
+        <div class="text-center">
+          <div class="text-4xl mb-2">🏦</div>
+          <h3 class="text-xl font-bold mb-2">Gestionar Medios de Acreditación</h3>
+          <p class="text-[var(--muted)] mb-4">Administra las cuentas/billeteras/pickup disponibles.</p>
+          <a href="{% url 'medios_acreditacion:tipos_list' %}" class="px-6 py-2 rounded-lg font-bold text-white shadow-sm" style="background:var(--brand)">
+            Acceder
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+
+
 
     <!-- Terminal TED (tauser) -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">

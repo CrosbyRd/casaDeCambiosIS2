@@ -5,13 +5,20 @@ Django settings for CasaDeCambioIS2 project.
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 
 # --- Seguridad / Debug ---
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")  # En prod: setear env
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 
 # --- Apps ---
 INSTALLED_APPS = [
@@ -30,9 +37,12 @@ INSTALLED_APPS = [
     "admin_panel",
     "core.apps.CoreConfig",
     'pagos',
+    "medios_acreditacion",
     'operaciones',
     'transacciones',
-    'ted',
+    'configuracion',
+    'payments'
+
 ]
 
 # --- Middleware ---
