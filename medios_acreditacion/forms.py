@@ -31,17 +31,16 @@ class CampoMedioForm(forms.ModelForm):
 # medios_acreditacion/forms.py
 # medios_acreditacion/forms.py
 
+
 class MedioAcreditacionClienteForm(forms.ModelForm):
     class Meta:
         model = MedioAcreditacionCliente
-        fields = ("tipo", "alias", "activo")  # más los dinámicos…
+        fields = ("tipo", "alias", "activo")
 
     def __init__(self, *args, **kwargs):
-        # No necesitamos 'user' aquí
         kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        # 1) Intentar tomar el tipo del POST o del initial (?tipo=…)
         tipo_obj = None
         raw_tipo = self.data.get("tipo") or (
             self.initial.get("tipo") if isinstance(self.initial, dict) else None
@@ -55,24 +54,17 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
             except TipoMedioAcreditacion.DoesNotExist:
                 tipo_obj = None
 
-        # 2) Si no vino de POST/initial y estamos EDITANDO, usar tipo_id
         if not tipo_obj and getattr(self.instance, "pk", None):
-            # Esta línea es SEGURA: no usa el descriptor, solo el FK crudo
             if getattr(self.instance, "tipo_id", None):
-                # Ahora sí es seguro resolver el objeto
                 tipo_obj = self.instance.tipo
 
-        # 3) En crear, si ya resolví tipo, lo coloco en la instancia
         if tipo_obj and not getattr(self.instance, "pk", None):
             self.instance.tipo = tipo_obj
 
-        # 4) Si todavía no hay tipo, no creo campos dinámicos (se crearán
-        #    cuando el usuario seleccione uno y se envíe el POST)
         if not tipo_obj:
             return
 
-        # === A partir de aquí, tu lógica actual de campos dinámicos ===
-        # Por ejemplo:
+        # Campos dinámicos
         for campo in tipo_obj.campos.filter(activo=True):
             field_name = f"campo_{campo.nombre}"
 
@@ -95,11 +87,15 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
                 field = forms.CharField(required=campo.obligatorio, label=campo.nombre)
 
             if campo.regex:
-                field.validators.append(
-                    forms.RegexField(regex=campo.regex).validators[0]
-                )
+                field.validators.append(forms.RegexField(regex=campo.regex).validators[0])
 
             self.fields[field_name] = field
+
+            # 👇 Aquí cargamos valores existentes al editar
+            if self.instance and self.instance.pk:
+                valor_guardado = (self.instance.datos or {}).get(campo.nombre)
+                if valor_guardado is not None:
+                    self.initial[field_name] = valor_guardado
 
     def clean(self):
         cleaned = super().clean()
