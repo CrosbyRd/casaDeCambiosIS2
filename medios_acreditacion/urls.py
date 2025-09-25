@@ -19,4 +19,7 @@ urlpatterns = [
     path("clientes/crear/", views.MedioClienteCreateView.as_view(), name="clientes_create"),
     path("clientes/<uuid:pk>/editar/", views.MedioClienteUpdateView.as_view(), name="clientes_update"),
     path("clientes/<uuid:pk>/eliminar/", views.MedioClienteDeleteView.as_view(), name="clientes_delete"),
+    path("clientes/<uuid:pk>/predeterminar/",
+         views.MedioClientePredeterminarView.as_view(),
+         name="clientes_predeterminar"),
 ]

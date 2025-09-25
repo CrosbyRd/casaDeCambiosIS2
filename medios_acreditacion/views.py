@@ -7,6 +7,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from usuarios.mixins import RequireClienteMixin
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.views import View
+from django.shortcuts import get_object_or_404
+
 
 from .models import (
     TipoMedioAcreditacion,
@@ -251,3 +255,23 @@ class MedioClienteDeleteView(RequireClienteMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Medio de acreditación eliminado correctamente ❌")
         return super().delete(request, *args, **kwargs)
+    
+
+
+class MedioClientePredeterminarView(RequireClienteMixin, View):
+    def post(self, request, pk):
+        # obtener el medio del cliente logueado
+        medio = get_object_or_404(
+            MedioAcreditacionCliente.objects.filter(cliente=self.cliente), pk=pk
+        )
+        if not medio.activo:
+            return HttpResponseBadRequest("Medio inactivo.")
+        # marcar y desmarcar otros (lo hace su save())
+        medio.predeterminado = True
+        medio.save()
+        # status 204: sin contenido; tu JS hace reload de la página
+        return HttpResponse(status=204)
+
+    def get(self, request, pk):
+        # no permitimos GET para esta acción
+        return HttpResponseForbidden()
