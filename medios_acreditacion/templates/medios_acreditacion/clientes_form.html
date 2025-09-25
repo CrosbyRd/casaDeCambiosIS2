@@ -53,21 +53,28 @@
     {% endif %}
 
     <!-- Campos dinámicos (según el tipo) -->
-    {% for field in form.visible_fields %}
-      {% if field.name != "tipo" and field.name != "alias" and field.name != "activo" %}
-        <div class="mb-4">
-          <label class="block font-semibold">{{ field.label }}</label>
-          {{ field }}
-          {% for e in field.errors %}
-            {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endfor %}
+      {% for field in form.visible_fields %}
+        {% if field.name != "tipo" and field.name != "alias" and field.name != "activo" and field.name != "predeterminado" %}
+          <div class="mb-4">
+            <label class="block font-semibold">{{ field.label }}</label>
+            {{ field }}
+            {% for e in field.errors %}{% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
 
-    <div class="flex items-center gap-2 mb-6">
-      {{ form.activo }} <label for="{{ form.activo.id_for_label }}">Activo</label>
-    </div>
+      <div class="flex items-center gap-6 mb-6">
+        <label class="flex items-center gap-2">
+          {{ form.activo }} <span>Activo</span>
+        </label>
+        <label class="flex items-center gap-2">
+          {{ form.predeterminado }} <span>Predeterminado</span>
+        </label>
+      </div>
+      {% for e in form.predeterminado.errors %}
+        {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+      {% endfor %}
+
 
     <div class="flex justify-end gap-3">
       <a href="{% url 'medios_acreditacion:clientes_list' %}"

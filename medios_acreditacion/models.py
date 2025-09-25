@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 import re
 from django.core.exceptions import ValidationError
-
+from django.db.models import Q, UniqueConstraint
 
 class TipoMedioAcreditacion(models.Model):
     id_tipo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -83,6 +83,17 @@ class MedioAcreditacionCliente(models.Model):
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
+    predeterminado = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["cliente"],
+                condition=Q(predeterminado=True),
+                name="uniq_default_medio_por_cliente",
+            ),
+        ]
+
 
     def __str__(self):
         # ← evita disparar el descriptor de FK cuando todavía no hay tipo/cliente
@@ -135,10 +146,27 @@ class MedioAcreditacionCliente(models.Model):
                 if not re.match(campo.regex, svalor):
                     errores[key_form] = _("No cumple el formato requerido.")
 
+            # 👇 reglas del predeterminado
+        if self.predeterminado and not self.activo:
+            errores["predeterminado"] = _("No puede ser predeterminado si está inactivo.")
+
         if errores:
             # 👈 devolvemos dict con keys que existen en el form → no explota
             raise ValidationError(errores)
 
+    def save(self, *args, **kwargs):
+            # Si marco este como predeterminado, desmarco los demás del mismo cliente
+            if self.predeterminado and self.cliente_id:
+                MedioAcreditacionCliente.objects.filter(
+                    cliente_id=self.cliente_id,
+                    predeterminado=True
+                ).exclude(pk=self.pk).update(predeterminado=False)
+
+            # Si se desactiva, no puede quedar como predeterminado
+            if not self.activo and self.predeterminado:
+                self.predeterminado = False
+
+            return super().save(*args, **kwargs)
         
 
 

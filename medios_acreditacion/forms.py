@@ -34,7 +34,7 @@ class CampoMedioForm(forms.ModelForm):
 class MedioAcreditacionClienteForm(forms.ModelForm):
     class Meta:
         model = MedioAcreditacionCliente
-        fields = ("tipo", "alias", "activo")
+        fields = ("tipo", "alias", "activo", "predeterminado")
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("user", None)
