@@ -39,21 +39,17 @@
       {% endif %}
     </div>
 
-    <!-- Alias opcional (solo si el form lo trae) -->
-    {% if form.fields.alias %}
-      <div class="mb-4">
-        <label class="block font-semibold">Alias (opcional)</label>
-        {{ form.alias }}
-        {% for e in form.alias.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
-      </div>
-    {% endif %}
-
-    <!-- Campos dinámicos (según el tipo) -->
+    <!-- Campos del formulario -->
     {% for field in form.visible_fields %}
-      {# ❗️Django templates no soportan ("a","b","c") en 'in'. Usa comparaciones #}
-      {% if field.name != "tipo" and field.name != "alias" and field.name != "activo" %}
+      {% if field.name != "tipo" and field.name != "activo" %}
         <div class="mb-4">
-          <label class="block font-semibold">{{ field.label }}</label>
+          <label class="block font-semibold">
+            {% if field.name == "alias" %}
+              Alias (opcional)
+            {% else %}
+              {{ field.label }}
+            {% endif %}
+          </label>
           {{ field }}
           {% for e in field.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
         </div>

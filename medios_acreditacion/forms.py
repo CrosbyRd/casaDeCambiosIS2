@@ -31,7 +31,6 @@ class CampoMedioForm(forms.ModelForm):
 # medios_acreditacion/forms.py
 # medios_acreditacion/forms.py
 
-
 class MedioAcreditacionClienteForm(forms.ModelForm):
     class Meta:
         model = MedioAcreditacionCliente
@@ -64,34 +63,15 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
         if not tipo_obj:
             return
 
-        # Campos dinámicos
+        # ✅ Crear SIEMPRE como CharField
         for campo in tipo_obj.campos.filter(activo=True):
             field_name = f"campo_{campo.nombre}"
+            self.fields[field_name] = forms.CharField(
+                required=campo.obligatorio,
+                label=campo.nombre,
+            )
 
-            if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO:
-                field = forms.IntegerField(required=campo.obligatorio, label=campo.nombre)
-            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
-                field = forms.CharField(
-                    required=campo.obligatorio, label=campo.nombre, min_length=9, max_length=15
-                )
-            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL:
-                field = forms.EmailField(required=campo.obligatorio, label=campo.nombre)
-            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
-                field = forms.RegexField(
-                    regex=r"^\d{6,8}-\d{1}$",
-                    required=campo.obligatorio,
-                    label=campo.nombre,
-                    error_messages={"invalid": "El RUC debe tener el formato ########-#"},
-                )
-            else:
-                field = forms.CharField(required=campo.obligatorio, label=campo.nombre)
-
-            if campo.regex:
-                field.validators.append(forms.RegexField(regex=campo.regex).validators[0])
-
-            self.fields[field_name] = field
-
-            # 👇 Aquí cargamos valores existentes al editar
+            # inicializar al editar
             if self.instance and self.instance.pk:
                 valor_guardado = (self.instance.datos or {}).get(campo.nombre)
                 if valor_guardado is not None:
@@ -101,13 +81,39 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
         cleaned = super().clean()
         tipo = cleaned.get("tipo") or getattr(self.instance, "tipo", None)
         if not tipo:
-            # sin tipo no empaquetamos datos dinámicos
             return cleaned
 
         datos = {}
         for campo in tipo.campos.filter(activo=True):
-            valor = cleaned.get(f"campo_{campo.nombre}", None)
-            if valor is not None:
-                datos[campo.nombre] = valor
+            field_name = f"campo_{campo.nombre}"
+            valor = cleaned.get(field_name)
+
+            if not valor:
+                if campo.obligatorio:
+                    self.add_error(field_name, "Este campo es obligatorio.")
+                continue
+
+            # ✅ Validaciones manuales seguras
+            if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO:
+                if not valor.isdigit():
+                    self.add_error(field_name, "Debe ser un número válido.")
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
+                if not valor.isdigit() or len(valor) < 9:
+                    self.add_error(field_name, "Debe ser un teléfono válido (mín. 9 dígitos).")
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL:
+                if "@" not in valor:
+                    self.add_error(field_name, "Debe ser un correo electrónico válido.")
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
+                import re
+                if not re.match(r"^\d{6,8}-\d{1}$", valor):
+                    self.add_error(field_name, "El RUC debe tener el formato ########-#")
+
+            if campo.regex:
+                import re
+                if not re.match(campo.regex, valor):
+                    self.add_error(field_name, "No cumple el formato requerido.")
+
+            datos[campo.nombre] = valor
+
         self.instance.datos = datos
         return cleaned

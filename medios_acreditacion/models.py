@@ -91,43 +91,52 @@ class MedioAcreditacionCliente(models.Model):
         return f"{t} - {c}"
 
 
-
     def clean(self):
         """Valida que los datos cargados coincidan con lo definido por el admin."""
         if not self.tipo_id:
             return
-    
-        
-        errores = {}
-        for campo in self.tipo.campos.filter(activo=True):
-            valor = (self.datos or {}).get(campo.nombre)
 
-            if campo.obligatorio and not valor:
-                errores[campo.nombre] = _("Este campo es obligatorio.")
+        errores = {}
+        datos = self.datos or {}
+
+        for campo in self.tipo.campos.filter(activo=True):
+            key_form = f"campo_{campo.nombre}"   # <-- nombre que SÍ existe en el form
+            valor = datos.get(campo.nombre)
+
+            # Obligatorio
+            if campo.obligatorio and (valor is None or str(valor).strip() == ""):
+                errores[key_form] = _("Este campo es obligatorio.")
                 continue
 
-            if valor:
-                if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO and not str(valor).isdigit():
-                    errores[campo.nombre] = _("Debe ser un número válido.")
+            if valor is None or str(valor).strip() == "":
+                continue  # opcional vacío, nada más que validar
 
-                if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
-                    if not str(valor).isdigit() or len(str(valor)) < 9:
-                        errores[campo.nombre] = _("Debe ser un teléfono válido (mín. 9 dígitos).")
+            svalor = str(valor)
 
-                if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL and "@" not in valor:
-                    errores[campo.nombre] = _("Debe ser un correo electrónico válido.")
+            # Validaciones por tipo
+            if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.NUMERO:
+                if not svalor.isdigit():
+                    errores[key_form] = _("Debe ser un número válido.")
 
-                if campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
-                    import re
-                    if not re.match(r"^\d{6,8}-\d{1}$", valor):
-                        errores[campo.nombre] = _("El RUC debe tener el formato ########-#.")
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.TELEFONO:
+                if not svalor.isdigit() or len(svalor) < 9 or len(svalor) > 15:
+                    errores[key_form] = _("Debe ser un teléfono válido (9 a 15 dígitos).")
 
-                if campo.regex:
-                    import re
-                    if not re.match(campo.regex, str(valor)):
-                        errores[campo.nombre] = _("No cumple el formato requerido.")
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.EMAIL:
+                if "@" not in svalor or "." not in svalor.rsplit("@", 1)[-1]:
+                    errores[key_form] = _("Debe ser un correo electrónico válido.")
+
+            elif campo.tipo_dato == CampoMedioAcreditacion.TipoDato.RUC:
+                if not re.match(r"^\d{6,8}-\d{1}$", svalor):
+                    errores[key_form] = _("El RUC debe tener el formato ########-#.")
+
+            # Regex extra (si el admin lo definió)
+            if campo.regex:
+                if not re.match(campo.regex, svalor):
+                    errores[key_form] = _("No cumple el formato requerido.")
 
         if errores:
+            # 👈 devolvemos dict con keys que existen en el form → no explota
             raise ValidationError(errores)
 
         
