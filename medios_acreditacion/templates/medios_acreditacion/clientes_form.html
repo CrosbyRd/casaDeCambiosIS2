@@ -33,25 +33,34 @@
     <div class="mb-4">
       <label class="block font-semibold mb-1">Tipo</label>
       {{ form.tipo }}
-      {% for e in form.tipo.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      {% for e in form.tipo.errors %}
+        {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+      {% endfor %}
       {% if form.fields.tipo.disabled %}
         <p class="text-xs text-[var(--muted)] mt-1">El tipo no se puede cambiar en edición.</p>
       {% endif %}
     </div>
 
-    <!-- Campos del formulario -->
+    <!-- Alias opcional (solo si el form lo trae) -->
+    {% if form.fields.alias %}
+      <div class="mb-4">
+        <label class="block font-semibold">Alias (opcional)</label>
+        {{ form.alias }}
+        {% for e in form.alias.errors %}
+          {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Campos dinámicos (según el tipo) -->
     {% for field in form.visible_fields %}
-      {% if field.name != "tipo" and field.name != "activo" %}
+      {% if field.name != "tipo" and field.name != "alias" and field.name != "activo" %}
         <div class="mb-4">
-          <label class="block font-semibold">
-            {% if field.name == "alias" %}
-              Alias (opcional)
-            {% else %}
-              {{ field.label }}
-            {% endif %}
-          </label>
+          <label class="block font-semibold">{{ field.label }}</label>
           {{ field }}
-          {% for e in field.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+          {% for e in field.errors %}
+            {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+          {% endfor %}
         </div>
       {% endif %}
     {% endfor %}
@@ -92,7 +101,6 @@
 </style>
 
 <script>
-  // En "crear": al cambiar el tipo, recargar con ?tipo=<uuid> para mostrar los campos definidos
   (function () {
     const select = document.getElementById("id_tipo");
     if (!select) return;
@@ -100,7 +108,7 @@
     if (isCreate) {
       select.addEventListener("change", () => {
         const v = select.value;
-        const base = window.location.pathname; // /medios-acreditacion/clientes/crear/
+        const base = window.location.pathname;
         const qs = v ? ("?tipo=" + encodeURIComponent(v)) : "";
         window.location.href = base + qs;
       });
