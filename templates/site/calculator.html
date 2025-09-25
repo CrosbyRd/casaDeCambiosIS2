@@ -80,6 +80,15 @@
                 <span id="res-code">{{ form.moneda_destino.value }}</span>
               </div>
             </div>
+            {% if user.is_authenticated %}
+              <div class="mt-4">
+                <a id="btn-proceder-operacion" href="#" class="gx-btn">Proceder a Operación</a>
+              </div>
+            {% else %}
+              <div class="mt-4">
+                <a href="{% url 'login' %}" class="gx-btn">Inicia sesión para operar</a>
+              </div>
+            {% endif %}
           {% endif %}
         {% endif %}
       </div>
@@ -215,6 +224,33 @@
   monto?.addEventListener('input', () => enforceRules('amount'));
   enforceRules();          // estado inicial
   updateResultFlag();      // y bandera inicial
+
+  // Lógica para el botón "Proceder a Operación"
+  const btnProcederOperacion = document.getElementById('btn-proceder-operacion');
+  console.log('Elemento btnProcederOperacion:', btnProcederOperacion); // Depuración: verificar si el elemento se encuentra
+
+  if (btnProcederOperacion) {
+    btnProcederOperacion.addEventListener('click', (e) => {
+      e.preventDefault();
+      // Usar las variables ya declaradas
+      const currentMonto = monto?.value;
+      const currentMonedaOrigen = selOri?.value;
+      const currentMonedaDestino = selDst?.value;
+
+      console.log('Botón "Proceder a Operación" clickeado.');
+      console.log('Monto:', currentMonto, 'Origen:', currentMonedaOrigen, 'Destino:', currentMonedaDestino);
+
+      if (currentMonto && currentMonedaOrigen && currentMonedaDestino && toNumber(currentMonto) > 0) {
+        const url = new URL("{{ iniciar_operacion_url }}");
+        url.searchParams.append('monto', toNumber(currentMonto));
+        url.searchParams.append('moneda_origen', currentMonedaOrigen);
+        url.searchParams.append('moneda_destino', currentMonedaDestino);
+        window.location.href = url.toString();
+      } else {
+        alert("Por favor, completa todos los campos de la calculadora y asegúrate que el monto sea mayor a 0 antes de proceder.");
+      }
+    });
+  }
 
   // BORRAR
   btnClr?.addEventListener('click', () => {
