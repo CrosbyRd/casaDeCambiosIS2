@@ -194,7 +194,7 @@ class MedioClienteCreateView(RequireClienteMixin, CreateView):
         return initial
 
     def form_valid(self, form):
-        form.instance.cliente = self.request.user.cliente_en_uso
+        form.instance.cliente = self.cliente
         return super().form_valid(form)
     
     def get_form_kwargs(self):
