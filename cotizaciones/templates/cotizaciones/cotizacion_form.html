@@ -170,7 +170,7 @@
     const tc = document.getElementById('total_compra');
     const tv = document.getElementById('total_venta');
 
-    if (tc) tc.textContent = (vC + cC).toFixed(4);
+    if (tc) tc.textContent = (vC - cC).toFixed(4); // Corregido: la comisión de compra se resta
     if (tv) tv.textContent = (vV + cV).toFixed(4);
   }
 

@@ -121,57 +121,49 @@
       <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
         <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
         <div class="divide-y divide-neutral-200">
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-123456</div>
-              <div class="text-sm text-neutral-500 truncate">Compra USD — 28/08/2025</div>
-            </div>
-            <div class="text-red-600 font-extrabold">-500</div>
-          </div>
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-789012</div>
-              <div class="text-sm text-neutral-500 truncate">Venta EUR — 27/08/2025</div>
-            </div>
-            <div class="text-emerald-600 font-extrabold">+300</div>
-          </div>
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-123456</div>
-              <div class="text-sm text-neutral-500 truncate">Comisión — 27/08/2025</div>
-            </div>
-            <div class="text-red-600 font-extrabold">-20</div>
-          </div>
+          {% if transacciones %}
+            {% for transaccion in transacciones %}
+              <div class="py-3 flex items-center justify-between">
+                <div class="min-w-0">
+                  <div class="font-bold">{{ transaccion.id }}</div>
+                  <div class="text-sm text-neutral-500 truncate">
+                    {{ transaccion.get_tipo_operacion_display }} - {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }}
+                  </div>
+                </div>
+                <div class="font-extrabold">
+                  <span class="text-neutral-500">{{ transaccion.get_estado_display }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-neutral-500">No hay transacciones recientes.</p>
+          {% endif %}
         </div>
       </div>
     </div>
 
-    <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-      <h2 class="text-xl font-extrabold mb-6">Métodos de pago</h2>
-
-      <h3 class="font-extrabold mb-2">Tarjetas</h3>
-      <div class="space-y-3 mb-6">
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-16 rounded-xl bg-neutral-200"></div>
-            <div>
-              <div class="font-bold">EXCHANGE VISA <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">CREDIT</span></div>
-              <div class="text-sm text-neutral-500">**** **** **** 6860 · Expira 08/27</div>
-            </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
+      <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
+        <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
+        <div class="divide-y divide-neutral-200">
+          {% if transacciones %}
+            {% for transaccion in transacciones %}
+              <div class="py-3 flex items-center justify-between">
+                <div class="min-w-0">
+                  <div class="font-bold">{{ transaccion.id }}</div>
+                  <div class="text-sm text-neutral-500 truncate">
+                    {{ transaccion.get_tipo_operacion_display }} - {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }}
+                  </div>
+                </div>
+                <div class="font-extrabold text-neutral-500">
+                  {{ transaccion.get_estado_display }}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-neutral-500">No hay transacciones recientes.</p>
+          {% endif %}
         </div>
-
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-16 rounded-xl bg-neutral-200"></div>
-            <div>
-              <div class="font-bold">EXCHANGE MASTERCARD <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">DEBIT</span></div>
-              <div class="text-sm text-neutral-500">**** **** **** 6650 · Expira 09/26</div>
-            </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
-        </div>
+      </div>
       </div>
 
       <h3 class="font-extrabold mb-2">Billeteras electrónicas</h3>
