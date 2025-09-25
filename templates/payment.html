@@ -1,0 +1,126 @@
+<!-- 
+Crea una carpeta 'templates' en la raíz de tu proyecto (junto a manage.py).
+Luego, coloca este archivo dentro de esa carpeta.
+myproject/
+├── templates/
+│   └── payment.html
+...
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar con Stripe</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; padding: 20px; background-color: #f6f9fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;}
+        .container { background-color: white; width: 400px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08); }
+        h1 { text-align: center; color: #32325d; }
+        .product-info { margin-bottom: 20px; text-align: center; }
+        #payment-element { margin-bottom: 20px; }
+        #submit { background: #5469d4; color: #ffffff; font-family: inherit; border: 0; border-radius: 4px; padding: 12px 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: block; width: 100%; transition: all 0.2s ease; }
+        #submit:hover { filter: brightness(1.1); }
+        #submit.processing { opacity: 0.5; cursor: not-allowed; }
+        #payment-message { margin-top: 15px; color: #fa755a; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pagar Producto</h1>
+        <div class="product-info">
+            <p>Producto de Ejemplo</p>
+            <p><strong>Precio: $25.50 USD</strong></p>
+        </div>
+
+        <form id="payment-form">
+            <div id="payment-element">
+                <!-- El Elemento de Pago de Stripe se insertará aquí -->
+            </div>
+            <button id="submit" class="processing" disabled>
+                <span id="button-text">Pagar ahora</span>
+            </button>
+            <div id="payment-message" role="alert"></div>
+        </form>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Clave pública de Stripe pasada desde la vista de Django
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+        let elements;
+
+        // Monto del producto en centavos
+        const productAmount = 2550;
+
+        initialize();
+
+        document
+            .querySelector("#payment-form")
+            .addEventListener("submit", handleSubmit);
+        
+        // --- FUNCIONES ---
+
+        async function initialize() {
+            // 1. Llamar a nuestro backend para crear el Payment Intent
+            const response = await fetch("/api/create-payment-intent/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 'amount': productAmount }),
+            });
+            const { clientSecret } = await response.json();
+
+            // 2. Crear y montar los elementos de pago en el DOM
+            const appearance = { theme: 'stripe' };
+            elements = stripe.elements({ appearance, clientSecret });
+
+            const paymentElement = elements.create("payment");
+            paymentElement.mount("#payment-element");
+
+            // Habilitar el botón una vez que todo está cargado
+            document.querySelector("#submit").disabled = false;
+            document.querySelector("#submit").classList.remove("processing");
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            setLoading(true);
+
+            // 3. Confirmar el pago con Stripe
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    // URL a la que redirigir al cliente tras un pago exitoso
+                    return_url: `${window.location.origin}/payment-success/`,
+                },
+            });
+
+            // Esta parte solo se ejecuta si hay un error inmediato al confirmar el pago.
+            // De lo contrario, el cliente es redirigido a `return_url`.
+            if (error.type === "card_error" || error.type === "validation_error") {
+                showMessage(error.message);
+            } else {
+                showMessage("Ocurrió un error inesperado.");
+            }
+
+            setLoading(false);
+        }
+
+        function showMessage(messageText) {
+            const messageContainer = document.querySelector("#payment-message");
+            messageContainer.textContent = messageText;
+        }
+
+        function setLoading(isLoading) {
+            const submitButton = document.querySelector("#submit");
+            if (isLoading) {
+                submitButton.disabled = true;
+                submitButton.classList.add("processing");
+            } else {
+                submitButton.disabled = false;
+                submitButton.classList.remove("processing");
+            }
+        }
+    </script>
+</body>
+</html>

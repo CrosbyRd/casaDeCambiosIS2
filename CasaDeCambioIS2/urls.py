@@ -10,8 +10,8 @@ from core import views as core_views
 
 urlpatterns = [
     # Home dinámico
-    path("", site_home, name="home"),
-
+    path("", site_home, name="home"),   
+    
     # Páginas informativas
     path("how-it-works/", TemplateView.as_view(template_name="site/how-it-works.html"), name="site_how_it_works"),
     path("rates/", core_views.site_rates, name="site_rates"),
@@ -30,7 +30,8 @@ urlpatterns = [
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
     path("admin_panel/", include("admin_panel.urls")),
     path("core/", include("core.urls")), # Incluir las URLs de la app core
-
+    path("", include("payments.urls")),
+    
     # Autenticación (OTP + reset)
     path("cuentas/login/", usuarios_views.login_view, name="login"),
     path("cuentas/otp/", usuarios_views.login_otp, name="login_otp"),
