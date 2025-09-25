@@ -34,7 +34,10 @@
 │   │   ├── 0002_remove_cliente_correo_electronico.py
 │   │   ├── 0003_alter_cliente_options.py
 │   │   ├── 0003_remove_cliente_user.py
+│   │   ├── 0004_merge_20250914_0029.py
 │   │   ├── 0004_merge_20250914_0108.py
+│   │   ├── 0005_merge_20250914_2011.py
+│   │   ├── 0006_medioacreditacion.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -50,6 +53,8 @@
 │   └── views.py
 ├── core
 │   ├── apps.py
+│   ├── fixtures
+│   │   └── monedas_cotizaciones.json
 │   ├── forms.py
 │   ├── __init__.py
 │   ├── logic.py
@@ -81,6 +86,7 @@
 │   │   ├── 0002_alter_cotizacion_options.py
 │   │   ├── 0002_cotizacion_comision_compra_cotizacion_comision_venta.py
 │   │   ├── 0003_merge_20250906_2230.py
+│   │   ├── 0004_alter_cotizacion_comision_compra_and_more.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -88,10 +94,354 @@
 │   │       ├── cotizacion_confirm_delete.html
 │   │       ├── cotizacion_form.html
 │   │       └── cotizacion_list.html
-│   ├── tests.py
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
 │   ├── urls.py
 │   └── views.py
 ├── db.sqlite3
+├── docs
+│   ├── admin_panel.migrations.rst
+│   ├── admin_panel.rst
+│   ├── _build
+│   │   ├── doctrees
+│   │   │   ├── admin_panel.doctree
+│   │   │   ├── admin_panel.migrations.doctree
+│   │   │   ├── CasaDeCambioIS2.doctree
+│   │   │   ├── clientes.doctree
+│   │   │   ├── clientes.migrations.doctree
+│   │   │   ├── core.doctree
+│   │   │   ├── correo.doctree
+│   │   │   ├── correo.migrations.doctree
+│   │   │   ├── cotizaciones.doctree
+│   │   │   ├── cotizaciones.migrations.doctree
+│   │   │   ├── environment.pickle
+│   │   │   ├── index.doctree
+│   │   │   ├── lib.doctree
+│   │   │   ├── lib.migrations.doctree
+│   │   │   ├── manage.doctree
+│   │   │   ├── modules.doctree
+│   │   │   ├── monedas.doctree
+│   │   │   ├── monedas.migrations.doctree
+│   │   │   ├── roles.doctree
+│   │   │   ├── roles.migrations.doctree
+│   │   │   ├── source
+│   │   │   │   ├── admin_panel.doctree
+│   │   │   │   ├── admin_panel.migrations.doctree
+│   │   │   │   ├── CasaDeCambioIS2.doctree
+│   │   │   │   ├── clientes.doctree
+│   │   │   │   ├── clientes.migrations.doctree
+│   │   │   │   ├── core.doctree
+│   │   │   │   ├── correo.doctree
+│   │   │   │   ├── correo.migrations.doctree
+│   │   │   │   ├── cotizaciones.doctree
+│   │   │   │   ├── cotizaciones.migrations.doctree
+│   │   │   │   ├── lib.doctree
+│   │   │   │   ├── lib.migrations.doctree
+│   │   │   │   ├── manage.doctree
+│   │   │   │   ├── modules.doctree
+│   │   │   │   ├── monedas.doctree
+│   │   │   │   ├── monedas.migrations.doctree
+│   │   │   │   ├── roles.doctree
+│   │   │   │   ├── roles.migrations.doctree
+│   │   │   │   ├── usuarios.doctree
+│   │   │   │   ├── usuarios.management.commands.doctree
+│   │   │   │   ├── usuarios.management.doctree
+│   │   │   │   └── usuarios.migrations.doctree
+│   │   │   ├── usuarios.doctree
+│   │   │   ├── usuarios.management.commands.doctree
+│   │   │   ├── usuarios.management.doctree
+│   │   │   └── usuarios.migrations.doctree
+│   │   ├── gtml
+│   │   │   └── _static
+│   │   │       ├── jquery.js
+│   │   │       └── _sphinx_javascript_frameworks_compat.js
+│   │   └── html
+│   │       ├── admin_panel.html
+│   │       ├── admin_panel.migrations.html
+│   │       ├── CasaDeCambioIS2.html
+│   │       ├── clientes.html
+│   │       ├── clientes.migrations.html
+│   │       ├── core.html
+│   │       ├── correo.html
+│   │       ├── correo.migrations.html
+│   │       ├── cotizaciones.html
+│   │       ├── cotizaciones.migrations.html
+│   │       ├── genindex.html
+│   │       ├── index.html
+│   │       ├── lib.html
+│   │       ├── lib.migrations.html
+│   │       ├── manage.html
+│   │       ├── _modules
+│   │       │   ├── admin_panel
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   └── 0001_initial.html
+│   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── CasaDeCambioIS2
+│   │       │   │   └── views.html
+│   │       │   ├── clientes
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_remove_cliente_correo_electronico.html
+│   │       │   │   │   └── 0003_alter_cliente_options.html
+│   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── core
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── logic.html
+│   │       │   │   ├── tests.html
+│   │       │   │   └── views.html
+│   │       │   ├── correo
+│   │       │   │   └── apps.html
+│   │       │   ├── cotizaciones
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_alter_cotizacion_options.html
+│   │       │   │   │   ├── 0002_cotizacion_comision_compra_cotizacion_comision_venta.html
+│   │       │   │   │   └── 0003_merge_20250906_2230.html
+│   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── django
+│   │       │   │   ├── db
+│   │       │   │   │   └── models
+│   │       │   │   └── utils
+│   │       │   │       └── functional.html
+│   │       │   ├── functools.html
+│   │       │   ├── index.html
+│   │       │   ├── lib
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── manage.html
+│   │       │   ├── monedas
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_moneda_admite_efectivo_moneda_admite_en_linea_and_more.html
+│   │       │   │   │   ├── 0003_alter_moneda_minima_denominacion.html
+│   │       │   │   │   ├── 0004_remove_moneda_limite_transaccion.html
+│   │       │   │   │   ├── 0005_remove_moneda_admite_efectivo_and_more.html
+│   │       │   │   │   └── 0006_alter_moneda_options.html
+│   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── roles
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   └── 0002_alter_role_options.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── serializers.html
+│   │       │   │   └── views.html
+│   │       │   └── usuarios
+│   │       │       ├── apps.html
+│   │       │       ├── forms.html
+│   │       │       ├── management
+│   │       │       │   └── commands
+│   │       │       ├── migrations
+│   │       │       │   ├── 0001_initial.html
+│   │       │       │   ├── 0002_customuser_roles.html
+│   │       │       │   ├── 0002_permiso_rol_customuser_rol.html
+│   │       │       │   ├── 0003_auto_20250820_1326.html
+│   │       │       │   ├── 0004_remove_customuser_tipo_usuario_and_more.html
+│   │       │       │   ├── 0005_merge_20250821_0105.html
+│   │       │       │   ├── 0006_remove_rol_permisos_remove_customuser_rol_and_more.html
+│   │       │       │   ├── 0007_remove_customuser_roles_customuser_tipo_usuario_and_more.html
+│   │       │       │   ├── 0008_alter_customuser_tipo_usuario.html
+│   │       │       │   ├── 0009_customuser_clientes.html
+│   │       │       │   ├── 0009_remove_customuser_username_and_more.html
+│   │       │       │   ├── 0010_alter_customuser_options_alter_customuser_managers_and_more.html
+│   │       │       │   ├── 0010_customuser_role.html
+│   │       │       │   ├── 0011_merge_20250822_1119.html
+│   │       │       │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.html
+│   │       │       │   └── 0013_usuariospermissions.html
+│   │       │       ├── models.html
+│   │       │       └── views.html
+│   │       ├── modules.html
+│   │       ├── monedas.html
+│   │       ├── monedas.migrations.html
+│   │       ├── objects.inv
+│   │       ├── py-modindex.html
+│   │       ├── roles.html
+│   │       ├── roles.migrations.html
+│   │       ├── search.html
+│   │       ├── searchindex.js
+│   │       ├── source
+│   │       │   ├── admin_panel.html
+│   │       │   ├── admin_panel.migrations.html
+│   │       │   ├── CasaDeCambioIS2.html
+│   │       │   ├── clientes.html
+│   │       │   ├── clientes.migrations.html
+│   │       │   ├── core.html
+│   │       │   ├── correo.html
+│   │       │   ├── correo.migrations.html
+│   │       │   ├── cotizaciones.html
+│   │       │   ├── cotizaciones.migrations.html
+│   │       │   ├── lib.html
+│   │       │   ├── lib.migrations.html
+│   │       │   ├── manage.html
+│   │       │   ├── modules.html
+│   │       │   ├── monedas.html
+│   │       │   ├── monedas.migrations.html
+│   │       │   ├── roles.html
+│   │       │   ├── roles.migrations.html
+│   │       │   ├── usuarios.html
+│   │       │   ├── usuarios.management.commands.html
+│   │       │   ├── usuarios.management.html
+│   │       │   └── usuarios.migrations.html
+│   │       ├── _sources
+│   │       │   ├── admin_panel.migrations.rst.txt
+│   │       │   ├── admin_panel.rst.txt
+│   │       │   ├── CasaDeCambioIS2.rst.txt
+│   │       │   ├── clientes.migrations.rst.txt
+│   │       │   ├── clientes.rst.txt
+│   │       │   ├── core.rst.txt
+│   │       │   ├── correo.migrations.rst.txt
+│   │       │   ├── correo.rst.txt
+│   │       │   ├── cotizaciones.migrations.rst.txt
+│   │       │   ├── cotizaciones.rst.txt
+│   │       │   ├── index.rst.txt
+│   │       │   ├── lib.migrations.rst.txt
+│   │       │   ├── lib.rst.txt
+│   │       │   ├── manage.rst.txt
+│   │       │   ├── modules.rst.txt
+│   │       │   ├── monedas.migrations.rst.txt
+│   │       │   ├── monedas.rst.txt
+│   │       │   ├── roles.migrations.rst.txt
+│   │       │   ├── roles.rst.txt
+│   │       │   ├── source
+│   │       │   │   ├── admin_panel.migrations.rst.txt
+│   │       │   │   ├── admin_panel.rst.txt
+│   │       │   │   ├── CasaDeCambioIS2.rst.txt
+│   │       │   │   ├── clientes.migrations.rst.txt
+│   │       │   │   ├── clientes.rst.txt
+│   │       │   │   ├── core.rst.txt
+│   │       │   │   ├── correo.migrations.rst.txt
+│   │       │   │   ├── correo.rst.txt
+│   │       │   │   ├── cotizaciones.migrations.rst.txt
+│   │       │   │   ├── cotizaciones.rst.txt
+│   │       │   │   ├── lib.migrations.rst.txt
+│   │       │   │   ├── lib.rst.txt
+│   │       │   │   ├── manage.rst.txt
+│   │       │   │   ├── modules.rst.txt
+│   │       │   │   ├── monedas.migrations.rst.txt
+│   │       │   │   ├── monedas.rst.txt
+│   │       │   │   ├── roles.migrations.rst.txt
+│   │       │   │   ├── roles.rst.txt
+│   │       │   │   ├── usuarios.management.commands.rst.txt
+│   │       │   │   ├── usuarios.management.rst.txt
+│   │       │   │   ├── usuarios.migrations.rst.txt
+│   │       │   │   └── usuarios.rst.txt
+│   │       │   ├── usuarios.management.commands.rst.txt
+│   │       │   ├── usuarios.management.rst.txt
+│   │       │   ├── usuarios.migrations.rst.txt
+│   │       │   └── usuarios.rst.txt
+│   │       ├── _static
+│   │       │   ├── base-stemmer.js
+│   │       │   ├── basic.css
+│   │       │   ├── css
+│   │       │   │   ├── badge_only.css
+│   │       │   │   ├── fonts
+│   │       │   │   │   ├── fontawesome-webfont.eot
+│   │       │   │   │   ├── fontawesome-webfont.svg
+│   │       │   │   │   ├── fontawesome-webfont.ttf
+│   │       │   │   │   ├── fontawesome-webfont.woff
+│   │       │   │   │   ├── fontawesome-webfont.woff2
+│   │       │   │   │   ├── lato-bold-italic.woff
+│   │       │   │   │   ├── lato-bold-italic.woff2
+│   │       │   │   │   ├── lato-bold.woff
+│   │       │   │   │   ├── lato-bold.woff2
+│   │       │   │   │   ├── lato-normal-italic.woff
+│   │       │   │   │   ├── lato-normal-italic.woff2
+│   │       │   │   │   ├── lato-normal.woff
+│   │       │   │   │   ├── lato-normal.woff2
+│   │       │   │   │   ├── Roboto-Slab-Bold.woff
+│   │       │   │   │   ├── Roboto-Slab-Bold.woff2
+│   │       │   │   │   ├── Roboto-Slab-Regular.woff
+│   │       │   │   │   └── Roboto-Slab-Regular.woff2
+│   │       │   │   └── theme.css
+│   │       │   ├── doctools.js
+│   │       │   ├── documentation_options.js
+│   │       │   ├── file.png
+│   │       │   ├── fonts
+│   │       │   │   ├── Lato
+│   │       │   │   │   ├── lato-bold.eot
+│   │       │   │   │   ├── lato-bolditalic.eot
+│   │       │   │   │   ├── lato-bolditalic.ttf
+│   │       │   │   │   ├── lato-bolditalic.woff
+│   │       │   │   │   ├── lato-bolditalic.woff2
+│   │       │   │   │   ├── lato-bold.ttf
+│   │       │   │   │   ├── lato-bold.woff
+│   │       │   │   │   ├── lato-bold.woff2
+│   │       │   │   │   ├── lato-italic.eot
+│   │       │   │   │   ├── lato-italic.ttf
+│   │       │   │   │   ├── lato-italic.woff
+│   │       │   │   │   ├── lato-italic.woff2
+│   │       │   │   │   ├── lato-regular.eot
+│   │       │   │   │   ├── lato-regular.ttf
+│   │       │   │   │   ├── lato-regular.woff
+│   │       │   │   │   └── lato-regular.woff2
+│   │       │   │   └── RobotoSlab
+│   │       │   │       ├── roboto-slab-v7-bold.eot
+│   │       │   │       ├── roboto-slab-v7-bold.ttf
+│   │       │   │       ├── roboto-slab-v7-bold.woff
+│   │       │   │       ├── roboto-slab-v7-bold.woff2
+│   │       │   │       ├── roboto-slab-v7-regular.eot
+│   │       │   │       ├── roboto-slab-v7-regular.ttf
+│   │       │   │       ├── roboto-slab-v7-regular.woff
+│   │       │   │       └── roboto-slab-v7-regular.woff2
+│   │       │   ├── jquery.js
+│   │       │   ├── js
+│   │       │   │   ├── badge_only.js
+│   │       │   │   ├── theme.js
+│   │       │   │   └── versions.js
+│   │       │   ├── language_data.js
+│   │       │   ├── minus.png
+│   │       │   ├── plus.png
+│   │       │   ├── pygments.css
+│   │       │   ├── searchtools.js
+│   │       │   ├── spanish-stemmer.js
+│   │       │   ├── sphinx_highlight.js
+│   │       │   ├── _sphinx_javascript_frameworks_compat.js
+│   │       │   └── translations.js
+│   │       ├── usuarios.html
+│   │       ├── usuarios.management.commands.html
+│   │       ├── usuarios.management.html
+│   │       └── usuarios.migrations.html
+│   ├── CasaDeCambioIS2.rst
+│   ├── clientes.migrations.rst
+│   ├── clientes.rst
+│   ├── conf.py
+│   ├── core.rst
+│   ├── correo.migrations.rst
+│   ├── correo.rst
+│   ├── cotizaciones.migrations.rst
+│   ├── cotizaciones.rst
+│   ├── index.rst
+│   ├── lib.migrations.rst
+│   ├── lib.rst
+│   ├── make.bat
+│   ├── Makefile
+│   ├── manage.rst
+│   ├── modules.rst
+│   ├── monedas.migrations.rst
+│   ├── monedas.rst
+│   ├── roles.migrations.rst
+│   ├── roles.rst
+│   ├── usuarios.management.commands.rst
+│   ├── usuarios.management.rst
+│   ├── usuarios.migrations.rst
+│   └── usuarios.rst
 ├── lib
 │   ├── admin.py
 │   ├── apps.py
@@ -119,6 +469,7 @@
 │   │   ├── 0004_remove_moneda_limite_transaccion.py
 │   │   ├── 0005_remove_moneda_admite_efectivo_and_more.py
 │   │   ├── 0006_alter_moneda_options.py
+│   │   ├── 0007_alter_moneda_admite_en_linea_and_more.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -128,8 +479,24 @@
 │   │       ├── eliminar.html
 │   │       ├── listar.html
 │   │       └── moneda_detalle.html
+│   ├── test
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
 │   ├── tests.py
 │   ├── urls.py
+│   └── views.py
+├── operaciones
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
 │   └── views.py
 ├── output.png
 ├── pagos
@@ -150,13 +517,20 @@
 │   │       ├── form_tipo_medio_pago.html
 │   │       ├── listar_tipos_medio_pago.html
 │   │       └── ver_tipo_medio_pago.html
-│   ├── tests.py
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
 │   ├── urls.py
 │   └── views.py
 ├── Procfile
+├── proyecto_estructura_detallada.txt
 ├── q
 ├── README.md
 ├── repo_structure.txt
+├── requirements-dev.txt
 ├── requirements.txt
 ├── roles
 │   ├── admin.py
@@ -174,11 +548,13 @@
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── run_tests.py
 ├── runtime.txt
 ├── static
 │   ├── css
 │   │   └── styles.css
 │   └── img
+│       ├── logo.ico
 │       ├── logo-principal.png
 │       └── logo-secundario.png
 ├── structurre.txt
@@ -208,6 +584,16 @@
 │       ├── reset-confirm.html
 │       ├── signup.html
 │       └── verify.html
+├── transacciones
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
 └── usuarios
     ├── admin.py
     ├── apps.py
@@ -245,4 +631,4 @@
     ├── urls.py
     └── views.py
 
-49 directories, 197 files
+97 directories, 535 files
