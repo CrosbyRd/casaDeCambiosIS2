@@ -1,0 +1,44 @@
+[
+  {
+    "model": "clientes.cliente",
+    "pk": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "fields": {
+      "nombre": "Cliente Minorista 1",
+      "categoria": "minorista",
+      "activo": true,
+      "fecha_registro": "2025-01-01T10:00:00Z",
+      "ultima_modificacion": "2025-01-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "pk": "b1fccb00-0d1c-4ff9-cc7e-7cc0ce491b22",
+    "fields": {
+      "nombre": "Cliente Corporativo 1",
+      "categoria": "corporativo",
+      "activo": true,
+      "fecha_registro": "2025-01-02T11:00:00Z",
+      "ultima_modificacion": "2025-01-02T11:00:00Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "fields": {
+      "nombre": "Cliente VIP 1",
+      "categoria": "vip",
+      "activo": true,
+      "fecha_registro": "2025-01-03T12:00:00Z",
+      "ultima_modificacion": "2025-01-03T12:00:00Z"
+    }
+  },
+  {
+    "model": "clientes.cliente",
+    "fields": {
+      "nombre": "Cliente Minorista 2",
+      "categoria": "minorista",
+      "activo": true,
+      "fecha_registro": "2025-01-04T13:00:00Z",
+      "ultima_modificacion": "2025-01-04T13:00:00Z"
+    }
+  }
+]

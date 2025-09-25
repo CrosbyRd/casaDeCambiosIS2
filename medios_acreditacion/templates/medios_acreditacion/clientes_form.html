@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{{ form.instance.pk|yesno:"Editar medio,Nuevo medio" }}{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-6 py-10">
+
+  <header class="flex items-center justify-between mb-6">
+    {% with is_edit=form.instance.pk %}
+      <h1 class="...">{{ is_edit|yesno:"Editar medio,Crear medio" }}</h1>
+    {% endwith %}
+    <a href="{% url 'medios_acreditacion:clientes_list' %}"
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver</a>
+  </header>
+
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="p-3 mb-2 rounded-lg bg-blue-50 text-blue-800 border border-blue-200">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" novalidate class="bg-white border rounded-xl shadow-sm p-6"
+        style="border-color:var(--line)">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="mb-4 text-red-700">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <!-- Tipo -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Tipo</label>
+      {{ form.tipo }}
+      {% for e in form.tipo.errors %}
+        {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+      {% endfor %}
+      {% if form.fields.tipo.disabled %}
+        <p class="text-xs text-[var(--muted)] mt-1">El tipo no se puede cambiar en edición.</p>
+      {% endif %}
+    </div>
+
+    <!-- Alias opcional (solo si el form lo trae) -->
+    {% if form.fields.alias %}
+      <div class="mb-4">
+        <label class="block font-semibold">Alias (opcional)</label>
+        {{ form.alias }}
+        {% for e in form.alias.errors %}
+          {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Campos dinámicos (según el tipo) -->
+      {% for field in form.visible_fields %}
+        {% if field.name != "tipo" and field.name != "alias" and field.name != "activo" and field.name != "predeterminado" %}
+          <div class="mb-4">
+            <label class="block font-semibold">{{ field.label }}</label>
+            {{ field }}
+            {% for e in field.errors %}{% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      <div class="flex items-center gap-6 mb-6">
+        <label class="flex items-center gap-2">
+          {{ form.activo }} <span>Activo</span>
+        </label>
+        <label class="flex items-center gap-2">
+          {{ form.predeterminado }} <span>Predeterminado</span>
+        </label>
+      </div>
+      {% for e in form.predeterminado.errors %}
+        {% ifchanged e %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endifchanged %}
+      {% endfor %}
+
+
+    <div class="flex justify-end gap-3">
+      <a href="{% url 'medios_acreditacion:clientes_list' %}"
+         class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+        Cancelar
+      </a>
+      <button type="submit"
+              class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+              style="background:var(--brand)">
+        {{ form.instance.pk|yesno:"Guardar,Crear" }}
+      </button>
+    </div>
+
+  </form>
+</main>
+
+<style>
+  input, select, textarea {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(115,60,255,.15);
+  }
+</style>
+
+<script>
+  (function () {
+    const select = document.getElementById("id_tipo");
+    if (!select) return;
+    const isCreate = "{{ accion|default:'' }}" === "crear";
+    if (isCreate) {
+      select.addEventListener("change", () => {
+        const v = select.value;
+        const base = window.location.pathname;
+        const qs = v ? ("?tipo=" + encodeURIComponent(v)) : "";
+        window.location.href = base + qs;
+      });
+    }
+  })();
+</script>
+{% endblock %}

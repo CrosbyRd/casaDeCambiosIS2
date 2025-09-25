@@ -5,10 +5,12 @@ from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib import messages
+from .utils import SESSION_KEY
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
+from roles.models import Role # Importar el modelo Role
 
 
 # ----------------------------
@@ -112,8 +114,9 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
-    # Bypass OTP para staff con superprivilegios (mantener compatibilidad interna)
-    if user.is_superuser:
+    # Bypass OTP para el usuario administrador en desarrollo y para usuarios con rol 'Cliente_Dev_OTP_Bypass'
+    admin_email = "globalexchangea2@gmail.com"
+    if (settings.DEBUG and user.email == admin_email) or (settings.DEBUG and user.roles.filter(name="Cliente_Dev_OTP_Bypass").exists()):
         login(request, user)
         next_url = request.session.pop("pending_login_next", None)
         return redirect(next_url or "usuarios:login_redirect")
@@ -206,9 +209,13 @@ def login_redirect(request):
     return redirect("usuarios:dashboard")
 
 
+from transacciones.models import Transaccion
+
 @login_required
 def dashboard(request):
-    return render(request, "usuarios/dashboard.html")
+    # Obtener las últimas transacciones del usuario
+    transacciones = Transaccion.objects.filter(cliente=request.user).order_by('-fecha_creacion')[:5]
+    return render(request, "usuarios/dashboard.html", {'transacciones': transacciones})
 
 
 @login_required
@@ -253,3 +260,27 @@ def quitar_cliente(request, user_id, cliente_id):
     user.clientes.remove(cliente)
     messages.success(request, f"Cliente '{cliente.nombre}' quitado de {user.email}.")
     return redirect("usuarios:listar_usuarios")
+
+
+@login_required
+def seleccionar_cliente(request):
+    user = request.user
+    clientes = user.clientes.all()
+
+    if not clientes.exists():
+        messages.warning(request, "Aún no tenés clientes asociados a tu usuario.")
+        return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})
+
+    if request.method == "POST":
+        cid = request.POST.get("cliente_id")
+        try:
+            cliente = clientes.get(pk=cid)
+        except Exception:
+            messages.error(request, "Cliente inválido.")
+        else:
+            request.session[SESSION_KEY] = str(cliente.pk)
+            messages.success(request, f"Cliente activo: {cliente}.")
+            next_url = request.GET.get("next") or "usuarios:dashboard"
+            return redirect(next_url)
+
+    return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})

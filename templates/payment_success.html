@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pago Exitoso</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f6f9fc; margin: 0;}
+        .container { text-align: center; background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #24b47e; }
+        p { color: #525f7f; }
+        a { color: #5469d4; text-decoration: none; font-weight: 600;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Pago completado con éxito!</h1>
+        <p>Gracias por tu compra. Hemos enviado un recibo a tu correo electrónico.</p>
+        <a href="{% url 'home' %}">Volver a pagina principal</a>
+    </div>
+</body>
+</html>

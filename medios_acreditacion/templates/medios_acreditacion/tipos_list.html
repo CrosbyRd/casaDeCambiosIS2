@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Tipos de Medios de Acreditación - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-6">
+    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+      📋 Tipos de Medios de Acreditación
+    </h1>
+    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+      Administra los tipos de medios que los clientes pueden usar para acreditar y recibir fondos.
+    </p>
+  </header>
+
+  <!-- Botón crear -->
+  <div class="flex justify-end mb-4">
+    <a href="{% url 'medios_acreditacion:tipos_create' %}"
+       class="px-4 py-2 rounded-xl bg-[var(--brand)] text-white font-medium shadow hover:opacity-90">
+       ➕ Crear nuevo tipo
+    </a>
+  </div>
+
+  <!-- Tabla de tipos -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-[var(--brand)] text-white">
+        <tr>
+          <th class="p-3">Nombre</th>
+          <th class="p-3">Descripción</th>
+          <th class="p-3">Estado</th>
+          <th class="p-3 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tipo in tipos %}
+        <tr class="hover:bg-[var(--brand-soft)] transition">
+          <td class="p-3 font-semibold text-[var(--ink)]">{{ tipo.nombre }}</td>
+          <td class="p-3 text-[var(--muted)]">{{ tipo.descripcion|default:"—" }}</td>
+          <td class="p-3">
+            {% if tipo.activo %}
+              <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-sm">Activo</span>
+            {% else %}
+              <span class="px-2 py-1 rounded-full bg-red-100 text-red-800 text-sm">Inactivo</span>
+            {% endif %}
+          </td>
+          <td class="p-3 flex justify-center gap-2">
+            <!-- Editar -->
+            <a href="{% url 'medios_acreditacion:tipos_update' tipo.id_tipo %}"
+               class="px-3 py-1 rounded-lg bg-[var(--brand-soft)] text-[var(--brand-dark)] text-sm font-medium hover:opacity-90">
+               ✏️ Editar
+            </a>
+            <!-- Eliminar -->
+            <a href="{% url 'medios_acreditacion:tipos_delete' tipo.id_tipo %}"
+               class="px-3 py-1 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700">
+               🗑️ Eliminar
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="p-6 text-center text-[var(--muted)]">
+            No hay tipos de medios de acreditación creados todavía.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</main>
+{% endblock %}
