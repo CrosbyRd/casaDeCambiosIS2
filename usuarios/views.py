@@ -5,7 +5,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-
+from django.contrib import messages
+from .utils import SESSION_KEY
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
@@ -259,3 +260,27 @@ def quitar_cliente(request, user_id, cliente_id):
     user.clientes.remove(cliente)
     messages.success(request, f"Cliente '{cliente.nombre}' quitado de {user.email}.")
     return redirect("usuarios:listar_usuarios")
+
+
+@login_required
+def seleccionar_cliente(request):
+    user = request.user
+    clientes = user.clientes.all()
+
+    if not clientes.exists():
+        messages.warning(request, "Aún no tenés clientes asociados a tu usuario.")
+        return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})
+
+    if request.method == "POST":
+        cid = request.POST.get("cliente_id")
+        try:
+            cliente = clientes.get(pk=cid)
+        except Exception:
+            messages.error(request, "Cliente inválido.")
+        else:
+            request.session[SESSION_KEY] = str(cliente.pk)
+            messages.success(request, f"Cliente activo: {cliente}.")
+            next_url = request.GET.get("next") or "usuarios:dashboard"
+            return redirect(next_url)
+
+    return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})

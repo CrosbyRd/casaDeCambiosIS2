@@ -71,6 +71,11 @@ urlpatterns = [
         name="password_reset_complete",
     ),
 
+
+    path("medios-acreditacion/", include("medios_acreditacion.urls")),
+
     # Admin de Django
     path("admin/", admin.site.urls),
+
+    
 ]
