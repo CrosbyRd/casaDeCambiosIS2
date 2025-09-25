@@ -51,7 +51,8 @@
         {% csrf_token %}
         <div class="btn-row" style="margin-top:18px;">
           <button id="btn-confirmar" class="gx-btn" type="submit">Confirmar Operación</button>
-          <a href="{% url 'core:iniciar_operacion' %}" class="gx-btn gx-btn--ghost">Volver y Modificar</a>
+          {% url 'core:iniciar_operacion' as iniciar_operacion_url %}
+          <a href="{{ iniciar_operacion_url }}?monto={{ operacion.monto_origen }}&moneda_origen={{ operacion.moneda_origen_codigo }}&moneda_destino={{ operacion.moneda_destino_codigo }}" class="gx-btn gx-btn--ghost">Volver y Modificar</a>
         </div>
       </form>
     </div>

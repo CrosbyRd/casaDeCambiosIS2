@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 "first_name": "Admin",
                 "last_name": "Principal",
                 "is_staff": True,     # puede loguearse como staff
-                "is_superuser": True, # Es superusuario global para bypass de OTP en desarrollo
+                "is_superuser": False, # no es superusuario global
                 "is_active": True,
                 "is_verified": True,
                 "verification_code": None, # Deshabilitar OTP para admin
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             "first_name": admin_user.first_name,
             "last_name": admin_user.last_name,
             "is_staff": True,     # Asegurar que sea staff
-            "is_superuser": True, # Asegurar que sea superusuario para bypass de OTP
+            "is_superuser": False, # no es superusuario global
             "is_active": admin_user.is_active,
             "is_verified": admin_user.is_verified,
             "verification_code": None, # Deshabilitar OTP para admin

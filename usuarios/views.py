@@ -113,9 +113,9 @@ def login_view(request):
         messages.error(request, "Tu cuenta no está verificada. Verifica tu correo para activarla.")
         return redirect("login")
 
-    # Bypass OTP para superusuarios (mantener compatibilidad interna)
-    # Y bypass para usuarios con el rol 'Cliente_Dev_OTP_Bypass' en entorno de desarrollo
-    if user.is_superuser or (settings.DEBUG and user.roles.filter(name="Cliente_Dev_OTP_Bypass").exists()):
+    # Bypass OTP para el usuario administrador en desarrollo y para usuarios con rol 'Cliente_Dev_OTP_Bypass'
+    admin_email = "globalexchangea2@gmail.com"
+    if (settings.DEBUG and user.email == admin_email) or (settings.DEBUG and user.roles.filter(name="Cliente_Dev_OTP_Bypass").exists()):
         login(request, user)
         next_url = request.session.pop("pending_login_next", None)
         return redirect(next_url or "usuarios:login_redirect")
