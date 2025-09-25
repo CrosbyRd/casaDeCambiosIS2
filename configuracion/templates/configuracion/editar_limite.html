@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+        {% if form.instance.pk %}Editar Límite{% else %}Agregar Nuevo Límite{% endif %}
+      </h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        {% if form.instance.pk %}
+          Modifica los límites del usuario.
+        {% else %}
+          Completa los campos para registrar un nuevo límite.
+        {% endif %}
+      </p>
+    </div>
+    <a href="{% url 'configuracion:lista_limites' %}"
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver</a>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm mb-4 p-6" style="border-color:var(--line)">
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Moneda Base (fija) -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold mb-2">Moneda Base</label>
+        <input type="text" value="Guaraní (₲)" disabled
+               class="w-full max-w-[380px] p-3 border rounded-xl bg-gray-100 cursor-not-allowed">
+      </div>
+
+      <!-- Límites Diario y Mensual -->
+      <div class="mb-6 flex flex-col gap-4">
+        <!-- Límite Diario -->
+        <div class="flex items-center gap-4">
+          {{ form.aplica_diario }} 
+          <label class="font-semibold">Aplicar Límite Diario</label>
+          {{ form.monto_diario }}
+        </div>
+
+        <!-- Límite Mensual -->
+        <div class="flex items-center gap-4">
+          {{ form.aplica_mensual }} 
+          <label class="font-semibold">Aplicar Límite Mensual</label>
+          {{ form.monto_mensual }}
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <a href="{% url 'configuracion:lista_limites' %}"
+           class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+          Cancelar
+        </a>
+        <button type="submit"
+                class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+                style="background:var(--brand)">
+          {% if form.instance.pk %}💾 Guardar Cambios{% else %}➕ Agregar{% endif %}
+        </button>
+      </div>
+
+    </form>
+  </section>
+</main>
+{% endblock %}

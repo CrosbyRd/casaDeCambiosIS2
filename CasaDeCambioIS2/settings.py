@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     "medios_acreditacion",
     'operaciones',
     'transacciones',
+    'configuracion',
     'payments'
+
 ]
 
 # --- Middleware ---
