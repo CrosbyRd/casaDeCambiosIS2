@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-4xl mx-auto px-6 py-10">
+
+  <header class="mb-6">
+    <h1 class="text-4xl font-extrabold mb-2 text-red-600">🗑 Eliminar Límite</h1>
+    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+      Esta acción no se puede deshacer. Revisá la información antes de continuar.
+    </p>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm p-6 md:p-8" style="border-color:var(--line)">
+    <p class="text-[var(--ink)] text-lg mb-4">
+      ¿Confirmás que querés eliminar el límite con valores:
+      <strong>Diario: {{ limite.limite_diario|floatformat:0 }} ₲</strong> y
+      <strong>Mensual: {{ limite.limite_mensual|floatformat:0 }} ₲</strong>?
+    </p>
+
+    <div class="rounded-lg px-4 py-3 mb-6" style="background:#fff6cc;border:1px solid #ffe08a;color:#7a5b00;">
+      ⚠️ Al eliminar este límite se perderán sus datos de manera permanente.
+    </div>
+
+    <form method="post" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      {% csrf_token %}
+      <button type="submit" class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+        🗑 Sí, eliminar
+      </button>
+      <a href="{% url 'configuracion:lista_limites' %}"
+         class="px-4 py-2 rounded-lg font-semibold text-white hover:brightness-95"
+         style="background:var(--brand)">
+        ✖ Cancelar
+      </a>
+    </form>
+  </section>
+</main>
+{% endblock %}
