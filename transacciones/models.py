@@ -6,7 +6,11 @@ from monedas.models import Moneda
 from clientes.models import Cliente 
 from operaciones.models import Tauser
 import uuid
-
+#nuevo
+from django.core.exceptions import ValidationError
+from configuracion.models import TransactionLimit
+from django.db.models import Sum
+from django.utils.timezone import now
 # Forward declaration for MedioAcreditacion
 class MedioAcreditacion(models.Model):
     class Meta:
@@ -78,3 +82,49 @@ class Transaccion(models.Model):
         verbose_name = "Transacción"
         verbose_name_plural = "Transacciones"
         ordering = ['-fecha_creacion']
+    ...
+    # ----------------------------
+    # Validación de límites
+    # ----------------------------
+    def clean(self):
+        """
+        Valida que el monto no supere el límite definido en la moneda base (PYG),
+        tanto diario como mensual, acumulando por cliente.
+        """
+        limite = TransactionLimit.objects.filter(moneda__codigo="PYG").first()
+        if not limite:
+            return  # Si no hay límite configurado, no validamos
+
+        # --- 1. Calcular monto en PYG para esta transacción ---
+        if self.moneda_origen.codigo == "PYG":
+            monto_pyg = self.monto_origen
+        elif self.moneda_destino.codigo == "PYG":
+            monto_pyg = self.monto_destino
+        else:
+            # Caso raro: ninguna moneda es PYG → convertir usando tasa
+            monto_pyg = self.monto_origen * self.tasa_cambio_aplicada
+
+        # --- 2. Calcular acumulados en PYG ---
+        hoy = now().date()
+        inicio_mes = hoy.replace(day=1)
+
+        acumulado_dia = Transaccion.objects.filter(
+            cliente=self.cliente,
+            fecha_creacion__date=hoy
+        ).exclude(id=self.id).aggregate(total=Sum("monto_destino"))["total"] or 0
+
+        acumulado_mes = Transaccion.objects.filter(
+            cliente=self.cliente,
+            fecha_creacion__date__gte=inicio_mes
+        ).exclude(id=self.id).aggregate(total=Sum("monto_destino"))["total"] or 0
+
+        # --- 3. Validaciones ---
+        if limite.aplica_diario and acumulado_dia + monto_pyg > limite.monto_diario:
+            raise ValidationError(
+                f"Límite diario excedido: {acumulado_dia + monto_pyg} / {limite.monto_diario} PYG"
+            )
+
+        if limite.aplica_mensual and acumulado_mes + monto_pyg > limite.monto_mensual:
+            raise ValidationError(
+                f"Límite mensual excedido: {acumulado_mes + monto_pyg} / {limite.monto_mensual} PYG"
+            )

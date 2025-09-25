@@ -77,5 +77,6 @@ urlpatterns = [
     # Admin de Django
     path("admin/", admin.site.urls),
 
-    
+    path('configuracion/', include('configuracion.urls')),
 ]
+
