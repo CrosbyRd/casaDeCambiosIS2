@@ -238,3 +238,35 @@ img, svg, video{ max-width:100%; height:auto; }
 
 /* Utilidad: contenedor con scroll horizontal para tablas anchas (por si no usas Tailwind en algún template) */
 .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+/* ===== Mostrar/Ocultar contraseña ===== */
+.password-field{ position: relative; }
+.password-field input[type="password"],
+.password-field input[type="text"]{
+  padding-right: 2.5rem; /* espacio para el botón ojo */
+}
+.pw-toggle{
+  position: absolute;
+  right: .6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem; height: 2rem;
+  border: 1px solid transparent;
+  border-radius: .5rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.pw-toggle:hover{ color: var(--ink); }
+.pw-toggle:focus-visible{
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 20%, transparent);
+}
+.pw-icon{ width: 1.25rem; height: 1.25rem; }
+.pw-icon--on{ display: none; }            /* ojo abierto oculto por defecto */
+.pw-toggle[aria-pressed="true"] .pw-icon--on{ display: block; }
+.pw-toggle[aria-pressed="true"] .pw-icon--off{ display: none; }

@@ -65,6 +65,13 @@ class OperacionForm(SimulacionForm):
         choices=Transaccion.TIPO_OPERACION_CHOICES,
         widget=forms.Select(attrs={'class': ''})
     )
+    modalidad_tasa = forms.ChoiceField(
+        label="Modalidad de Tasa",
+        choices=Transaccion.MODALIDAD_TASA_CHOICES,
+        widget=forms.Select(attrs={'class': ''}),
+        initial='bloqueada', # Por defecto, la tasa bloqueada
+        help_text="Elige si la tasa se bloquea por un tiempo o es indicativa."
+    )
 
     def clean(self):
         cleaned_data = super().clean()

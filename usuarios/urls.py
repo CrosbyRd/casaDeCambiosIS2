@@ -1,4 +1,17 @@
+"""
+URLs de la app Usuarios.
+========================
+
+.. module:: usuarios.urls
+   :synopsis: Enrutamiento de vistas del módulo de usuarios.
+
+Incluye rutas de autenticación, dashboard y utilidades internas.
+Se añade la ruta ``/usuarios/ted/`` que renderiza la plantilla
+``usuarios/ted.html`` mediante TemplateView.
+"""
+
 from django.urls import path, include
+from django.views.generic import TemplateView
 from . import views
 
 # Espacio de nombres de la app
@@ -15,6 +28,13 @@ urlpatterns = [
 
     # --- Dashboard de usuario autenticado ---
     path("dashboard/", views.dashboard, name="dashboard"),
+
+    # --- TED (render directo de plantilla) ---
+    path(
+        "ted/",
+        TemplateView.as_view(template_name="usuarios/ted.html"),
+        name="ted",
+    ),
 
     # --- Herramientas de administración internas ---
     path("listar/", views.listar_usuarios, name="listar_usuarios"),

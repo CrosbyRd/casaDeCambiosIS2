@@ -1,5 +1,15 @@
 # transacciones/models.py
+"""
+Modelos de la aplicación **transacciones**.
 
+.. module:: transacciones.models
+   :synopsis: Gestión de transacciones de compra/venta de divisas en la Casa de Cambio.
+
+Este módulo define:
+
+- :class:`Transaccion`: Representa operaciones de compra/venta de divisa.
+  Incluye montos, monedas, tasas de cambio, comisiones, estados, medios de acreditación y validación de límites.
+"""
 from django.db import models
 from django.conf import settings
 from monedas.models import Moneda
@@ -19,8 +29,25 @@ class MedioAcreditacion(models.Model):
 
 class Transaccion(models.Model):
     """
-    Modela una operación de compra o venta de divisa.
-    La perspectiva es siempre desde la Casa de Cambio.
+    Modelo que representa una operación de compra o venta de divisa.
+
+    Perspectiva: Casa de Cambio.
+
+    **Tipos de operación**
+    ----------------------
+    - 'venta': La empresa vende divisa al cliente (cliente compra divisa)
+    - 'compra': La empresa compra divisa al cliente (cliente vende divisa)
+
+    **Estados posibles**
+    -------------------
+    - 'pendiente_pago_cliente': Pendiente de pago del cliente (PYG)
+    - 'pendiente_retiro_tauser': Pendiente de retiro de divisa (Tauser)
+    - 'pendiente_deposito_tauser': Pendiente de depósito de divisa (Tauser)
+    - 'procesando_acreditacion': Procesando acreditación a cliente (PYG)
+    - 'completada': Transacción completada con éxito
+    - 'cancelada': Interrumpida antes del pago/deposito del cliente
+    - 'anulada': Revertida después del pago/deposito
+    - 'error': Error técnico o inesperado
     """
 
     # --- PERSPECTIVA CASA DE CAMBIO ---
@@ -43,8 +70,10 @@ class Transaccion(models.Model):
         # Estados comunes
         ('completada', 'Completada'),   # Éxito
         ('cancelada', 'Cancelada'),     # Interrumpida antes del pago/deposito del cliente
+        ('cancelada_usuario_tasa', 'Cancelada por Usuario (Variación de Tasa)'),
+        ('cancelada_tasa_expirada', 'Cancelada (Tasa Expirada)'),
         ('anulada', 'Anulada'),         # Revertida después del pago/deposito del cliente
-        ('error', 'Error'),             # Error técnico/inesperado             
+        ('error', 'Error'),             # Error técnico/inesperado
     ]
 
     # --- CAMPOS DEL MODELO ---
@@ -74,9 +103,55 @@ class Transaccion(models.Model):
     # Timestamps
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    # Campo clave para la lógica de negocio GEG-105
+    tasa_garantizada_hasta = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Fecha y hora límite para honrar la tasa garantizada."
+    )
+
+    MODALIDAD_TASA_CHOICES = [
+        ('bloqueada', 'Tasa Bloqueada'),
+        ('flotante', 'Tasa Flotante (Indicativa)'),
+    ]
+    modalidad_tasa = models.CharField(
+        max_length=10,
+        choices=MODALIDAD_TASA_CHOICES,
+        default='bloqueada',
+        help_text="Define si la tasa es fija por un tiempo o indicativa."
+    )
     
     def __str__(self):
         return f"ID: {self.id} - {self.get_tipo_operacion_display()} para {self.cliente.username} [{self.get_estado_display()}]"
+
+    @property
+    def is_tasa_expirada(self):
+        """
+        Verifica si la tasa garantizada ha expirado para una transacción pendiente.
+        """
+        if self.modalidad_tasa == 'bloqueada' and self.tasa_garantizada_hasta:
+            if self.estado in ['pendiente_pago_cliente', 'pendiente_deposito_tauser']:
+                return now() > self.tasa_garantizada_hasta
+        return False
+
+    @property
+    def estado_dinamico(self):
+        """
+        Devuelve el estado 'cancelada_tasa_expirada' si la tasa ha expirado,
+        de lo contrario, devuelve el estado actual.
+        """
+        if self.is_tasa_expirada:
+            return 'cancelada_tasa_expirada'
+        return self.estado
+
+    def get_estado_display_dinamico(self):
+        """
+        Devuelve el display name del estado dinámico.
+        """
+        estado = self.estado_dinamico
+        # Reconstruimos los choices en un diccionario para buscar el display name
+        choices_dict = dict(self.ESTADO_CHOICES)
+        return choices_dict.get(estado, estado.replace('_', ' ').title())
 
     class Meta:
         verbose_name = "Transacción"
@@ -88,8 +163,11 @@ class Transaccion(models.Model):
     # ----------------------------
     def clean(self):
         """
-        Valida que el monto no supere el límite definido en la moneda base (PYG),
-        tanto diario como mensual, acumulando por cliente.
+        Valida que el monto de la transacción no supere los límites definidos en PYG.
+
+        Considera:
+        - Límite diario y mensual del cliente.
+        - Acumulado de transacciones previas (excluyendo la propia).
         """
         limite = TransactionLimit.objects.filter(moneda__codigo="PYG").first()
         if not limite:
