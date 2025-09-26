@@ -2,7 +2,6 @@
 {% load static %}
 {% block title %}Global Exchange{% endblock %}
 
-{# Acciones del header: Inicio + Cerrar sesión #}
 {% block header_auth %}
 <div class="hidden md:flex items-center gap-3">
   <a href="{% url 'home' %}" class="btn-secondary">Inicio</a>
@@ -25,6 +24,7 @@
 {% url 'medios_acreditacion:clientes_list' as medios_url %}
 {% url 'core:iniciar_operacion' as iniciar_operacion_url %}
 {% url 'core:historial_transacciones' as historial_url %}
+{% url 'usuarios:seleccionar_cliente' as seleccionar_cliente_url %}
 
 <main class="max-w-[1200px] mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-[260px,1fr] gap-6">
 
@@ -51,7 +51,6 @@
           <span>Tarjetas</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
 
-        {# Link a Medios de acreditación (lista del cliente) #}
         <a href="{{ medios_url }}"
            aria-current="{% if request.path == medios_url %}page{% endif %}"
            class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
@@ -68,7 +67,7 @@
       <div>
         <div class="mb-2 text-xs font-extrabold tracking-wide text-purple-700/80">GENERAL</div>
 
-        {# Transacciones: inicia nueva operación #}
+        <!-- Transacciones: inicia nueva operación -->
         <a href="{{ iniciar_operacion_url }}"
            aria-current="{% if request.path == iniciar_operacion_url %}page{% endif %}"
            class="flex items-center justify-between px-4 py-2 rounded-xl transition
@@ -81,7 +80,7 @@
           <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
 
-        {# NUEVO: Historial de transacciones (tabla completa) #}
+        <!-- Historial de transacciones -->
         <a href="{{ historial_url }}"
            aria-current="{% if request.path == historial_url %}page{% endif %}"
            class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
@@ -110,6 +109,26 @@
       </div>
     {% endif %}
 
+    {# Banner compacto: Cliente activo + CTA primaria (sin 'Gestionar' para evitar redundancia) #}
+    <div class="rounded-2xl border p-3 bg-white/60 hidden md:flex items-center justify-between"
+         style="border-color:var(--line)">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
+          <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+          Cliente activo
+        </span>
+        <span class="gx-chip gx-chip--brand gx-chip--lg">
+          {% if cliente %}{{ cliente.nombre }}
+          {% elif cliente_activo %}{{ cliente_activo.nombre }}
+          {% elif request.session.cliente_activo_id %}ID: {{ request.session.cliente_activo_id }}
+          {% else %}Ninguno{% endif %}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{{ seleccionar_cliente_url }}?next={{ request.path }}" class="gx-btn">Cambiar</a>
+      </div>
+    </div>
+
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
       <div>
         <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
@@ -122,63 +141,38 @@
         <p class="text-neutral-500">{{ request.user.email }}</p>
       </div>
 
-      <div class="rounded-2xl border border-neutral-200 p-4 w-full md:w-[320px] bg-white shadow-sm">
-        <div class="flex items-center justify-between">
+      <!-- Tarjeta lateral: dejar 'Último acceso' y cliente activo, sin botones redundantes -->
+      <div class="rounded-2xl border border-neutral-200 p-5 w-full md:w-[420px] bg-white shadow-sm">
+        <div class="flex items-center justify-between mb-4">
           <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
             <span class="h-2 w-2 rounded-full bg-purple-500"></span> Cuenta personal
           </span>
           <span class="text-sm text-neutral-500">Último acceso: {{ request.user.last_login|date:"d/m/Y" }}</span>
         </div>
-      </div>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-        <h2 class="text-xl font-extrabold mb-4">Mis cuentas</h2>
-        <div class="space-y-4">
-          <div class="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="font-bold">ACC-123456</div>
-                <div class="text-sm text-neutral-500">Actualizado: 28/08/2025 &nbsp;&nbsp; Tipo: Corriente</div>
-              </div>
-              <div class="text-emerald-600 font-extrabold text-lg">$1,250</div>
-            </div>
+        <div>
+          <h3 class="text-sm font-semibold text-neutral-500 mb-1">Cliente activo</h3>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="gx-chip gx-chip--brand gx-chip--lg">
+              {% if cliente %}{{ cliente.nombre }}
+              {% elif cliente_activo %}{{ cliente_activo.nombre }}
+              {% elif request.session.cliente_activo_id %}Cliente seleccionado
+              {% else %}Ninguno{% endif %}
+            </span>
+            {% if request.session.cliente_activo_id %}
+              <span class="text-xs text-neutral-500">ID: {{ request.session.cliente_activo_id }}</span>
+            {% endif %}
           </div>
-          <div class="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="font-bold">ACC-789012</div>
-                <div class="text-sm text-neutral-500">Actualizado: 27/08/2025 &nbsp;&nbsp; Tipo: Corriente</div>
-              </div>
-              <div class="text-emerald-600 font-extrabold text-lg">$980</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-        <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
-        <div class="divide-y divide-neutral-200">
-          {% if transacciones %}
-            {% for transaccion in transacciones %}
-              <div class="py-3 flex items-center justify-between">
-                <div class="min-w-0">
-                  <div class="font-bold">{{ transaccion.id }}</div>
-                  <div class="text-sm text-neutral-500 truncate">
-                    {{ transaccion.get_tipo_operacion_display }} - {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }}
-                  </div>
-                </div>
-                <div class="font-extrabold text-neutral-500">{{ transaccion.get_estado_display }}</div>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p class="text-neutral-500">No hay transacciones recientes.</p>
-          {% endif %}
+          <p class="mt-2 text-sm text-neutral-500">
+            Este cliente se usará para iniciar operaciones y ver el historial asociado.
+          </p>
         </div>
       </div>
     </div>
 
+    {# *** Se elimina la grilla de "Mis cuentas" y la primera "Últimas transacciones" por redundantes *** #}
+
+    <!-- Sección inferior: única lista de Últimas transacciones (la más completa) -->
     <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
       <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
       <div class="divide-y divide-neutral-200">
@@ -253,4 +247,23 @@
     <p class="mt-6 text-sm text-neutral-500">* Este dashboard es una maqueta visual y no realiza operaciones reales.</p>
   </section>
 </main>
+
+<style>
+  /* Utilitarios coherentes con la paleta del proyecto */
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px; padding:10px 14px;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent); white-space:nowrap;
+  }
+  .gx-btn--ghost{
+    background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;
+  }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
+  .gx-chip{
+    display:inline-flex; align-items:center; border:1.5px solid var(--line); border-radius:999px; padding:6px 10px;
+    background:#fff; color:var(--ink); font-weight:800;
+  }
+  .gx-chip--brand{ border-color:var(--brand-soft); background:var(--brand-soft); color:var(--brand-dark); }
+  .gx-chip--lg{ padding:8px 12px; }
+</style>
 {% endblock %}
