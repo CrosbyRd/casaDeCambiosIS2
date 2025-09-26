@@ -12,6 +12,7 @@ a la sección de administración de monedas.
 """
 
 from django.db import models
+from django.conf import settings
 
 
 class Moneda(models.Model):
@@ -116,3 +117,107 @@ class Moneda(models.Model):
         :rtype: str
         """
         return f"{self.nombre} ({self.codigo})"
+
+
+# ==============================
+# Inventario TED (en app monedas)
+# ==============================
+
+class TedDenominacion(models.Model):
+    """
+    Denominaciones manejadas por el TED para una moneda dada.
+
+    ``valor`` se almacena como entero en la unidad de la moneda (p. ej. 1, 2, 5, 10, 20, 50, 100).
+    """
+    moneda = models.ForeignKey(
+        Moneda,
+        on_delete=models.PROTECT,
+        related_name="denominaciones_ted",
+        help_text="Moneda a la que pertenece la denominación."
+    )
+    valor = models.PositiveIntegerField(
+        help_text="Valor facial (entero) de la denominación. Ej.: 1, 2, 5, 10, 20, 50, 100."
+    )
+    activa = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = (("moneda", "valor"),)
+        ordering = ["moneda__codigo", "valor"]
+        permissions = [
+            ("access_ted_inventory", "Puede gestionar el inventario del TED"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.moneda.codigo} {self.valor}"
+
+
+class TedInventario(models.Model):
+    """
+    Stock disponible por denominación para la terminal TED.
+
+    Se usa ``OneToOneField`` para asegurar un único registro por denominación.
+    """
+    denominacion = models.OneToOneField(
+        TedDenominacion,
+        on_delete=models.PROTECT,
+        related_name="stock",
+        help_text="Denominación cuyo stock se registra."
+    )
+    cantidad = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["denominacion__moneda__codigo", "denominacion__valor"]
+
+    def __str__(self) -> str:
+        return f"Stock {self.denominacion} = {self.cantidad}"
+
+
+class TedMovimiento(models.Model):
+    """
+    Movimiento de inventario TED (histórico).
+
+    ``delta`` > 0 incrementa stock; ``delta`` < 0 descuenta stock.
+    """
+    MOTIVO_AJUSTE = "AJUSTE"
+    MOTIVO_COMPRA = "COMPRA"  # Cliente compra USD/EUR → retiro billetes
+    MOTIVO_VENTA = "VENTA"    # Cliente vende USD/EUR → depósito billetes
+    MOTIVO_CHEQUE = "CHEQUE"  # Depósito de cheque (mock)
+    MOTIVO_OTRO = "OTRO"
+
+    MOTIVO_CHOICES = [
+        (MOTIVO_AJUSTE, "Ajuste manual"),
+        (MOTIVO_COMPRA, "Compra cliente (retiro billetes)"),
+        (MOTIVO_VENTA, "Venta cliente (depósito billetes)"),
+        (MOTIVO_CHEQUE, "Depósito de cheque (mock)"),
+        (MOTIVO_OTRO, "Otro"),
+    ]
+
+    denominacion = models.ForeignKey(
+        TedDenominacion,
+        on_delete=models.PROTECT,
+        related_name="movimientos"
+    )
+    delta = models.IntegerField(help_text="Variación de stock. Positivo suma, negativo resta.")
+    motivo = models.CharField(max_length=12, choices=MOTIVO_CHOICES, default=MOTIVO_OTRO)
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="movimientos_ted"
+    )
+    # Referencia opcional a transacción (placeholder mientras el módulo está en mock)
+    transaccion_ref = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Referencia textual/ID externo de la transacción (opcional)."
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        signo = "+" if self.delta >= 0 else "-"
+        return f"[{self.created_at:%Y-%m-%d %H:%M}] {self.denominacion} {signo}{abs(self.delta)} ({self.motivo})"
