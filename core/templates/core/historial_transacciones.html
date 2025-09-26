@@ -49,29 +49,26 @@
     <div class="mt-3 flex flex-wrap gap-2">
       <button class="gx-btn" type="submit">Aplicar filtros</button>
       <a class="gx-btn gx-btn--ghost" href="?">Limpiar</a>
-      <a class="gx-btn gx-btn--secondary" href="{% url 'core:iniciar_operacion' %}">Nueva operación</a>
     </div>
   </form>
 
-  <!-- Tabla -->
+  <!-- Tabla (sin la fila “Resultados”) -->
   <section class="bg-white border rounded-2xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Resultados</div>
-
     <div class="overflow-x-auto">
       <table class="min-w-full">
         <caption class="sr-only">Listado de transacciones</caption>
-        <thead>
-          <tr class="text-left text-sm text-[var(--muted)] border-b" style="border-color:var(--line)">
-            <th class="px-4 py-3">ID</th>
-            <th class="px-4 py-3">Fecha</th>
-            <th class="px-4 py-3">Tipo</th>
-            <th class="px-4 py-3">Estado</th>
-            <th class="px-4 py-3">Origen</th>
-            <th class="px-4 py-3">Monto origen</th>
-            <th class="px-4 py-3">Destino</th>
-            <th class="px-4 py-3">Monto destino</th>
-            <th class="px-4 py-3">Tasa</th>
-            <th class="px-4 py-3">Código</th>
+        <thead class="gx-thead">
+          <tr>
+            <th scope="col" class="px-4 py-3">ID</th>
+            <th scope="col" class="px-4 py-3">Fecha</th>
+            <th scope="col" class="px-4 py-3">Tipo</th>
+            <th scope="col" class="px-4 py-3">Estado</th>
+            <th scope="col" class="px-4 py-3">Origen</th>
+            <th scope="col" class="px-4 py-3">Monto origen</th>
+            <th scope="col" class="px-4 py-3">Destino</th>
+            <th scope="col" class="px-4 py-3">Monto destino</th>
+            <th scope="col" class="px-4 py-3">Tasa</th>
+            <th scope="col" class="px-4 py-3">Código</th>
           </tr>
         </thead>
         <tbody class="divide-y" style="divide-color:var(--line)">
@@ -97,9 +94,8 @@
       </table>
     </div>
 
-    <!-- Paginación -->
     {% if page_obj.paginator.num_pages > 1 %}
-      <nav class="flex items-center justify-between p-4 border-t" style="border-color:var(--line)" aria-label="Paginación">
+      <nav class="flex items-center justify-between p-4 border-top" style="border-color:var(--line)" aria-label="Paginación">
         <div class="text-sm text-[var(--muted)]">
           Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
         </div>
@@ -129,6 +125,9 @@
   }
   .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
   .gx-btn--ghost:hover{ background:var(--brand-soft); }
-  .gx-btn--secondary{ background:var(--brand-soft); color:var(--brand-dark); }
+
+  /* Encabezado de tabla lila, texto blanco */
+  .gx-thead tr { background: var(--brand); }
+  .gx-thead th { color: #fff; font-weight:800; }
 </style>
 {% endblock %}
