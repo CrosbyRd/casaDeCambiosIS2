@@ -74,10 +74,14 @@
         <tbody class="divide-y" style="divide-color:var(--line)">
           {% for t in page_obj.object_list %}
             <tr class="hover:bg-purple-50/40">
-              <td class="px-4 py-3 font-bold">{{ t.id }}</td>
+              <td class="px-4 py-3 font-bold">
+                <a href="{% url 'core:detalle_transaccion' transaccion_id=t.id %}" class="text-[var(--brand)] hover:underline">
+                  {{ t.id }}
+                </a>
+              </td>
               <td class="px-4 py-3">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
               <td class="px-4 py-3">{{ t.get_tipo_operacion_display }}</td>
-              <td class="px-4 py-3">{{ t.get_estado_display }}</td>
+              <td class="px-4 py-3">{{ t.get_estado_display_dinamico }}</td>
               <td class="px-4 py-3">{{ t.moneda_origen.codigo }}</td>
               <td class="px-4 py-3">{{ t.monto_origen }}</td>
               <td class="px-4 py-3">{{ t.moneda_destino.codigo }}</td>

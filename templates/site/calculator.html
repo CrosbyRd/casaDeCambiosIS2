@@ -82,7 +82,7 @@
             </div>
             {% if user.is_authenticated %}
               <div class="mt-4">
-                <a id="btn-proceder-operacion" href="#" class="gx-btn">Proceder a Operación</a>
+                <button form="form-simulador" type="submit" name="proceder" class="gx-btn">Proceder a Operación</button>
               </div>
             {% else %}
               <div class="mt-4">
@@ -225,32 +225,7 @@
   enforceRules();          // estado inicial
   updateResultFlag();      // y bandera inicial
 
-  // Lógica para el botón "Proceder a Operación"
-  const btnProcederOperacion = document.getElementById('btn-proceder-operacion');
-  console.log('Elemento btnProcederOperacion:', btnProcederOperacion); // Depuración: verificar si el elemento se encuentra
-
-  if (btnProcederOperacion) {
-    btnProcederOperacion.addEventListener('click', (e) => {
-      e.preventDefault();
-      // Usar las variables ya declaradas
-      const currentMonto = monto?.value;
-      const currentMonedaOrigen = selOri?.value;
-      const currentMonedaDestino = selDst?.value;
-
-      console.log('Botón "Proceder a Operación" clickeado.');
-      console.log('Monto:', currentMonto, 'Origen:', currentMonedaOrigen, 'Destino:', currentMonedaDestino);
-
-      if (currentMonto && currentMonedaOrigen && currentMonedaDestino && toNumber(currentMonto) > 0) {
-        const url = new URL("{{ iniciar_operacion_url }}");
-        url.searchParams.append('monto', toNumber(currentMonto));
-        url.searchParams.append('moneda_origen', currentMonedaOrigen);
-        url.searchParams.append('moneda_destino', currentMonedaDestino);
-        window.location.href = url.toString();
-      } else {
-        alert("Por favor, completa todos los campos de la calculadora y asegúrate que el monto sea mayor a 0 antes de proceder.");
-      }
-    });
-  }
+  // No se necesita la lógica del botón, ya que ahora es un botón de submit.
 
   // BORRAR
   btnClr?.addEventListener('click', () => {
