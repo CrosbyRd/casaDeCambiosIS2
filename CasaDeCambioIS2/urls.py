@@ -29,6 +29,7 @@ urlpatterns = [
     path("cotizaciones/", include("cotizaciones.urls")),
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
     path("admin_panel/", include("admin_panel.urls")),
+    path("operaciones/", include("operaciones.urls")),
     path("core/", include("core.urls")), # Incluir las URLs de la app core
     path("", include("payments.urls")),
     
@@ -79,4 +80,3 @@ urlpatterns = [
 
     path('configuracion/', include('configuracion.urls')),
 ]
-
