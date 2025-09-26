@@ -15,7 +15,7 @@ app_name = "admin_panel"
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
-    # monta TED bajo /admin_panel/ted/ con namespace "tedavs"
+    # Monta TED bajo /admin_panel/ted/ con namespace "ted"
     path("ted/", include(("ted.urls", "ted"), namespace="ted")),
 ]
 
