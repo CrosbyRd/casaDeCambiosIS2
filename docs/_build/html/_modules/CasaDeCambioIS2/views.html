@@ -42,7 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Módulos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
 
         </div>
@@ -70,13 +70,16 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para CasaDeCambioIS2.views</h1><div class="highlight"><pre>
-<span></span><span class="c1"># proyecto_principal/views.py</span>
+<span></span><span class="c1"># CasaDeCambioIS2/views.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>    <span class="c1">#devuelve una respuesta HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cotizaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cotizacion</span> <span class="c1"># Importar el modelo Cotizacion</span>
 
 <div class="viewcode-block" id="home">
-<a class="viewcode-back" href="../../source/CasaDeCambioIS2.html#CasaDeCambioIS2.views.home">[documentos]</a>
+<a class="viewcode-back" href="../../CasaDeCambioIS2.html#CasaDeCambioIS2.views.home">[documentos]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;home.html&#39;</span><span class="p">)</span></div>
+    <span class="c1"># Obtener las últimas cotizaciones para mostrar en la página de inicio</span>
+    <span class="n">cotizaciones_destacadas</span> <span class="o">=</span> <span class="n">Cotizacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s1">&#39;moneda_base&#39;</span><span class="p">,</span> <span class="s1">&#39;moneda_destino&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-fecha_actualizacion&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># Obtener las 5 más recientes</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;site/home.html&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;cotizaciones_destacadas&#39;</span><span class="p">:</span> <span class="n">cotizaciones_destacadas</span><span class="p">})</span> <span class="c1"># Corregido: usar el nombre de variable correcto</span></div>
 
 </pre></div>
 

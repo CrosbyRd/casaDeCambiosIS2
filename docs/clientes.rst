@@ -1,13 +1,6 @@
 clientes package
 ================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   clientes.migrations
 
 Submodules
 ----------

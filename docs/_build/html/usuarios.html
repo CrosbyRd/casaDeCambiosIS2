@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="usuarios.management package" href="usuarios.management.html" />
-    <link rel="prev" title="roles.migrations package" href="roles.migrations.html" /> 
+    <link rel="next" title="configuracion package" href="configuracion.html" />
+    <link rel="prev" title="roles package" href="roles.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,11 +57,6 @@
 <li class="toctree-l2"><a class="reference internal" href="monedas.html">monedas package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html">roles package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">usuarios package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.management.html">usuarios.management package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html">usuarios.migrations package</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios.admin">usuarios.admin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios.apps">usuarios.apps module</a><ul>
@@ -80,7 +75,10 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios.tests">usuarios.tests module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-usuarios.urls">usuarios.urls module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">usuarios.urls module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-usuarios.urls">URLs de la app Usuarios.</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios.views">usuarios.views module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.admin_panel"><code class="docutils literal notranslate"><span class="pre">admin_panel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.agregar_cliente"><code class="docutils literal notranslate"><span class="pre">agregar_cliente()</span></code></a></li>
@@ -94,12 +92,20 @@
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.quitar_cliente"><code class="docutils literal notranslate"><span class="pre">quitar_cliente()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.reenviar_codigo"><code class="docutils literal notranslate"><span class="pre">reenviar_codigo()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.views.seleccionar_cliente"><code class="docutils literal notranslate"><span class="pre">seleccionar_cliente()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.verify"><code class="docutils literal notranslate"><span class="pre">verify()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">configuracion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">medios_acreditacion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">operaciones package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">pagos package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">payments package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">transacciones package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">ted package</a></li>
 </ul>
 </li>
 </ul>
@@ -131,161 +137,6 @@
              
   <section id="usuarios-package">
 <h1>usuarios package<a class="headerlink" href="#usuarios-package" title="Link to this heading"></a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="usuarios.management.html">usuarios.management package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.management.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.management.commands.html">usuarios.management.commands package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.management.commands.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.management.commands.html#module-usuarios.management.commands.seed_users">usuarios.management.commands.seed_users module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.management.commands.html#module-usuarios.management.commands">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.management.html#module-usuarios.management">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usuarios.migrations.html">usuarios.migrations package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0001_initial">usuarios.migrations.0001_initial module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0001_initial.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0001_initial.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0001_initial.Migration.initial"><code class="docutils literal notranslate"><span class="pre">Migration.initial</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0001_initial.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0002_customuser_roles">usuarios.migrations.0002_customuser_roles module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_customuser_roles.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_customuser_roles.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_customuser_roles.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0002_permiso_rol_customuser_rol">usuarios.migrations.0002_permiso_rol_customuser_rol module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_permiso_rol_customuser_rol.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_permiso_rol_customuser_rol.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0002_permiso_rol_customuser_rol.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0003_auto_20250820_1326">usuarios.migrations.0003_auto_20250820_1326 module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0003_auto_20250820_1326.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0003_auto_20250820_1326.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0003_auto_20250820_1326.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0003_auto_20250820_1326.populate_roles"><code class="docutils literal notranslate"><span class="pre">populate_roles()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0004_remove_customuser_tipo_usuario_and_more">usuarios.migrations.0004_remove_customuser_tipo_usuario_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0004_remove_customuser_tipo_usuario_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0004_remove_customuser_tipo_usuario_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0004_remove_customuser_tipo_usuario_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0005_merge_20250821_0105">usuarios.migrations.0005_merge_20250821_0105 module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0005_merge_20250821_0105.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0005_merge_20250821_0105.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0005_merge_20250821_0105.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0006_remove_rol_permisos_remove_customuser_rol_and_more">usuarios.migrations.0006_remove_rol_permisos_remove_customuser_rol_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0006_remove_rol_permisos_remove_customuser_rol_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0006_remove_rol_permisos_remove_customuser_rol_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0006_remove_rol_permisos_remove_customuser_rol_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0007_remove_customuser_roles_customuser_tipo_usuario_and_more">usuarios.migrations.0007_remove_customuser_roles_customuser_tipo_usuario_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0007_remove_customuser_roles_customuser_tipo_usuario_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0007_remove_customuser_roles_customuser_tipo_usuario_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0007_remove_customuser_roles_customuser_tipo_usuario_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0008_alter_customuser_tipo_usuario">usuarios.migrations.0008_alter_customuser_tipo_usuario module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0008_alter_customuser_tipo_usuario.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0008_alter_customuser_tipo_usuario.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0008_alter_customuser_tipo_usuario.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0009_customuser_clientes">usuarios.migrations.0009_customuser_clientes module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_customuser_clientes.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_customuser_clientes.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_customuser_clientes.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0009_remove_customuser_username_and_more">usuarios.migrations.0009_remove_customuser_username_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_remove_customuser_username_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_remove_customuser_username_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0009_remove_customuser_username_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0010_alter_customuser_options_alter_customuser_managers_and_more">usuarios.migrations.0010_alter_customuser_options_alter_customuser_managers_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_alter_customuser_options_alter_customuser_managers_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_alter_customuser_options_alter_customuser_managers_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_alter_customuser_options_alter_customuser_managers_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0010_customuser_role">usuarios.migrations.0010_customuser_role module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_customuser_role.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_customuser_role.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0010_customuser_role.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0011_merge_20250822_1119">usuarios.migrations.0011_merge_20250822_1119 module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0011_merge_20250822_1119.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0011_merge_20250822_1119.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0011_merge_20250822_1119.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0012_remove_customuser_role_customuser_code_created_at_and_more">usuarios.migrations.0012_remove_customuser_role_customuser_code_created_at_and_more module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0012_remove_customuser_role_customuser_code_created_at_and_more.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0012_remove_customuser_role_customuser_code_created_at_and_more.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0012_remove_customuser_role_customuser_code_created_at_and_more.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations.0013_usuariospermissions">usuarios.migrations.0013_usuariospermissions module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0013_usuariospermissions.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0013_usuariospermissions.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.migrations.html#usuarios.migrations.0013_usuariospermissions.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.migrations.html#module-usuarios.migrations">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
@@ -477,6 +328,12 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="usuarios.models.CustomUser.get_full_name">
+<span class="sig-name descname"><span class="pre">get_full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/models.html#CustomUser.get_full_name"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.models.CustomUser.get_full_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the first_name plus the last_name, with a space in between.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.get_next_by_date_joined">
 <span class="sig-name descname"><span class="pre">get_next_by_date_joined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">date_joined&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#usuarios.models.CustomUser.get_next_by_date_joined" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -585,6 +442,36 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="usuarios.models.CustomUser.medios_acreditacion">
+<span class="sig-name descname"><span class="pre">medios_acreditacion</span></span><a class="headerlink" href="#usuarios.models.CustomUser.medios_acreditacion" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="usuarios.models.CustomUser.movimientos_ted">
+<span class="sig-name descname"><span class="pre">movimientos_ted</span></span><a class="headerlink" href="#usuarios.models.CustomUser.movimientos_ted" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="usuarios.models.CustomUser.objects">
 <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;usuarios.models.CustomUserManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#usuarios.models.CustomUser.objects" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -608,6 +495,21 @@ a many-to-many relation.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
 instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="usuarios.models.CustomUser.transacciones">
+<span class="sig-name descname"><span class="pre">transacciones</span></span><a class="headerlink" href="#usuarios.models.CustomUser.transacciones" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
 <p>Most of the implementation is delegated to a dynamically defined manager
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
@@ -682,8 +584,14 @@ object the first time, the query is executed.</p>
 <section id="module-usuarios.tests">
 <span id="usuarios-tests-module"></span><h2>usuarios.tests module<a class="headerlink" href="#module-usuarios.tests" title="Link to this heading"></a></h2>
 </section>
+<section id="module-0">
+<span id="usuarios-urls-module"></span><h2>usuarios.urls module<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <section id="module-usuarios.urls">
-<span id="usuarios-urls-module"></span><h2>usuarios.urls module<a class="headerlink" href="#module-usuarios.urls" title="Link to this heading"></a></h2>
+<span id="urls-de-la-app-usuarios"></span><h3>URLs de la app Usuarios.<a class="headerlink" href="#module-usuarios.urls" title="Link to this heading"></a></h3>
+<p>Incluye rutas de autenticación, dashboard y utilidades internas.
+Se añade la ruta <code class="docutils literal notranslate"><span class="pre">/usuarios/ted/</span></code> que renderiza la plantilla
+<code class="docutils literal notranslate"><span class="pre">usuarios/ted.html</span></code> mediante TemplateView.</p>
+</section>
 </section>
 <section id="module-usuarios.views">
 <span id="usuarios-views-module"></span><h2>usuarios.views module<a class="headerlink" href="#module-usuarios.views" title="Link to this heading"></a></h2>
@@ -748,6 +656,11 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="usuarios.views.seleccionar_cliente">
+<span class="sig-prename descclassname"><span class="pre">usuarios.views.</span></span><span class="sig-name descname"><span class="pre">seleccionar_cliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/views.html#seleccionar_cliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.views.seleccionar_cliente" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="usuarios.views.verify">
 <span class="sig-prename descclassname"><span class="pre">usuarios.views.</span></span><span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/views.html#verify"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.views.verify" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -762,8 +675,8 @@ object the first time, the query is executed.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="roles.migrations.html" class="btn btn-neutral float-left" title="roles.migrations package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="usuarios.management.html" class="btn btn-neutral float-right" title="usuarios.management package" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="roles.html" class="btn btn-neutral float-left" title="roles package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="configuracion.html" class="btn btn-neutral float-right" title="configuracion package" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

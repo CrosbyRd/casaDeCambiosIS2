@@ -1,0 +1,141 @@
+medios\_acreditacion.migrations package
+=======================================
+
+Submodules
+----------
+
+medios\_acreditacion.migrations.0001\_initial module
+----------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0001_initial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0002\_tipomedioacreditacion\_delete\_medioacreditacion module
+---------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0002_tipomedioacreditacion_delete_medioacreditacion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0003\_medioacreditacion\_delete\_tipomedioacreditacion\_and\_more module
+--------------------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0003_medioacreditacion_delete_tipomedioacreditacion_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0004\_remove\_medioacreditacion\_uniq\_medio\_cuenta\_por\_cliente\_and\_more module
+--------------------------------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0004_remove_medioacreditacion_uniq_medio_cuenta_por_cliente_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0005\_tipomedioacreditacion\_delete\_medioacreditacion module
+---------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0005_tipomedioacreditacion_delete_medioacreditacion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0006\_alter\_tipomedioacreditacion\_options\_and\_more module
+---------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0006_alter_tipomedioacreditacion_options_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0007\_categoriamedio\_remove\_tipomedioacreditacion\_codigo\_and\_more module
+-------------------------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0007_categoriamedio_remove_tipomedioacreditacion_codigo_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0008\_alter\_categoriamedio\_options\_and\_more module
+--------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0008_alter_categoriamedio_options_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0009\_alter\_categoriamedio\_codigo\_and\_more module
+-------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0009_alter_categoriamedio_codigo_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0010\_remove\_categoriamedio\_nombre module
+---------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0010_remove_categoriamedio_nombre
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0011\_campomedioacreditacion\_medioacreditacioncliente\_and\_more module
+--------------------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0011_campomedioacreditacion_medioacreditacioncliente_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0012\_alter\_campomedioacreditacion\_regex module
+---------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0012_alter_campomedioacreditacion_regex
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0013\_campomedioacreditacion\_activo module
+---------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0013_campomedioacreditacion_activo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0014\_alter\_tipomedioacreditacion\_options module
+----------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0014_alter_tipomedioacreditacion_options
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0015\_medioacreditacioncliente\_alias module
+----------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0015_medioacreditacioncliente_alias
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+medios\_acreditacion.migrations.0016\_medioacreditacioncliente\_predeterminado\_and\_more module
+------------------------------------------------------------------------------------------------
+
+.. automodule:: medios_acreditacion.migrations.0016_medioacreditacioncliente_predeterminado_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: medios_acreditacion.migrations
+   :members:
+   :undoc-members:
+   :show-inheritance:

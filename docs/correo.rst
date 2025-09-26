@@ -1,13 +1,6 @@
 correo package
 ==============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   correo.migrations
 
 Submodules
 ----------

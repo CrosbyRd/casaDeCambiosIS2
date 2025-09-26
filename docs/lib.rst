@@ -1,13 +1,6 @@
 lib package
 ===========
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   lib.migrations
 
 Submodules
 ----------

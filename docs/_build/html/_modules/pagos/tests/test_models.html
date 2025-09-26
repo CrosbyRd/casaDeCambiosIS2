@@ -1,0 +1,175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pagos.tests.test_models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">pagos.tests.test_models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para pagos.tests.test_models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pagos.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioPago</span>
+
+<div class="viewcode-block" id="TipoMedioPagoModelTests">
+<a class="viewcode-back" href="../../../pagos.tests.html#pagos.tests.test_models.TipoMedioPagoModelTests">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioPagoModelTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TipoMedioPagoModelTests.test_str_retorna_nombre">
+<a class="viewcode-back" href="../../../pagos.tests.html#pagos.tests.test_models.TipoMedioPagoModelTests.test_str_retorna_nombre">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_str_retorna_nombre</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que el método __str__ retorna correctamente el nombre del tipo de medio de pago.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tipo</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Tarjeta de Crédito&quot;</span><span class="p">,</span>
+            <span class="n">comision_porcentaje</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+            <span class="n">bonificacion_porcentaje</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">activo</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tipo</span><span class="p">),</span> <span class="s2">&quot;Tarjeta de Crédito&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TipoMedioPagoModelTests.test_valores_por_defecto">
+<a class="viewcode-back" href="../../../pagos.tests.html#pagos.tests.test_models.TipoMedioPagoModelTests.test_valores_por_defecto">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_valores_por_defecto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que los campos opcionales tomen los valores por defecto al crear un registro sin especificarlos.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tipo</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Cheque&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tipo</span><span class="o">.</span><span class="n">comision_porcentaje</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tipo</span><span class="o">.</span><span class="n">bonificacion_porcentaje</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">tipo</span><span class="o">.</span><span class="n">activo</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TipoMedioPagoModelTests.test_valores_invalidos">
+<a class="viewcode-back" href="../../../pagos.tests.html#pagos.tests.test_models.TipoMedioPagoModelTests.test_valores_invalidos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_valores_invalidos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que se lance un ValidationError si se ingresan valores fuera de rango (como comision_porcentaje negativo).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tipo</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Medio inválido&quot;</span><span class="p">,</span>
+            <span class="n">comision_porcentaje</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span>  <span class="c1"># inválido por MinValueValidator</span>
+            <span class="n">bonificacion_porcentaje</span><span class="o">=</span><span class="mf">150.0</span>  <span class="c1"># inválido por MaxValueValidator</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+            <span class="n">tipo</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span>  <span class="c1"># full_clean() valida todos los validators</span></div>
+
+
+<div class="viewcode-block" id="TipoMedioPagoModelTests.test_comision_bonificacion_maxima">
+<a class="viewcode-back" href="../../../pagos.tests.html#pagos.tests.test_models.TipoMedioPagoModelTests.test_comision_bonificacion_maxima">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_comision_bonificacion_maxima</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que no se permitan valores mayores a 100 para comision o bonificacion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tipo</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Medio inválido 2&quot;</span><span class="p">,</span>
+            <span class="n">comision_porcentaje</span><span class="o">=</span><span class="mf">101.0</span><span class="p">,</span>
+            <span class="n">bonificacion_porcentaje</span><span class="o">=</span><span class="mf">50.0</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+            <span class="n">tipo</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span>
+
+        <span class="n">tipo2</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Medio inválido 3&quot;</span><span class="p">,</span>
+            <span class="n">comision_porcentaje</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+            <span class="n">bonificacion_porcentaje</span><span class="o">=</span><span class="mf">120.0</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">ValidationError</span><span class="p">):</span>
+            <span class="n">tipo2</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,13 +1,6 @@
 cotizaciones package
 ====================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   cotizaciones.migrations
 
 Submodules
 ----------

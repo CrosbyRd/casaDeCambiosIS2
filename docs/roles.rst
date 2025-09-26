@@ -1,13 +1,6 @@
 roles package
 =============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   roles.migrations
 
 Submodules
 ----------

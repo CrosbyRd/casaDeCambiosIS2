@@ -1,14 +1,6 @@
 admin\_panel package
 ====================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   admin_panel.migrations
-
 Submodules
 ----------
 

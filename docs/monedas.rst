@@ -1,13 +1,6 @@
 monedas package
 ===============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   monedas.migrations
 
 Submodules
 ----------

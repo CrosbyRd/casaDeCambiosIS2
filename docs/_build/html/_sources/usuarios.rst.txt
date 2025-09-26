@@ -1,14 +1,6 @@
 usuarios package
 ================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   usuarios.management
-   usuarios.migrations
 
 Submodules
 ----------
