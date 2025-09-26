@@ -44,12 +44,8 @@
 
       <div>
         <div class="mb-2 text-xs font-extrabold tracking-wide text-purple-700/80">PRODUCTOS</div>
-        <a href="#" class="flex items-center justify-between px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-          <span>Cuentas</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
-        </a>
-        <a href="#" class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-          <span>Tarjetas</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
-        </a>
+
+        {# Se eliminaron Cuentas y Tarjetas (plantillas) para evitar ruido #}
 
         <a href="{{ medios_url }}"
            aria-current="{% if request.path == medios_url %}page{% endif %}"
@@ -109,7 +105,7 @@
       </div>
     {% endif %}
 
-    {# Banner compacto: Cliente activo + CTA primaria (sin 'Gestionar' para evitar redundancia) #}
+    {# Banner compacto: Cliente activo (sin botón Gestionar redundante) #}
     <div class="rounded-2xl border p-3 bg-white/60 hidden md:flex items-center justify-between"
          style="border-color:var(--line)">
       <div class="flex items-center gap-3">
@@ -141,7 +137,7 @@
         <p class="text-neutral-500">{{ request.user.email }}</p>
       </div>
 
-      <!-- Tarjeta lateral: dejar 'Último acceso' y cliente activo, sin botones redundantes -->
+      <!-- Tarjeta lateral: dejar 'Último acceso' y cliente activo -->
       <div class="rounded-2xl border border-neutral-200 p-5 w-full md:w-[420px] bg-white shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
@@ -170,9 +166,9 @@
       </div>
     </div>
 
-    {# *** Se elimina la grilla de "Mis cuentas" y la primera "Últimas transacciones" por redundantes *** #}
+    {# Se eliminaron “Mis cuentas” y el primer bloque de “Últimas transacciones” redundante #}
 
-    <!-- Sección inferior: única lista de Últimas transacciones (la más completa) -->
+    <!-- Única sección de Últimas transacciones -->
     <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
       <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
       <div class="divide-y divide-neutral-200">
@@ -194,55 +190,7 @@
       </div>
     </div>
 
-    <h3 class="font-extrabold mb-2">Billeteras electrónicas</h3>
-    <div class="space-y-3 mb-6">
-      <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-100 font-extrabold text-purple-700">Tigo</span>
-          <div>
-            <div class="font-bold">Tigo Money <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">WALLET</span></div>
-            <div class="text-sm text-neutral-500">Teléfono asociado: 0983••••20</div>
-          </div>
-        </div>
-        <a href="#" class="btn">Cambiar</a>
-      </div>
-
-      <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-100 font-extrabold text-purple-700">Pers.</span>
-          <div>
-            <div class="font-bold">Personal Pay <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">WALLET</span></div>
-            <div class="text-sm text-neutral-500">Teléfono asociado: 0971••••42</div>
-          </div>
-        </div>
-        <a href="#" class="btn">Cambiar</a>
-      </div>
-    </div>
-
-    <h3 class="font-extrabold mb-2">Cheques</h3>
-    <div class="space-y-3">
-      <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-neutral-200 font-extrabold text-neutral-700">CHQ</span>
-          <div>
-            <div class="font-bold">Cheque común <span class="ml-2 text-xs font-extrabold rounded-full bg-neutral-200 px-2 py-0.5 text-neutral-700">OFFLINE</span></div>
-            <div class="text-sm text-neutral-500">Banco emisor: *Itapúa* · N° 00••827</div>
-          </div>
-        </div>
-        <a href="#" class="btn-secondary">Ver detalles</a>
-      </div>
-
-      <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-neutral-200 font-extrabold text-neutral-700">CHQ+</span>
-          <div>
-            <div class="font-bold">Cheque adelantado <span class="ml-2 text-xs font-extrabold rounded-full bg-neutral-200 px-2 py-0.5 text-neutral-700">OFFLINE</span></div>
-            <div class="text-sm text-neutral-500">Banco emisor: *Regional* · N° 00••114</div>
-          </div>
-        </div>
-        <a href="#" class="btn-secondary">Ver detalles</a>
-      </div>
-    </div>
+    {# *** Se eliminaron por completo “Billeteras electrónicas” y “Cheques” (maqueta) *** #}
 
     <p class="mt-6 text-sm text-neutral-500">* Este dashboard es una maqueta visual y no realiza operaciones reales.</p>
   </section>
