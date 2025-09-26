@@ -149,8 +149,8 @@
           {% for transaccion in transacciones %}
             <div class="py-3 flex items-center justify-between">
               <div class="min-w-0">
-                <div class="font-bold">{{ transaccion.id }}</div>
-                <div class="text-sm text-neutral-500 truncate">
+                {# Cambiado: se oculta el ID y se muestra en negrita el texto inferior #}
+                <div class="font-bold">
                   {{ transaccion.get_tipo_operacion_display }} - {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }}
                 </div>
               </div>
