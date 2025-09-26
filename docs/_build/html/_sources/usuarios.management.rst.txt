@@ -1,3 +1,3 @@
-usuarios.management package
+paquete usuarios.management
 ===========================
 

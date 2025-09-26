@@ -1,11 +1,11 @@
-payments package
+paquete payments
 ================
 
 
-Submodules
+Submódulos
 ----------
 
-payments.admin module
+módulo payments.admin
 ---------------------
 
 .. automodule:: payments.admin
@@ -13,7 +13,7 @@ payments.admin module
    :undoc-members:
    :show-inheritance:
 
-payments.apps module
+módulo payments.apps
 --------------------
 
 .. automodule:: payments.apps
@@ -21,7 +21,7 @@ payments.apps module
    :undoc-members:
    :show-inheritance:
 
-payments.models module
+módulo payments.models
 ----------------------
 
 .. automodule:: payments.models
@@ -29,7 +29,7 @@ payments.models module
    :undoc-members:
    :show-inheritance:
 
-payments.stripe\_service module
+módulo payments.stripe\_service
 -------------------------------
 
 .. automodule:: payments.stripe_service
@@ -37,7 +37,7 @@ payments.stripe\_service module
    :undoc-members:
    :show-inheritance:
 
-payments.tests module
+módulo payments.tests
 ---------------------
 
 .. automodule:: payments.tests
@@ -45,7 +45,7 @@ payments.tests module
    :undoc-members:
    :show-inheritance:
 
-payments.urls module
+módulo payments.urls
 --------------------
 
 .. automodule:: payments.urls
@@ -53,7 +53,7 @@ payments.urls module
    :undoc-members:
    :show-inheritance:
 
-payments.views module
+módulo payments.views
 ---------------------
 
 .. automodule:: payments.views
@@ -61,7 +61,7 @@ payments.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: payments

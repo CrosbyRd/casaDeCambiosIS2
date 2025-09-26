@@ -1,12 +1,12 @@
-medios\_acreditacion package
+paquete medios\_acreditacion
 ============================
 
    medios_acreditacion.tests
 
-Submodules
+Submódulos
 ----------
 
-medios\_acreditacion.admin module
+módulo medios\_acreditacion.admin
 ---------------------------------
 
 .. automodule:: medios_acreditacion.admin
@@ -14,7 +14,7 @@ medios\_acreditacion.admin module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.apps module
+módulo medios\_acreditacion.apps
 --------------------------------
 
 .. automodule:: medios_acreditacion.apps
@@ -22,7 +22,7 @@ medios\_acreditacion.apps module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.forms module
+módulo medios\_acreditacion.forms
 ---------------------------------
 
 .. automodule:: medios_acreditacion.forms
@@ -30,7 +30,7 @@ medios\_acreditacion.forms module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.models module
+módulo medios\_acreditacion.models
 ----------------------------------
 
 .. automodule:: medios_acreditacion.models
@@ -38,7 +38,7 @@ medios\_acreditacion.models module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.urls module
+módulo medios\_acreditacion.urls
 --------------------------------
 
 .. automodule:: medios_acreditacion.urls
@@ -46,7 +46,7 @@ medios\_acreditacion.urls module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.views module
+módulo medios\_acreditacion.views
 ---------------------------------
 
 .. automodule:: medios_acreditacion.views
@@ -54,7 +54,7 @@ medios\_acreditacion.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: medios_acreditacion

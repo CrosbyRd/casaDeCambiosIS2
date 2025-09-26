@@ -1,12 +1,12 @@
-configuracion package
+paquete configuracion
 =====================
 
    configuracion.tests
 
-Submodules
+Submódulos
 ----------
 
-configuracion.admin module
+módulo configuracion.admin
 --------------------------
 
 .. automodule:: configuracion.admin
@@ -14,7 +14,7 @@ configuracion.admin module
    :undoc-members:
    :show-inheritance:
 
-configuracion.apps module
+módulo configuracion.apps
 -------------------------
 
 .. automodule:: configuracion.apps
@@ -22,7 +22,7 @@ configuracion.apps module
    :undoc-members:
    :show-inheritance:
 
-configuracion.forms module
+módulo configuracion.forms
 --------------------------
 
 .. automodule:: configuracion.forms
@@ -30,7 +30,7 @@ configuracion.forms module
    :undoc-members:
    :show-inheritance:
 
-configuracion.models module
+módulo configuracion.models
 ---------------------------
 
 .. automodule:: configuracion.models
@@ -38,7 +38,7 @@ configuracion.models module
    :undoc-members:
    :show-inheritance:
 
-configuracion.urls module
+módulo configuracion.urls
 -------------------------
 
 .. automodule:: configuracion.urls
@@ -46,7 +46,7 @@ configuracion.urls module
    :undoc-members:
    :show-inheritance:
 
-configuracion.views module
+módulo configuracion.views
 --------------------------
 
 .. automodule:: configuracion.views
@@ -54,7 +54,7 @@ configuracion.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: configuracion

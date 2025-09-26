@@ -1,10 +1,10 @@
-configuracion.tests package
+paquete configuracion.tests
 ===========================
 
-Submodules
+Submódulos
 ----------
 
-configuracion.tests.test\_forms module
+módulo configuracion.tests.test\_forms
 --------------------------------------
 
 .. automodule:: configuracion.tests.test_forms
@@ -12,7 +12,7 @@ configuracion.tests.test\_forms module
    :undoc-members:
    :show-inheritance:
 
-configuracion.tests.test\_models module
+módulo configuracion.tests.test\_models
 ---------------------------------------
 
 .. automodule:: configuracion.tests.test_models
@@ -20,7 +20,7 @@ configuracion.tests.test\_models module
    :undoc-members:
    :show-inheritance:
 
-configuracion.tests.test\_urls module
+módulo configuracion.tests.test\_urls
 -------------------------------------
 
 .. automodule:: configuracion.tests.test_urls
@@ -28,7 +28,7 @@ configuracion.tests.test\_urls module
    :undoc-members:
    :show-inheritance:
 
-configuracion.tests.test\_views module
+módulo configuracion.tests.test\_views
 --------------------------------------
 
 .. automodule:: configuracion.tests.test_views
@@ -36,7 +36,7 @@ configuracion.tests.test\_views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: configuracion.tests

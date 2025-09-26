@@ -1,10 +1,10 @@
-core package
+paquete core
 ============
 
-Submodules
+Submódulos
 ----------
 
-core.apps module
+módulo core.apps
 ----------------
 
 .. automodule:: core.apps
@@ -12,7 +12,7 @@ core.apps module
    :undoc-members:
    :show-inheritance:
 
-core.forms module
+módulo core.forms
 -----------------
 
 .. automodule:: core.forms
@@ -20,7 +20,7 @@ core.forms module
    :undoc-members:
    :show-inheritance:
 
-core.logic module
+módulo core.logic
 -----------------
 
 .. automodule:: core.logic
@@ -28,7 +28,7 @@ core.logic module
    :undoc-members:
    :show-inheritance:
 
-core.tests module
+módulo core.tests
 -----------------
 
 .. automodule:: core.tests
@@ -36,7 +36,7 @@ core.tests module
    :undoc-members:
    :show-inheritance:
 
-core.views module
+módulo core.views
 -----------------
 
 .. automodule:: core.views
@@ -44,7 +44,7 @@ core.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: core

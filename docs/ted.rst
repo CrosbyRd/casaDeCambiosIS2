@@ -1,11 +1,11 @@
-ted package
+paquete ted
 ===========
 
 
-Submodules
+Submódulos
 ----------
 
-ted.apps module
+módulo ted.apps
 ---------------
 
 .. automodule:: ted.apps
@@ -13,7 +13,7 @@ ted.apps module
    :undoc-members:
    :show-inheritance:
 
-ted.forms module
+módulo ted.forms
 ----------------
 
 .. automodule:: ted.forms
@@ -21,7 +21,7 @@ ted.forms module
    :undoc-members:
    :show-inheritance:
 
-ted.models module
+módulo ted.models
 -----------------
 
 .. automodule:: ted.models
@@ -29,7 +29,7 @@ ted.models module
    :undoc-members:
    :show-inheritance:
 
-ted.services module
+módulo ted.services
 -------------------
 
 .. automodule:: ted.services
@@ -37,7 +37,7 @@ ted.services module
    :undoc-members:
    :show-inheritance:
 
-ted.urls module
+módulo ted.urls
 ---------------
 
 .. automodule:: ted.urls
@@ -45,7 +45,7 @@ ted.urls module
    :undoc-members:
    :show-inheritance:
 
-ted.views module
+módulo ted.views
 ----------------
 
 .. automodule:: ted.views
@@ -53,7 +53,7 @@ ted.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: ted

@@ -1,10 +1,10 @@
-medios\_acreditacion.tests package
+paquete medios\_acreditacion.tests
 ==================================
 
-Submodules
+Submódulos
 ----------
 
-medios\_acreditacion.tests.test\_forms module
+módulo medios\_acreditacion.tests.test\_forms
 ---------------------------------------------
 
 .. automodule:: medios_acreditacion.tests.test_forms
@@ -12,7 +12,7 @@ medios\_acreditacion.tests.test\_forms module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.tests.test\_models module
+módulo medios\_acreditacion.tests.test\_models
 ----------------------------------------------
 
 .. automodule:: medios_acreditacion.tests.test_models
@@ -20,7 +20,7 @@ medios\_acreditacion.tests.test\_models module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.tests.test\_urls module
+módulo medios\_acreditacion.tests.test\_urls
 --------------------------------------------
 
 .. automodule:: medios_acreditacion.tests.test_urls
@@ -28,7 +28,7 @@ medios\_acreditacion.tests.test\_urls module
    :undoc-members:
    :show-inheritance:
 
-medios\_acreditacion.tests.test\_views module
+módulo medios\_acreditacion.tests.test\_views
 ---------------------------------------------
 
 .. automodule:: medios_acreditacion.tests.test_views
@@ -36,7 +36,7 @@ medios\_acreditacion.tests.test\_views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: medios_acreditacion.tests

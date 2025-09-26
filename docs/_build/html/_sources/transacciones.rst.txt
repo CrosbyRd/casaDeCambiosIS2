@@ -1,11 +1,11 @@
-transacciones package
+paquete transacciones
 =====================
 
 
-Submodules
+Submódulos
 ----------
 
-transacciones.admin module
+módulo transacciones.admin
 --------------------------
 
 .. automodule:: transacciones.admin
@@ -13,7 +13,7 @@ transacciones.admin module
    :undoc-members:
    :show-inheritance:
 
-transacciones.apps module
+módulo transacciones.apps
 -------------------------
 
 .. automodule:: transacciones.apps
@@ -21,7 +21,7 @@ transacciones.apps module
    :undoc-members:
    :show-inheritance:
 
-transacciones.models module
+módulo transacciones.models
 ---------------------------
 
 .. automodule:: transacciones.models
@@ -29,7 +29,7 @@ transacciones.models module
    :undoc-members:
    :show-inheritance:
 
-transacciones.tests module
+módulo transacciones.tests
 --------------------------
 
 .. automodule:: transacciones.tests
@@ -37,7 +37,7 @@ transacciones.tests module
    :undoc-members:
    :show-inheritance:
 
-transacciones.urls module
+módulo transacciones.urls
 -------------------------
 
 .. automodule:: transacciones.urls
@@ -45,7 +45,7 @@ transacciones.urls module
    :undoc-members:
    :show-inheritance:
 
-transacciones.views module
+módulo transacciones.views
 --------------------------
 
 .. automodule:: transacciones.views
@@ -53,7 +53,7 @@ transacciones.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: transacciones

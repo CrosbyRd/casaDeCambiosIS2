@@ -1,11 +1,11 @@
-roles package
+paquete roles
 =============
 
 
-Submodules
+Submódulos
 ----------
 
-roles.admin module
+módulo roles.admin
 ------------------
 
 .. automodule:: roles.admin
@@ -13,7 +13,7 @@ roles.admin module
    :undoc-members:
    :show-inheritance:
 
-roles.apps module
+módulo roles.apps
 -----------------
 
 .. automodule:: roles.apps
@@ -21,7 +21,7 @@ roles.apps module
    :undoc-members:
    :show-inheritance:
 
-roles.models module
+módulo roles.models
 -------------------
 
 .. automodule:: roles.models
@@ -29,7 +29,7 @@ roles.models module
    :undoc-members:
    :show-inheritance:
 
-roles.serializers module
+módulo roles.serializers
 ------------------------
 
 .. automodule:: roles.serializers
@@ -37,7 +37,7 @@ roles.serializers module
    :undoc-members:
    :show-inheritance:
 
-roles.tests module
+módulo roles.tests
 ------------------
 
 .. automodule:: roles.tests
@@ -45,7 +45,7 @@ roles.tests module
    :undoc-members:
    :show-inheritance:
 
-roles.urls module
+módulo roles.urls
 -----------------
 
 .. automodule:: roles.urls
@@ -53,7 +53,7 @@ roles.urls module
    :undoc-members:
    :show-inheritance:
 
-roles.views module
+módulo roles.views
 ------------------
 
 .. automodule:: roles.views
@@ -61,7 +61,7 @@ roles.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: roles

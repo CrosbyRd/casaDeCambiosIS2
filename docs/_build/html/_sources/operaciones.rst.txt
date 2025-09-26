@@ -1,11 +1,11 @@
-operaciones package
+paquete operaciones
 ===================
 
 
-Submodules
+Submódulos
 ----------
 
-operaciones.admin module
+módulo operaciones.admin
 ------------------------
 
 .. automodule:: operaciones.admin
@@ -13,7 +13,7 @@ operaciones.admin module
    :undoc-members:
    :show-inheritance:
 
-operaciones.apps module
+módulo operaciones.apps
 -----------------------
 
 .. automodule:: operaciones.apps
@@ -21,7 +21,7 @@ operaciones.apps module
    :undoc-members:
    :show-inheritance:
 
-operaciones.models module
+módulo operaciones.models
 -------------------------
 
 .. automodule:: operaciones.models
@@ -29,7 +29,7 @@ operaciones.models module
    :undoc-members:
    :show-inheritance:
 
-operaciones.tests module
+módulo operaciones.tests
 ------------------------
 
 .. automodule:: operaciones.tests
@@ -37,7 +37,7 @@ operaciones.tests module
    :undoc-members:
    :show-inheritance:
 
-operaciones.urls module
+módulo operaciones.urls
 -----------------------
 
 .. automodule:: operaciones.urls
@@ -45,7 +45,7 @@ operaciones.urls module
    :undoc-members:
    :show-inheritance:
 
-operaciones.views module
+módulo operaciones.views
 ------------------------
 
 .. automodule:: operaciones.views
@@ -53,7 +53,7 @@ operaciones.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: operaciones

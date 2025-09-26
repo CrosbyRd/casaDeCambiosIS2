@@ -1,11 +1,11 @@
-lib package
+paquete lib
 ===========
 
 
-Submodules
+Submódulos
 ----------
 
-lib.admin module
+módulo lib.admin
 ----------------
 
 .. automodule:: lib.admin
@@ -13,7 +13,7 @@ lib.admin module
    :undoc-members:
    :show-inheritance:
 
-lib.apps module
+módulo lib.apps
 ---------------
 
 .. automodule:: lib.apps
@@ -21,7 +21,7 @@ lib.apps module
    :undoc-members:
    :show-inheritance:
 
-lib.models module
+módulo lib.models
 -----------------
 
 .. automodule:: lib.models
@@ -29,7 +29,7 @@ lib.models module
    :undoc-members:
    :show-inheritance:
 
-lib.tests module
+módulo lib.tests
 ----------------
 
 .. automodule:: lib.tests
@@ -37,7 +37,7 @@ lib.tests module
    :undoc-members:
    :show-inheritance:
 
-lib.urls module
+módulo lib.urls
 ---------------
 
 .. automodule:: lib.urls
@@ -45,7 +45,7 @@ lib.urls module
    :undoc-members:
    :show-inheritance:
 
-lib.views module
+módulo lib.views
 ----------------
 
 .. automodule:: lib.views
@@ -53,7 +53,7 @@ lib.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: lib

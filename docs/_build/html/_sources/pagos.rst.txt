@@ -1,12 +1,12 @@
-pagos package
+paquete pagos
 =============
 
    pagos.tests
 
-Submodules
+Submódulos
 ----------
 
-pagos.admin module
+módulo pagos.admin
 ------------------
 
 .. automodule:: pagos.admin
@@ -14,7 +14,7 @@ pagos.admin module
    :undoc-members:
    :show-inheritance:
 
-pagos.apps module
+módulo pagos.apps
 -----------------
 
 .. automodule:: pagos.apps
@@ -22,7 +22,7 @@ pagos.apps module
    :undoc-members:
    :show-inheritance:
 
-pagos.forms module
+módulo pagos.forms
 ------------------
 
 .. automodule:: pagos.forms
@@ -30,7 +30,7 @@ pagos.forms module
    :undoc-members:
    :show-inheritance:
 
-pagos.models module
+módulo pagos.models
 -------------------
 
 .. automodule:: pagos.models
@@ -38,7 +38,7 @@ pagos.models module
    :undoc-members:
    :show-inheritance:
 
-pagos.services module
+módulo pagos.services
 ---------------------
 
 .. automodule:: pagos.services
@@ -46,7 +46,7 @@ pagos.services module
    :undoc-members:
    :show-inheritance:
 
-pagos.urls module
+módulo pagos.urls
 -----------------
 
 .. automodule:: pagos.urls
@@ -54,7 +54,7 @@ pagos.urls module
    :undoc-members:
    :show-inheritance:
 
-pagos.views module
+módulo pagos.views
 ------------------
 
 .. automodule:: pagos.views
@@ -62,7 +62,7 @@ pagos.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: pagos

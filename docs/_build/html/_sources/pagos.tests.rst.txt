@@ -1,10 +1,10 @@
-pagos.tests package
+paquete pagos.tests
 ===================
 
-Submodules
+Submódulos
 ----------
 
-pagos.tests.test\_forms module
+módulo pagos.tests.test\_forms
 ------------------------------
 
 .. automodule:: pagos.tests.test_forms
@@ -12,7 +12,7 @@ pagos.tests.test\_forms module
    :undoc-members:
    :show-inheritance:
 
-pagos.tests.test\_models module
+módulo pagos.tests.test\_models
 -------------------------------
 
 .. automodule:: pagos.tests.test_models
@@ -20,7 +20,7 @@ pagos.tests.test\_models module
    :undoc-members:
    :show-inheritance:
 
-pagos.tests.test\_urls module
+módulo pagos.tests.test\_urls
 -----------------------------
 
 .. automodule:: pagos.tests.test_urls
@@ -28,7 +28,7 @@ pagos.tests.test\_urls module
    :undoc-members:
    :show-inheritance:
 
-pagos.tests.test\_views module
+módulo pagos.tests.test\_views
 ------------------------------
 
 .. automodule:: pagos.tests.test_views
@@ -36,7 +36,7 @@ pagos.tests.test\_views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: pagos.tests
