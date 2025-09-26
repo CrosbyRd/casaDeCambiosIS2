@@ -72,6 +72,8 @@ class Command(BaseCommand):
             "access_user_client_management",# Asociación cliente-usuario
             "access_clientes_panel",        # Clientes
             "access_medios_acreditacion",   # Medios de acreditación
+            "puede_operar_terminal",
+            "puede_gestionar_inventario",
         ]
 
         permisos_admin = []

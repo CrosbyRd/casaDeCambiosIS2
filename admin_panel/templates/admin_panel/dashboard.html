@@ -103,12 +103,14 @@
       </a>
     </section>
 
-    <!-- Terminal TED -->
+    <!-- TED (Inventario / Admin) -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-5xl mb-4">🏧</div>
-      <h2 class="text-xl font-bold mb-2">Terminal TED</h2>
-      <p class="text-gray-500 mb-4">Depósito/Extracción de divisas y cheques (simulado).</p>
-      <a href="{% url 'admin_panel:ted:panel' %}"
+      <div class="text-5xl mb-4">📦</div>
+      <h2 class="text-xl font-bold mb-2">TED</h2>
+      <p class="text-gray-500 mb-4">
+        Stock de billetes por denominación, Nº de serie y ubicación del terminal.
+      </p>
+      <a href="{% url 'admin_panel:ted:inventario' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
         Acceder

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajustar inventario{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-6 py-10">
+  <header class="mb-6">
+    <h1 class="text-3xl font-extrabold text-[var(--ink)]">Ajustar inventario</h1>
+    <p class="text-[var(--muted)]">Equipo {{ serial }} · {{ direccion }}</p>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="px-6 py-4 border-b" style="border-color:var(--line)">
+      <div class="font-bold text-[var(--ink)]">{{ den.moneda.nombre }} ({{ den.moneda.codigo }}) — Denominación: {{ den.moneda.codigo }} {{ den.valor }}</div>
+      <div class="text-[var(--muted)]">Stock actual: <strong>{{ inv.cantidad }}</strong></div>
+    </div>
+
+    <form method="post" class="px-6 py-6 space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block font-semibold mb-1">Ajuste</label>
+        {{ form.delta }}
+        <p class="muted">{{ form.delta.help_text }}</p>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Motivo</label>
+        {{ form.motivo }}
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Comentario (opcional)</label>
+        {{ form.comentario }}
+      </div>
+
+      <div class="flex items-center space-x-2">
+        {{ form.confirm }} <label>Confirmo el ajuste</label>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <a href="{% url 'admin_panel:ted:inventario' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95">Cancelar</a>
+        <button class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">Aplicar ajuste</button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

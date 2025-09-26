@@ -67,6 +67,12 @@
 │   │       ├── editar_limite.html
 │   │       ├── eliminar_limite.html
 │   │       └── lista_limites.html
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
 │   ├── urls.py
 │   └── views.py
 ├── core
@@ -82,6 +88,7 @@
 │   ├── templates
 │   │   └── core
 │   │       ├── confirmar_operacion.html
+│   │       ├── historial_transacciones.html
 │   │       └── iniciar_operacion.html
 │   ├── tests.py
 │   ├── urls.py
@@ -515,7 +522,12 @@
 │   │       ├── tipos_confirm_delete.html
 │   │       ├── tipos_form.html
 │   │       └── tipos_list.html
-│   ├── tests.py
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── test_forms.py
+│   │   ├── test_models.py
+│   │   ├── test_urls.py
+│   │   └── test_views.py
 │   ├── urls.py
 │   └── views.py
 ├── mi_modelo_datos.dot
@@ -623,6 +635,7 @@
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── run_tests_H5.py
 ├── run_tests.py
 ├── runtime.txt
 ├── static
@@ -877,4 +890,4 @@
     ├── utils.py
     └── views.py
 
-131 directories, 747 files
+133 directories, 758 files

@@ -10,4 +10,5 @@ class TedPerms(models.Model):
     class Meta:
         permissions = [
             ("puede_operar_terminal", "Puede operar el terminal TED"),
+            ("puede_gestionar_inventario", "Puede gestionar inventario TED"),
         ]

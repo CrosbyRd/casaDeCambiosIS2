@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Inventario TED{% endblock %}
+
+{% block content %}
+<main class="max-w-[1100px] mx-auto px-6 py-8">
+  <header class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="h1 mb-1">🧳 Inventario TED</h1>
+      <div class="muted">Nº de serie: <strong>{{ serial }}</strong> · Ubicación: <strong>{{ direccion }}</strong></div>
+    </div>
+    <div class="flex gap-2">
+      <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary">⬅ Volver al Panel</a>
+      <a href="{% url 'admin_panel:ted:crear_stock' %}" class="btn">➕ Crear stock</a>
+    </div>
+  </header>
+
+  {% if not grupos %}
+    <div class="box muted text-center">No hay monedas habilitadas para terminal.</div>
+  {% else %}
+    {% for g in grupos %}
+      <section class="box mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="h2">{{ g.moneda.nombre }} ({{ g.moneda.codigo }})</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Denominación</th>
+                <th class="text-right">Stock</th>
+                <th class="text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in g.items %}
+                <tr>
+                  <td>{{ g.moneda.codigo }} {{ row.den.valor }}</td>
+                  <td class="text-right">{{ row.stock }}</td>
+                  <td class="text-right space-x-2">
+                    <a href="{% url 'admin_panel:ted:inventario_ajustar' row.den.id %}" class="btn-secondary">Ajustar</a>
+                    <form action="{% url 'admin_panel:ted:eliminar_denominacion' row.den.id %}" method="post" style="display:inline">
+                      {% csrf_token %}
+                      <button class="btn-danger" onclick="return confirm('¿Eliminar denominación?')">Eliminar</button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="3" class="muted text-center">Sin denominaciones.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    {% endfor %}
+  {% endif %}
+</main>
+{% endblock %}
