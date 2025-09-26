@@ -1,48 +1,147 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}Ajustar inventario{% endblock %}
+{% block title %}Ajustar inventario | TED{% endblock %}
 
 {% block content %}
-<main class="max-w-3xl mx-auto px-6 py-10">
-  <header class="mb-6">
-    <h1 class="text-3xl font-extrabold text-[var(--ink)]">Ajustar inventario</h1>
-    <p class="text-[var(--muted)]">Equipo {{ serial }} · {{ direccion }}</p>
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🧮 Ajustar inventario</h1>
+      <p class="text-lg leading-relaxed text-[var(--muted)]">
+        Equipo <strong>{{ serial }}</strong> · {{ direccion }}
+      </p>
+    </div>
+    <a href="{% url 'admin_panel:ted:inventario' %}"
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+      ⬅ Volver
+    </a>
   </header>
 
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <div class="px-6 py-4 border-b" style="border-color:var(--line)">
-      <div class="font-bold text-[var(--ink)]">{{ den.moneda.nombre }} ({{ den.moneda.codigo }}) — Denominación: {{ den.moneda.codigo }} {{ den.valor }}</div>
-      <div class="text-[var(--muted)]">Stock actual: <strong>{{ inv.cantidad }}</strong></div>
+  {% if messages %}
+  <div class="max-w-5xl mx-auto mt-2 space-y-3">
+    {% for message in messages %}
+      <div class="rounded-lg px-4 py-3 border
+           {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+           {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+           {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+           {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Resumen de la denominación -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6" style="border-color:var(--line)">
+    <div class="px-6 py-4 flex items-center justify-between gap-4"
+         style="background:var(--brand-soft)">
+      <div class="text-[var(--ink)]">
+        <div class="font-extrabold">
+          <span class="currency-emoji" data-code="{{ den.moneda.codigo }}"></span>
+          {{ den.moneda.nombre }} <span class="text-[var(--muted)] font-semibold">({{ den.moneda.codigo }})</span>
+        </div>
+        <div class="text-[var(--muted)]">
+          Denominación: <strong>{{ den.moneda.codigo }} {{ den.valor }}</strong>
+        </div>
+      </div>
+      <div class="px-3 py-1.5 rounded-lg border text-sm font-semibold bg-white"
+           style="border-color:var(--line); color:var(--ink)">
+        Stock actual: <span class="font-extrabold">{{ inv.cantidad }}</span>
+      </div>
     </div>
 
-    <form method="post" class="px-6 py-6 space-y-4">
+    <!-- Formulario -->
+    <form method="post" class="px-6 py-6 space-y-5">
       {% csrf_token %}
-      <div>
-        <label class="block font-semibold mb-1">Ajuste</label>
-        {{ form.delta }}
-        <p class="muted">{{ form.delta.help_text }}</p>
+
+      {% if form.non_field_errors %}
+      <div class="rounded-lg px-4 py-3 border bg-red-50 border-red-200 text-red-800">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="block font-semibold mb-1 text-[var(--ink)]">Ajuste</label>
+          {{ form.delta }}
+          {% if form.delta.errors %}
+            <p class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
+              {{ form.delta.errors|striptags }}
+            </p>
+          {% else %}
+            <p class="text-sm text-[var(--muted)]">{{ form.delta.help_text }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1 text-[var(--ink)]">Motivo</label>
+          {{ form.motivo }}
+          {% if form.motivo.errors %}
+            <p class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
+              {{ form.motivo.errors|striptags }}
+            </p>
+          {% endif %}
+        </div>
       </div>
 
       <div>
-        <label class="block font-semibold mb-1">Motivo</label>
-        {{ form.motivo }}
-      </div>
-
-      <div>
-        <label class="block font-semibold mb-1">Comentario (opcional)</label>
+        <label class="block font-semibold mb-1 text-[var(--ink)]">Comentario (opcional)</label>
         {{ form.comentario }}
+        {% if form.comentario.errors %}
+          <p class="mt-2 px-3 py-2 rounded-md border border-red-200 bg-red-50 text-red-700">
+            {{ form.comentario.errors|striptags }}
+          </p>
+        {% endif %}
       </div>
 
-      <div class="flex items-center space-x-2">
-        {{ form.confirm }} <label>Confirmo el ajuste</label>
+      <div class="flex items-center gap-2">
+        {{ form.confirm }} <label class="text-[var(--ink)]">Confirmo el ajuste</label>
+        {% if form.confirm.errors %}
+          <span class="text-red-600 text-sm ml-2">{{ form.confirm.errors|striptags }}</span>
+        {% endif %}
       </div>
 
-      <div class="flex gap-3 pt-2">
-        <a href="{% url 'admin_panel:ted:inventario' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95">Cancelar</a>
-        <button class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">Aplicar ajuste</button>
+      <div class="flex justify-end gap-3 pt-2">
+        <a href="{% url 'admin_panel:ted:inventario' %}"
+           class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+          Cancelar
+        </a>
+        <button class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+                style="background:var(--brand)">
+          Aplicar ajuste
+        </button>
       </div>
     </form>
   </section>
 </main>
+
+<!-- Emoji por moneda (igual que en otras pantallas) -->
+<script>
+  (function(){
+    const MAP = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
+    document.querySelectorAll('.currency-emoji').forEach(el => {
+      const code = String(el.dataset.code || '').toUpperCase();
+      el.textContent = (MAP[code] || "💱") + " ";
+    });
+  })();
+</script>
+
+<style>
+  /* Entradas con look consistente al resto del sistema */
+  #id_delta, #id_motivo, #id_comentario {
+    width:100%; background:#fff; border:1.5px solid var(--line);
+    border-radius:12px; padding:12px 14px; min-height:48px;
+    font-size:1rem; color:var(--ink);
+    box-shadow:0 1px 2px rgba(0,0,0,.03);
+    transition:box-shadow .2s, border-color .2s;
+  }
+  #id_comentario { min-height: 110px; }
+  #id_delta:focus, #id_motivo:focus, #id_comentario:focus {
+    outline:none; border-color:var(--brand);
+    box-shadow:0 0 0 3px rgba(115,60,255,.15);
+  }
+  /* Checkbox confirm con separación */
+  #id_confirm { width:18px; height:18px; }
+</style>
 {% endblock %}

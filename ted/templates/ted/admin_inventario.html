@@ -2,57 +2,134 @@
 {% block title %}Inventario TED{% endblock %}
 
 {% block content %}
-<main class="max-w-[1100px] mx-auto px-6 py-8">
-  <header class="flex items-center justify-between mb-6">
+<main class="max-w-6xl mx-auto px-6 py-10">
+
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="h1 mb-1">🧳 Inventario TED</h1>
-      <div class="muted">Nº de serie: <strong>{{ serial }}</strong> · Ubicación: <strong>{{ direccion }}</strong></div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🧳 Inventario TED</h1>
+      <p class="text-lg leading-relaxed text-[var(--muted)]">
+        Nº de serie: <strong>{{ serial }}</strong> · Ubicación: <strong>{{ direccion }}</strong>
+      </p>
     </div>
-    <div class="flex gap-2">
-      <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary">⬅ Volver al Panel</a>
-      <a href="{% url 'admin_panel:ted:crear_stock' %}" class="btn">➕ Crear stock</a>
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'admin_panel:ted:crear_stock' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white"
+         style="background:var(--brand)">
+        ➕ Crear stock
+      </a>
     </div>
   </header>
 
-  {% if not grupos %}
-    <div class="box muted text-center">No hay monedas habilitadas para terminal.</div>
-  {% else %}
-    {% for g in grupos %}
-      <section class="box mb-4">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="h2">{{ g.moneda.nombre }} ({{ g.moneda.codigo }})</h2>
-        </div>
+  {% if messages %}
+  <div class="max-w-5xl mx-auto px-0 mt-4 space-y-3">
+    {% for message in messages %}
+      <div class="rounded-lg px-4 py-3 border
+           {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+           {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+           {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+           {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-        <div class="overflow-x-auto">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Denominación</th>
-                <th class="text-right">Stock</th>
-                <th class="text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for row in g.items %}
-                <tr>
-                  <td>{{ g.moneda.codigo }} {{ row.den.valor }}</td>
-                  <td class="text-right">{{ row.stock }}</td>
-                  <td class="text-right space-x-2">
-                    <a href="{% url 'admin_panel:ted:inventario_ajustar' row.den.id %}" class="btn-secondary">Ajustar</a>
-                    <form action="{% url 'admin_panel:ted:eliminar_denominacion' row.den.id %}" method="post" style="display:inline">
-                      {% csrf_token %}
-                      <button class="btn-danger" onclick="return confirm('¿Eliminar denominación?')">Eliminar</button>
-                    </form>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr><td colspan="3" class="muted text-center">Sin denominaciones.</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
+  {% if not grupos %}
+    <!-- Estado vacío -->
+    <section class="bg-white border rounded-xl shadow-sm p-8 text-center" style="border-color:var(--line)">
+      <div class="text-5xl mb-2">🗃️</div>
+      <h2 class="text-2xl font-bold mb-2 text-[var(--ink)]">Sin monedas en inventario</h2>
+      <p class="text-[var(--muted)] mb-6">
+        Aún no registraste denominaciones para la terminal. Crea stock inicial para comenzar.
+      </p>
+      <a href="{% url 'admin_panel:ted:crear_stock' %}"
+         class="px-5 py-2 rounded-lg font-bold text-white shadow-sm"
+         style="background:var(--brand)">
+        ➕ Crear stock
+      </a>
+    </section>
+  {% else %}
+
+    {% for g in grupos %}
+    <!-- Tarjeta por moneda -->
+    <section class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6" style="border-color:var(--line)">
+      <!-- Cabecera de tarjeta -->
+      <div class="flex items-center justify-between px-6 py-4"
+           style="background:var(--brand-soft)">
+        <h2 class="text-xl font-extrabold text-[var(--ink)]">
+          <span class="currency-emoji" data-code="{{ g.moneda.codigo }}"></span>{{ g.moneda.nombre }}
+          <span class="ml-2 text-[var(--muted)] font-semibold">({{ g.moneda.codigo }})</span>
+        </h2>
+        <div class="flex gap-2">
+          <a href="{% url 'admin_panel:ted:crear_stock' %}"
+             class="px-3 py-1.5 rounded-md font-semibold bg-white border hover:bg-gray-50"
+             style="border-color:var(--line); color:var(--ink)">
+            ➕ Nueva denominación
+          </a>
         </div>
-      </section>
+      </div>
+
+      <!-- Tabla de stock -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead class="text-white" style="background:var(--brand)">
+            <tr>
+              <th class="px-6 py-3">Denominación</th>
+              <th class="px-6 py-3 text-right">Stock</th>
+              <th class="px-6 py-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in g.items %}
+            <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+              <td class="px-6 py-4 font-medium text-[var(--ink)]">
+                {{ g.moneda.codigo }} {{ row.den.valor }}
+              </td>
+              <td class="px-6 py-4 text-right">{{ row.stock }}</td>
+              <td class="px-6 py-4">
+                <div class="flex justify-end gap-2">
+                  <a href="{% url 'admin_panel:ted:inventario_ajustar' row.den.id %}"
+                     class="px-3 py-1.5 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
+                    Ajustar
+                  </a>
+                  <form action="{% url 'admin_panel:ted:eliminar_denominacion' row.den.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="px-3 py-1.5 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700"
+                            onclick="return confirm('¿Eliminar esta denominación?')">
+                      Eliminar
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="px-6 py-6 text-center text-[var(--muted)]">
+                No hay denominaciones registradas para esta moneda.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
     {% endfor %}
   {% endif %}
 </main>
+
+<!-- Emoji por moneda, igual al usado en Monedas -->
+<script>
+  (function(){
+    const MAP = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
+    document.querySelectorAll('.currency-emoji').forEach(el => {
+      const code = String(el.dataset.code || '').toUpperCase();
+      el.textContent = (MAP[code] || "💱") + " ";
+    });
+  })();
+</script>
 {% endblock %}
