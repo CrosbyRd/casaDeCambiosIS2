@@ -68,6 +68,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def get_full_name(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        full_name = "%s %s" % (self.first_name, self.last_name)
+        return full_name.strip()
+
     # Genera un código de 6 dígitos y marca la hora de creación
     def generate_verification_code(self):
         """Genera un código de 6 dígitos y guarda el momento de creación."""

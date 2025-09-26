@@ -43,8 +43,9 @@ class Transaccion(models.Model):
         # Estados comunes
         ('completada', 'Completada'),   # Éxito
         ('cancelada', 'Cancelada'),     # Interrumpida antes del pago/deposito del cliente
+        ('cancelada_usuario_tasa', 'Cancelada por Usuario (Variación de Tasa)'),
         ('anulada', 'Anulada'),         # Revertida después del pago/deposito del cliente
-        ('error', 'Error'),             # Error técnico/inesperado             
+        ('error', 'Error'),             # Error técnico/inesperado
     ]
 
     # --- CAMPOS DEL MODELO ---
@@ -74,6 +75,12 @@ class Transaccion(models.Model):
     # Timestamps
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    # Campo clave para la lógica de negocio GEG-105
+    tasa_garantizada_hasta = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Fecha y hora límite para honrar la tasa garantizada."
+    )
     
     def __str__(self):
         return f"ID: {self.id} - {self.get_tipo_operacion_display()} para {self.cliente.username} [{self.get_estado_display()}]"

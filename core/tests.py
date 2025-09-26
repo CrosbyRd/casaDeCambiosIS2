@@ -13,6 +13,8 @@ from django.contrib.auth import get_user_model
 from clientes.models import Cliente
 from cotizaciones.models import Cotizacion
 from monedas.models import Moneda
+from django.utils import timezone # Importar timezone
+from datetime import timedelta # Importar timedelta
 # Importar excepciones específicas si se desea mockearlas con precisión
 from django.core.exceptions import ObjectDoesNotExist as DjangoObjectDoesNotExist
 
@@ -280,3 +282,123 @@ class SimulacionLogicConcrectTest(TestCase):
         self.assertEqual(resultado['tasa_aplicada'], Decimal('7252.5'))
         # El monto recibido debe ser 1000 * 7252.5 = 7,252,500
         self.assertEqual(resultado['monto_recibido'], Decimal('7252500'))
+
+
+from django.urls import reverse
+from django.test import Client
+from transacciones.models import Transaccion
+
+class CoreViewsTest(TestCase):
+    """
+    Pruebas para las vistas en la app `core` que manejan el flujo de operaciones.
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(email='testuser@example.com', password='password', is_active=True)
+        cls.cliente = Cliente.objects.create(nombre='Test Client')
+        cls.user.clientes.add(cls.cliente)
+        
+        cls.pyg = Moneda.objects.create(codigo='PYG', nombre='Guaraní')
+        cls.usd = Moneda.objects.create(codigo='USD', nombre='Dólar')
+        
+        Cotizacion.objects.create(
+            moneda_base=cls.pyg,
+            moneda_destino=cls.usd,
+            valor_venta=Decimal('7400'),
+            comision_venta=Decimal('100'),
+            valor_compra=Decimal('7300'),
+            comision_compra=Decimal('50')
+        )
+
+    def setUp(self):
+        self.client = Client()
+        self.client.login(email='testuser@example.com', password='password')
+
+    def test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa(self):
+        """
+        Verifica que la vista `confirmar_operacion` crea una transacción de tipo 'compra'
+        (cliente vende USD) y establece correctamente el campo `tasa_garantizada_hasta`.
+        """
+        # 1. Simular los datos que la vista `iniciar_operacion` guardaría en la sesión
+        session = self.client.session
+        session['operacion_pendiente'] = {
+            'tipo_operacion': 'compra', # Cliente vende USD
+            'moneda_origen_codigo': 'USD',
+            'monto_origen': '100.00',
+            'moneda_destino_codigo': 'PYG',
+            'monto_recibido': '725000.00', # (7300 - 50) * 100
+            'tasa_aplicada': '7250.00',
+            'comision_aplicada': '0.00', # Simplificado para la prueba
+        }
+        session.save()
+
+        # 2. Realizar el POST a la vista de confirmación
+        url = reverse('core:confirmar_operacion')
+        response = self.client.post(url)
+
+        # 3. Verificar la redirección y la creación del objeto
+        self.assertEqual(response.status_code, 302)
+        # La redirección ahora va a la página de detalle de la operación
+        transaccion_id = Transaccion.objects.first().id # Obtener el ID de la transacción creada
+        self.assertRedirects(response, reverse('core:detalle_operacion_tauser', args=[transaccion_id]))
+
+        # 4. Comprobar que la transacción se creó con los datos correctos
+        self.assertTrue(Transaccion.objects.exists())
+        transaccion = Transaccion.objects.first()
+        
+        self.assertEqual(transaccion.cliente, self.user)
+        self.assertEqual(transaccion.tipo_operacion, 'compra')
+        self.assertEqual(transaccion.estado, 'pendiente_deposito_tauser')
+        self.assertIsNotNone(transaccion.tasa_garantizada_hasta)
+
+        # 5. Verificar que la fecha de garantía sea aproximadamente 2 horas en el futuro
+        ahora = timezone.now()
+        dos_horas_despues = ahora + timedelta(hours=2)
+        diferencia = dos_horas_despues - transaccion.tasa_garantizada_hasta
+        
+        # Permitimos una pequeña diferencia (ej. 5 segundos) para la ejecución del código
+        self.assertTrue(abs(diferencia.total_seconds()) < 5)
+
+    def test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min(self):
+        """
+        Verifica que la vista `confirmar_operacion` crea una transacción de tipo 'venta'
+        (cliente compra USD) y establece `tasa_garantizada_hasta` a 15 minutos.
+        """
+        # 1. Simular los datos que la vista `iniciar_operacion` guardaría en la sesión
+        session = self.client.session
+        session['operacion_pendiente'] = {
+            'tipo_operacion': 'venta', # Cliente compra USD
+            'moneda_origen_codigo': 'PYG',
+            'monto_origen': '740000.00',
+            'moneda_destino_codigo': 'USD',
+            'monto_recibido': '100.00',
+            'tasa_aplicada': '7400.00',
+            'comision_aplicada': '0.00', # Simplificado para la prueba
+        }
+        session.save()
+
+        # 2. Realizar el POST a la vista de confirmación
+        url = reverse('core:confirmar_operacion')
+        response = self.client.post(url)
+
+        # 3. Verificar la redirección y la creación del objeto
+        self.assertEqual(response.status_code, 302)
+        transaccion_id = Transaccion.objects.first().id
+        self.assertRedirects(response, reverse('core:detalle_operacion_tauser', args=[transaccion_id]))
+
+        # 4. Comprobar que la transacción se creó con los datos correctos
+        self.assertTrue(Transaccion.objects.exists())
+        transaccion = Transaccion.objects.first()
+        
+        self.assertEqual(transaccion.cliente, self.user)
+        self.assertEqual(transaccion.tipo_operacion, 'venta')
+        self.assertEqual(transaccion.estado, 'pendiente_pago_cliente')
+        self.assertIsNotNone(transaccion.tasa_garantizada_hasta)
+
+        # 5. Verificar que la fecha de garantía sea aproximadamente 15 minutos en el futuro
+        ahora = timezone.now()
+        quince_minutos_despues = ahora + timedelta(minutes=15)
+        diferencia = quince_minutos_despues - transaccion.tasa_garantizada_hasta
+        
+        # Permitimos una pequeña diferencia (ej. 5 segundos) para la ejecución del código
+        self.assertTrue(abs(diferencia.total_seconds()) < 5)
