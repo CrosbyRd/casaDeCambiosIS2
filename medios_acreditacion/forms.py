@@ -1,3 +1,16 @@
+"""
+Formularios de la aplicación **medios_acreditacion**.
+
+.. module:: medios_acreditacion.forms
+   :synopsis: Definición de formularios para la gestión de Tipos de Medio, Campos de Medio y Medios de clientes.
+
+Este módulo implementa los formularios para:
+
+- **TipoMedioForm**: formulario administrativo para crear y editar tipos de medio de acreditación.
+- **CampoMedioForm**: formulario administrativo para configurar los campos de un tipo de medio.
+- **MedioAcreditacionClienteForm**: formulario dinámico que construye campos en función del tipo de medio
+  seleccionado por el cliente, con validaciones automáticas.
+"""
 from django import forms
 from .models import TipoMedioAcreditacion, CampoMedioAcreditacion, MedioAcreditacionCliente
 from django.utils.text import slugify
@@ -7,6 +20,25 @@ from django.core.validators import RegexValidator
 # Formulario para Tipos de medios (admin)
 # -----------------------------
 class TipoMedioForm(forms.ModelForm):
+    """
+    Formulario para la gestión de **Tipos de Medios de Acreditación** (administrador).
+
+    **Modelo asociado**
+    -------------------
+    :class:`medios_acreditacion.models.TipoMedioAcreditacion`
+
+    **Campos**
+    ----------
+    - ``nombre`` : nombre del tipo de medio.
+    - ``descripcion`` : descripción opcional.
+    - ``activo`` : checkbox para habilitar/deshabilitar.
+
+    **Widgets personalizados**
+    --------------------------
+    - nombre → TextInput con clase *form-control*.
+    - descripcion → Textarea con clase *form-control*.
+    - activo → CheckboxInput con clase *form-check-input*.
+    """
     class Meta:
         model = TipoMedioAcreditacion
         fields = ["nombre", "descripcion", "activo"]
@@ -20,6 +52,33 @@ class TipoMedioForm(forms.ModelForm):
 # -----------------------------
 # Formulario para Campos de medios (admin)
 class CampoMedioForm(forms.ModelForm):
+    """
+    Formulario dinámico para la gestión de **Medios de Acreditación de Clientes**.
+
+    Este formulario genera dinámicamente los campos en función del tipo de medio de
+    acreditación seleccionado, aplicando validaciones específicas según el tipo de dato
+    y expresiones regulares configuradas.
+
+    **Modelo asociado**
+    -------------------
+    :class:`medios_acreditacion.models.MedioAcreditacionCliente`
+
+    **Campos básicos**
+    ------------------
+    - ``tipo`` : tipo de medio de acreditación.
+    - ``alias`` : alias personalizado del cliente.
+    - ``activo`` : estado del medio.
+    - ``predeterminado`` : indicador de si es el medio principal.
+
+    **Métodos**
+    -----------
+    __init__(*args, **kwargs)
+        Construye los campos dinámicos en base al tipo de medio seleccionado.
+    clean() -> dict
+        Valida y normaliza los datos dinámicos, aplicando validaciones específicas
+        por tipo de dato y regex. Asigna el resultado al campo ``datos`` del modelo.
+    """
+
     class Meta:
         model = CampoMedioAcreditacion
         fields = ["nombre", "tipo_dato", "obligatorio", "regex"]  # activo no es necesario para esta opción
@@ -78,6 +137,21 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
                     self.initial[field_name] = valor_guardado
 
     def clean(self):
+        """
+        Valida los campos dinámicos en función de las reglas definidas
+        en :class:`CampoMedioAcreditacion`.
+
+        **Validaciones aplicadas**
+        --------------------------
+        - NUMERO → solo dígitos.
+        - TELEFONO → dígitos, mínimo 9.
+        - EMAIL → debe contener '@'.
+        - RUC → formato ########-#.
+        - Regex extra → validación personalizada.
+
+        Retorna:
+            dict: datos limpios y validados.
+        """
         cleaned = super().clean()
         tipo = cleaned.get("tipo") or getattr(self.instance, "tipo", None)
         if not tipo:
