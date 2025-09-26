@@ -29,9 +29,22 @@ def calculadora_view(request):
         moneda_origen = form.cleaned_data['moneda_origen']
         moneda_destino = form.cleaned_data['moneda_destino']
 
+        # Si el usuario hace clic en "Proceder a Operación", redirigir a la vista de inicio de operación.
+        if 'proceder' in request.POST:
+            import urllib.parse
+            query_params = {
+                'monto': monto_origen,
+                'moneda_origen': moneda_origen,
+                'moneda_destino': moneda_destino,
+            }
+            # Construir la URL con parámetros GET para pre-rellenar el formulario en la siguiente vista.
+            redirect_url = f"{reverse('core:iniciar_operacion')}?{urllib.parse.urlencode(query_params)}"
+            return redirect(redirect_url)
+
+        # Si es solo un cálculo, procesar y mostrar el resultado en la misma página.
         resultado = calcular_simulacion(monto_origen, moneda_origen, moneda_destino, user=request.user)
 
-        if resultado['error']:
+        if resultado and resultado.get('error'):
             messages.error(request, resultado['error'])
             resultado = None
 
@@ -120,6 +133,7 @@ def iniciar_operacion(request):
             'monto_recibido': str(resultado_simulacion['monto_recibido']),
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
+            'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Guardar la modalidad de tasa
         }
         return redirect('core:confirmar_operacion')
 
@@ -148,15 +162,17 @@ def confirmar_operacion(request):
 
         estado_inicial = 'pendiente_pago_cliente' if operacion_pendiente['tipo_operacion'] == 'venta' else 'pendiente_deposito_tauser'
         codigo_operacion_tauser = str(uuid.uuid4())[:10]
+        modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada') # Obtener la modalidad de tasa
 
         # Lógica de Bloqueo de Tasa (GEG-105)
         tasa_garantizada_hasta = None
-        if operacion_pendiente['tipo_operacion'] == 'compra':
-            # Cliente vende divisa extranjera, deposita en Tauser. Garantía de 2 horas.
-            tasa_garantizada_hasta = timezone.now() + timedelta(hours=2)
-        elif operacion_pendiente['tipo_operacion'] == 'venta':
-            # Cliente compra divisa extranjera, paga digitalmente. Garantía de 15 minutos.
-            tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
+        if modalidad_tasa == 'bloqueada':
+            if operacion_pendiente['tipo_operacion'] == 'compra':
+                # Cliente vende divisa extranjera, deposita en Tauser. Garantía de 2 horas.
+                tasa_garantizada_hasta = timezone.now() + timedelta(hours=2)
+            elif operacion_pendiente['tipo_operacion'] == 'venta':
+                # Cliente compra divisa extranjera, paga digitalmente. Garantía de 15 minutos.
+                tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
 
         transaccion = Transaccion.objects.create(
             cliente=request.user,
@@ -170,25 +186,26 @@ def confirmar_operacion(request):
             comision_aplicada=operacion_pendiente['comision_aplicada'],
             codigo_operacion_tauser=codigo_operacion_tauser,
             tasa_garantizada_hasta=tasa_garantizada_hasta,
+            modalidad_tasa=modalidad_tasa, # Guardar la modalidad de tasa en la transacción
         )
         messages.success(
             request,
             f"Operación {transaccion.id} creada con éxito. Estado: {transaccion.get_estado_display()}. Código: {codigo_operacion_tauser}"
         )
         request.session.pop('operacion_pendiente', None)
-        return redirect('core:detalle_operacion_tauser', transaccion_id=transaccion.id)
+        return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
     return render(request, 'core/confirmar_operacion.html', {'operacion': operacion_pendiente})
 
 
 @login_required
-def detalle_operacion_tauser(request, transaccion_id):
+def detalle_transaccion(request, transaccion_id):
     """
-    Muestra los detalles de una transacción creada, incluyendo el código del Tauser
-    y la fecha de expiración de la tasa garantizada.
+    Muestra los detalles de una transacción creada, incluyendo el código de operación
+    y la fecha de expiración de la tasa garantizada, adaptándose al tipo de operación.
     """
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=request.user)
-    return render(request, 'core/detalle_operacion_tauser.html', {'transaccion': transaccion})
+    return render(request, 'core/detalle_transaccion.html', {'transaccion': transaccion})
 
 
 @login_required

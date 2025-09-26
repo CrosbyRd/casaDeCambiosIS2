@@ -340,7 +340,7 @@ class CoreViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
         # La redirección ahora va a la página de detalle de la operación
         transaccion_id = Transaccion.objects.first().id # Obtener el ID de la transacción creada
-        self.assertRedirects(response, reverse('core:detalle_operacion_tauser', args=[transaccion_id]))
+        self.assertRedirects(response, reverse('core:detalle_transaccion', args=[transaccion_id]))
 
         # 4. Comprobar que la transacción se creó con los datos correctos
         self.assertTrue(Transaccion.objects.exists())
@@ -384,7 +384,7 @@ class CoreViewsTest(TestCase):
         # 3. Verificar la redirección y la creación del objeto
         self.assertEqual(response.status_code, 302)
         transaccion_id = Transaccion.objects.first().id
-        self.assertRedirects(response, reverse('core:detalle_operacion_tauser', args=[transaccion_id]))
+        self.assertRedirects(response, reverse('core:detalle_transaccion', args=[transaccion_id]))
 
         # 4. Comprobar que la transacción se creó con los datos correctos
         self.assertTrue(Transaccion.objects.exists())

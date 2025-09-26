@@ -40,10 +40,19 @@ def api_confirmar_deposito_tauser(request):
 
     transaccion = get_object_or_404(Transaccion, codigo_operacion_tauser=codigo_operacion, estado='pendiente_deposito_tauser')
 
+    # --- Verificación Proactiva de Expiración de Tasa ---
+    if transaccion.is_tasa_expirada:
+        transaccion.estado = 'cancelada_tasa_expirada'
+        transaccion.save()
+        return JsonResponse({
+            'status': 'error',
+            'mensaje': 'La operación no puede continuar porque la tasa garantizada ha expirado. La transacción ha sido cancelada.'
+        }, status=400)
+
     # --- Lógica Central del Modelo Híbrido ---
     
     # 1. CAMINO FELIZ: Verificar si la garantía de la tasa sigue vigente.
-    if transaccion.tasa_garantizada_hasta and timezone.now() <= transaccion.tasa_garantizada_hasta:
+    if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta and timezone.now() <= transaccion.tasa_garantizada_hasta:
         transaccion.estado = 'procesando_acreditacion'
         transaccion.save()
         

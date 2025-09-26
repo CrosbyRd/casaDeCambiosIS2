@@ -7,6 +7,6 @@ urlpatterns = [
     path('calculadora/', views.calculadora_view, name='calculadora'),
     path('operacion/iniciar/', views.iniciar_operacion, name='iniciar_operacion'),
     path('operacion/confirmar/', views.confirmar_operacion, name='confirmar_operacion'),
-    path('operacion/detalle/<uuid:transaccion_id>/', views.detalle_operacion_tauser, name='detalle_operacion_tauser'),
+    path('operacion/detalle/<uuid:transaccion_id>/', views.detalle_transaccion, name='detalle_transaccion'),
     path('transacciones/historial/', views.historial_transacciones, name='historial_transacciones'),
 ]
