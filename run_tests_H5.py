@@ -9,7 +9,6 @@ import re
 # -----------------------------
 # Configuración inicial
 # -----------------------------
-# Ignorar warnings de Django
 warnings.filterwarnings("ignore", category=UserWarning, module="django")
 
 # Asegurarse de que Python encuentre tu proyecto
@@ -25,17 +24,15 @@ django.setup()
 # -----------------------------
 out = StringIO()
 try:
-    # Lista de apps a testear
-    apps_a_testear = ["medios_acreditacion", "configuracion"]
-    
+    # Lista de apps a testear (agregamos 'transacciones')
+    apps_a_testear = ["medios_acreditacion", "configuracion", "transacciones"]
+
     # Ejecutar tests
     call_command("test", *apps_a_testear, verbosity=1, stdout=out, stderr=out)
     result = out.getvalue()
 
     # Detectar número de tests ejecutados
     match = re.search(r"Ran (\d+) test", result)
-      # Detectar número de tests ejecutados
-  
     if match:
         print(f"Se ejecutaron {match.group(1)} pruebas.")
 
@@ -45,7 +42,6 @@ try:
     else:
         # Si hay errores o fallos, imprimir toda la salida
         print(result)
-
 
 except SystemExit:
     # call_command termina con sys.exit() al final
