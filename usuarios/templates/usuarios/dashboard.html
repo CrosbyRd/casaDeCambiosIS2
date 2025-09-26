@@ -137,33 +137,6 @@
         <p class="text-neutral-500">{{ request.user.email }}</p>
       </div>
 
-      <!-- Tarjeta lateral: dejar 'Último acceso' y cliente activo -->
-      <div class="rounded-2xl border border-neutral-200 p-5 w-full md:w-[420px] bg-white shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
-            <span class="h-2 w-2 rounded-full bg-purple-500"></span> Cuenta personal
-          </span>
-          <span class="text-sm text-neutral-500">Último acceso: {{ request.user.last_login|date:"d/m/Y" }}</span>
-        </div>
-
-        <div>
-          <h3 class="text-sm font-semibold text-neutral-500 mb-1">Cliente activo</h3>
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="gx-chip gx-chip--brand gx-chip--lg">
-              {% if cliente %}{{ cliente.nombre }}
-              {% elif cliente_activo %}{{ cliente_activo.nombre }}
-              {% elif request.session.cliente_activo_id %}Cliente seleccionado
-              {% else %}Ninguno{% endif %}
-            </span>
-            {% if request.session.cliente_activo_id %}
-              <span class="text-xs text-neutral-500">ID: {{ request.session.cliente_activo_id }}</span>
-            {% endif %}
-          </div>
-          <p class="mt-2 text-sm text-neutral-500">
-            Este cliente se usará para iniciar operaciones y ver el historial asociado.
-          </p>
-        </div>
-      </div>
     </div>
 
     {# Se eliminaron “Mis cuentas” y el primer bloque de “Últimas transacciones” redundante #}
