@@ -2,7 +2,6 @@
 {% load static %}
 {% block title %}Global Exchange{% endblock %}
 
-{# Acciones del header: Inicio + Cerrar sesión #}
 {% block header_auth %}
 <div class="hidden md:flex items-center gap-3">
   <a href="{% url 'home' %}" class="btn-secondary">Inicio</a>
@@ -22,6 +21,11 @@
 
 {% block content %}
 {% url 'usuarios:dashboard' as dashboard_url %}
+{% url 'medios_acreditacion:clientes_list' as medios_url %}
+{% url 'usuarios:ted' as ted_url %}
+{% url 'core:iniciar_operacion' as iniciar_operacion_url %}
+{% url 'core:historial_transacciones' as historial_url %}
+{% url 'usuarios:seleccionar_cliente' as seleccionar_cliente_url %}
 
 <main class="max-w-[1200px] mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-[260px,1fr] gap-6">
 
@@ -41,18 +45,60 @@
 
       <div>
         <div class="mb-2 text-xs font-extrabold tracking-wide text-purple-700/80">PRODUCTOS</div>
-        <a href="#" class="flex items-center justify-between px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-          <span>Cuentas</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
+
+        <a href="{{ medios_url }}"
+           aria-current="{% if request.path == medios_url %}page{% endif %}"
+           class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
+                 {% if request.path == medios_url %}
+                   bg-white border border-purple-200 text-purple-900 font-semibold shadow-sm
+                 {% else %}
+                   text-purple-900/80 hover:bg-purple-100 hover:text-purple-900
+                 {% endif %}">
+          <span>Medios de acreditación</span>
+          <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
-        <a href="#" class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-          <span>Tarjetas</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
+
+        <!-- NUEVO: Botón TED (apunta a /usuarios/ted/) -->
+        <a href="{{ ted_url }}"
+           aria-current="{% if request.path == ted_url %}page{% endif %}"
+           class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
+                 {% if request.path == ted_url %}
+                   bg-white border border-purple-200 text-purple-900 font-semibold shadow-sm
+                 {% else %}
+                   text-purple-900/80 hover:bg-purple-100 hover:text-purple-900
+                 {% endif %}">
+          <span>TED</span>
+          <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
       </div>
 
       <div>
         <div class="mb-2 text-xs font-extrabold tracking-wide text-purple-700/80">GENERAL</div>
-        <a href="#" class="flex items-center justify-between px-4 py-2 rounded-xl text-purple-900/80 hover:bg-purple-100 hover:text-purple-900 transition">
-          <span>Transacciones</span><span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
+
+        <!-- Transacciones: inicia nueva operación -->
+        <a href="{{ iniciar_operacion_url }}"
+           aria-current="{% if request.path == iniciar_operacion_url %}page{% endif %}"
+           class="flex items-center justify-between px-4 py-2 rounded-xl transition
+                 {% if request.path == iniciar_operacion_url %}
+                   bg-white border border-purple-200 text-purple-900 font-semibold shadow-sm
+                 {% else %}
+                   text-purple-900/80 hover:bg-purple-100 hover:text-purple-900
+                 {% endif %}">
+          <span>Transacciones</span>
+          <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
+        </a>
+
+        <!-- Historial de transacciones -->
+        <a href="{{ historial_url }}"
+           aria-current="{% if request.path == historial_url %}page{% endif %}"
+           class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
+                 {% if request.path == historial_url %}
+                   bg-white border border-purple-200 text-purple-900 font-semibold shadow-sm
+                 {% else %}
+                   text-purple-900/80 hover:bg-purple-100 hover:text-purple-900
+                 {% endif %}">
+          <span>Historial</span>
+          <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
       </div>
     </nav>
@@ -71,6 +117,25 @@
       </div>
     {% endif %}
 
+    <div class="rounded-2xl border p-3 bg-white/60 hidden md:flex items-center justify-between"
+         style="border-color:var(--line)">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
+          <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+          Cliente activo
+        </span>
+        <span class="gx-chip gx-chip--brand gx-chip--lg">
+          {% if cliente %}{{ cliente.nombre }}
+          {% elif cliente_activo %}{{ cliente_activo.nombre }}
+          {% elif request.session.cliente_activo_id %}ID: {{ request.session.cliente_activo_id }}
+          {% else %}Ninguno{% endif %}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{{ seleccionar_cliente_url }}?next={{ request.path }}" class="gx-btn">Cambiar</a>
+      </div>
+    </div>
+
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
       <div>
         <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
@@ -82,151 +147,47 @@
         </h1>
         <p class="text-neutral-500">{{ request.user.email }}</p>
       </div>
-
-      <div class="rounded-2xl border border-neutral-200 p-4 w-full md:w-[320px] bg-white shadow-sm">
-        <div class="flex items-center justify-between">
-          <span class="inline-flex items-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-sm font-bold text-purple-700">
-            <span class="h-2 w-2 rounded-full bg-purple-500"></span> Cuenta personal
-          </span>
-          <span class="text-sm text-neutral-500">Último acceso: {{ request.user.last_login|date:"d/m/Y" }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-        <h2 class="text-xl font-extrabold mb-4">Mis cuentas</h2>
-        <div class="space-y-4">
-          <div class="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="font-bold">ACC-123456</div>
-                <div class="text-sm text-neutral-500">Actualizado: 28/08/2025 &nbsp;&nbsp; Tipo: Corriente</div>
-              </div>
-              <div class="text-emerald-600 font-extrabold text-lg">$1,250</div>
-            </div>
-          </div>
-          <div class="rounded-xl border border-neutral-200 p-4 bg-neutral-50">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="font-bold">ACC-789012</div>
-                <div class="text-sm text-neutral-500">Actualizado: 27/08/2025 &nbsp;&nbsp; Tipo: Corriente</div>
-              </div>
-              <div class="text-emerald-600 font-extrabold text-lg">$980</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-        <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
-        <div class="divide-y divide-neutral-200">
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-123456</div>
-              <div class="text-sm text-neutral-500 truncate">Compra USD — 28/08/2025</div>
-            </div>
-            <div class="text-red-600 font-extrabold">-500</div>
-          </div>
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-789012</div>
-              <div class="text-sm text-neutral-500 truncate">Venta EUR — 27/08/2025</div>
-            </div>
-            <div class="text-emerald-600 font-extrabold">+300</div>
-          </div>
-          <div class="py-3 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="font-bold">ACC-123456</div>
-              <div class="text-sm text-neutral-500 truncate">Comisión — 27/08/2025</div>
-            </div>
-            <div class="text-red-600 font-extrabold">-20</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
-      <h2 class="text-xl font-extrabold mb-6">Métodos de pago</h2>
-
-      <h3 class="font-extrabold mb-2">Tarjetas</h3>
-      <div class="space-y-3 mb-6">
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-16 rounded-xl bg-neutral-200"></div>
-            <div>
-              <div class="font-bold">EXCHANGE VISA <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">CREDIT</span></div>
-              <div class="text-sm text-neutral-500">**** **** **** 6860 · Expira 08/27</div>
+      <h2 class="text-xl font-extrabold mb-4">Últimas transacciones</h2>
+      <div class="divide-y divide-neutral-200">
+        {% if transacciones %}
+          {% for transaccion in transacciones %}
+            <div class="py-3 flex items-center justify-between">
+              <div class="min-w-0">
+                <div class="font-bold">
+                  {{ transaccion.get_tipo_operacion_display }} - {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }}
+                </div>
+              </div>
+              <div class="font-extrabold text-neutral-500">{{ transaccion.get_estado_display }}</div>
             </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
-        </div>
-
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-16 rounded-xl bg-neutral-200"></div>
-            <div>
-              <div class="font-bold">EXCHANGE MASTERCARD <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">DEBIT</span></div>
-              <div class="text-sm text-neutral-500">**** **** **** 6650 · Expira 09/26</div>
-            </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
-        </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-neutral-500">No hay transacciones recientes.</p>
+        {% endif %}
       </div>
-
-      <h3 class="font-extrabold mb-2">Billeteras electrónicas</h3>
-      <div class="space-y-3 mb-6">
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-100 font-extrabold text-purple-700">Tigo</span>
-            <div>
-              <div class="font-bold">Tigo Money <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">WALLET</span></div>
-              <div class="text-sm text-neutral-500">Teléfono asociado: 0983••••20</div>
-            </div>
-          </div>
-          <a href="#" class="btn">Cambiar</a>
-        </div>
-
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-100 font-extrabold text-purple-700">Pers.</span>
-            <div>
-              <div class="font-bold">Personal Pay <span class="ml-2 text-xs font-extrabold rounded-full bg-purple-100 px-2 py-0.5 text-purple-700">WALLET</span></div>
-              <div class="text-sm text-neutral-500">Teléfono asociado: 0971••••42</div>
-            </div>
-          </div>
-          <a href="#" class="btn">Cambiar</a>
-        </div>
-      </div>
-
-      <h3 class="font-extrabold mb-2">Cheques</h3>
-      <div class="space-y-3">
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-neutral-200 font-extrabold text-neutral-700">CHQ</span>
-            <div>
-              <div class="font-bold">Cheque común <span class="ml-2 text-xs font-extrabold rounded-full bg-neutral-200 px-2 py-0.5 text-neutral-700">OFFLINE</span></div>
-              <div class="text-sm text-neutral-500">Banco emisor: *Itapúa* · N° 00••827</div>
-            </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
-        </div>
-
-        <div class="flex items-center justify-between rounded-2xl border border-neutral-200 p-4 bg-neutral-50">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-neutral-200 font-extrabold text-neutral-700">CHQ+</span>
-            <div>
-              <div class="font-bold">Cheque adelantado <span class="ml-2 text-xs font-extrabold rounded-full bg-neutral-200 px-2 py-0.5 text-neutral-700">OFFLINE</span></div>
-              <div class="text-sm text-neutral-500">Banco emisor: *Regional* · N° 00••114</div>
-            </div>
-          </div>
-          <a href="#" class="btn-secondary">Ver detalles</a>
-        </div>
-      </div>
-
-      <p class="mt-6 text-sm text-neutral-500">* Este dashboard es una maqueta visual y no realiza operaciones reales.</p>
     </div>
 
+    <p class="mt-6 text-sm text-neutral-500">* Este dashboard es una maqueta visual y no realiza operaciones reales.</p>
   </section>
 </main>
+
+<style>
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px; padding:10px 14px;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent); white-space:nowrap;
+  }
+  .gx-btn--ghost{
+    background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;
+  }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
+  .gx-chip{
+    display:inline-flex; align-items:center; border:1.5px solid var(--line); border-radius:999px; padding:6px 10px;
+    background:#fff; color:var(--ink); font-weight:800;
+  }
+  .gx-chip--brand{ border-color:var(--brand-soft); background:var(--brand-soft); color:var(--brand-dark); }
+  .gx-chip--lg{ padding:8px 12px; }
+</style>
 {% endblock %}

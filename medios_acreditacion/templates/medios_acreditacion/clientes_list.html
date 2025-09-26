@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}Mis medios de acreditación{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <header class="flex items-center justify-between mb-6">
+    <h1 class="text-4xl font-extrabold text-[var(--ink)]">Mis medios de acreditación</h1>
+    <a href="{% url 'medios_acreditacion:clientes_create' %}"
+       class="px-4 py-2 rounded-xl font-semibold text-white shadow-sm"
+       style="background:var(--brand)">
+      Agregar medio
+    </a>
+  </header>
+
+  {% if messages %}
+    <div class="mb-6">
+      {% for message in messages %}
+        <div class="p-3 mb-2 rounded-lg bg-blue-50 text-blue-800 border border-blue-200">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if medios %}
+    <section class="grid gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2">
+      {# --- PRIMERO: los predeterminados --- #}
+      {% for m in medios %}
+        {% if m.predeterminado %}
+          <article class="medio-card is-default">
+            <div class="card-head">
+              <h2 class="card-title">{{ m.tipo.nombre }}</h2>
+              <span class="badge-default" title="Medio predeterminado">⭐ Predeterminado</span>
+            </div>
+
+            <div class="card-body">
+              <p class="alias-strong">
+                {% if m.alias %}{{ m.alias }}{% else %}<span class="italic">(sin alias)</span>{% endif %}
+              </p>
+
+              {# Vista previa de campos del medio (m.datos) #}
+              {% if m.datos %}
+                <ul class="kv-list">
+                  {% for k,v in m.datos.items|slice:":4" %}
+                    <li class="kv-chip">
+                      <span class="kv-k">{{ k }}</span>
+                      <span class="kv-v">{{ v }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              <div class="mt-3 flex items-center gap-2">
+                <span class="status-pill ok">Activo</span>
+              </div>
+
+              <div class="mt-4 flex items-center justify-end gap-2">
+                <a href="{% url 'medios_acreditacion:clientes_update' m.pk %}" class="btn-primary-outline">Editar</a>
+                <form action="{% url 'medios_acreditacion:clientes_delete' m.pk %}" method="post" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger" onclick="return confirm('¿Eliminar este medio?')">
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+
+      {# --- DESPUÉS: los no predeterminados --- #}
+      {% for m in medios %}
+        {% if not m.predeterminado %}
+          <article class="medio-card">
+            <div class="card-head">
+              <h2 class="card-title">{{ m.tipo.nombre }}</h2>
+            </div>
+
+            <div class="card-body">
+              <p class="alias-strong">
+                {% if m.alias %}{{ m.alias }}{% else %}<span class="italic">(sin alias)</span>{% endif %}
+              </p>
+
+              {% if m.datos %}
+                <ul class="kv-list">
+                  {% for k,v in m.datos.items|slice:":4" %}
+                    <li class="kv-chip">
+                      <span class="kv-k">{{ k }}</span>
+                      <span class="kv-v">{{ v }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              <div class="mt-3 flex items-center gap-2">
+                <span class="status-pill {% if m.activo %}ok{% else %}warn{% endif %}">
+                  {{ m.activo|yesno:"Activo,Inactivo" }}
+                </span>
+              </div>
+
+              <div class="mt-4 flex items-center justify-end gap-2">
+                {% if m.activo %}
+                  <button type="button" class="btn-secondary js-set-default" data-pk="{{ m.pk }}">
+                    Seleccionar
+                  </button>
+                {% endif %}
+                <a href="{% url 'medios_acreditacion:clientes_update' m.pk %}" class="btn-primary-outline">Editar</a>
+                <form action="{% url 'medios_acreditacion:clientes_delete' m.pk %}" method="post" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-danger" onclick="return confirm('¿Eliminar este medio?')">
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </section>
+  {% else %}
+    <section class="bg-white border rounded-xl shadow-sm p-8 text-center" style="border-color:var(--line)">
+      <p class="text-[var(--muted)]">Aún no cargaste medios.</p>
+    </section>
+  {% endif %}
+</main>
+
+<style>
+  /* ---- Card base ---- */
+  .medio-card{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(17,24,39,.04);
+    transition:box-shadow .2s ease, border-color .2s ease;
+  }
+  .medio-card:hover{ box-shadow:0 6px 20px rgba(17,24,39,.08) }
+  .medio-card.is-default{
+    background: var(--brand-soft);
+    box-shadow: inset 0 0 0 2px var(--brand);
+    border-color: var(--brand);
+  }
+
+  /* ---- Header estilo tabla (lila + blanco) ---- */
+  .card-head{
+    display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+    background: var(--brand);
+    color:#fff;
+    padding:.6rem .9rem;
+  }
+  .card-title{
+    font-weight:800; font-size:1.05rem; line-height:1.25rem; margin:0; color:#fff;
+  }
+
+  /* ---- Body ---- */
+  .card-body{ padding:14px; }
+
+  /* Alias destacado */
+  .alias-strong{ color:var(--ink); font-size:1.05rem; font-weight:800; margin-top:.2rem; }
+
+  /* Vista previa de campos (chips) */
+  .kv-list{
+    list-style:none; padding:0; margin:.45rem 0 0; display:flex; flex-wrap:wrap; gap:.4rem;
+  }
+  .kv-chip{
+    display:inline-flex; align-items:baseline; gap:.35rem;
+    padding:.2rem .5rem; border-radius:9999px; border:1px solid var(--line); background:#fff;
+    font-size:.8rem;
+  }
+  .kv-k{ font-weight:700; color:var(--ink); }
+  .kv-v{ color:var(--muted); max-width:16ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ---- Badges & pills ---- */
+  .badge-default{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.75rem; line-height:1rem; padding:.2rem .55rem;
+    border-radius:9999px; background:#fff; color:#111; /* texto oscuro para contraste */
+    border:1px solid var(--brand); white-space:nowrap;
+  }
+  .status-pill{
+    display:inline-block; font-size:.8rem; padding:.15rem .5rem;
+    border-radius:9999px; border:1px solid;
+  }
+  .status-pill.ok{ background:#ecfdf5; color:#065f46; border-color:#a7f3d0 }
+  .status-pill.warn{ background:#fffbeb; color:#92400e; border-color:#fde68a }
+
+  /* ---- Botones (paleta unificada) ---- */
+  .btn-primary-outline{
+    background: var(--brand); color:#fff; font-weight:700;
+    padding:.45rem .8rem; border-radius:10px; box-shadow:0 1px 0 rgba(0,0,0,.05);
+  }
+  .btn-primary-outline:hover{ filter:brightness(0.95) }
+
+  .btn-secondary{
+    background: var(--brand-soft); color: var(--brand-dark); font-weight:800;
+    padding:.45rem .8rem; border-radius:10px;
+  }
+  .btn-secondary:hover{ filter:brightness(.95) }
+
+  .btn-danger{
+    background:#dc2626; color:#fff; font-weight:800;
+    padding:.45rem .8rem; border-radius:10px;
+  }
+  .btn-danger:hover{ background:#b91c1c }
+</style>
+
+<script>
+  // Botón "Seleccionar" — usa el endpoint ya existente: POST /medios-acreditacion/clientes/<pk>/predeterminar/
+  (function () {
+    const buttons = document.querySelectorAll(".js-set-default");
+    if (!buttons.length) return;
+
+    function getCookie(name){
+      const value = `; ${document.cookie}`; const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    buttons.forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const pk = btn.getAttribute("data-pk");
+        btn.disabled = true;
+        try{
+          const res = await fetch(`/medios-acreditacion/clientes/${pk}/predeterminar/`, {
+            method:"POST",
+            headers:{ "X-CSRFToken": csrftoken, "X-Requested-With":"fetch" },
+            body:""
+          });
+          if(res.ok){ window.location.reload(); }
+          else{ alert("No se pudo seleccionar como predeterminado."); }
+        }catch(e){ alert("Error de red al seleccionar medio."); }
+        finally{ btn.disabled = false; }
+      });
+    });
+  })();
+</script>
+{% endblock %}

@@ -5,13 +5,19 @@ Django settings for CasaDeCambioIS2 project.
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # --- Seguridad / Debug ---
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key")  # En prod: setear env
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+
+# --- Stripe ---
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 
 # --- Apps ---
 INSTALLED_APPS = [
@@ -26,10 +32,16 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
-    'cotizaciones',
+    "cotizaciones",
     "admin_panel",
     "core.apps.CoreConfig",
-    'pagos',
+    "pagos",
+    "medios_acreditacion",
+    "operaciones",
+    "transacciones",
+    "configuracion",
+    "payments",
+    "ted",
 ]
 
 # --- Middleware ---
@@ -82,13 +94,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-# ⚙️ REEMPLAZA estos valores por tu cuenta y clave de 16 dígitos
-# O bien defínelos como variables de entorno: EMAIL_HOST_USER y EMAIL_HOST_PASSWORD
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "globalexchangeparaguay@gmail.com")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "dhqe ofhp bhad nwhg")  # ← Pega aquí tu app password si no usas env
-
-# Remitente por defecto (aparece en los emails)
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "dhqe ofhp bhad nwhg")  # App password si no usas env
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", f"Global Exchange <{EMAIL_HOST_USER}>")
 
 # --- Password validators ---
@@ -118,3 +125,11 @@ LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "usuarios:login_redirect"
 LOGOUT_REDIRECT_URL = "/"
 
+# --- TED / Cotizaciones ---
+# Minutos de vigencia considerados "recientes" para una cotización.
+# Puedes sobreescribirlo con la variable de entorno TED_COTIZACION_VIGENCIA_MINUTES.
+TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES", "15"))
+
+# En desarrollo, permite operar con cotizaciones vencidas si se activa.
+# TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
+TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")

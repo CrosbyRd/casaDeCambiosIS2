@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Iniciar Operación - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- Header (mismo patrón que tus pantallas de crear) -->
+  <header class="mb-6">
+    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">💱 Iniciar Operación</h1>
+    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+      Seleccioná el tipo de operación y completá los datos para continuar con la confirmación.
+    </p>
+    <div class="mt-4">
+      <a href="{% url 'home' %}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
+         style="background:var(--brand-soft); color:var(--brand-dark); border-color:var(--brand-soft);">
+        ⬅️ Volver
+      </a>
+    </div>
+  </header>
+
+  <!-- Mensajes del framework -->
+  {% if messages %}
+    <div class="mb-4 space-y-2">
+      {% for message in messages %}
+        <div class="px-4 py-3 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Card -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <form method="post" id="form-operacion" novalidate>
+      {% csrf_token %}
+
+      <!-- Bloque: Tipo de operación -->
+      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Tipo de operación</div>
+      <div class="p-5">
+        <label for="{{ form.tipo_operacion.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+          {{ form.tipo_operacion.label }}
+        </label>
+        {{ form.tipo_operacion }}
+        {% if form.tipo_operacion.errors %}
+          <p class="mt-2 text-sm text-red-600">{{ form.tipo_operacion.errors.as_text|cut:"* " }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Bloque: Monedas -->
+      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Monedas</div>
+      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="{{ form.moneda_origen.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+            {{ form.moneda_origen.label }}
+          </label>
+          {{ form.moneda_origen }}
+          {% if form.moneda_origen.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ form.moneda_origen.errors.as_text|cut:"* " }}</p>
+          {% endif %}
+        </div>
+        <div>
+          <label for="{{ form.moneda_destino.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+            {{ form.moneda_destino.label }}
+          </label>
+          {{ form.moneda_destino }}
+          {% if form.moneda_destino.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ form.moneda_destino.errors.as_text|cut:"* " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Bloque: Monto -->
+      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Monto</div>
+      <div class="p-5">
+        <label for="{{ form.monto.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+          {{ form.monto.label }}
+        </label>
+        {{ form.monto }}
+        {% if form.monto.errors %}
+          <p class="mt-2 text-sm text-red-600">{{ form.monto.errors.as_text|cut:"* " }}</p>
+        {% endif %}
+        <p class="mt-2 text-sm text-[var(--muted)]">
+          La operación debe involucrar PYG. El monto mínimo puede depender de la denominación de la moneda.
+        </p>
+      </div>
+
+      <!-- Bloque: Modalidad de Tasa -->
+      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Modalidad de Tasa</div>
+      <div class="p-5">
+        <label for="{{ form.modalidad_tasa.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+          {{ form.modalidad_tasa.label }}
+        </label>
+        {{ form.modalidad_tasa }}
+        {% if form.modalidad_tasa.errors %}
+          <p class="mt-2 text-sm text-red-600">{{ form.modalidad_tasa.errors.as_text|cut:"* " }}</p>
+        {% endif %}
+        <p class="mt-2 text-sm text-[var(--muted)]">
+          {{ form.modalidad_tasa.help_text }}
+        </p>
+      </div>
+
+      <!-- Acciones -->
+      <div class="p-5 border-t" style="border-color:var(--line)">
+        <div class="flex flex-col md:flex-row gap-3 md:justify-end">
+          <a href="{% url 'home' %}"
+             class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
+             style="background:#e11d48; color:#fff;">
+            Cancelar
+          </a>
+          <button id="btn-submit" type="submit"
+                  class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
+                  style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
+            Proceder a Confirmación
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+
+<!-- Estilos: aplicados por ID nativo (sin filtros ni as_widget) -->
+<style>
+  /* Inputs y selects con la estética del proyecto */
+  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa {
+    width:100%; border:1.5px solid var(--line); border-radius:12px;
+    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus, #id_modalidad_tasa:focus {
+    outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
+  }
+</style>
+
+<!-- JS opcional: habilita/deshabilita submit según reglas del negocio (frontend) -->
+<script>
+(function () {
+  const tipo = document.getElementById('id_tipo_operacion');
+  const ori  = document.getElementById('id_moneda_origen');
+  const dst  = document.getElementById('id_moneda_destino');
+  const monto= document.getElementById('id_monto');
+  const btn  = document.getElementById('btn-submit');
+
+  const isPYG = v => String(v||'').toUpperCase()==='PYG';
+  const isForeign = v => v && !isPYG(v);
+
+  function enforce() {
+    let ok = true;
+    const t = tipo?.value || '';
+    const o = ori?.value  || '';
+    const d = dst?.value  || '';
+    const m = parseFloat(monto?.value || '0');
+
+    if (t === 'compra') {          // cliente vende divisa a la casa (resultado en PYG)
+      if (isPYG(o) || isForeign(d)) ok = false; // origen no PYG, destino PYG
+    } else if (t === 'venta') {    // cliente compra divisa a la casa (origen PYG)
+      if (isForeign(o) || isPYG(d)) ok = false; // origen PYG, destino no PYG
+    } else {
+      ok = false;
+    }
+
+    if (!t || !o || !d || o === d || !(m > 0)) ok = false;
+    if (btn) btn.disabled = !ok;
+  }
+  ['change','input'].forEach(ev=>{
+    tipo?.addEventListener(ev, enforce);
+    ori?.addEventListener(ev, enforce);
+    dst?.addEventListener(ev, enforce);
+    monto?.addEventListener(ev, enforce);
+  });
+  enforce();
+})();
+</script>
+{% endblock %}

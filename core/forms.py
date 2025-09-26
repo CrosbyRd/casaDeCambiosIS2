@@ -1,6 +1,7 @@
 # core/forms.py
 from django import forms
 from monedas.models import Moneda
+from transacciones.models import Transaccion # Importar el modelo Transaccion
 
 class SimulacionForm(forms.Form):
     monto = forms.DecimalField(
@@ -56,4 +57,37 @@ class SimulacionForm(forms.Form):
                 raise forms.ValidationError("Las monedas no pueden ser iguales.")
             if origen != 'PYG' and destino != 'PYG':
                 raise forms.ValidationError("La simulación debe involucrar Guaraníes (PYG).")
+        return cleaned_data
+
+class OperacionForm(SimulacionForm):
+    tipo_operacion = forms.ChoiceField(
+        label="Tipo de Operación",
+        choices=Transaccion.TIPO_OPERACION_CHOICES,
+        widget=forms.Select(attrs={'class': ''})
+    )
+    modalidad_tasa = forms.ChoiceField(
+        label="Modalidad de Tasa",
+        choices=Transaccion.MODALIDAD_TASA_CHOICES,
+        widget=forms.Select(attrs={'class': ''}),
+        initial='bloqueada', # Por defecto, la tasa bloqueada
+        help_text="Elige si la tasa se bloquea por un tiempo o es indicativa."
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo_operacion = cleaned_data.get("tipo_operacion")
+        moneda_origen = cleaned_data.get("moneda_origen")
+        moneda_destino = cleaned_data.get("moneda_destino")
+
+        if tipo_operacion and moneda_origen and moneda_destino:
+            if tipo_operacion == 'compra': # Cliente VENDE divisa extranjera a la casa de cambio
+                if moneda_origen == 'PYG':
+                    raise forms.ValidationError("Para 'Compra de Divisa', la moneda de origen no puede ser PYG.")
+                if moneda_destino != 'PYG':
+                    raise forms.ValidationError("Para 'Compra de Divisa', la moneda de destino debe ser PYG.")
+            elif tipo_operacion == 'venta': # Cliente COMPRA divisa extranjera de la casa de cambio
+                if moneda_origen != 'PYG':
+                    raise forms.ValidationError("Para 'Venta de Divisa', la moneda de origen debe ser PYG.")
+                if moneda_destino == 'PYG':
+                    raise forms.ValidationError("Para 'Venta de Divisa', la moneda de destino no puede ser PYG.")
         return cleaned_data

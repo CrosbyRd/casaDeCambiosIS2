@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block title %}Confirmar Operación - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  <!-- Header -->
+  <header class="mb-6">
+    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">✅ Confirmar Operación</h1>
+    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+      Revisá los datos antes de confirmar. Si necesitás cambiar algo, podés volver y editar sin perder la información.
+    </p>
+    {# Botón "Volver al inicio" eliminado a pedido #}
+  </header>
+
+  <!-- Mensajes del framework -->
+  {% if messages %}
+    <div class="mb-4 space-y-2" aria-live="polite">
+      {% for message in messages %}
+        <div class="px-4 py-3 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Card principal -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <!-- Encabezado de sección -->
+    <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">
+      Detalles de la operación
+    </div>
+
+    <!-- Resumen -->
+    <div class="p-5 space-y-4">
+      <div class="gx-summary">
+        <div class="gx-row">
+          <span class="gx-label">Tipo de operación</span>
+          <span class="gx-value">
+            {% if operacion.tipo_operacion == 'compra' %}
+              Compra de divisa (vos vendés, la casa compra)
+            {% else %}
+              Venta de divisa (vos comprás, la casa vende)
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="gx-row">
+          <span class="gx-label">Moneda origen</span>
+          <span class="gx-value gx-badge">{{ operacion.moneda_origen_codigo }}</span>
+        </div>
+
+        <div class="gx-row">
+          <span class="gx-label">Monto de origen</span>
+          <span class="gx-value">{{ operacion.monto_origen|unlocalize }}</span>
+        </div>
+
+        <div class="gx-row">
+          <span class="gx-label">Moneda destino</span>
+          <span class="gx-value gx-badge">{{ operacion.moneda_destino_codigo }}</span>
+        </div>
+
+        <div class="gx-row gx-row--highlight">
+          <span class="gx-label">Monto a recibir</span>
+          <span class="gx-value gx-amount">
+            {{ operacion.monto_recibido|unlocalize }} {{ operacion.moneda_destino_codigo }}
+          </span>
+        </div>
+
+        <div class="gx-row">
+          <span class="gx-label">Tasa aplicada</span>
+          <span class="gx-value">{{ operacion.tasa_aplicada|unlocalize }}</span>
+        </div>
+
+        <div class="gx-row">
+          <span class="gx-label">Bonificación aplicada</span>
+          <span class="gx-value">{{ operacion.comision_aplicada|unlocalize }} PYG</span>
+        </div>
+      </div>
+
+      <!-- Aviso de confirmación con mayor visibilidad -->
+      <div class="gx-info">
+        <p class="gx-info-text">
+          <strong>Al confirmar</strong>, tu operación se registrará inmediatamente y verás el estado correspondiente en tu panel.
+          Para este tipo de operación el estado inicial será
+          <strong class="gx-state">
+            {% if operacion.tipo_operacion == 'venta' %}pendiente_pago_cliente{% else %}pendiente_deposito_tauser{% endif %}
+          </strong>.
+        </p>
+      </div>
+
+      <!-- Acciones -->
+      <form method="post" id="form-confirmar" class="mt-2">
+        {% csrf_token %}
+        <div class="gx-actions">
+          <button id="btn-confirmar" type="submit" class="gx-btn">
+            Confirmar operación
+          </button>
+
+          {% url 'core:iniciar_operacion' as iniciar_operacion_url %}
+          <a class="gx-btn gx-btn--ghost"
+             href="{{ iniciar_operacion_url }}?monto={{ operacion.monto_origen }}&moneda_origen={{ operacion.moneda_origen_codigo }}&moneda_destino={{ operacion.moneda_destino_codigo }}">
+            Volver y modificar
+          </a>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <p class="mt-6 text-sm text-[var(--muted)]">
+    Consejo: revisá que el “Monto a recibir” sea correcto antes de confirmar.
+  </p>
+</main>
+
+<!-- Estilos locales -->
+<style>
+  .gx-summary { display:grid; gap:12px; }
+  .gx-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:#fff;
+  }
+  .gx-row--highlight { border-width:2px; background:var(--brand-soft); }
+  /* Etiquetas más visibles */
+  .gx-label { font-size:1rem; font-weight:700; color:var(--ink); }
+  .gx-value { font-weight:800; color:var(--ink); }
+  .gx-badge {
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px;
+    background:var(--brand-soft); color:var(--brand-dark); border:1px solid var(--brand-soft);
+    font-weight:800;
+  }
+  .gx-amount { font-size:1.3rem; color:var(--brand); }
+
+  /* Aviso de confirmación destacado */
+  .gx-info {
+    border:2px solid var(--brand);
+    background: color-mix(in oklab, var(--brand-soft) 85%, white);
+    border-radius:14px; padding:14px 16px;
+  }
+  .gx-info-text { font-size:1rem; color:var(--ink); line-height:1.6; }
+  .gx-state { color:var(--brand-dark); font-weight:900; }
+
+  .gx-actions { display:grid; gap:10px; grid-template-columns:1fr; }
+  @media (min-width:520px){ .gx-actions{ grid-template-columns:1fr 1fr; } }
+
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
+    padding:12px 16px; font-size:16px; width:100%;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+    cursor:pointer; transition: filter .15s ease, transform .02s ease;
+  }
+  .gx-btn:hover{ filter:brightness(1.03); }
+  .gx-btn:active{ transform:translateY(1px); }
+  .gx-btn[disabled]{ opacity:.55; cursor:not-allowed; box-shadow:none; }
+
+  .gx-btn--ghost{
+    background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;
+  }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+</style>
+
+<!-- JS mínimo: evita doble envío -->
+<script>
+(function(){
+  const form = document.getElementById('form-confirmar');
+  const btn  = document.getElementById('btn-confirmar');
+  if(form && btn){
+    form.addEventListener('submit', function(){
+      btn.disabled = true;
+      btn.textContent = 'Confirmando...';
+    });
+  }
+})();
+</script>
+{% endblock %}

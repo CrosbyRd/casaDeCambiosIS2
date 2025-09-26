@@ -1,0 +1,277 @@
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.forms import inlineformset_factory
+from django.shortcuts import redirect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from usuarios.mixins import RequireClienteMixin
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.views import View
+from django.shortcuts import get_object_or_404
+
+
+from .models import (
+    TipoMedioAcreditacion,
+    CampoMedioAcreditacion,
+    MedioAcreditacionCliente,
+)
+from .forms import (
+    TipoMedioForm,
+    CampoMedioForm,
+    MedioAcreditacionClienteForm,
+)
+
+
+
+# ===== Mixin de acceso solo admin de esta sección =====
+class AccessMediosAcreditacionMixin:
+    required_permission = "medios_acreditacion.access_medios_acreditacion"
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm(self.required_permission):
+            # mismo comportamiento que tus otras apps: fuera -> home
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
+
+# =====================================================
+# Formset inline: Campos dentro de un Tipo de Medio
+# (UN SOLO FORMSET para crear y editar; siempre con can_delete=True)
+# =====================================================
+CampoFormSet = inlineformset_factory(
+    parent_model=TipoMedioAcreditacion,
+    model=CampoMedioAcreditacion,
+    form=CampoMedioForm,
+    extra=0,          # 👈 SIN fila vacía automática
+    can_delete=True,
+)
+
+# =====================================================
+# VISTAS PARA TIPOS DE MEDIO (admin)
+# =====================================================
+class TipoMedioListView(AccessMediosAcreditacionMixin, ListView):
+    model = TipoMedioAcreditacion
+    template_name = "medios_acreditacion/tipos_list.html"
+    context_object_name = "tipos"
+
+
+class TipoMedioCreateView(AccessMediosAcreditacionMixin, CreateView):
+    model = TipoMedioAcreditacion
+    form_class = TipoMedioForm
+    template_name = "medios_acreditacion/tipos_form.html"
+    success_url = reverse_lazy("medios_acreditacion:tipos_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # en GET y en POST previo al guardado del padre, sin instance
+        context["formset"] = CampoFormSet(self.request.POST or None, self.request.FILES or None)
+        context["accion"] = "crear"
+        return context
+
+    def form_valid(self, form):
+        # 1) Guardar el padre
+        self.object = form.save()
+
+        # 2) RECONSTRUIR el formset con instance=self.object y los mismos POST/FILES
+        formset = CampoFormSet(self.request.POST, self.request.FILES, instance=self.object)
+
+        # 3) Validar el formset ya sobre la instancia correcta
+        if not formset.is_valid():
+            messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
+            # Re-render con el formset rearmado (para mostrar errores)
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # 4) Guardar (en crear podés eliminar realmente los marcados con DELETE)
+        instances = formset.save(commit=False)
+        for inst in instances:
+            # por si acaso
+            inst.tipo_medio = self.object
+            inst.activo = True
+            inst.save()
+
+        # Borrar los marcados
+        for obj in formset.deleted_objects:
+            obj.delete()
+
+        messages.success(self.request, "Tipo de medio y campos creados correctamente ✅")
+        return redirect(self.success_url)
+
+    
+    
+
+class TipoMedioUpdateView(AccessMediosAcreditacionMixin, UpdateView):
+    model = TipoMedioAcreditacion
+    form_class = TipoMedioForm
+    template_name = "medios_acreditacion/tipos_form.html"
+    success_url = reverse_lazy("medios_acreditacion:tipos_list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context["formset"] = CampoFormSet(self.request.POST, instance=self.object)
+        else:
+            context["formset"] = CampoFormSet(instance=self.object)
+        context["accion"] = "editar"
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context["formset"]
+
+        if not formset.is_valid():
+            for idx, f in enumerate(formset.forms, start=1):
+                if f.errors:
+                    messages.error(self.request, f"Fila {idx}: {f.errors}")
+            messages.error(self.request, "Revisá los campos: hay errores en la definición de campos.")
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # Guardar primero el Tipo
+        self.object = form.save()
+
+        # 1) Crear/actualizar (sin borrar aún)
+        instances = formset.save(commit=False)
+        for inst in instances:
+            inst.tipo_medio = self.object
+            # si es nuevo, por defecto activo
+            if inst.pk is None:
+                inst.activo = True
+            inst.save()
+
+        # 2) Desactivar: los marcados como DELETE
+        for obj in formset.deleted_objects:
+            if obj.pk:
+                obj.activo = False
+                obj.save()
+
+        # 3) **Reactivar**: formularios existentes que NO están en DELETE
+        #    y cuya instancia actual está inactiva.
+        for f in formset.forms:
+            inst = f.instance
+            if inst.pk:
+                # Si el form tiene el campo DELETE (lo tiene en inline formset):
+                marked_delete = f.cleaned_data.get('DELETE', False)
+                if inst.activo is False and not marked_delete:
+                    inst.activo = True
+                    inst.save()
+
+        messages.success(self.request, "Tipo de medio y campos actualizados correctamente ✏️")
+        return redirect(self.success_url)
+
+
+class TipoMedioDeleteView(AccessMediosAcreditacionMixin, DeleteView):
+    model = TipoMedioAcreditacion
+    template_name = "medios_acreditacion/tipos_confirm_delete.html"
+    success_url = reverse_lazy("medios_acreditacion:tipos_list")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Tipo de medio eliminado correctamente ❌")
+        return super().delete(request, *args, **kwargs)
+
+# =====================================================
+# VISTAS PARA MEDIOS DE CLIENTES (lado cliente)
+# =====================================================
+class MedioClienteListView(RequireClienteMixin, ListView):
+    model = MedioAcreditacionCliente
+    template_name = "medios_acreditacion/clientes_list.html"
+    context_object_name = "medios"
+
+    def get_queryset(self):
+        return (super().get_queryset()
+                .filter(cliente=self.cliente)
+                .select_related("tipo"))
+
+class MedioClienteCreateView(RequireClienteMixin, CreateView):
+    model = MedioAcreditacionCliente
+    form_class = MedioAcreditacionClienteForm
+    template_name = "medios_acreditacion/clientes_form.html"
+    success_url = reverse_lazy("medios_acreditacion:clientes_list")
+
+
+
+    def get_initial(self):
+        initial = super().get_initial()
+        tipo = self.request.GET.get("tipo")
+        if tipo:
+            initial["tipo"] = tipo
+        return initial
+
+    def form_valid(self, form):
+        form.instance.cliente = self.cliente
+        return super().form_valid(form)
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user   # ahora el form lo acepta
+        # Para que al cambiar el select muestre campos dinámicos
+        tipo_id = self.request.GET.get("tipo")
+        if tipo_id:
+            try:
+                kwargs.setdefault("initial", {})
+                kwargs["initial"]["tipo"] = TipoMedioAcreditacion.objects.get(pk=tipo_id)
+            except TipoMedioAcreditacion.DoesNotExist:
+                pass
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["accion"] = "crear"
+        return ctx
+
+
+class MedioClienteUpdateView(RequireClienteMixin, UpdateView):
+    model = MedioAcreditacionCliente
+    form_class = MedioAcreditacionClienteForm
+    template_name = "medios_acreditacion/clientes_form.html"
+    success_url = reverse_lazy("medios_acreditacion:clientes_list")
+
+    def get_queryset(self):
+        return super().get_queryset().filter(cliente=self.cliente)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["accion"] = "editar"
+        return ctx
+
+    def form_valid(self, form):
+        form.instance.cliente = self.cliente
+        messages.success(self.request, "Medio de acreditación actualizado correctamente ✏️")
+        return super().form_valid(form)
+
+class MedioClienteDeleteView(RequireClienteMixin, DeleteView):
+    model = MedioAcreditacionCliente
+    template_name = "medios_acreditacion/clientes_confirm_delete.html"
+    success_url = reverse_lazy("medios_acreditacion:clientes_list")
+
+    def get_queryset(self):
+        return super().get_queryset().filter(cliente=self.cliente)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Medio de acreditación eliminado correctamente ❌")
+        return super().delete(request, *args, **kwargs)
+    
+
+
+class MedioClientePredeterminarView(RequireClienteMixin, View):
+    def post(self, request, pk):
+        # obtener el medio del cliente logueado
+        medio = get_object_or_404(
+            MedioAcreditacionCliente.objects.filter(cliente=self.cliente), pk=pk
+        )
+        if not medio.activo:
+            return HttpResponseBadRequest("Medio inactivo.")
+        # marcar y desmarcar otros (lo hace su save())
+        medio.predeterminado = True
+        medio.save()
+        # status 204: sin contenido; tu JS hace reload de la página
+        return HttpResponse(status=204)
+
+    def get(self, request, pk):
+        # no permitimos GET para esta acción
+        return HttpResponseForbidden()

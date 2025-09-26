@@ -80,6 +80,15 @@
                 <span id="res-code">{{ form.moneda_destino.value }}</span>
               </div>
             </div>
+            {% if user.is_authenticated %}
+              <div class="mt-4">
+                <button form="form-simulador" type="submit" name="proceder" class="gx-btn">Proceder a Operación</button>
+              </div>
+            {% else %}
+              <div class="mt-4">
+                <a href="{% url 'login' %}" class="gx-btn">Inicia sesión para operar</a>
+              </div>
+            {% endif %}
           {% endif %}
         {% endif %}
       </div>
@@ -215,6 +224,8 @@
   monto?.addEventListener('input', () => enforceRules('amount'));
   enforceRules();          // estado inicial
   updateResultFlag();      // y bandera inicial
+
+  // No se necesita la lógica del botón, ya que ahora es un botón de submit.
 
   // BORRAR
   btnClr?.addEventListener('click', () => {

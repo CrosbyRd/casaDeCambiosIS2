@@ -10,7 +10,7 @@
     <!-- Clientes -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-blue-600 text-5xl mb-4">👥</div>
-      <h2 class="text-xl font-bold mb-2">Gestionar Clientes</h2>
+      <h2 class="text-xl font-bold mb-2">Clientes</h2>
       <p class="text-gray-500 mb-4">Crea, edita y administra clientes registrados.</p>
       <a href="{% url 'clientes:lista' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
@@ -22,7 +22,7 @@
     <!-- Roles -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-green-600 text-5xl mb-4">🛡️</div>
-      <h2 class="text-xl font-bold mb-2">Gestionar Roles</h2>
+      <h2 class="text-xl font-bold mb-2">Roles</h2>
       <p class="text-gray-500 mb-4">Asigna permisos y gestiona roles de usuarios.</p>
       <a href="{% url 'roles:role-panel' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
@@ -35,7 +35,7 @@
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-purple-600 text-5xl mb-4">🔗</div>
       <h2 class="text-xl font-bold mb-2">Asociar Cliente a Usuario</h2>
-      <p class="text-gray-500 mb-4">Asociacion de clientes con usuarios específicos.</p>
+      <p class="text-gray-500 mb-4">Asociación de clientes con usuarios específicos.</p>
       <a href="{% url 'usuarios:listar_usuarios' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
@@ -46,7 +46,7 @@
     <!-- Monedas -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-yellow-600 text-5xl mb-4">💱</div>
-      <h2 class="text-xl font-bold mb-2">Gestionar Monedas</h2>
+      <h2 class="text-xl font-bold mb-2">Monedas</h2>
       <p class="text-gray-500 mb-4">Administra las monedas disponibles en el sistema.</p>
       <a href="{% url 'monedas:listar_monedas' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
@@ -58,7 +58,7 @@
     <!-- Tasas -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-red-600 text-5xl mb-4">📈</div>
-      <h2 class="text-xl font-bold mb-2">Gestionar Tasas</h2>
+      <h2 class="text-xl font-bold mb-2">Tasas</h2>
       <p class="text-gray-500 mb-4">Configura las cotizaciones y tasas de cambio.</p>
       <a href="{% url 'cotizaciones:cotizacion_list' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
@@ -70,9 +70,47 @@
     <!-- Métodos de pago -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-indigo-600 text-5xl mb-4">💳</div>
-      <h2 class="text-xl font-bold mb-2">Gestionar Métodos de Pago</h2>
+      <h2 class="text-xl font-bold mb-2">Métodos de Pago</h2>
       <p class="text-gray-500 mb-4">Agrega o modifica los métodos de pago habilitados.</p>
       <a href="{% url 'pagos:listar_tipos_medio_pago' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Configuración -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-gray-700 text-5xl mb-4">⚙️</div>
+      <h2 class="text-xl font-bold mb-2">Configuración</h2>
+      <p class="text-gray-500 mb-4">Administra los límites de transacción del sistema.</p>
+      <a href="{% url 'configuracion:configuracion-panel' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Medios de Acreditación -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-5xl mb-4">🏦</div>
+      <h2 class="text-xl font-bold mb-2">Medios de Acreditación</h2>
+      <p class="text-gray-500 mb-4">Administra las cuentas/billeteras/pickup disponibles.</p>
+      <a href="{% url 'medios_acreditacion:tipos_list' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- TED (Inventario / Admin) -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-5xl mb-4">📦</div>
+      <h2 class="text-xl font-bold mb-2">TED</h2>
+      <p class="text-gray-500 mb-4">
+        Stock de billetes por denominación, Nº de serie y ubicación del terminal.
+      </p>
+      <a href="{% url 'admin_panel:ted:inventario' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
         Acceder
