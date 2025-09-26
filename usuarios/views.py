@@ -6,12 +6,12 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .utils import SESSION_KEY
+from .utils import SESSION_KEY, get_cliente_activo
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
 from roles.models import Role # Importar el modelo Role
-
+from transacciones.models import Transaccion
 
 # ----------------------------
 # Registro + verificación de cuenta
@@ -213,11 +213,13 @@ from transacciones.models import Transaccion
 
 @login_required
 def dashboard(request):
-    # Obtener las últimas transacciones del usuario
     transacciones = Transaccion.objects.filter(cliente=request.user).order_by('-fecha_creacion')[:5]
-    return render(request, "usuarios/dashboard.html", {'transacciones': transacciones})
-
-
+    cliente = get_cliente_activo(request)              # ← NUEVO
+    return render(
+        request,
+        "usuarios/dashboard.html",
+        {'transacciones': transacciones, 'cliente': cliente}  # ← NUEVO
+    )
 @login_required
 def admin_panel(request):
     if not request.user.is_staff:
