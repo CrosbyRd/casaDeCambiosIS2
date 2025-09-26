@@ -15,6 +15,10 @@ from core.utils import validar_limite_transaccion
 from django.utils import timezone
 from datetime import timedelta
 
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -185,3 +189,50 @@ def detalle_operacion_tauser(request, transaccion_id):
     """
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=request.user)
     return render(request, 'core/detalle_operacion_tauser.html', {'transaccion': transaccion})
+
+
+@login_required
+def historial_transacciones(request):
+    """
+    Muestra el historial de transacciones del usuario, con opciones de filtrado y paginación.
+    """
+    qs = Transaccion.objects.filter(cliente=request.user)\
+         .select_related('moneda_origen', 'moneda_destino')\
+         .order_by('-fecha_creacion')
+
+    # --- Filtros (GET) ---
+    tipo = request.GET.get('tipo')              # 'compra' | 'venta'
+    estado = request.GET.get('estado')          # usa los choices del modelo
+    moneda = request.GET.get('moneda')          # código ej. 'USD'
+    q = request.GET.get('q')                    # id o código operación
+    desde = request.GET.get('desde')            # 'YYYY-MM-DD'
+    hasta = request.GET.get('hasta')            # 'YYYY-MM-DD'
+
+    if tipo:
+        qs = qs.filter(tipo_operacion=tipo)
+    if estado:
+        qs = qs.filter(estado=estado)
+    if moneda:
+        qs = qs.filter(Q(moneda_origen__codigo=moneda) | Q(moneda_destino__codigo=moneda))
+    if q:
+        qs = qs.filter(Q(id__icontains=q) | Q(codigo_operacion_tauser__icontains=q))
+
+    if desde:
+        d = parse_date(desde)
+        if d:
+            qs = qs.filter(fecha_creacion__date__gte=d)
+    if hasta:
+        h = parse_date(hasta)
+        if h:
+            qs = qs.filter(fecha_creacion__date__lte=h)
+
+    # --- Paginación (10 por página) ---
+    paginator = Paginator(qs, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'filtros': {'tipo': tipo, 'estado': estado, 'moneda': moneda, 'q': q, 'desde': desde, 'hasta': hasta},
+    }
+    return render(request, 'core/historial_transacciones.html', context)
