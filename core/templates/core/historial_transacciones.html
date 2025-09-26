@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Historial de Transacciones - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-8 space-y-6">
+
+  <header>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-[var(--ink)]">🧾 Historial de transacciones</h1>
+    <p class="text-[var(--muted)] max-w-2xl">
+      Filtrá, buscá y revisá todas tus operaciones. Los filtros activos se aplican a toda la lista.
+    </p>
+  </header>
+
+  <!-- Filtros -->
+  <form method="get" class="bg-white border rounded-2xl p-4 shadow-sm" style="border-color:var(--line)">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+      <div>
+        <label class="block text-sm font-semibold mb-1">Tipo</label>
+        <select name="tipo" class="gx-field">
+          <option value="">Todos</option>
+          <option value="compra" {% if filtros.tipo == 'compra' %}selected{% endif %}>Compra</option>
+          <option value="venta"  {% if filtros.tipo == 'venta'  %}selected{% endif %}>Venta</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Estado</label>
+        <input class="gx-field" name="estado" value="{{ filtros.estado|default:'' }}" placeholder="Ej: pendiente_pago_cliente">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Moneda</label>
+        <input class="gx-field" name="moneda" value="{{ filtros.moneda|default:'' }}" placeholder="Ej: USD">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Desde</label>
+        <input type="date" class="gx-field" name="desde" value="{{ filtros.desde|default:'' }}">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Hasta</label>
+        <input type="date" class="gx-field" name="hasta" value="{{ filtros.hasta|default:'' }}">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Buscar</label>
+        <input class="gx-field" name="q" value="{{ filtros.q|default:'' }}" placeholder="ID o código">
+      </div>
+    </div>
+
+    <div class="mt-3 flex flex-wrap gap-2">
+      <button class="gx-btn" type="submit">Aplicar filtros</button>
+      <a class="gx-btn gx-btn--ghost" href="?">Limpiar</a>
+      <a class="gx-btn gx-btn--secondary" href="{% url 'core:iniciar_operacion' %}">Nueva operación</a>
+    </div>
+  </form>
+
+  <!-- Tabla -->
+  <section class="bg-white border rounded-2xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Resultados</div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <caption class="sr-only">Listado de transacciones</caption>
+        <thead>
+          <tr class="text-left text-sm text-[var(--muted)] border-b" style="border-color:var(--line)">
+            <th class="px-4 py-3">ID</th>
+            <th class="px-4 py-3">Fecha</th>
+            <th class="px-4 py-3">Tipo</th>
+            <th class="px-4 py-3">Estado</th>
+            <th class="px-4 py-3">Origen</th>
+            <th class="px-4 py-3">Monto origen</th>
+            <th class="px-4 py-3">Destino</th>
+            <th class="px-4 py-3">Monto destino</th>
+            <th class="px-4 py-3">Tasa</th>
+            <th class="px-4 py-3">Código</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y" style="divide-color:var(--line)">
+          {% for t in page_obj.object_list %}
+            <tr class="hover:bg-purple-50/40">
+              <td class="px-4 py-3 font-bold">{{ t.id }}</td>
+              <td class="px-4 py-3">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
+              <td class="px-4 py-3">{{ t.get_tipo_operacion_display }}</td>
+              <td class="px-4 py-3">{{ t.get_estado_display }}</td>
+              <td class="px-4 py-3">{{ t.moneda_origen.codigo }}</td>
+              <td class="px-4 py-3">{{ t.monto_origen }}</td>
+              <td class="px-4 py-3">{{ t.moneda_destino.codigo }}</td>
+              <td class="px-4 py-3">{{ t.monto_destino }}</td>
+              <td class="px-4 py-3">{{ t.tasa_cambio_aplicada }}</td>
+              <td class="px-4 py-3">{{ t.codigo_operacion_tauser }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10" class="px-4 py-6 text-center text-[var(--muted)]">No se encontraron transacciones.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="flex items-center justify-between p-4 border-t" style="border-color:var(--line)" aria-label="Paginación">
+        <div class="text-sm text-[var(--muted)]">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </div>
+        <div class="flex gap-2">
+          {% if page_obj.has_previous %}
+            <a class="gx-btn gx-btn--ghost" href="?{% if request.GET %}{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+          {% endif %}
+          {% if page_obj.has_next %}
+            <a class="gx-btn" href="?{% if request.GET %}{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+          {% endif %}
+        </div>
+      </nav>
+    {% endif %}
+  </section>
+</main>
+
+<style>
+  .gx-field{
+    width:100%; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; height:44px;
+    background:#fff; color:var(--ink); transition:box-shadow .15s, border-color .15s;
+  }
+  .gx-field:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18); }
+
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px; padding:10px 14px;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+  }
+  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+  .gx-btn--secondary{ background:var(--brand-soft); color:var(--brand-dark); }
+</style>
+{% endblock %}
