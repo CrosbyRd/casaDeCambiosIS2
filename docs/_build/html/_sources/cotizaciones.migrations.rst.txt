@@ -36,6 +36,14 @@ cotizaciones.migrations.0003\_merge\_20250906\_2230 module
    :undoc-members:
    :show-inheritance:
 
+cotizaciones.migrations.0004\_alter\_cotizacion\_comision\_compra\_and\_more module
+-----------------------------------------------------------------------------------
+
+.. automodule:: cotizaciones.migrations.0004_alter_cotizacion_comision_compra_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

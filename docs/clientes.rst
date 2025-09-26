@@ -1,18 +1,11 @@
-clientes package
+paquete clientes
 ================
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   clientes.migrations
-
-Submodules
+Submódulos
 ----------
 
-clientes.admin module
+módulo clientes.admin
 ---------------------
 
 .. automodule:: clientes.admin
@@ -20,7 +13,7 @@ clientes.admin module
    :undoc-members:
    :show-inheritance:
 
-clientes.apps module
+módulo clientes.apps
 --------------------
 
 .. automodule:: clientes.apps
@@ -28,7 +21,7 @@ clientes.apps module
    :undoc-members:
    :show-inheritance:
 
-clientes.forms module
+módulo clientes.forms
 ---------------------
 
 .. automodule:: clientes.forms
@@ -36,7 +29,7 @@ clientes.forms module
    :undoc-members:
    :show-inheritance:
 
-clientes.models module
+módulo clientes.models
 ----------------------
 
 .. automodule:: clientes.models
@@ -44,7 +37,7 @@ clientes.models module
    :undoc-members:
    :show-inheritance:
 
-clientes.tests module
+módulo clientes.tests
 ---------------------
 
 .. automodule:: clientes.tests
@@ -52,7 +45,7 @@ clientes.tests module
    :undoc-members:
    :show-inheritance:
 
-clientes.urls module
+módulo clientes.urls
 --------------------
 
 .. automodule:: clientes.urls
@@ -60,7 +53,7 @@ clientes.urls module
    :undoc-members:
    :show-inheritance:
 
-clientes.views module
+módulo clientes.views
 ---------------------
 
 .. automodule:: clientes.views
@@ -68,7 +61,7 @@ clientes.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: clientes

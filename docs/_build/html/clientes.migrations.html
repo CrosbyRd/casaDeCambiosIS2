@@ -72,6 +72,12 @@
 <li class="toctree-l2"><a class="reference internal" href="monedas.html">monedas package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html">roles package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usuarios.html">usuarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">configuracion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">medios_acreditacion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">operaciones package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">pagos package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">payments package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">transacciones package</a></li>
 </ul>
 </li>
 </ul>
@@ -131,6 +137,25 @@
 </dd></dl>
 
 </section>
+<section id="module-clientes.migrations.0002_cliente_user">
+<span id="clientes-migrations-0002-cliente-user-module"></span><h2>clientes.migrations.0002_cliente_user module<a class="headerlink" href="#module-clientes.migrations.0002_cliente_user" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0002_cliente_user.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0002_cliente_user.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0002_cliente_user.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0002_cliente_user.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0002_cliente_user.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0001_initial'),</span> <span class="pre">('usuarios',</span> <span class="pre">'__first__')]</span></em><a class="headerlink" href="#clientes.migrations.0002_cliente_user.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0002_cliente_user.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;AddField</span>&#160; <span class="pre">model_name='cliente',</span> <span class="pre">name='user',</span> <span class="pre">field=&lt;django.db.models.fields.related.OneToOneField&gt;&gt;]</span></em><a class="headerlink" href="#clientes.migrations.0002_cliente_user.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-clientes.migrations.0002_remove_cliente_correo_electronico">
 <span id="clientes-migrations-0002-remove-cliente-correo-electronico-module"></span><h2>clientes.migrations.0002_remove_cliente_correo_electronico module<a class="headerlink" href="#module-clientes.migrations.0002_remove_cliente_correo_electronico" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -164,6 +189,101 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="clientes.migrations.0003_alter_cliente_options.Migration.operations">
 <span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;AlterModelOptions</span>&#160; <span class="pre">name='cliente',</span> <span class="pre">options={'ordering':</span> <span class="pre">['nombre'],</span> <span class="pre">'permissions':</span> <span class="pre">[('access_clientes_panel',</span> <span class="pre">'Puede</span> <span class="pre">acceder</span> <span class="pre">al</span> <span class="pre">panel</span> <span class="pre">de</span> <span class="pre">clientes')],</span> <span class="pre">'verbose_name':</span> <span class="pre">'Cliente',</span> <span class="pre">'verbose_name_plural':</span> <span class="pre">'Clientes'}&gt;]</span></em><a class="headerlink" href="#clientes.migrations.0003_alter_cliente_options.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-clientes.migrations.0003_remove_cliente_user">
+<span id="clientes-migrations-0003-remove-cliente-user-module"></span><h2>clientes.migrations.0003_remove_cliente_user module<a class="headerlink" href="#module-clientes.migrations.0003_remove_cliente_user" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0003_remove_cliente_user.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0003_remove_cliente_user.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0003_remove_cliente_user.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0003_remove_cliente_user.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0003_remove_cliente_user.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0002_cliente_user')]</span></em><a class="headerlink" href="#clientes.migrations.0003_remove_cliente_user.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0003_remove_cliente_user.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;RemoveField</span>&#160; <span class="pre">model_name='cliente',</span> <span class="pre">name='user'&gt;]</span></em><a class="headerlink" href="#clientes.migrations.0003_remove_cliente_user.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-clientes.migrations.0004_merge_20250914_0029">
+<span id="clientes-migrations-0004-merge-20250914-0029-module"></span><h2>clientes.migrations.0004_merge_20250914_0029 module<a class="headerlink" href="#module-clientes.migrations.0004_merge_20250914_0029" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0029.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0004_merge_20250914_0029.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0004_merge_20250914_0029.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0029.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0029.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0003_alter_cliente_options'),</span> <span class="pre">('clientes',</span> <span class="pre">'0003_remove_cliente_user')]</span></em><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0029.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0029.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0029.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-clientes.migrations.0004_merge_20250914_0108">
+<span id="clientes-migrations-0004-merge-20250914-0108-module"></span><h2>clientes.migrations.0004_merge_20250914_0108 module<a class="headerlink" href="#module-clientes.migrations.0004_merge_20250914_0108" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0108.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0004_merge_20250914_0108.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0004_merge_20250914_0108.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0108.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0108.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0003_alter_cliente_options'),</span> <span class="pre">('clientes',</span> <span class="pre">'0003_remove_cliente_user')]</span></em><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0108.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0004_merge_20250914_0108.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#clientes.migrations.0004_merge_20250914_0108.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-clientes.migrations.0005_merge_20250914_2011">
+<span id="clientes-migrations-0005-merge-20250914-2011-module"></span><h2>clientes.migrations.0005_merge_20250914_2011 module<a class="headerlink" href="#module-clientes.migrations.0005_merge_20250914_2011" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0005_merge_20250914_2011.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0005_merge_20250914_2011.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0005_merge_20250914_2011.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0005_merge_20250914_2011.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0005_merge_20250914_2011.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0004_merge_20250914_0029'),</span> <span class="pre">('clientes',</span> <span class="pre">'0004_merge_20250914_0108')]</span></em><a class="headerlink" href="#clientes.migrations.0005_merge_20250914_2011.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0005_merge_20250914_2011.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#clientes.migrations.0005_merge_20250914_2011.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-clientes.migrations.0006_medioacreditacion">
+<span id="clientes-migrations-0006-medioacreditacion-module"></span><h2>clientes.migrations.0006_medioacreditacion module<a class="headerlink" href="#module-clientes.migrations.0006_medioacreditacion" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="clientes.migrations.0006_medioacreditacion.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.migrations.0006_medioacreditacion.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/migrations/0006_medioacreditacion.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.migrations.0006_medioacreditacion.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0006_medioacreditacion.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('clientes',</span> <span class="pre">'0005_merge_20250914_2011'),</span> <span class="pre">('operaciones',</span> <span class="pre">'0001_initial'),</span> <span class="pre">('usuarios',</span> <span class="pre">'__first__')]</span></em><a class="headerlink" href="#clientes.migrations.0006_medioacreditacion.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="clientes.migrations.0006_medioacreditacion.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;CreateModel</span>&#160; <span class="pre">name='MedioAcreditacion',</span> <span class="pre">fields=[('id',</span> <span class="pre">&lt;django.db.models.fields.BigAutoField&gt;),</span> <span class="pre">('identificador',</span> <span class="pre">&lt;django.db.models.fields.CharField&gt;),</span> <span class="pre">('alias',</span> <span class="pre">&lt;django.db.models.fields.CharField&gt;),</span> <span class="pre">('fecha_creacion',</span> <span class="pre">&lt;django.db.models.fields.DateTimeField&gt;),</span> <span class="pre">('canal',</span> <span class="pre">&lt;django.db.models.fields.related.ForeignKey&gt;),</span> <span class="pre">('cliente',</span> <span class="pre">&lt;django.db.models.fields.related.ForeignKey&gt;)],</span> <span class="pre">options={'verbose_name':</span> <span class="pre">'Medio</span> <span class="pre">de</span> <span class="pre">Acreditación',</span> <span class="pre">'verbose_name_plural':</span> <span class="pre">'Medios</span> <span class="pre">de</span> <span class="pre">Acreditación',</span> <span class="pre">'unique_together':</span> <span class="pre">{('cliente',</span> <span class="pre">'canal',</span> <span class="pre">'identificador')}}&gt;]</span></em><a class="headerlink" href="#clientes.migrations.0006_medioacreditacion.Migration.operations" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

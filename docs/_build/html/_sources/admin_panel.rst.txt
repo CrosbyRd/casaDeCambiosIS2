@@ -1,18 +1,10 @@
-admin\_panel package
+paquete admin\_panel
 ====================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   admin_panel.migrations
-
-Submodules
+Submódulos
 ----------
 
-admin\_panel.admin module
+módulo admin\_panel.admin
 -------------------------
 
 .. automodule:: admin_panel.admin
@@ -20,7 +12,7 @@ admin\_panel.admin module
    :undoc-members:
    :show-inheritance:
 
-admin\_panel.apps module
+módulo admin\_panel.apps
 ------------------------
 
 .. automodule:: admin_panel.apps
@@ -28,7 +20,7 @@ admin\_panel.apps module
    :undoc-members:
    :show-inheritance:
 
-admin\_panel.models module
+módulo admin\_panel.models
 --------------------------
 
 .. automodule:: admin_panel.models
@@ -36,7 +28,7 @@ admin\_panel.models module
    :undoc-members:
    :show-inheritance:
 
-admin\_panel.tests module
+módulo admin\_panel.tests
 -------------------------
 
 .. automodule:: admin_panel.tests
@@ -44,7 +36,7 @@ admin\_panel.tests module
    :undoc-members:
    :show-inheritance:
 
-admin\_panel.urls module
+módulo admin\_panel.urls
 ------------------------
 
 .. automodule:: admin_panel.urls
@@ -52,7 +44,7 @@ admin\_panel.urls module
    :undoc-members:
    :show-inheritance:
 
-admin\_panel.views module
+módulo admin\_panel.views
 -------------------------
 
 .. automodule:: admin_panel.views
@@ -60,7 +52,7 @@ admin\_panel.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: admin_panel

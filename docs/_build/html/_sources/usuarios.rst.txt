@@ -1,19 +1,11 @@
-usuarios package
+paquete usuarios
 ================
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   usuarios.management
-   usuarios.migrations
-
-Submodules
+Submódulos
 ----------
 
-usuarios.admin module
+módulo usuarios.admin
 ---------------------
 
 .. automodule:: usuarios.admin
@@ -21,7 +13,7 @@ usuarios.admin module
    :undoc-members:
    :show-inheritance:
 
-usuarios.apps module
+módulo usuarios.apps
 --------------------
 
 .. automodule:: usuarios.apps
@@ -29,7 +21,7 @@ usuarios.apps module
    :undoc-members:
    :show-inheritance:
 
-usuarios.forms module
+módulo usuarios.forms
 ---------------------
 
 .. automodule:: usuarios.forms
@@ -37,7 +29,7 @@ usuarios.forms module
    :undoc-members:
    :show-inheritance:
 
-usuarios.models module
+módulo usuarios.models
 ----------------------
 
 .. automodule:: usuarios.models
@@ -45,7 +37,7 @@ usuarios.models module
    :undoc-members:
    :show-inheritance:
 
-usuarios.tests module
+módulo usuarios.tests
 ---------------------
 
 .. automodule:: usuarios.tests
@@ -53,7 +45,7 @@ usuarios.tests module
    :undoc-members:
    :show-inheritance:
 
-usuarios.urls module
+módulo usuarios.urls
 --------------------
 
 .. automodule:: usuarios.urls
@@ -61,7 +53,7 @@ usuarios.urls module
    :undoc-members:
    :show-inheritance:
 
-usuarios.views module
+módulo usuarios.views
 ---------------------
 
 .. automodule:: usuarios.views
@@ -69,7 +61,7 @@ usuarios.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: usuarios

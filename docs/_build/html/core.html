@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>core package &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+  <title>paquete core &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="correo package" href="correo.html" />
-    <link rel="prev" title="clientes.migrations package" href="clientes.migrations.html" /> 
+    <link rel="next" title="paquete correo" href="correo.html" />
+    <link rel="prev" title="paquete clientes" href="clientes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,46 +43,59 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">CasaDeCambioIS2 package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">admin_panel package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="clientes.html">clientes package</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">core package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core.apps">core.apps module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete core</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-core.apps">módulo core.apps</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#core.apps.CoreConfig"><code class="docutils literal notranslate"><span class="pre">CoreConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core.forms">core.forms module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-core.forms">módulo core.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.forms.OperacionForm"><code class="docutils literal notranslate"><span class="pre">OperacionForm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#core.forms.SimulacionForm"><code class="docutils literal notranslate"><span class="pre">SimulacionForm</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core.logic">core.logic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-core.logic">módulo core.logic</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#core.logic.calcular_simulacion"><code class="docutils literal notranslate"><span class="pre">calcular_simulacion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core.tests">core.tests module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-core.tests">módulo core.tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.tests.CoreViewsTest"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.tests.SimulacionLogicConcrectTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#core.tests.SimulacionLogicTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core.views">core.views module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#core.views.pagina_inicio_y_simulador"><code class="docutils literal notranslate"><span class="pre">pagina_inicio_y_simulador()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#core.views.site_home"><code class="docutils literal notranslate"><span class="pre">site_home()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-core.views">módulo core.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.calculadora_view"><code class="docutils literal notranslate"><span class="pre">calculadora_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.confirmar_operacion"><code class="docutils literal notranslate"><span class="pre">confirmar_operacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.detalle_transaccion"><code class="docutils literal notranslate"><span class="pre">detalle_transaccion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.historial_transacciones"><code class="docutils literal notranslate"><span class="pre">historial_transacciones()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core.views.iniciar_operacion"><code class="docutils literal notranslate"><span class="pre">iniciar_operacion()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#core.views.site_rates"><code class="docutils literal notranslate"><span class="pre">site_rates()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-core">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="correo.html">correo package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">cotizaciones package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lib.html">lib package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manage.html">manage module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="monedas.html">monedas package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html">roles package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.html">usuarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
 </ul>
@@ -102,7 +115,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
-      <li class="breadcrumb-item active">core package</li>
+      <li class="breadcrumb-item active">paquete core</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/core.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
       </li>
@@ -112,13 +125,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="core-package">
-<h1>core package<a class="headerlink" href="#core-package" title="Link to this heading"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+  <section id="paquete-core">
+<h1>paquete core<a class="headerlink" href="#paquete-core" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
 </section>
 <section id="module-core.apps">
-<span id="core-apps-module"></span><h2>core.apps module<a class="headerlink" href="#module-core.apps" title="Link to this heading"></a></h2>
+<span id="modulo-core-apps"></span><h2>módulo core.apps<a class="headerlink" href="#module-core.apps" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.apps.CoreConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.apps.</span></span><span class="sig-name descname"><span class="pre">CoreConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/apps.html#CoreConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.apps.CoreConfig" title="Link to this definition"></a></dt>
@@ -137,7 +150,38 @@
 
 </section>
 <section id="module-core.forms">
-<span id="core-forms-module"></span><h2>core.forms module<a class="headerlink" href="#module-core.forms" title="Link to this heading"></a></h2>
+<span id="modulo-core-forms"></span><h2>módulo core.forms<a class="headerlink" href="#module-core.forms" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.forms.OperacionForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.forms.</span></span><span class="sig-name descname"><span class="pre">OperacionForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/forms.html#OperacionForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.forms.OperacionForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.forms.SimulacionForm" title="core.forms.SimulacionForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulacionForm</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.forms.OperacionForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'modalidad_tasa':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'moneda_destino':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'moneda_origen':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo_operacion':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#core.forms.OperacionForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.forms.OperacionForm.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/forms.html#OperacionForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.forms.OperacionForm.clean" title="Link to this definition"></a></dt>
+<dd><p>Hook for doing any extra form-wide cleaning after Field.clean() has been
+called on every field. Any ValidationError raised by this method will
+not be associated with a particular field; it will have a special-case
+association with the field named “__all__”.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.forms.OperacionForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'modalidad_tasa':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'moneda_destino':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'moneda_origen':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo_operacion':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#core.forms.OperacionForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="core.forms.OperacionForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#core.forms.OperacionForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="core.forms.SimulacionForm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.forms.</span></span><span class="sig-name descname"><span class="pre">SimulacionForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/forms.html#SimulacionForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.forms.SimulacionForm" title="Link to this definition"></a></dt>
@@ -176,7 +220,7 @@ association with the field named “__all__”.</p>
 
 </section>
 <section id="module-core.logic">
-<span id="core-logic-module"></span><h2>core.logic module<a class="headerlink" href="#module-core.logic" title="Link to this heading"></a></h2>
+<span id="modulo-core-logic"></span><h2>módulo core.logic<a class="headerlink" href="#module-core.logic" title="Link to this heading"></a></h2>
 <p>Módulo de lógica de negocio para cálculos de simulación de cambio de divisas.</p>
 <p>Este módulo contiene la función principal para calcular simulaciones de compra y venta de divisas,
 aplicando tasas, comisiones y bonificaciones de cliente.</p>
@@ -209,11 +253,78 @@ la tasa aplicada, la bonificación aplicada y cualquier error.</p>
 
 </section>
 <section id="module-core.tests">
-<span id="core-tests-module"></span><h2>core.tests module<a class="headerlink" href="#module-core.tests" title="Link to this heading"></a></h2>
+<span id="modulo-core-tests"></span><h2>módulo core.tests<a class="headerlink" href="#module-core.tests" title="Link to this heading"></a></h2>
 <p>Módulo de pruebas unitarias para la lógica de simulación de cambio de divisas.</p>
 <p>Este módulo contiene pruebas para la función <cite>calcular_simulacion</cite> en <cite>core.logic</cite>,
 asegurando que los cálculos de compra/venta, la aplicación de bonificaciones y
 el manejo de errores funcionen como se espera.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.tests.CoreViewsTest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.tests.</span></span><span class="sig-name descname"><span class="pre">CoreViewsTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#CoreViewsTest"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.CoreViewsTest" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Pruebas para las vistas en la app <cite>core</cite> que manejan el flujo de operaciones.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.CoreViewsTest.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#CoreViewsTest.setUp"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.CoreViewsTest.setUp" title="Link to this definition"></a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.CoreViewsTest.setUpTestData">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setUpTestData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#CoreViewsTest.setUpTestData"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.CoreViewsTest.setUpTestData" title="Link to this definition"></a></dt>
+<dd><p>Load initial data for the TestCase.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa">
+<span class="sig-name descname"><span class="pre">test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa" title="Link to this definition"></a></dt>
+<dd><p>Verifica que la vista <cite>confirmar_operacion</cite> crea una transacción de tipo “compra”
+(cliente vende USD) y establece correctamente el campo <cite>tasa_garantizada_hasta</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min">
+<span class="sig-name descname"><span class="pre">test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min" title="Link to this definition"></a></dt>
+<dd><p>Verifica que la vista <cite>confirmar_operacion</cite> crea una transacción de tipo “venta”
+(cliente compra USD) y establece <cite>tasa_garantizada_hasta</cite> a 15 minutos.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="core.tests.SimulacionLogicConcrectTest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.tests.</span></span><span class="sig-name descname"><span class="pre">SimulacionLogicConcrectTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicConcrectTest"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicConcrectTest" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Conjunto de pruebas para la función <cite>calcular_simulacion</cite> utilizando
+datos reales en la base de datos de prueba para verificar los cálculos
+específicos de la lógica de negocio.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.SimulacionLogicConcrectTest.setUpTestData">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setUpTestData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicConcrectTest.setUpTestData"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicConcrectTest.setUpTestData" title="Link to this definition"></a></dt>
+<dd><p>Configura los datos de prueba necesarios para los escenarios de negocio.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo">
+<span class="sig-name descname"><span class="pre">test_compra_a_cliente_corporativo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo" title="Link to this definition"></a></dt>
+<dd><p>Verifica el cálculo de compra de 1000 USD a un cliente Corporativo.
+Fórmula: GUARANIES = DOLARES * (PB_DOLAR - (COMISION_COM - (COMISION_COM * 5%)))
+COMISION_FINAL = 50 - (50 * 0.05) = 50 - 2.5 = 47.5
+TC_COMP_CORP = 7300 - 47.5 = 7252.5
+GUARANIES por 1000 USD = 1000 * 7252.5 = 7,252,500</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.tests.SimulacionLogicConcrectTest.test_venta_a_cliente_vip">
+<span class="sig-name descname"><span class="pre">test_venta_a_cliente_vip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicConcrectTest.test_venta_a_cliente_vip"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicConcrectTest.test_venta_a_cliente_vip" title="Link to this definition"></a></dt>
+<dd><p>Verifica el cálculo de venta de 1000 USD a un cliente VIP.
+Fórmula: DOLARES = GUARANIES / (PB_DOLAR + COMISION_VTA - (COMISION_VTA * 10%))
+TC_VTA_VIP = 7300 + 100 - (100 * 0.10) = 7390
+GUARANIES para 1000 USD = 1000 * 7390 = 7,390,000</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="core.tests.SimulacionLogicTest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.tests.</span></span><span class="sig-name descname"><span class="pre">SimulacionLogicTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/tests.html#SimulacionLogicTest"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.tests.SimulacionLogicTest" title="Link to this definition"></a></dt>
@@ -262,15 +373,33 @@ cuando un cliente minorista vende PYG para comprar USD.</p>
 
 </section>
 <section id="module-core.views">
-<span id="core-views-module"></span><h2>core.views module<a class="headerlink" href="#module-core.views" title="Link to this heading"></a></h2>
+<span id="modulo-core-views"></span><h2>módulo core.views<a class="headerlink" href="#module-core.views" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="core.views.pagina_inicio_y_simulador">
-<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">pagina_inicio_y_simulador</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#pagina_inicio_y_simulador"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.pagina_inicio_y_simulador" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="core.views.calculadora_view">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">calculadora_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#calculadora_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.calculadora_view" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="core.views.site_home">
-<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">site_home</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#site_home"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.site_home" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="core.views.confirmar_operacion">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">confirmar_operacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#confirmar_operacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.confirmar_operacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.views.detalle_transaccion">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">detalle_transaccion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaccion_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#detalle_transaccion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.detalle_transaccion" title="Link to this definition"></a></dt>
+<dd><p>Muestra los detalles de una transacción creada, incluyendo el código de operación
+y la fecha de expiración de la tasa garantizada, adaptándose al tipo de operación.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.views.historial_transacciones">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">historial_transacciones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#historial_transacciones"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.historial_transacciones" title="Link to this definition"></a></dt>
+<dd><p>Muestra el historial de transacciones del usuario, con opciones de filtrado y paginación.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.views.iniciar_operacion">
+<span class="sig-prename descclassname"><span class="pre">core.views.</span></span><span class="sig-name descname"><span class="pre">iniciar_operacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/core/views.html#iniciar_operacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#core.views.iniciar_operacion" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -279,17 +408,17 @@ cuando un cliente minorista vende PYG para comprar USD.</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-core">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-core" title="Link to this heading"></a></h2>
-</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-core"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="clientes.migrations.html" class="btn btn-neutral float-left" title="clientes.migrations package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="correo.html" class="btn btn-neutral float-right" title="correo package" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="clientes.html" class="btn btn-neutral float-left" title="paquete clientes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="correo.html" class="btn btn-neutral float-right" title="paquete correo" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
