@@ -47,9 +47,9 @@ class TransactionLimit(models.Model):
         editable=False
     )
     aplica_diario = models.BooleanField(default=True)
-    monto_diario = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    monto_diario = models.PositiveIntegerField(default=0)
     aplica_mensual = models.BooleanField(default=False)
-    monto_mensual = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    monto_mensual = models.PositiveIntegerField(default=0) 
 
     class Meta:
         verbose_name = "Límite de Transacción"

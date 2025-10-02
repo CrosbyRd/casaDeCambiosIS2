@@ -1,9 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange{% endblock %}
+{% load configuracion_extras %}  {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
-
   <header class="flex items-center justify-between mb-8">
     <div>
       <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
@@ -26,27 +25,31 @@
     <form method="post">
       {% csrf_token %}
 
-      <!-- Moneda Base (fija) -->
       <div class="mb-6">
         <label class="block text-sm font-semibold mb-2">Moneda Base</label>
         <input type="text" value="Guaraní (₲)" disabled
                class="w-full max-w-[380px] p-3 border rounded-xl bg-gray-100 cursor-not-allowed">
       </div>
 
-      <!-- Límites Diario y Mensual -->
       <div class="mb-6 flex flex-col gap-4">
-        <!-- Límite Diario -->
         <div class="flex items-center gap-4">
           {{ form.aplica_diario }} 
           <label class="font-semibold">Aplicar Límite Diario</label>
-          {{ form.monto_diario }}
+          
+          <div class="relative flex-grow max-w-[200px]">
+              {{ form.monto_diario }} 
+          </div>
+
         </div>
 
-        <!-- Límite Mensual -->
         <div class="flex items-center gap-4">
           {{ form.aplica_mensual }} 
           <label class="font-semibold">Aplicar Límite Mensual</label>
-          {{ form.monto_mensual }}
+
+          <div class="relative flex-grow max-w-[200px]">
+              {{ form.monto_mensual }}
+          </div>
+
         </div>
       </div>
 
@@ -65,4 +68,89 @@
     </form>
   </section>
 </main>
+
+
+<script>
+    // Función para limpiar el formato: 1.000.000 -> 1000000
+    function cleanFormat(value) {
+        // Solo elimina puntos de miles. No se necesita manejar la coma decimal
+        return value.toString().replace(/\./g, '');
+    }
+
+    // Función para aplicar el formato: 1000000 -> 1.000.000 (formato PY)
+    function applyFormat(value) {
+        if (!value) return '';
+        // Convierte el valor limpio a un número entero
+        let number = parseInt(cleanFormat(value));
+        if (isNaN(number)) return value;
+
+        // Usa Intl.NumberFormat sin decimales
+        return new Intl.NumberFormat('es-PY', {
+            maximumFractionDigits: 0
+        }).format(number);
+    }
+    
+    // Función de inicialización para los campos
+    function initCurrencyField(fieldId) {
+        const inputHidden = document.getElementById(fieldId);
+        
+        if (!inputHidden) return;
+        
+        // 1. Configuración de campos
+        inputHidden.style.display = 'none';
+
+        const inputVisible = document.createElement('input');
+        inputVisible.setAttribute('type', 'text');
+        inputVisible.className = inputHidden.className + ' p-3 border rounded-xl'; 
+        inputVisible.id = fieldId + '_visible';
+        inputVisible.value = applyFormat(inputHidden.value);
+        
+        inputHidden.parentNode.insertBefore(inputVisible, inputHidden);
+
+        // 6. Evento al escribir (input): Sincroniza y MANTIENE el cursor
+        inputVisible.addEventListener('input', function() {
+            const oldValue = this.value;
+            const oldCleanValue = cleanFormat(oldValue);
+            
+            // 1. Guardar la posición actual del cursor (offset)
+            const cursorPosition = this.selectionStart;
+            
+            // 2. Contar cuántos separadores de miles (puntos) hay antes del cursor
+            const nonDigitsBeforeCursor = (oldValue.substring(0, cursorPosition).match(/\./g) || []).length;
+
+            // 3. Limpiar el valor que está escribiendo el usuario (esto actualiza el campo oculto)
+            const cleanedValue = cleanFormat(oldValue);
+            inputHidden.value = cleanedValue;
+
+            // 4. Volver a aplicar el formato al campo visible
+            const newValue = applyFormat(cleanedValue);
+            this.value = newValue;
+
+            // 5. Contar cuántos separadores de miles (puntos) hay en el NUEVO valor formateado
+            const newNonDigitsBeforeCursor = (newValue.substring(0, cursorPosition).match(/\./g) || []).length;
+
+            // 6. Calcular el desplazamiento del cursor:
+            //    Si se borró un separador, el cursor debe moverse una posición *menos*.
+            //    Si se insertó un separador (al escribir el 1000), el cursor debe moverse una posición *más*.
+            const adjustment = newNonDigitsBeforeCursor - nonDigitsBeforeCursor;
+
+            // 7. Restablecer la posición del cursor ajustada
+            //    Usamos setTimeout para asegurarnos de que el DOM esté actualizado
+            setTimeout(() => {
+                const newCursorPosition = cursorPosition + adjustment;
+                this.setSelectionRange(newCursorPosition, newCursorPosition);
+            }, 0); 
+        });
+
+        // 7. Evento al perder el foco (blur): Asegura el formato final
+        inputVisible.addEventListener('blur', function() {
+            this.value = applyFormat(this.value);
+        });
+    }
+
+    // Inicializa los dos campos
+    initCurrencyField('{{ form.monto_diario.id_for_label }}');
+    initCurrencyField('{{ form.monto_mensual.id_for_label }}');
+
+</script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load configuracion_extras %}
 {% block title %}Listado de Límites — Global Exchange{% endblock %}
 
 {% block content %}
@@ -66,10 +67,10 @@
               {{ l.moneda.nombre }} ({{ l.moneda.simbolo }})
             </td>
             <td class="px-6 py-4 text-center font-bold whitespace-nowrap">
-              {% if l.aplica_diario %}{{ l.monto_diario|floatformat:0 }} ₲{% else %}—{% endif %}
+              {% if l.aplica_diario %}{{ l.monto_diario|floatformat:0|formatear_moneda }} ₲{% else %}—{% endif %}
             </td>
             <td class="px-6 py-4 text-center font-bold whitespace-nowrap">
-              {% if l.aplica_mensual %}{{ l.monto_mensual|floatformat:0 }} ₲{% else %}—{% endif %}
+              {% if l.aplica_mensual %}{{ l.monto_mensual|floatformat:0|formatear_moneda }} ₲{% else %}—{% endif %}
             </td>
             <td class="px-6 py-4">
               <div class="flex justify-center gap-2">
