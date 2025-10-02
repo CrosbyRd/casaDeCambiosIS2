@@ -21,6 +21,9 @@ from django.core.exceptions import ValidationError
 from configuracion.models import TransactionLimit
 from django.db.models import Sum
 from django.utils.timezone import now
+
+
+
 # Forward declaration for MedioAcreditacion
 class MedioAcreditacion(models.Model):
     class Meta:
@@ -78,7 +81,16 @@ class Transaccion(models.Model):
 
     # --- CAMPOS DEL MODELO ---
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='transacciones')
+    cliente = models.ForeignKey(
+        Cliente,  # <--- ¡CORREGIDO! Usa el modelo Cliente
+        on_delete=models.PROTECT,
+        related_name='transacciones_cliente',
+    )
+    usuario_operador = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='operaciones_realizadas',
+    )
     tipo_operacion = models.CharField(max_length=10, choices=TIPO_OPERACION_CHOICES)
     estado = models.CharField(max_length=30, choices=ESTADO_CHOICES)
     
