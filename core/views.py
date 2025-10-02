@@ -217,7 +217,9 @@ def historial_transacciones(request):
     """
     Muestra el historial de transacciones del usuario, con opciones de filtrado y paginación.
     """
-    qs = Transaccion.objects.filter(cliente=request.user)\
+    cliente_activo = get_cliente_activo(request)
+
+    qs = Transaccion.objects.filter(cliente=cliente_activo)\
          .select_related('moneda_origen', 'moneda_destino')\
          .order_by('-fecha_creacion')
 

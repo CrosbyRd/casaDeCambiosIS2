@@ -103,12 +103,24 @@
         <div class="text-sm text-[var(--muted)]">
           Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
         </div>
-        <div class="flex gap-2">
+          <div class="flex gap-2">
+          {% comment %}
+            Corrección de paginación: Iterar sobre request.GET.items para preservar
+            todos los filtros de la URL excepto el 'page' actual.
+          {% endcomment %}
+          
           {% if page_obj.has_previous %}
-            <a class="gx-btn gx-btn--ghost" href="?{% if request.GET %}{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+            <a class="gx-btn gx-btn--ghost" 
+              href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+                Anterior
+            </a>
           {% endif %}
+          
           {% if page_obj.has_next %}
-            <a class="gx-btn" href="?{% if request.GET %}{{ request.GET.urlencode|cut:'page='|cut:page_obj.number|stringformat:'s' }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+            <a class="gx-btn" 
+              href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+                Siguiente
+            </a>
           {% endif %}
         </div>
       </nav>
