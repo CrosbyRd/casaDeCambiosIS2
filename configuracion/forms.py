@@ -14,15 +14,18 @@ class TransactionLimitForm(forms.ModelForm):
     """
     Formulario para crear o editar un límite de transacción.
 
+    
+    Formulario para crear o editar un límite de transacción.
+
     **Campos incluidos**
     -------------------
     aplica_diario : BooleanField
         Indica si aplica límite diario.
-    monto_diario : DecimalField
+    monto_diario : IntegerField  <-- ACTUALIZAR ESTO (era DecimalField)
         Monto máximo permitido diario, con placeholder "Monto Diario PYG".
     aplica_mensual : BooleanField
         Indica si aplica límite mensual.
-    monto_mensual : DecimalField
+    monto_mensual : IntegerField  <-- ACTUALIZAR ESTO (era DecimalField)
         Monto máximo permitido mensual, con placeholder "Monto Mensual PYG".
 
     **Widgets**

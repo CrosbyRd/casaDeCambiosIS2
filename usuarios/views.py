@@ -12,6 +12,7 @@ from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
 from roles.models import Role # Importar el modelo Role
 from transacciones.models import Transaccion
+from django.contrib.auth import get_user_model
 
 # ----------------------------
 # Registro + verificación de cuenta
@@ -213,13 +214,29 @@ from transacciones.models import Transaccion
 
 @login_required
 def dashboard(request):
-    transacciones = Transaccion.objects.filter(cliente=request.user).order_by('-fecha_creacion')[:5]
-    cliente = get_cliente_activo(request)              # ← NUEVO
+    
+    # 1. OBTENER el cliente activo
+    cliente_activo = get_cliente_activo(request)
+    
+    # 2. Corregir la consulta de transacciones
+    if cliente_activo:
+        # Filtramos por el objeto Cliente activo. ¡ESTA ES LA CORRECCIÓN CLAVE!
+        transacciones = Transaccion.objects.filter(
+            cliente=cliente_activo # ✅ CORRECTO: Filtra por la instancia de Cliente
+        ).order_by('-fecha_creacion')[:5]
+    else:
+        # Si no hay cliente activo, el usuario debería ir a seleccionarlo.
+        # Mientras tanto, mostramos transacciones vacías.
+        transacciones = Transaccion.objects.none() 
+
+    # 3. Renderizar
     return render(
         request,
         "usuarios/dashboard.html",
-        {'transacciones': transacciones, 'cliente': cliente}  # ← NUEVO
+        {'transacciones': transacciones, 'cliente': cliente_activo}
     )
+
+
 @login_required
 def admin_panel(request):
     if not request.user.is_staff:
@@ -266,7 +283,16 @@ def quitar_cliente(request, user_id, cliente_id):
 
 @login_required
 def seleccionar_cliente(request):
-    user = request.user
+    
+        # 🚨 SOLUCIÓN: Cargar el CustomUser fresco directamente de la DB
+    try:
+        User = get_user_model()
+        user = User.objects.get(pk=request.user.pk)
+    except User.DoesNotExist:
+        # Si falla la recarga, el usuario debe desloguearse.
+        messages.error(request, "Error de sesión: Usuario no encontrado.")
+        return redirect('logout') # O a donde te dirija el logout
+    
     clientes = user.clientes.all()
 
     if not clientes.exists():

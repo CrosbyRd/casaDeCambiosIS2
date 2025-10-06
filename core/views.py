@@ -3,22 +3,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
 from django.urls import reverse
-
+from django.utils.timezone import now
 from .forms import SimulacionForm, OperacionForm
 from .logic import calcular_simulacion
 from monedas.models import Moneda
 from cotizaciones.models import Cotizacion
-from transacciones.models import Transaccion
 from clientes.models import Cliente
+from configuracion.models import TransactionLimit
+from transacciones.models import Transaccion
 import uuid
-from core.utils import validar_limite_transaccion
 from django.utils import timezone
 from datetime import timedelta
-
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.utils.dateparse import parse_date
-
+from core.utils import validar_limite_transaccion
+from usuarios.utils import get_cliente_activo 
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -57,9 +57,18 @@ def site_rates(request):
     return render(request, 'site/rates.html', {'cotizaciones': cotizaciones})
 
 
+
 @login_required
 def iniciar_operacion(request):
+    # Asegurarse de que haya un cliente activo
+    cliente = get_cliente_activo(request)  # Usamos get_cliente_activo para obtener el cliente activo
+    if not cliente:
+        messages.info(request, "Seleccioná con qué cliente querés operar.")
+        return redirect("usuarios:seleccionar_cliente")  # Redirige a la página de selección de cliente
+
     initial_data = {}
+
+    # Obtener los parámetros de la URL si están presentes
     if request.method == 'GET':
         monto_from_url = request.GET.get('monto')
         moneda_origen_from_url = request.GET.get('moneda_origen')
@@ -76,55 +85,40 @@ def iniciar_operacion(request):
     form = OperacionForm(request.POST or initial_data)
     resultado_simulacion = None
 
+    # Calcular el límite disponible para el cliente
+    limite_cfg = TransactionLimit.objects.filter(moneda__codigo='PYG').first()  # Límite en PYG
+    limite_disponible = Decimal(limite_cfg.monto_diario) if limite_cfg else Decimal(0)
+
+    # Obtener las transacciones del día y calcular el total consumido por el cliente
+    hoy = now().date()
+
+    total_transacciones_hoy = Transaccion.objects.filter(
+        cliente=cliente,  # <--- ¡REVERTIDO a la variable cliente!
+        fecha_creacion__date=hoy
+    ).aggregate(Sum('monto_origen'))['monto_origen__sum'] or Decimal(0)
+
+    limite_disponible -= total_transacciones_hoy  # Límite disponible = Límite diario - Total transacciones hoy
+
+    # Procesar el formulario
     if request.method == 'POST' and form.is_valid():
         tipo_operacion = form.cleaned_data['tipo_operacion']
         monto_origen = form.cleaned_data['monto']
         moneda_origen_codigo = form.cleaned_data['moneda_origen']
         moneda_destino_codigo = form.cleaned_data['moneda_destino']
 
-        try:
-            moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
-            moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
-        except Moneda.DoesNotExist as e:
-            messages.error(request, f"Error: {e}")
-            return render(request, 'core/iniciar_operacion.html', {'form': form})
+        # Verificación de la simulación y la validación de los límites
+        resultado_simulacion = calcular_simulacion(monto_origen, moneda_origen_codigo, moneda_destino_codigo, user=request.user)
 
-        resultado_simulacion = calcular_simulacion(
-            monto_origen, moneda_origen_codigo, moneda_destino_codigo, user=request.user
-        )
-
-        if resultado_simulacion['error']:
+        if resultado_simulacion.get('error'):
             messages.error(request, resultado_simulacion['error'])
             return render(request, 'core/iniciar_operacion.html', {'form': form})
 
-        cliente = request.user.clientes.first()
-        if not cliente:
-            messages.error(request, "No se encontró un perfil de cliente asociado a tu usuario.")
+        # Validar el límite disponible
+        if monto_origen > limite_disponible:
+            messages.error(request, f"El monto excede el límite disponible de {limite_disponible} PYG.")
             return render(request, 'core/iniciar_operacion.html', {'form': form})
 
-        # --- Validación de límites usando la función existente ---
-        if tipo_operacion == 'compra':
-            monto_a_validar = monto_origen
-            moneda_a_validar = moneda_origen_codigo
-        else:  # venta
-            monto_a_validar = resultado_simulacion['monto_recibido']
-            moneda_a_validar = moneda_destino_codigo
-
-        usuario = request.user  # CustomUser
-        valido, mensaje = validar_limite_transaccion(
-            request.user,
-            monto_a_validar,
-            moneda_origen=moneda_a_validar,
-            moneda_destino=moneda_destino_codigo
-        )
-
-
-
-        if not valido:
-            messages.error(request, mensaje)
-            return render(request, 'core/iniciar_operacion.html', {'form': form})
-
-        # --- Proceder a confirmación ---
+        # Proceder con la operación
         request.session['operacion_pendiente'] = {
             'tipo_operacion': tipo_operacion,
             'moneda_origen_codigo': moneda_origen_codigo,
@@ -133,15 +127,23 @@ def iniciar_operacion(request):
             'monto_recibido': str(resultado_simulacion['monto_recibido']),
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
-            'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Guardar la modalidad de tasa
         }
+
         return redirect('core:confirmar_operacion')
 
-    return render(request, 'core/iniciar_operacion.html', {'form': form, 'resultado_simulacion': resultado_simulacion})
+    # Pasar el límite disponible al template
+    return render(request, 'core/iniciar_operacion.html', {
+        'form': form,
+        'resultado_simulacion': resultado_simulacion,
+        'limite_disponible': limite_disponible,  # Pasamos el límite disponible al template
+        'cliente': cliente  # Pasamos el cliente al template
+    })
+
 
 
 @login_required
 def confirmar_operacion(request):
+    cliente_activo = get_cliente_activo(request)
     operacion_pendiente = request.session.get('operacion_pendiente')
 
     if not operacion_pendiente:
@@ -175,7 +177,8 @@ def confirmar_operacion(request):
                 tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
 
         transaccion = Transaccion.objects.create(
-            cliente=request.user,
+            cliente=cliente_activo,
+            usuario_operador=request.user,
             tipo_operacion=operacion_pendiente['tipo_operacion'],
             estado=estado_inicial,
             moneda_origen=moneda_origen_obj,
@@ -204,7 +207,8 @@ def detalle_transaccion(request, transaccion_id):
     Muestra los detalles de una transacción creada, incluyendo el código de operación
     y la fecha de expiración de la tasa garantizada, adaptándose al tipo de operación.
     """
-    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=request.user)
+    cliente_activo = get_cliente_activo(request)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
     return render(request, 'core/detalle_transaccion.html', {'transaccion': transaccion})
 
 
@@ -213,7 +217,9 @@ def historial_transacciones(request):
     """
     Muestra el historial de transacciones del usuario, con opciones de filtrado y paginación.
     """
-    qs = Transaccion.objects.filter(cliente=request.user)\
+    cliente_activo = get_cliente_activo(request)
+
+    qs = Transaccion.objects.filter(cliente=cliente_activo)\
          .select_related('moneda_origen', 'moneda_destino')\
          .order_by('-fecha_creacion')
 
