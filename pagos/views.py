@@ -167,10 +167,10 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
-        # Prefijar tipo por querystring ?tipo=<uuid>
         if self.request.method == "GET" and self.request.GET.get("tipo"):
             kwargs.setdefault("initial", {})["tipo"] = self.request.GET.get("tipo")
         return kwargs
+
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -178,6 +178,7 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
         obj.save()
         messages.success(self.request, "Medio de pago creado correctamente.")
         return redirect(self.success_url)
+
 
 class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
     model = MedioPagoCliente

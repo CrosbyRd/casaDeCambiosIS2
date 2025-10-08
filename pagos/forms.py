@@ -44,10 +44,12 @@ class CampoMedioPagoForm(forms.ModelForm):
 # Cliente: Form dinámico por "tipo"
 # ---------------------------------
 class MedioPagoClienteForm(forms.ModelForm):
+    # Sobrescribimos 'tipo' para tener control total del widget y la UX
     tipo = forms.ModelChoiceField(
-        queryset=TipoMedioPago.objects.filter(activo=True),
+        queryset=TipoMedioPago.objects.filter(activo=True).order_by("nombre"),
         widget=forms.Select(attrs={"class": "form-select w-full"}),
         help_text="Selecciona el tipo de medio de pago",
+        required=True,
     )
 
     class Meta:
@@ -59,28 +61,44 @@ class MedioPagoClienteForm(forms.ModelForm):
             "predeterminado": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
         }
 
- 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        # Nunca accedas a self.instance.tipo directamente si no hay FK
-        tipo = None
-        # Si estamos editando y hay FK asignado
+        # 1) Determinar el 'tipo' seleccionado
+        tipo_obj = None
+
+        # a) Si estoy editando y ya hay FK
         if getattr(self.instance, "pk", None) and getattr(self.instance, "tipo_id", None):
-            tipo = self.instance.tipo
-        else:
-            # Intentar tomarlo del POST o del initial (p.ej. ?tipo=<uuid>)
+            tipo_obj = self.instance.tipo
+
+        # b) Si viene por POST (form enviado) o por initial / querystring
+        if tipo_obj is None:
             tipo_pk = self.data.get("tipo") or self.initial.get("tipo")
             if tipo_pk:
                 try:
-                    tipo = TipoMedioPago.objects.get(pk=tipo_pk)
+                    tipo_obj = TipoMedioPago.objects.get(pk=tipo_pk, activo=True)
                 except TipoMedioPago.DoesNotExist:
-                    tipo = None
+                    tipo_obj = None
 
+        # c) Fallback UX: si no hay selección y hay al menos un tipo activo, usamos el primero
+        if tipo_obj is None:
+            first_tipo = self.fields["tipo"].queryset.first()
+            if first_tipo is not None:
+                tipo_obj = first_tipo
+                # setear initial para que el select muestre el valor
+                self.initial["tipo"] = first_tipo.pk
+
+        # 2) Construir campos dinámicos si tenemos tipo
         self._campos_config = []
-        if tipo:
-            for campo in tipo.campos.filter(activo=True):
+        if tipo_obj:
+            # asegurar que el select muestre el valor actual (por GET/?tipo= o fallback)
+            self.fields["tipo"].initial = tipo_obj.pk
+
+            # ✅ Independiente del related_name:
+            campos_qs = CampoMedioPago.objects.filter(tipo=tipo_obj, activo=True).order_by("nombre_campo")
+
+            for campo in campos_qs:
                 nombre = campo.nombre_campo
                 requerido = campo.obligatorio
                 self.fields[nombre] = forms.CharField(
@@ -88,10 +106,13 @@ class MedioPagoClienteForm(forms.ModelForm):
                     required=requerido,
                     widget=forms.TextInput(attrs={"class": "form-input w-full"}),
                 )
-                # Si es edición, prellenar
                 if getattr(self.instance, "pk", None):
                     self.fields[nombre].initial = (self.instance.datos or {}).get(nombre, "")
                 self._campos_config.append(campo)
+
+    @property
+    def campos_config(self):
+        return getattr(self, "_campos_config", [])
 
     def clean(self):
         cleaned = super().clean()
@@ -134,6 +155,3 @@ class MedioPagoClienteForm(forms.ModelForm):
         self.instance.datos = datos
         return cleaned
     
-    @property
-    def campos_config(self):
-        return getattr(self, "_campos_config", [])
