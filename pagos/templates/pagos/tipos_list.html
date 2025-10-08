@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="px-6 py-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-4xl font-extrabold">Medios de Pago</h1>
+      <p class="text-lg text-gray-600">Definí tipos de medios y su comisión.</p>
+    </div>
+    <div class="space-x-2">
+      <a href="{% url 'home' %}" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Volver al Panel</a>
+      <a href="{% url 'pagos:tipos_create' %}" class="btn bg-[var(--brand)] text-white">Agregar Tipo</a>
+    </div>
+  </div>
+
+  {% include "partials/messages.html" %}
+
+  <div class="bg-white rounded-xl border border-[var(--line)] shadow">
+    <table class="min-w-full">
+      <thead class="bg-[var(--brand)] text-white">
+        <tr>
+          <th class="px-4 py-3 text-left">Nombre</th>
+          <th class="px-4 py-3 text-left">Comisión %</th>
+          <th class="px-4 py-3 text-left">Estado</th>
+          <th class="px-4 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tipos %}
+        <tr class="hover:bg-[var(--brand-soft)]">
+          <td class="px-4 py-3">{{ t.nombre }}</td>
+          <td class="px-4 py-3">{{ t.comision_porcentaje }}%</td>
+          <td class="px-4 py-3">
+            {% if t.activo %}
+              <span class="px-2 py-1 rounded bg-green-100 text-green-700">Activo</span>
+            {% else %}
+              <span class="px-2 py-1 rounded bg-gray-200 text-gray-700">Inactivo</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 text-right space-x-2">
+            <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" href="{% url 'pagos:tipos_update' t.id_tipo %}">Editar</a>
+            <a class="btn bg-red-600 hover:bg-red-700 text-white" href="{% url 'pagos:tipos_delete' t.id_tipo %}">Eliminar</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Sin tipos cargados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

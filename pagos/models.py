@@ -1,66 +1,184 @@
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
-
-#NUEVO
+import uuid
+from decimal import Decimal
+from django.conf import settings
 from django.core.exceptions import ValidationError
-class TipoMedioPago(models.Model):
-    """
-    Tipos de medios de pago: Tarjeta de crédito, Billetera electrónica, Cheque, etc.
-    """
-    nombre = models.CharField(
-        max_length=50,
-        unique=True,
-        help_text="Ej.: 'Tarjeta de Crédito', 'Billetera Electrónica', 'Cheque'"
-    )
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+from django.db.models import Q
+from django.utils import timezone
 
-    # Comisión aplicada sobre el monto de la operación (en %)
+# ----------------------------------------------------------------------------
+# 1) TipoMedioPago: define el tipo de método de pago + comisión %
+# ----------------------------------------------------------------------------
+class TipoMedioPago(models.Model):
+    id_tipo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nombre = models.CharField(max_length=100, unique=True)
+
+    # Comisión en porcentaje que aplica este medio (0 a 100)
     comision_porcentaje = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        default=0.00,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Comisión en % del monto total de la transacción (0–100)."
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("100"))],
+        help_text="Porcentaje de comisión que aplica este medio (0–100).",
     )
 
-    # NUEVO: Bonificación/Descuento (en %)
-    bonificacion_porcentaje = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        default=0.00,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Descuento en % aplicado (0–100)."
-    )
+    descripcion = models.TextField(blank=True)
+    activo = models.BooleanField(default=True)
+    creado_en = models.DateTimeField(default=timezone.now, editable=False)
+    actualizado_en = models.DateTimeField(auto_now=True)
 
-    # Estado del medio de pago
-    activo = models.BooleanField(
-        default=True,
-        help_text="Si está desactivado no se podrá utilizar en operaciones."
-    )
-
-    # Trazabilidad
-    created_at = models.DateTimeField(auto_now_add=True)  # fecha de creación
-    updated_at = models.DateTimeField(auto_now=True)      # última actualización
+    class Meta:
+        db_table = "pagos_tipo_medio"
+        verbose_name = "Tipo de medio de pago"
+        verbose_name_plural = "Tipos de medios de pago"
+        permissions = [
+            ("access_pagos_section", "Puede acceder a la sección de pagos"),
+        ]
 
     def __str__(self):
         return self.nombre
 
+
+# ----------------------------------------------------------------------------
+# 2) CampoMedioPago: define los campos dinámicos por tipo
+# ----------------------------------------------------------------------------
+class CampoMedioPago(models.Model):
+    class TipoDato(models.TextChoices):
+        TEXTO = "texto", "Texto"
+        NUMERO = "numero", "Número"
+        TELEFONO = "telefono", "Teléfono"
+        EMAIL = "email", "Email"
+        RUC = "ruc", "RUC"
+
+    class RegexOpciones(models.TextChoices):
+        NINGUNO = "", "(sin regex)"
+        SOLO_NUMEROS = r"^\d+$", "Solo números"
+        EMAIL = r"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email básico"
+        TELEFONO_PY = r"^\+?595\d{7,10}$", "Teléfono PY (+595...)"
+        RUC_PY = r"^\d{6,8}-\d{1}$", "RUC PY (########-#)"
+
+    id_campo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tipo = models.ForeignKey(TipoMedioPago, related_name="campos", on_delete=models.CASCADE)
+    nombre_campo = models.CharField(max_length=100)
+    tipo_dato = models.CharField(max_length=15, choices=TipoDato.choices, default=TipoDato.TEXTO)
+    obligatorio = models.BooleanField(default=False)
+
+    # Opción de regex predefinida y/o personalizada
+    regex_opcional = models.CharField(max_length=200, choices=RegexOpciones.choices, blank=True, default="")
+    regex_personalizado = models.CharField(max_length=300, blank=True)
+
+    activo = models.BooleanField(default=True)
+
     class Meta:
-        verbose_name = "Tipo de Medio de Pago"
-        verbose_name_plural = "Tipos de Medios de Pago"
-        ordering = ("-activo", "nombre")
+        db_table = "pagos_campo_medio"
+        verbose_name = "Campo de medio de pago"
+        verbose_name_plural = "Campos de medios de pago"
+        unique_together = ("tipo", "nombre_campo")
+
+    def __str__(self):
+        return f"{self.tipo.nombre} · {self.nombre_campo}"
+
+
+# ----------------------------------------------------------------------------
+# 3) MedioPagoCliente: instancia del cliente con datos dinámicos + predeterminado
+# ----------------------------------------------------------------------------
+class MedioPagoCliente(models.Model):
+    id_medio = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Ajusta el import del modelo Cliente según tu proyecto
+    cliente = models.ForeignKey("clientes.Cliente", related_name="medios_pago", on_delete=models.CASCADE)
+    tipo = models.ForeignKey(TipoMedioPago, related_name="medios_cliente", on_delete=models.PROTECT)
+
+    alias = models.CharField(max_length=120, help_text="Nombre para identificar rápidamente este medio")
+    datos = models.JSONField(default=dict, blank=True)
+
+    activo = models.BooleanField(default=True)
+    predeterminado = models.BooleanField(default=False)
+
+    creado_en = models.DateTimeField(default=timezone.now, editable=False)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "pagos_medio_cliente"
+        verbose_name = "Medio de pago del cliente"
+        verbose_name_plural = "Medios de pago del cliente"
+        constraints = [
+            # A lo sumo un predeterminado por cliente
+            models.UniqueConstraint(
+                fields=["cliente"],
+                condition=Q(predeterminado=True),
+                name="uniq_medio_pago_predeterminado_por_cliente",
+            )
+        ]
+
+    def __str__(self):
+            # Evitar RelatedObjectDoesNotExist en crear/instancias sin FK
+            alias = self.alias or "—"
+            try:
+                tipo_nombre = self.tipo.nombre  # puede no existir aún
+            except Exception:
+                tipo_nombre = "—"
+            estado = "(inactivo)" if getattr(self, "activo", True) is False else ""
+            return f"{alias} · {tipo_nombre} {estado}".strip()
+
+    # Validación: verificar que los datos cumplan con los campos activos del tipo
     def clean(self):
-        # Validar nombre
-        if not self.nombre:
-            raise ValidationError({'nombre': "El nombre no puede estar vacío."})
+        errors = {}
+        campos_activos = list(self.tipo.campos.filter(activo=True))
+        datos = self.datos or {}
 
-        # Validar comisiones
-        if self.comision_porcentaje < 0 or self.comision_porcentaje > 100:
-            raise ValidationError({'comision_porcentaje': "Debe estar entre 0 y 100."})
+        import re
 
-        if self.bonificacion_porcentaje < 0 or self.bonificacion_porcentaje > 100:
-            raise ValidationError({'bonificacion_porcentaje': "Debe estar entre 0 y 100."})
+        # Mapeo de validadores ligeros por tipo de dato
+        def _valida_tipo(nombre, valor, tipo):
+            if valor in (None, ""):
+                return None
+            if tipo == CampoMedioPago.TipoDato.NUMERO:
+                if not re.fullmatch(r"^-?\d+(?:[\.,]\d+)?$", str(valor)):
+                    return f"{nombre}: debe ser numérico"
+            elif tipo == CampoMedioPago.TipoDato.TELEFONO:
+                if not re.fullmatch(r"^\+?\d{6,15}$", str(valor)):
+                    return f"{nombre}: teléfono inválido"
+            elif tipo == CampoMedioPago.TipoDato.EMAIL:
+                if not re.fullmatch(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", str(valor)):
+                    return f"{nombre}: email inválido"
+            elif tipo == CampoMedioPago.TipoDato.RUC:
+                if not re.fullmatch(r"^\d{6,8}-\d{1}$", str(valor)):
+                    return f"{nombre}: RUC inválido (########-#)"
+            return None
 
+        for campo in campos_activos:
+            nombre = campo.nombre_campo
+            valor = datos.get(nombre)
+            if campo.obligatorio and (valor is None or str(valor).strip() == ""):
+                errors[nombre] = "Es obligatorio"
+                continue
+            # Validación por tipo
+            type_err = _valida_tipo(nombre, valor, campo.tipo_dato)
+            if type_err:
+                errors[nombre] = type_err
+                continue
+            # Validación por regex (opcional y/o personalizada)
+            patron = campo.regex_personalizado or campo.regex_opcional or ""
+            if patron and valor not in (None, ""):
+                try:
+                    if not re.fullmatch(patron, str(valor)):
+                        errors[nombre] = "Formato inválido"
+                except re.error:
+                    errors[nombre] = "Regex inválida en configuración"
+
+        if errors:
+            raise ValidationError(errors)
+
+    # Lógica de predeterminado y desactivación
     def save(self, *args, **kwargs):
-        # Llamar a clean antes de guardar para validar
-        self.full_clean()
+        # Si se inactiva, también pierde el estado de predeterminado
+        if not self.activo and self.predeterminado:
+            self.predeterminado = False
         super().save(*args, **kwargs)
+        # Si quedó como predeterminado, desmarcar otros del mismo cliente
+        if self.predeterminado:
+            MedioPagoCliente.objects.filter(
+                cliente=self.cliente, predeterminado=True
+            ).exclude(pk=self.pk).update(predeterminado=False)

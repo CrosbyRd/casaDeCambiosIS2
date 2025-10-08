@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="px-6 py-6">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-4xl font-extrabold">Mis medios de pago</h1>
+    <div class="space-x-2">
+      <a href="{% url 'pagos:clientes_create' %}" class="btn bg-[var(--brand)] text-white">Agregar</a>
+    </div>
+  </div>
+
+  {% include "partials/messages.html" %}
+
+  <div class="bg-white rounded-xl border border-[var(--line)] shadow">
+    <table class="min-w-full">
+      <thead class="bg-[var(--brand)] text-white">
+        <tr>
+          <th class="px-4 py-3 text-left">Alias</th>
+          <th class="px-4 py-3 text-left">Tipo</th>
+          <th class="px-4 py-3 text-left">Comisión</th>
+          <th class="px-4 py-3 text-left">Predeterminado</th>
+          <th class="px-4 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for m in medios %}
+        <tr class="hover:bg-[var(--brand-soft)]">
+          <td class="px-4 py-3">{{ m.alias }}</td>
+          <td class="px-4 py-3">{{ m.tipo.nombre }}</td>
+          <td class="px-4 py-3">{{ m.tipo.comision_porcentaje }}%</td>
+          <td class="px-4 py-3">{% if m.predeterminado %}✅{% else %}—{% endif %}</td>
+          <td class="px-4 py-3 text-right space-x-2">
+            <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" href="{% url 'pagos:clientes_update' m.id_medio %}">Editar</a>
+            <a class="btn bg-red-600 hover:bg-red-700 text-white" href="{% url 'pagos:clientes_delete' m.id_medio %}">Eliminar</a>
+            {% if m.activo %}
+            <form action="{% url 'pagos:clientes_predeterminar' m.id_medio %}" method="post" style="display:inline">
+              {% csrf_token %}
+              <button class="btn bg-emerald-600 hover:bg-emerald-700 text-white">Predeterminar</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">Sin medios cargados.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
