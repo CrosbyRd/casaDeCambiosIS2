@@ -1,10 +1,31 @@
-# ted/views.py — REEMPLAZO COMPLETO
+# ted/views.py
+"""
+Vistas del módulo TED (Terminal).
+=================================
+
+.. module:: ted.views
+   :synopsis: Operación de terminal, inventario y utilidades de consulta.
+
+Incluye:
+- Panel y flujo operativo (COMPRA/VENTA) sobre el inventario TED.
+- Sección administrativa de inventario (listar, ajustar, crear stock, movimientos).
+- **monedas_disponibles**: endpoint JSON para exponer *solo* los códigos de moneda
+  actualmente disponibles en el TED (sin revelar cantidades), pensado para el
+  modal del mock de usuario.
+
+Notas
+-----
+- No se expone el detalle de stock al usuario final.
+- Se filtran monedas no-PYG y con ``admite_terminal=True``.
+"""
+
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -428,3 +449,39 @@ def eliminar_denominacion(request, den_id: int):
     den.save(update_fields=["activa"])
     messages.success(request, "Denominación desactivada y stock limpiado.")
     return redirect("admin_panel:ted:inventario")
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# NUEVO: Endpoint JSON de monedas disponibles (SIN cantidades)
+# ──────────────────────────────────────────────────────────────────────────────
+@login_required
+def monedas_disponibles(request):
+    """
+    Devuelve en JSON el listado de **códigos** de moneda disponibles en el TED.
+
+    No expone cantidades ni denominaciones. Filtra:
+      - Solo inventario con ``cantidad > 0``
+      - Denominaciones activas
+      - Monedas con ``admite_terminal=True``
+      - Excluye ``PYG``
+
+    **Respuesta**
+    -------------
+    .. code-block:: json
+
+        { "monedas": ["BRL", "EUR", "USD"] }
+    """
+    qs = (
+        TedInventario.objects
+        .filter(
+            cantidad__gt=0,
+            denominacion__activa=True,
+            denominacion__moneda__admite_terminal=True,
+        )
+        .exclude(denominacion__moneda__codigo__iexact="PYG")
+        .select_related("denominacion__moneda")
+        .values_list("denominacion__moneda__codigo", flat=True)
+        .distinct()
+        .order_by("denominacion__moneda__codigo")
+    )
+    return JsonResponse({"monedas": list(qs)})

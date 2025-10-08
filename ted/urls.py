@@ -26,6 +26,11 @@ urlpatterns = [
     path("inventario/eliminar-den/<int:den_id>/", views.eliminar_denominacion, name="inventario_eliminar_den"),
     path("inventario/eliminar/<int:den_id>/", views.eliminar_denominacion, name="eliminar_denominacion"),
 
-    # Movimientos (si lo necesitas visible)
+    # Movimientos
     path("inventario/movimientos/", views.inventario_movimientos, name="inventario_movimientos"),
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # NUEVO: Endpoint JSON para el modal de usuario (monedas disponibles)
+    # ──────────────────────────────────────────────────────────────────────────
+    path("monedas_disponibles/", views.monedas_disponibles, name="monedas_disponibles"),
 ]
