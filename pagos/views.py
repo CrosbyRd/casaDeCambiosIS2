@@ -1,13 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-# from django.forms import inlineformset_factory          # 👈 QUITAR
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
-
+from django.db.models import Count, Q 
 from .models import TipoMedioPago, CampoMedioPago, MedioPagoCliente
 from .forms import (
     TipoMedioPagoForm,
@@ -53,9 +52,13 @@ class TipoPagoListView(AccessPagosMixin, ListView):
     context_object_name = "tipos"
 
     def get_queryset(self):
-        qs = super().get_queryset().order_by("-activo", "nombre")
-        # Anotar si está en uso para bloquear borrado en el template
-        return qs
+        # en_uso = cantidad de medios de clientes que usan este tipo (activos o no, a tu gusto)
+        return (
+            super()
+            .get_queryset()
+            .annotate(en_uso=Count("medios_cliente", distinct=True))  # <- usa tu related_name
+            .order_by("-activo", "nombre")
+        )
 
 class TipoPagoCreateView(AccessPagosMixin, CreateView):
     model = TipoMedioPago
@@ -135,13 +138,23 @@ class TipoPagoDeleteView(AccessPagosMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # Bloquear si está en uso por algún cliente
-        if self.object.medios_cliente.exists():
-            messages.error(request, "No se puede eliminar: hay medios de pago de clientes usando este tipo.")
-            return redirect(self.success_url)
-        messages.success(request, "Tipo de medio de pago eliminado.")
-        return super().delete(request, *args, **kwargs)
 
+        # Bloquear si está en uso por al menos un cliente
+        if self.object.medios_cliente.exists():   # <- usa tu related_name
+            messages.warning(
+                request,
+                "No se puede eliminar este método: está siendo utilizado por clientes. "
+                "Desactívalo si no querés que se use."
+            )
+            return redirect(self.success_url)
+
+        messages.success(request, "Método de pago eliminado.")
+        return super().delete(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        # En lugar de mostrar una página de confirmación, redirigimos a la lista
+        messages.info(request, "Usá el botón Eliminar para confirmar desde el listado.")
+        return redirect(self.success_url)
 # ---------------------------------------------------------------------------
 # Cliente – Medios de pago
 # ---------------------------------------------------------------------------

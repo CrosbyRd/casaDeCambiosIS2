@@ -1,6 +1,18 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="px-6 py-6">
+
+  <style>
+    .row-inactive { background:#fee2e2; }               /* rojo claro */
+    .tag-disabled{
+      display:inline-block; font-weight:800; font-size:.75rem;
+      color:#7f1d1d; background:#fecaca; border:1px solid #fca5a5;
+      border-radius:999px; padding:.2rem .5rem;
+    }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+  </style>
+
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-4xl font-extrabold">Mis medios de pago</h1>
     <div class="space-x-2">
@@ -23,24 +35,43 @@
       </thead>
       <tbody>
       {% for m in medios %}
-        <tr class="hover:bg-[var(--brand-soft)]">
+        <tr class="{% if not m.activo or not m.tipo.activo %}row-inactive{% endif %} hover:bg-[var(--brand-soft)]">
           <td class="px-4 py-3">{{ m.alias }}</td>
-          <td class="px-4 py-3">{{ m.tipo.nombre }}</td>
+
+          <td class="px-4 py-3">
+            {{ m.tipo.nombre }}
+            {% if not m.activo %}
+              <div class="mt-1"><span class="tag-disabled">Deshabilitado temporalmente</span></div>
+            {% elif not m.tipo.activo %}
+              <div class="mt-1"><span class="tag-disabled">Indisponible por el administrador</span></div>
+            {% endif %}
+          </td>
+
           <td class="px-4 py-3">{{ m.tipo.comision_porcentaje }}%</td>
           <td class="px-4 py-3">{% if m.predeterminado %}✅{% else %}—{% endif %}</td>
+
           <td class="px-4 py-3 text-right space-x-2">
-            <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" href="{% url 'pagos:clientes_update' m.id_medio %}">Editar</a>
-            <a class="btn bg-red-600 hover:bg-red-700 text-white" href="{% url 'pagos:clientes_delete' m.id_medio %}">Eliminar</a>
-            {% if m.activo %}
+            <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]"
+               href="{% url 'pagos:clientes_update' m.id_medio %}">Editar</a>
+
+            <a class="btn bg-red-600 hover:bg-red-700 text-white"
+               href="{% url 'pagos:clientes_delete' m.id_medio %}">Eliminar</a>
+
             <form action="{% url 'pagos:clientes_predeterminar' m.id_medio %}" method="post" style="display:inline">
               {% csrf_token %}
-              <button class="btn bg-emerald-600 hover:bg-emerald-700 text-white">Predeterminar</button>
+              <button class="btn bg-emerald-600 hover:bg-emerald-700 text-white"
+                      {% if not m.activo or not m.tipo.activo %}
+                        disabled title="No disponible mientras esté deshabilitado"
+                      {% endif %}>
+                Predeterminar
+              </button>
             </form>
-            {% endif %}
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">Sin medios cargados.</td></tr>
+        <tr>
+          <td colspan="5" class="px-4 py-6 text-center text-gray-500">Sin medios cargados.</td>
+        </tr>
       {% endfor %}
       </tbody>
     </table>

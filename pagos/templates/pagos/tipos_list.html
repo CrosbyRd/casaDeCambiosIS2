@@ -2,51 +2,240 @@
 {% load static %}
 {% block content %}
 <div class="px-6 py-6">
-  <div class="flex items-center justify-between mb-4">
-    <div>
-      <h1 class="text-4xl font-extrabold">Medios de Pago</h1>
-      <p class="text-lg text-gray-600">Definí tipos de medios y su comisión.</p>
-    </div>
-    <div class="space-x-2">
-      <a href="{% url 'home' %}" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Volver al Panel</a>
-      <a href="{% url 'pagos:tipos_create' %}" class="btn bg-[var(--brand)] text-white">Agregar Tipo</a>
+
+  <style>
+    .box-narrow{max-width:1100px;margin:0 auto;}
+    .tag-usage{
+      display:inline-block;font-weight:800;font-size:.75rem;
+      color:#7c2d12;background:#ffedd5;border:1px solid #fdba74;
+      border-radius:999px;padding:.18rem .5rem;margin-left:.5rem;
+    }
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+
+    /* Modal base */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(17, 24, 39, .45);
+      display:none; align-items:center; justify-content:center; z-index:60;
+    }
+    .modal-card{
+      width: min(92vw, 560px); background:#fff; border-radius:16px;
+      border:1px solid var(--line); box-shadow:0 20px 50px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .modal-head{
+      background:var(--brand); color:#fff; font-weight:900; padding:14px 16px;
+    }
+    .modal-body{ padding:16px; color:var(--ink); }
+    .modal-actions{ padding:12px 16px; display:flex; justify-content:flex-end; gap:8px; }
+
+    /* Estilo ALARMANTE para confirmación (rojo suave) */
+    .modal-head--danger{ background:#b91c1c; } /* red-700 */
+    .modal-card--danger{ border-color:#fecaca; } /* red-200 */
+    .modal-body--danger{
+      background:#fef2f2; /* red-50 */
+      color:#7f1d1d;      /* red-900 */
+    }
+    .danger-note{ font-size:.9rem; color:#7f1d1d; }
+
+    /* Ícono advertencia */
+    .icon-warning{
+      width:22px;height:22px; flex:0 0 22px;
+      color:#b91c1c; margin-right:.5rem;
+    }
+
+
+  </style>
+
+  <div class="box-narrow">
+    <header class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Medios de Pago</h1>
+        <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+          Definí tipos de medios y su comisión.
+        </p>
+      </div>
+
+      <div class="space-x-3 flex">
+        <a href="{% url 'admin_panel:dashboard' %}"
+          class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+          ⬅ Volver al Panel
+        </a>
+        <a href="{% url 'pagos:tipos_create' %}"
+          class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+          ➕ Agregar Tipo
+        </a>
+      </div>
+    </header>
+
+
+    {% include "partials/messages.html" %}
+
+    <div class="bg-white rounded-xl border border-[var(--line)] shadow">
+      <table class="min-w-full">
+        <thead class="bg-[var(--brand)] text-white">
+          <tr>
+            <th class="px-4 py-3 text-left">Nombre</th>
+            <th class="px-4 py-3 text-left">Comisión %</th>
+            <th class="px-4 py-3 text-left">Estado</th>
+            <th class="px-4 py-3 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tipos %}
+          <tr class="hover:bg-[var(--brand-soft)]">
+            <td class="px-4 py-3">
+              {{ t.nombre }}
+              {% if t.en_uso > 0 %}
+                <span class="tag-usage">En uso: {{ t.en_uso }}</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3">{{ t.comision_porcentaje }}%</td>
+            <td class="px-4 py-3">
+              {% if t.activo %}
+                <span class="px-2 py-1 rounded bg-green-100 text-green-700">Activo</span>
+              {% else %}
+                <span class="px-2 py-1 rounded bg-gray-200 text-gray-700">Inactivo</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]"
+                 href="{% url 'pagos:tipos_update' t.id_tipo %}">Editar</a>
+
+              {% if t.en_uso|default:0 > 0 %}
+                <!-- ⛔ En uso: Eliminar muestra el modal “por qué no se puede eliminar” -->
+                <button type="button"
+                        class="btn bg-red-600 text-white btn-eliminar-bloqueado"
+                        data-nombre="{{ t.nombre|escape }}"
+                        data-enuso="{{ t.en_uso }}">
+                  Eliminar
+                </button>
+              {% else %}
+                <!-- ✅ Libre: confirmación y POST al DeleteView -->
+                <form method="post" action="{% url 'pagos:tipos_delete' t.id_tipo %}" class="inline delete-form">
+                  {% csrf_token %}
+                  <button type="button"
+                          class="btn bg-red-600 hover:bg-red-700 text-white btn-eliminar-confirm"
+                          data-nombre="{{ t.nombre|escape }}">
+                    Eliminar
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Sin tipos cargados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 
-  {% include "partials/messages.html" %}
-
-  <div class="bg-white rounded-xl border border-[var(--line)] shadow">
-    <table class="min-w-full">
-      <thead class="bg-[var(--brand)] text-white">
-        <tr>
-          <th class="px-4 py-3 text-left">Nombre</th>
-          <th class="px-4 py-3 text-left">Comisión %</th>
-          <th class="px-4 py-3 text-left">Estado</th>
-          <th class="px-4 py-3 text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in tipos %}
-        <tr class="hover:bg-[var(--brand-soft)]">
-          <td class="px-4 py-3">{{ t.nombre }}</td>
-          <td class="px-4 py-3">{{ t.comision_porcentaje }}%</td>
-          <td class="px-4 py-3">
-            {% if t.activo %}
-              <span class="px-2 py-1 rounded bg-green-100 text-green-700">Activo</span>
-            {% else %}
-              <span class="px-2 py-1 rounded bg-gray-200 text-gray-700">Inactivo</span>
-            {% endif %}
-          </td>
-          <td class="px-4 py-3 text-right space-x-2">
-            <a class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" href="{% url 'pagos:tipos_update' t.id_tipo %}">Editar</a>
-            <a class="btn bg-red-600 hover:bg-red-700 text-white" href="{% url 'pagos:tipos_delete' t.id_tipo %}">Eliminar</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Sin tipos cargados.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- MODAL: Explicación de por qué no se puede eliminar -->
+  <div id="whyModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">No se puede eliminar este método</div>
+      <div class="modal-body">
+        <p id="whyText" class="mb-3"></p>
+        <ul class="list-disc ml-5 text-sm text-gray-700">
+          <li>Eliminarlo rompería los medios de pago ya cargados por los clientes.</li>
+          <li>Si no querés que se utilice, <strong>desactívalo</strong> desde “Editar”.</li>
+          <li>Al estar desactivado ya no aparecerá para crear nuevos medios.</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" id="whyClose">Entendido</button>
+      </div>
+    </div>
   </div>
+
+  <!-- MODAL: Confirmación de borrado (ALARMANTE) -->
+  <div id="confirmModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card modal-card--danger">
+      <div class="modal-head modal-head--danger">Eliminar método de pago</div>
+      <div class="modal-body modal-body--danger">
+        <div class="flex items-start mb-2">
+          <!-- Ícono advertencia -->
+          <svg class="icon-warning" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 9v4m0 4h.01M10.29 3.86l-8.4 14.55A2 2 0 0 0 3.6 21h16.8a2 2 0 0 0 1.71-2.59L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <p id="confirmText" class="font-bold">¿Seguro que querés eliminar este método?</p>
+            <p class="danger-note mt-1">Esta acción es <strong>permanente</strong> y no se puede deshacer.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]" id="confirmCancel">Cancelar</button>
+        <button type="button" class="btn bg-red-600 hover:bg-red-700 text-white" id="confirmOk">Eliminar definitivamente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      /* ===== Modal “por qué no se puede eliminar” (EN USO) ===== */
+      const whyBackdrop = document.getElementById('whyModal');
+      const whyText     = document.getElementById('whyText');
+      const whyCloseBtn = document.getElementById('whyClose');
+
+      function openWhy(nombre, enUso){
+        const plural = Number(enUso) === 1 ? 'cliente' : 'clientes';
+        whyText.textContent =
+          `“${nombre}” está siendo utilizado por ${enUso} ${plural}. ` +
+          `Por este motivo no se permite eliminarlo.`;
+        whyBackdrop.style.display = 'flex';
+        whyBackdrop.setAttribute('aria-hidden', 'false');
+      }
+      function closeWhy(){
+        whyBackdrop.style.display = 'none';
+        whyBackdrop.setAttribute('aria-hidden', 'true');
+      }
+
+      /* 👇 AÑADIDO: enlazamos el botón eliminar-bloqueado al modal de “por qué” */
+      document.querySelectorAll('.btn-eliminar-bloqueado').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          openWhy(btn.dataset.nombre || 'Este método', btn.dataset.enuso || 'varios');
+        });
+      });
+      whyCloseBtn.addEventListener('click', closeWhy);
+      whyBackdrop.addEventListener('click', e=>{ if(e.target === whyBackdrop) closeWhy(); });
+      document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeWhy(); });
+
+      /* ===== Modal de confirmación (NO EN USO) ===== */
+      const cBackdrop = document.getElementById('confirmModal');
+      const cText     = document.getElementById('confirmText');
+      const cBtnOk    = document.getElementById('confirmOk');
+      const cBtnNo    = document.getElementById('confirmCancel');
+
+      let pendingForm = null;
+
+      function openConfirm(form, nombre){
+        pendingForm = form;
+        cText.textContent = `¿Seguro que querés eliminar “${nombre}”?`;
+        cBackdrop.style.display = 'flex';
+        cBackdrop.setAttribute('aria-hidden', 'false');
+      }
+      function closeConfirm(){
+        cBackdrop.style.display = 'none';
+        cBackdrop.setAttribute('aria-hidden', 'true');
+        pendingForm = null;
+      }
+
+      document.querySelectorAll('.btn-eliminar-confirm').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const form = btn.closest('form.delete-form');
+          if(!form) return;
+          openConfirm(form, btn.dataset.nombre || 'este método');
+        });
+      });
+
+      cBtnOk.addEventListener('click', ()=>{ if(pendingForm) pendingForm.submit(); });
+      cBtnNo.addEventListener('click', closeConfirm);
+      cBackdrop.addEventListener('click', e=>{ if(e.target === cBackdrop) closeConfirm(); });
+      document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeConfirm(); });
+    })();
+  </script>
+
 </div>
 {% endblock %}
