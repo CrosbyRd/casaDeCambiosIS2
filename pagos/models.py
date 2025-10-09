@@ -64,9 +64,8 @@ class CampoMedioPago(models.Model):
     tipo_dato = models.CharField(max_length=15, choices=TipoDato.choices, default=TipoDato.TEXTO)
     obligatorio = models.BooleanField(default=False)
 
-    # Opción de regex predefinida y/o personalizada
+    # Solo regex predefinida
     regex_opcional = models.CharField(max_length=200, choices=RegexOpciones.choices, blank=True, default="")
-    regex_personalizado = models.CharField(max_length=300, blank=True)
 
     activo = models.BooleanField(default=True)
 
@@ -113,14 +112,14 @@ class MedioPagoCliente(models.Model):
         ]
 
     def __str__(self):
-            # Evitar RelatedObjectDoesNotExist en crear/instancias sin FK
-            alias = self.alias or "—"
-            try:
-                tipo_nombre = self.tipo.nombre  # puede no existir aún
-            except Exception:
-                tipo_nombre = "—"
-            estado = "(inactivo)" if getattr(self, "activo", True) is False else ""
-            return f"{alias} · {tipo_nombre} {estado}".strip()
+        # Evitar RelatedObjectDoesNotExist en crear/instancias sin FK
+        alias = self.alias or "—"
+        try:
+            tipo_nombre = self.tipo.nombre  # puede no existir aún
+        except Exception:
+            tipo_nombre = "—"
+        estado = "(inactivo)" if getattr(self, "activo", True) is False else ""
+        return f"{alias} · {tipo_nombre} {estado}".strip()
 
     # Validación: verificar que los datos cumplan con los campos activos del tipo
     def clean(self):
@@ -159,8 +158,8 @@ class MedioPagoCliente(models.Model):
             if type_err:
                 errors[nombre] = type_err
                 continue
-            # Validación por regex (opcional y/o personalizada)
-            patron = campo.regex_personalizado or campo.regex_opcional or ""
+            # Validación por regex (solo la predefinida)
+            patron = campo.regex_opcional or ""
             if patron and valor not in (None, ""):
                 try:
                     if not re.fullmatch(patron, str(valor)):

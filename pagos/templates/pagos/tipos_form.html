@@ -1,192 +1,259 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<style>
+  /* Compactar tabla y controles */
+  .cmpct th, .cmpct td { padding: .5rem .75rem; vertical-align: top; }
+  .cmpct .cell { padding: .5rem; }
+
+  /* Botón estado Activo/Inactivo */
+  .state-btn { border-radius:999px; font-weight:800; padding:.5rem .9rem; border:1.5px solid var(--line); }
+  .state-on  { background:#10b9811a; color:#0f766e; border-color:#10b98150; }
+  .state-off { background:#ef44441a; color:#7f1d1d; border-color:#ef444450; }
+  .state-btn:hover { filter:saturate(110%); }
+
+  /* Caja angosta como tablas de cotización */
+  .box-narrow { max-width: 1100px; margin: 0 auto; }
+
+  /* Botón eliminar que marca DELETE del formset */
+  .btn-danger { background:#ef4444; color:#fff; font-weight:800; border:none; border-radius:12px; padding:.45rem .8rem; }
+  .btn-danger:hover { filter:brightness(0.95); }
+  .row-removed { opacity:.55; filter:grayscale(15%); }
+  .hint { font-size:.75rem; color:var(--muted); }
+
+  /* Encabezado lila (idéntico a cotizaciones) */
+  .head-purple { background:var(--brand); color:#fff; font-weight:900; text-transform:uppercase; letter-spacing:.02em; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="px-6 py-6">
-  <!-- Encabezado -->
-  <div class="flex items-center justify-between mb-6">
+
+  <!-- Encabezado alineado -->
+  <div class="mb-6 box-narrow flex items-start justify-between gap-4">
     <div>
-      <h1 class="text-4xl font-extrabold">
+      <h1 class="h1">
         {% if object %}Editar tipo de medio de pago{% else %}Nuevo tipo de medio de pago{% endif %}
       </h1>
-      <p class="text-lg text-[var(--muted)] leading-relaxed max-w-xl">
+      <p class="lead max-w-3xl">
         Definí el medio de pago y su <strong>comisión %</strong>. Después agregá los
         <strong>campos requeridos</strong> que el cliente deberá completar.
       </p>
     </div>
-    <a href="{% url 'pagos:tipos_list' %}"
-       class="rounded-2xl px-4 py-2 bg-[var(--brand-soft)] text-[var(--brand-dark)] shadow hover:shadow-lg transition">
-      Volver
-    </a>
+    <a href="{% url 'pagos:tipos_list' %}" class="btn-secondary self-start">Volver</a>
   </div>
 
   {% include "partials/messages.html" %}
 
-  <!-- Card principal -->
-  <form method="post" novalidate class="relative">
+  <form method="post" novalidate class="relative form">
     {% csrf_token %}
 
-    <div class="bg-white rounded-xl border border-[var(--line)] shadow p-6 space-y-8">
-      <!-- Datos del tipo -->
-      <section>
-        <h2 class="text-2xl font-bold mb-4">Datos del tipo</h2>
+    <div class="box box-narrow space-y-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <!-- Nombre -->
-          <div class="md:col-span-3">
-            <label for="{{ form.nombre.id_for_label }}" class="block font-semibold mb-1">Nombre</label>
+      <!-- Cabecera: Nombre / Comisión -->
+      <div class="rounded-xl overflow-hidden border border-[var(--line)]">
+        <div class="grid grid-cols-1 md:grid-cols-3">
+          <div class="md:col-span-2 px-4 py-3 head-purple">Nombre</div>
+          <div class="md:col-span-1 px-4 py-3 head-purple">Comisión porcentaje</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-0 bg-white">
+          <div class="p-4 border-t border-[var(--line)] md:col-span-2">
             {{ form.nombre }}
             {% if form.nombre.errors %}
               <p class="text-red-600 text-sm mt-1">{{ form.nombre.errors|striptags }}</p>
             {% else %}
-              <p class="text-sm text-[var(--muted)] mt-1">Ej.: Tarjeta de crédito, Billetera, Transferencia…</p>
+              <p class="hint mt-1">Ej.: Tarjeta de crédito, Billetera, Transferencia…</p>
             {% endif %}
           </div>
 
-          <!-- Comisión % con sufijo visual -->
-          <div class="md:col-span-2">
-            <label for="{{ form.comision_porcentaje.id_for_label }}" class="block font-semibold mb-1">Comisión porcentaje</label>
+          <div class="p-4 border-t border-l border-[var(--line)] md:col-span-1">
             <div class="flex items-stretch rounded-lg border border-[var(--line)] overflow-hidden focus-within:ring-2 focus-within:ring-[var(--brand)]">
-            {{ form.comision_porcentaje }}
+              {{ form.comision_porcentaje }}
               <span class="px-3 py-2 bg-[var(--brand-soft)] text-[var(--brand-dark)] font-semibold">%</span>
             </div>
-            <p class="text-sm text-[var(--muted)] mt-1">Rango sugerido: 0,00 – 100,00</p>
+            <p class="hint mt-1">Rango sugerido: 0,00 – 100,00</p>
             {% if form.comision_porcentaje.errors %}
               <p class="text-red-600 text-sm mt-1">{{ form.comision_porcentaje.errors|striptags }}</p>
             {% endif %}
           </div>
+        </div>
 
-          <!-- Activo (switch simple) -->
-          <div class="md:col-span-1">
-            <label class="block font-semibold mb-1">Activo</label>
-            <label class="inline-flex items-center gap-2">
-              {{ form.activo }}
-              <span class="text-sm text-[var(--muted)]">Visible para su uso</span>
-            </label>
-          </div>
-
-          <!-- Descripción -->
-          <div class="md:col-span-6">
-            <label for="{{ form.descripcion.id_for_label }}" class="block font-semibold mb-1">Descripción</label>
+        <!-- Descripción (segunda fila) -->
+        <div class="grid grid-cols-1">
+          <div class="px-4 py-3 head-purple">Descripción</div>
+          <div class="p-4 border-t border-[var(--line)] bg-white">
             {{ form.descripcion }}
             {% if form.descripcion.errors %}
               <p class="text-red-600 text-sm mt-1">{{ form.descripcion.errors|striptags }}</p>
             {% else %}
-              <p class="text-sm text-[var(--muted)] mt-1">Texto breve para administradores (opcional).</p>
+              <p class="hint mt-1">Texto breve para administradores (opcional).</p>
             {% endif %}
           </div>
         </div>
-      </section>
+
+        <!-- Estado -->
+        <div class="p-4 border-t border-[var(--line)] bg-white flex items-center gap-3">
+          <span class="hint">Estado</span>
+          <input type="checkbox" id="id_activo" name="{{ form.activo.name }}" {% if form.activo.value %}checked{% endif %} class="hidden">
+          <button type="button" id="btn-estado" class="state-btn {% if form.activo.value %}state-on{% else %}state-off{% endif %}">
+            {% if form.activo.value %}Activo{% else %}Inactivo{% endif %}
+          </button>
+          <script>
+            (function(){
+              const chk = document.getElementById('id_activo');
+              const btn = document.getElementById('btn-estado');
+              if(!chk || !btn) return;
+              btn.addEventListener('click', function(){
+                chk.checked = !chk.checked;
+                if(chk.checked){ btn.classList.remove('state-off'); btn.classList.add('state-on'); btn.textContent = 'Activo'; }
+                else{ btn.classList.remove('state-on'); btn.classList.add('state-off'); btn.textContent = 'Inactivo'; }
+              });
+            })();
+          </script>
+        </div>
+      </div>
 
       <!-- Campos del medio -->
-      <section>
+      <section class="box-narrow">
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-2xl font-bold">Campos del medio</h2>
-          <button type="button" id="add-form"
-                  class="rounded-2xl px-4 py-2 bg-[var(--brand-soft)] text-[var(--brand-dark)] shadow hover:shadow-lg transition flex items-center gap-2">
+          <h2 class="h2">Campos del medio</h2>
+          <button type="button" id="add-form" class="btn-secondary">
             <span class="text-xl leading-none">＋</span> Agregar campo
           </button>
         </div>
 
         {{ formset.management_form }}
 
-        <!-- Encabezados listados como “tabla” accesible -->
-        <div class="hidden md:grid md:grid-cols-12 text-xs uppercase tracking-wide text-[var(--muted)] mb-1">
-          <div class="md:col-span-3">Nombre del campo</div>
-          <div class="md:col-span-2">Tipo de dato</div>
-          <div class="md:col-span-1">Obligatorio</div>
-          <div class="md:col-span-2">Regex (predef.)</div>
-          <div class="md:col-span-3">Regex personalizada</div>
-          <div class="md:col-span-1 text-right pr-2">Activo</div>
-        </div>
+        <!-- Tabla estilo medios de acreditación -->
+        <div class="rounded-xl overflow-hidden border border-[var(--line)] cmpct">
+          <!-- Header lila -->
+          <div class="hidden md:grid md:grid-cols-12 head-purple">
+            <div class="md:col-span-3 px-4 py-2">Nombre del Campo</div>
+            <div class="md:col-span-2 px-4 py-2">Tipo de Dato</div>
+            <div class="md:col-span-1 px-4 py-2">Obligatorio</div>
+            <div class="md:col-span-2 px-4 py-2">Regex (predef.)</div>
+            <div class="md:col-span-1 px-4 py-2 text-right">Acciones</div>
+          </div>
 
-        <div id="formset" class="space-y-3">
-          {% for f in formset %}
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 hover:shadow transition">
-              <div class="md:col-span-3">
-                <label class="font-semibold mb-1 block">{{ f.nombre_campo.label }}</label>
-                {{ f.nombre_campo }}
-                {% if f.nombre_campo.errors %}<p class="text-red-600 text-sm">{{ f.nombre_campo.errors|striptags }}</p>{% endif %}
-              </div>
-              <div class="md:col-span-2">
-                <label class="font-semibold mb-1 block">{{ f.tipo_dato.label }}</label>
-                {{ f.tipo_dato }}
-              </div>
-              <div class="md:col-span-1 flex items-end">
-                <label class="inline-flex items-center gap-2">
-                  {{ f.obligatorio }} <span class="text-sm">Requerido</span>
-                </label>
-              </div>
-              <div class="md:col-span-2">
-                <label class="font-semibold mb-1 block">{{ f.regex_opcional.label }}</label>
-                {{ f.regex_opcional }}
-              </div>
-              <div class="md:col-span-3">
-                <label class="font-semibold mb-1 block">{{ f.regex_personalizado.label }}</label>
-                {{ f.regex_personalizado }}
-                <p class="text-xs text-[var(--muted)] mt-1">Ej.: <code>^\d{6,8}-\d{1}$</code></p>
-              </div>
-              <div class="md:col-span-1 flex items-center justify-end">
-                {{ f.activo }}
-              </div>
+          <div id="formset" class="space-y-2 p-3">
+            {% for f in formset %}
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 bg-white transition" data-row>
+                <div class="md:col-span-3 cell">
+                  <label class="font-semibold mb-1 block">{{ f.nombre_campo.label }}</label>
+                  {{ f.nombre_campo }}
+                  {% if f.nombre_campo.errors %}<p class="text-red-600 text-sm">{{ f.nombre_campo.errors|striptags }}</p>{% endif %}
+                </div>
+                <div class="md:col-span-2 cell">
+                  <label class="font-semibold mb-1 block">{{ f.tipo_dato.label }}</label>
+                  {{ f.tipo_dato }}
+                </div>
+                <div class="md:col-span-1 cell flex items-end">
+                  <label class="inline-flex items-center gap-2">
+                    {{ f.obligatorio }} <span class="text-sm">Requerido</span>
+                  </label>
+                </div>
+                <div class="md:col-span-2 cell">
+                  <label class="font-semibold mb-1 block">{{ f.regex_opcional.label }}</label>
+                  {{ f.regex_opcional }}
+                </div>
 
-              <!-- Eliminar/Desactivar -->
-              <div class="md:col-span-12 flex items-center justify-between pt-1">
-                <label class="inline-flex items-center gap-2">
-                  {{ f.DELETE }} <span class="text-sm">Desactivar / Eliminar</span>
-                </label>
-                {% if object %}
-                  <span class="text-xs text-[var(--muted)]">En edición: <strong>DELETE</strong> desactiva el campo existente (no lo borra físicamente).</span>
-                {% else %}
-                  <span class="text-xs text-[var(--muted)]">En creación: <strong>DELETE</strong> quita el campo del guardado.</span>
-                {% endif %}
+                <!-- Acciones: activar/eliminar -->
+                <div class="md:col-span-1 cell flex items-center justify-end gap-2">
+                  <label class="inline-flex items-center gap-2">
+                    {{ f.activo }} <span class="hint">Activo</span>
+                  </label>
+
+                  <!-- Checkbox DELETE real (oculto) + botón UI rojo -->
+                  <label class="hidden">{{ f.DELETE }}</label>
+                  <button type="button" class="btn-danger" data-delete>Eliminar</button>
+                </div>
+
+                <!-- Nota sobre DELETE (se mantiene para claridad) -->
+                <div class="md:col-span-12">
+                  {% if object %}
+                    <span class="hint">En edición: <strong>Eliminar</strong> marca el campo para desactivar/borrar al guardar.</span>
+                  {% else %}
+                    <span class="hint">En creación: <strong>Eliminar</strong> quita el campo de esta lista.</span>
+                  {% endif %}
+                </div>
               </div>
-            </div>
-          {% empty %}
-            <div class="rounded-xl border border-dashed border-[var(--line)] p-6 text-center text-[var(--muted)]">
-              Aún no agregaste campos. Usá “Agregar campo”.
-            </div>
-          {% endfor %}
+            {% empty %}
+              <div class="rounded-xl border border-dashed border-[var(--line)] p-6 text-center text-[var(--muted)] bg-white">
+                Aún no agregaste campos. Usá “Agregar campo”.
+              </div>
+            {% endfor %}
+          </div>
         </div>
       </section>
     </div>
 
-    <!-- Barra de acciones fija -->
+    <!-- Acciones -->
     <div class="sticky bottom-4 mt-6 flex justify-end">
-      <div class="rounded-2xl bg-white/80 backdrop-blur border border-[var(--line)] shadow-lg px-3 py-2 flex gap-2">
-        <button type="submit" name="_save" class="rounded-2xl px-4 py-2 bg-[var(--brand)] text-white shadow hover:shadow-lg transition">
-          Guardar
-        </button>
-        <button type="submit" name="_save_and_add" class="rounded-2xl px-4 py-2 bg-[var(--brand-soft)] text-[var(--brand-dark)] shadow hover:shadow-lg transition">
-          Guardar y agregar otro
-        </button>
+      <div class="rounded-2xl bg-white/90 backdrop-blur border border-[var(--line)] shadow-lg px-3 py-2 flex gap-2">
+        <button type="submit" name="_save" class="btn">Guardar</button>
+        <button type="submit" name="_save_and_add" class="btn-secondary">Guardar y agregar otro</button>
       </div>
     </div>
+
   </form>
 </div>
 
-<!-- JS UX: agregar filas del formset de forma robusta -->
+<!-- JS: agregar/quitar filas del formset y UI de eliminar -->
 <script>
 (function(){
   const addBtn   = document.getElementById('add-form');
   const formset  = document.getElementById('formset');
   const totalInp = document.querySelector('input[name$="-TOTAL_FORMS"]');
+  if(!formset || !totalInp) return;
 
-  if(!addBtn || !formset || !totalInp) return;
+  /* Botón estado (arriba) */
+  (function(){
+    const chk = document.getElementById('id_activo');
+    const btn = document.getElementById('btn-estado');
+    if(!chk || !btn) return;
+    btn.addEventListener('click', function(){
+      chk.checked = !chk.checked;
+      if(chk.checked){ btn.classList.remove('state-off'); btn.classList.add('state-on'); btn.textContent = 'Activo'; }
+      else{ btn.classList.remove('state-on'); btn.classList.add('state-off'); btn.textContent = 'Inactivo'; }
+    });
+  })();
 
-  // Inferir prefijo del formset (lo que está antes de -TOTAL_FORMS)
-  const prefix = totalInp.name.replace(/-TOTAL_FORMS$/,'');
+  /* Marcar DELETE con botón rojo y efecto visual */
+  function wireDeleteButtons(scope){
+    scope.querySelectorAll('[data-delete]').forEach(function(btn){
+      const row = btn.closest('[data-row]');
+      if(!row) return;
+      const del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+      if(!del) return;
 
-  addBtn.addEventListener('click', function(){
-    const index = parseInt(totalInp.value, 10);
-    const row = document.createElement('div');
-    row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 hover:shadow transition";
+      btn.addEventListener('click', function(){
+        del.checked = true;
+        row.classList.add('row-removed');
+        // En creación, podemos quitar visualmente la fila
+        const creating = !document.querySelector('input[name="id"]').value; // si existe "id" de objeto
+        if(creating){ setTimeout(()=>row.remove(), 150); totalInp.value = Math.max(0, parseInt(totalInp.value,10) - 1); }
+      });
+    });
+  }
+  wireDeleteButtons(document);
+
+  /* Agregar nueva fila al formset */
+  if(addBtn){
+    const prefix = totalInp.name.replace(/-TOTAL_FORMS$/,'');
+    addBtn.addEventListener('click', function(){
+      const index = parseInt(totalInp.value, 10);
+      const row = document.createElement('div');
+      row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 bg-white transition";
+      row.setAttribute('data-row','');
 
     row.innerHTML = `
-      <div class="md:col-span-3">
+      <div class="md:col-span-4 cell">
         <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-nombre_campo">Nombre del campo</label>
         <input type="text" name="${prefix}-${index}-nombre_campo" id="id_${prefix}-${index}-nombre_campo" class="form-input w-full" />
       </div>
-      <div class="md:col-span-2">
+      <div class="md:col-span-2 cell">
         <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-tipo_dato">Tipo de dato</label>
         <select name="${prefix}-${index}-tipo_dato" id="id_${prefix}-${index}-tipo_dato" class="form-select w-full">
           <option value="texto">Texto</option>
@@ -196,12 +263,12 @@
           <option value="ruc">RUC</option>
         </select>
       </div>
-      <div class="md:col-span-1 flex items-end">
+      <div class="md:col-span-1 cell flex items-end">
         <label class="inline-flex items-center gap-2">
           <input type="checkbox" name="${prefix}-${index}-obligatorio" class="form-checkbox"> <span class="text-sm">Requerido</span>
         </label>
       </div>
-      <div class="md:col-span-2">
+      <div class="md:col-span-4 cell">
         <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-regex_opcional">Regex (predef.)</label>
         <select name="${prefix}-${index}-regex_opcional" id="id_${prefix}-${index}-regex_opcional" class="form-select w-full">
           <option value="">(sin regex)</option>
@@ -211,33 +278,24 @@
           <option value="^\\d{6,8}-\\d{1}$">RUC PY (########-#)</option>
         </select>
       </div>
-      <div class="md:col-span-3">
-        <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-regex_personalizado">Regex personalizada</label>
-        <input type="text" name="${prefix}-${index}-regex_personalizado" id="id_${prefix}-${index}-regex_personalizado" class="form-input w-full" placeholder="^...$" />
-        <p class="text-xs text-[var(--muted)] mt-1">Se aplica si está presente (tiene prioridad).</p>
-      </div>
-      <div class="md:col-span-1 flex items-center justify-end">
-        <input type="checkbox" name="${prefix}-${index}-activo" class="form-checkbox" checked>
-      </div>
-      <div class="md:col-span-12 flex items-center justify-between pt-1">
+      <div class="md:col-span-1 cell flex items-center justify-end gap-2">
         <label class="inline-flex items-center gap-2">
-          <input type="checkbox" name="${prefix}-${index}-DELETE" class="form-checkbox">
-          <span class="text-sm">Eliminar (nuevo)</span>
+          <input type="checkbox" name="${prefix}-${index}-activo" class="form-checkbox" checked>
+          <span class="hint">Activo</span>
         </label>
-        <button type="button" class="text-sm text-red-600 hover:underline remove-row">Quitar fila</button>
+        <input type="checkbox" name="${prefix}-${index}-DELETE" class="hidden">
+        <button type="button" class="btn-danger" data-delete>Eliminar</button>
       </div>
+      <div class="md:col-span-12 hint">En creación: <strong>Eliminar</strong> quita el campo de esta lista.</div>
       <input type="hidden" name="${prefix}-${index}-id" />
     `;
 
-    formset.appendChild(row);
-    totalInp.value = index + 1;
 
-    // Permitir quitar filas nuevas sin dejar huecos
-    row.querySelector('.remove-row').addEventListener('click', () => {
-      row.remove();
-      totalInp.value = Math.max(0, parseInt(totalInp.value,10) - 1);
+      formset.appendChild(row);
+      totalInp.value = index + 1;
+      wireDeleteButtons(row);
     });
-  });
+  }
 })();
 </script>
 {% endblock %}

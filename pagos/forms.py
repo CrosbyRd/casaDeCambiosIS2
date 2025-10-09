@@ -13,7 +13,7 @@ class TipoMedioPagoForm(forms.ModelForm):
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-input w-full"}),
             "comision_porcentaje": forms.NumberInput(attrs={
-                "class": "flex-1 px-3 py-2 border-0 focus:outline-none",  # ← las que querías
+                "class": "flex-1 px-3 py-2 border-0 focus:outline-none",
                 "step": "0.01", "min": "0", "max": "100", "inputmode": "decimal",
             }),
             "descripcion": forms.Textarea(attrs={"class": "form-textarea w-full", "rows": 3}),
@@ -28,7 +28,6 @@ class CampoMedioPagoForm(forms.ModelForm):
             "tipo_dato",
             "obligatorio",
             "regex_opcional",
-            "regex_personalizado",
             "activo",
         ]
         widgets = {
@@ -36,7 +35,6 @@ class CampoMedioPagoForm(forms.ModelForm):
             "tipo_dato": forms.Select(attrs={"class": "form-select w-full"}),
             "obligatorio": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
             "regex_opcional": forms.Select(attrs={"class": "form-select w-full"}),
-            "regex_personalizado": forms.TextInput(attrs={"class": "form-input w-full", "placeholder": r"^...$"}),
             "activo": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
         }
 
@@ -86,18 +84,13 @@ class MedioPagoClienteForm(forms.ModelForm):
             first_tipo = self.fields["tipo"].queryset.first()
             if first_tipo is not None:
                 tipo_obj = first_tipo
-                # setear initial para que el select muestre el valor
                 self.initial["tipo"] = first_tipo.pk
 
         # 2) Construir campos dinámicos si tenemos tipo
         self._campos_config = []
         if tipo_obj:
-            # asegurar que el select muestre el valor actual (por GET/?tipo= o fallback)
             self.fields["tipo"].initial = tipo_obj.pk
-
-            # ✅ Independiente del related_name:
             campos_qs = CampoMedioPago.objects.filter(tipo=tipo_obj, activo=True).order_by("nombre_campo")
-
             for campo in campos_qs:
                 nombre = campo.nombre_campo
                 requerido = campo.obligatorio
@@ -142,8 +135,8 @@ class MedioPagoClienteForm(forms.ModelForm):
                 elif campo.tipo_dato == CampoMedioPago.TipoDato.RUC and not re.fullmatch(r"^\d{6,8}-\d{1}$", str(valor)):
                     errores[nombre] = "RUC inválido (########-#)"
 
-            # Regex opcional o personalizada
-            patron = campo.regex_personalizado or campo.regex_opcional or ""
+            # Regex solo predefinida
+            patron = campo.regex_opcional or ""
             if valor not in (None, "") and patron and not check_regex(patron, valor):
                 errores[nombre] = "Formato inválido"
 
@@ -154,4 +147,3 @@ class MedioPagoClienteForm(forms.ModelForm):
 
         self.instance.datos = datos
         return cleaned
-    
