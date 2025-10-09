@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.forms import inlineformset_factory
+# from django.forms import inlineformset_factory          # 👈 QUITAR
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -9,7 +9,12 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
 
 from .models import TipoMedioPago, CampoMedioPago, MedioPagoCliente
-from .forms import TipoMedioPagoForm, CampoMedioPagoForm, MedioPagoClienteForm
+from .forms import (
+    TipoMedioPagoForm,
+    CampoMedioPagoForm,          # (lo podés dejar si lo usás en admin)
+    MedioPagoClienteForm,
+    CampoMedioPagoFormSet,       # 👈 IMPORTANTE: usamos el formset correcto
+)
 
 # ---------------------------------------------------------------------------
 # Mixins
@@ -39,13 +44,8 @@ class RequireClienteMixin(LoginRequiredMixin):
 # ---------------------------------------------------------------------------
 # Admin – Tipos de medios de pago
 # ---------------------------------------------------------------------------
-CampoFormSet = inlineformset_factory(
-    parent_model=TipoMedioPago,
-    model=CampoMedioPago,
-    form=CampoMedioPagoForm,
-    extra=0,
-    can_delete=True,
-)
+# ❌ ELIMINADO: el formset local creado con inlineformset_factory
+# CampoFormSet = inlineformset_factory(...)
 
 class TipoPagoListView(AccessPagosMixin, ListView):
     model = TipoMedioPago
@@ -66,9 +66,9 @@ class TipoPagoCreateView(AccessPagosMixin, CreateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.POST:
-            ctx["formset"] = CampoFormSet(self.request.POST, instance=self.object)
+            ctx["formset"] = CampoMedioPagoFormSet(self.request.POST, instance=self.object)  # 👈
         else:
-            ctx["formset"] = CampoFormSet(instance=self.object)
+            ctx["formset"] = CampoMedioPagoFormSet(instance=self.object)                      # 👈
         return ctx
 
     def form_valid(self, form):
@@ -101,9 +101,9 @@ class TipoPagoUpdateView(AccessPagosMixin, UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.POST:
-            ctx["formset"] = CampoFormSet(self.request.POST, instance=self.object)
+            ctx["formset"] = CampoMedioPagoFormSet(self.request.POST, instance=self.object)  # 👈
         else:
-            ctx["formset"] = CampoFormSet(instance=self.object)
+            ctx["formset"] = CampoMedioPagoFormSet(instance=self.object)                      # 👈
         return ctx
 
     def form_valid(self, form):
@@ -171,14 +171,12 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
             kwargs.setdefault("initial", {})["tipo"] = self.request.GET.get("tipo")
         return kwargs
 
-
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.cliente = self.get_cliente()
         obj.save()
         messages.success(self.request, "Medio de pago creado correctamente.")
         return redirect(self.success_url)
-
 
 class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
     model = MedioPagoCliente

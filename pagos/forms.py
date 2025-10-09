@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import widgets
+from django.forms import inlineformset_factory, BaseInlineFormSet  # 👈 AÑADIDO
 from .models import TipoMedioPago, CampoMedioPago, MedioPagoCliente
 import re
 
@@ -21,6 +22,10 @@ class TipoMedioPagoForm(forms.ModelForm):
         }
 
 class CampoMedioPagoForm(forms.ModelForm):
+    """
+    ModelForm del campo: NO incluye ni el PK (id_campo) ni la FK (tipo).
+    Eso lo maneja el formset con instance=self.object.
+    """
     class Meta:
         model = CampoMedioPago
         fields = [
@@ -37,6 +42,50 @@ class CampoMedioPagoForm(forms.ModelForm):
             "regex_opcional": forms.Select(attrs={"class": "form-select w-full"}),
             "activo": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
         }
+
+class _BaseCampoMedioPagoFormSet(BaseInlineFormSet):
+    """
+    - extra=0: no crea líneas vacías “fantasma”.
+    - can_delete=True: habilita {{ f.DELETE }}.
+    - clean(): valida duplicados por 'nombre_campo' entre formularios no eliminados.
+    """
+    def clean(self):
+        super().clean()
+        seen = set()
+        errors = {}
+        for form in self.forms:
+            # Saltar forms vacíos o marcados para borrar
+            if not hasattr(form, "cleaned_data"):
+                continue
+            if form.cleaned_data.get("DELETE"):
+                continue
+            if form.cleaned_data.get("nombre_campo") in (None, ""):
+                # si el form no tiene nombre, dejemos que falle por “obligatorio”
+                # (o simplemente ignoramos para no duplicar mensajes)
+                continue
+
+            key = form.cleaned_data["nombre_campo"].strip().lower()
+            if key in seen:
+                form.add_error("nombre_campo", "Ya existe otro campo con ese nombre.")
+                errors["__all__"] = "Hay campos duplicados en el formulario."
+            else:
+                seen.add(key)
+
+        if errors:
+            # muestra un error general de formset (aparece arriba de la tabla)
+            from django.forms import ValidationError
+            raise ValidationError(errors)
+
+# 👇 ESTE es el formset que debe usarse en la vista
+CampoMedioPagoFormSet = inlineformset_factory(
+    parent_model=TipoMedioPago,
+    model=CampoMedioPago,
+    form=CampoMedioPagoForm,
+    formset=_BaseCampoMedioPagoFormSet,
+    extra=0,             # 👈 importantísimo
+    can_delete=True,     # 👈 para {{ f.DELETE }}
+    fk_name="tipo",
+)
 
 # ---------------------------------
 # Cliente: Form dinámico por "tipo"

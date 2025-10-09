@@ -1,8 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <style>
+  /* === Fix layout formset (sin encimado) === */
+  #formset [data-row] { align-items: start; }
+  #formset .cell { min-width: 0; padding:.5rem; }
+  #formset .cell > label { margin-bottom:.25rem; }
+  #formset select, #formset input[type="text"] { width: 100%; }
+  #formset .action-col { display:flex; flex-direction:column; gap:.4rem; align-items:flex-end; justify-content:flex-start; }
+  #formset .req-col { display:flex; align-items:center; height:100%; }
+
   /* Compactar tabla y controles */
   .cmpct th, .cmpct td { padding: .5rem .75rem; vertical-align: top; }
   .cmpct .cell { padding: .5rem; }
@@ -13,16 +22,13 @@
   .state-off { background:#ef44441a; color:#7f1d1d; border-color:#ef444450; }
   .state-btn:hover { filter:saturate(110%); }
 
-  /* Caja angosta como tablas de cotización */
   .box-narrow { max-width: 1100px; margin: 0 auto; }
 
-  /* Botón eliminar que marca DELETE del formset */
   .btn-danger { background:#ef4444; color:#fff; font-weight:800; border:none; border-radius:12px; padding:.45rem .8rem; }
   .btn-danger:hover { filter:brightness(0.95); }
   .row-removed { opacity:.55; filter:grayscale(15%); }
   .hint { font-size:.75rem; color:var(--muted); }
 
-  /* Encabezado lila (idéntico a cotizaciones) */
   .head-purple { background:var(--brand); color:#fff; font-weight:900; text-transform:uppercase; letter-spacing:.02em; }
 </style>
 {% endblock %}
@@ -49,7 +55,12 @@
   <form method="post" novalidate class="relative form">
     {% csrf_token %}
 
-    <div class="box box-narrow space-y-6">
+    {# Hidden con el id del objeto principal (solo en edición) — útil para el JS #}
+    {% if object %}
+      <input type="hidden" name="id" value="{{ object.pk }}">
+    {% endif %}
+
+    <div class="box-narrow space-y-6">
 
       <!-- Cabecera: Nombre / Comisión -->
       <div class="rounded-xl overflow-hidden border border-[var(--line)]">
@@ -80,7 +91,7 @@
           </div>
         </div>
 
-        <!-- Descripción (segunda fila) -->
+        <!-- Descripción -->
         <div class="grid grid-cols-1">
           <div class="px-4 py-3 head-purple">Descripción</div>
           <div class="p-4 border-t border-[var(--line)] bg-white">
@@ -128,49 +139,78 @@
 
         <!-- Tabla estilo medios de acreditación -->
         <div class="rounded-xl overflow-hidden border border-[var(--line)] cmpct">
-          <!-- Header lila -->
+          <!-- Header lila (4/2/1/4/1 = 12) -->
           <div class="hidden md:grid md:grid-cols-12 head-purple">
-            <div class="md:col-span-3 px-4 py-2">Nombre del Campo</div>
+            <div class="md:col-span-4 px-4 py-2">Nombre del Campo</div>
             <div class="md:col-span-2 px-4 py-2">Tipo de Dato</div>
             <div class="md:col-span-1 px-4 py-2">Obligatorio</div>
-            <div class="md:col-span-2 px-4 py-2">Regex (predef.)</div>
+            <div class="md:col-span-4 px-4 py-2">Regex (predef.)</div>
             <div class="md:col-span-1 px-4 py-2 text-right">Acciones</div>
           </div>
 
-          <div id="formset" class="space-y-2 p-3">
+          {% if formset.non_form_errors %}
+            <div class="mx-3 mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+              {{ formset.non_form_errors }}
+            </div>
+          {% endif %}
+
+          <div id="formset" class="space-y-3 p-3">
             {% for f in formset %}
-              <div class="grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 bg-white transition" data-row>
-                <div class="md:col-span-3 cell">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 bg-white shadow-sm transition" data-row>
+
+                <div class="md:col-span-4 cell">
                   <label class="font-semibold mb-1 block">{{ f.nombre_campo.label }}</label>
                   {{ f.nombre_campo }}
-                  {% if f.nombre_campo.errors %}<p class="text-red-600 text-sm">{{ f.nombre_campo.errors|striptags }}</p>{% endif %}
+                  {% if f.nombre_campo.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ f.nombre_campo.errors|striptags }}</p>
+                  {% endif %}
                 </div>
+
                 <div class="md:col-span-2 cell">
                   <label class="font-semibold mb-1 block">{{ f.tipo_dato.label }}</label>
                   {{ f.tipo_dato }}
+                  {% if f.tipo_dato.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ f.tipo_dato.errors|striptags }}</p>
+                  {% endif %}
                 </div>
-                <div class="md:col-span-1 cell flex items-end">
+
+                <div class="md:col-span-1 cell req-col">
                   <label class="inline-flex items-center gap-2">
                     {{ f.obligatorio }} <span class="text-sm">Requerido</span>
                   </label>
-                </div>
-                <div class="md:col-span-2 cell">
-                  <label class="font-semibold mb-1 block">{{ f.regex_opcional.label }}</label>
-                  {{ f.regex_opcional }}
+                  {% if f.obligatorio.errors %}
+                    <p class="text-red-600 text-xs mt-1">{{ f.obligatorio.errors|striptags }}</p>
+                  {% endif %}
                 </div>
 
-                <!-- Acciones: activar/eliminar -->
-                <div class="md:col-span-1 cell flex items-center justify-end gap-2">
+                <div class="md:col-span-4 cell">
+                  <label class="font-semibold mb-1 block">{{ f.regex_opcional.label }}</label>
+                  {{ f.regex_opcional }}
+                  {% if f.regex_opcional.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ f.regex_opcional.errors|striptags }}</p>
+                  {% endif %}
+                </div>
+
+                <!-- ACCIONES -->
+                <div class="md:col-span-1 cell action-col">
                   <label class="inline-flex items-center gap-2">
                     {{ f.activo }} <span class="hint">Activo</span>
                   </label>
-
-                  <!-- Checkbox DELETE real (oculto) + botón UI rojo -->
                   <label class="hidden">{{ f.DELETE }}</label>
                   <button type="button" class="btn-danger" data-delete>Eliminar</button>
                 </div>
 
-                <!-- Nota sobre DELETE (se mantiene para claridad) -->
+                {# IMPORTANTÍSIMO: enviar siempre el PK de la fila (tu PK es id_campo) #}
+                {{ f.id_campo }}
+
+                {% if f.errors %}
+                  <div class="md:col-span-12">
+                    <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-800 text-sm">
+                      {{ f.errors }}
+                    </div>
+                  </div>
+                {% endif %}
+
                 <div class="md:col-span-12">
                   {% if object %}
                     <span class="hint">En edición: <strong>Eliminar</strong> marca el campo para desactivar/borrar al guardar.</span>
@@ -196,7 +236,6 @@
         <button type="submit" name="_save_and_add" class="btn-secondary">Guardar y agregar otro</button>
       </div>
     </div>
-
   </form>
 </div>
 
@@ -220,7 +259,7 @@
     });
   })();
 
-  /* Marcar DELETE con botón rojo y efecto visual */
+  /* Marcar DELETE con botón rojo — en edición no quitamos filas del DOM */
   function wireDeleteButtons(scope){
     scope.querySelectorAll('[data-delete]').forEach(function(btn){
       const row = btn.closest('[data-row]');
@@ -231,9 +270,6 @@
       btn.addEventListener('click', function(){
         del.checked = true;
         row.classList.add('row-removed');
-        // En creación, podemos quitar visualmente la fila
-        const creating = !document.querySelector('input[name="id"]').value; // si existe "id" de objeto
-        if(creating){ setTimeout(()=>row.remove(), 150); totalInp.value = Math.max(0, parseInt(totalInp.value,10) - 1); }
       });
     });
   }
@@ -248,48 +284,48 @@
       row.className = "grid grid-cols-1 md:grid-cols-12 gap-3 border border-[var(--line)] rounded-xl p-3 bg-white transition";
       row.setAttribute('data-row','');
 
-    row.innerHTML = `
-      <div class="md:col-span-4 cell">
-        <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-nombre_campo">Nombre del campo</label>
-        <input type="text" name="${prefix}-${index}-nombre_campo" id="id_${prefix}-${index}-nombre_campo" class="form-input w-full" />
-      </div>
-      <div class="md:col-span-2 cell">
-        <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-tipo_dato">Tipo de dato</label>
-        <select name="${prefix}-${index}-tipo_dato" id="id_${prefix}-${index}-tipo_dato" class="form-select w-full">
-          <option value="texto">Texto</option>
-          <option value="numero">Número</option>
-          <option value="telefono">Teléfono</option>
-          <option value="email">Email</option>
-          <option value="ruc">RUC</option>
-        </select>
-      </div>
-      <div class="md:col-span-1 cell flex items-end">
-        <label class="inline-flex items-center gap-2">
-          <input type="checkbox" name="${prefix}-${index}-obligatorio" class="form-checkbox"> <span class="text-sm">Requerido</span>
-        </label>
-      </div>
-      <div class="md:col-span-4 cell">
-        <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-regex_opcional">Regex (predef.)</label>
-        <select name="${prefix}-${index}-regex_opcional" id="id_${prefix}-${index}-regex_opcional" class="form-select w-full">
-          <option value="">(sin regex)</option>
-          <option value="^\\d+$">Solo números</option>
-          <option value="^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$">Email básico</option>
-          <option value="^\\+?595\\d{7,10}$">Teléfono PY (+595...)</option>
-          <option value="^\\d{6,8}-\\d{1}$">RUC PY (########-#)</option>
-        </select>
-      </div>
-      <div class="md:col-span-1 cell flex items-center justify-end gap-2">
-        <label class="inline-flex items-center gap-2">
-          <input type="checkbox" name="${prefix}-${index}-activo" class="form-checkbox" checked>
-          <span class="hint">Activo</span>
-        </label>
-        <input type="checkbox" name="${prefix}-${index}-DELETE" class="hidden">
-        <button type="button" class="btn-danger" data-delete>Eliminar</button>
-      </div>
-      <div class="md:col-span-12 hint">En creación: <strong>Eliminar</strong> quita el campo de esta lista.</div>
-      <input type="hidden" name="${prefix}-${index}-id" />
-    `;
-
+      row.innerHTML = `
+        <div class="md:col-span-4 cell">
+          <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-nombre_campo">Nombre del campo</label>
+          <input type="text" name="${prefix}-${index}-nombre_campo" id="id_${prefix}-${index}-nombre_campo" class="form-input w-full" />
+        </div>
+        <div class="md:col-span-2 cell">
+          <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-tipo_dato">Tipo de dato</label>
+          <select name="${prefix}-${index}-tipo_dato" id="id_${prefix}-${index}-tipo_dato" class="form-select w-full">
+            <option value="texto">Texto</option>
+            <option value="numero">Número</option>
+            <option value="telefono">Teléfono</option>
+            <option value="email">Email</option>
+            <option value="ruc">RUC</option>
+          </select>
+        </div>
+        <div class="md:col-span-1 cell flex items-end">
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="${prefix}-${index}-obligatorio" class="form-checkbox"> <span class="text-sm">Requerido</span>
+          </label>
+        </div>
+        <div class="md:col-span-4 cell">
+          <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-regex_opcional">Regex (predef.)</label>
+          <select name="${prefix}-${index}-regex_opcional" id="id_${prefix}-${index}-regex_opcional" class="form-select w-full">
+            <option value="">(sin regex)</option>
+            <option value="^\\d+$">Solo números</option>
+            <option value="^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$">Email básico</option>
+            <option value="^\\+?595\\d{7,10}$">Teléfono PY (+595...)</option>
+            <option value="^\\d{6,8}-\\d{1}$">RUC PY (########-#)</option>
+          </select>
+        </div>
+        <div class="md:col-span-1 cell flex items-center justify-end gap-2">
+          <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="${prefix}-${index}-activo" class="form-checkbox" checked>
+            <span class="hint">Activo</span>
+          </label>
+          <input type="checkbox" name="${prefix}-${index}-DELETE" class="hidden">
+          <button type="button" class="btn-danger" data-delete>Eliminar</button>
+        </div>
+        <div class="md:col-span-12 hint">En creación: <strong>Eliminar</strong> quita el campo de esta lista.</div>
+        <!-- 👇 Nombre correcto del PK de tu modelo -->
+        <input type="hidden" name="${prefix}-${index}-id_campo" />
+      `;
 
       formset.appendChild(row);
       totalInp.value = index + 1;
