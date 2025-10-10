@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'transacciones',
     'configuracion',
     'payments',
+    'notificaciones',
 
 ]
 
