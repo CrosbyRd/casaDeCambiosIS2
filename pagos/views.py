@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,6 +14,9 @@ from .forms import (
     MedioPagoClienteForm,
     CampoMedioPagoFormSet,       # 👈 IMPORTANTE: usamos el formset correcto
 )
+from django.db import transaction
+from django.utils.timezone import now
+from django.urls import reverse
 
 # ---------------------------------------------------------------------------
 # Mixins
@@ -241,12 +244,37 @@ class MedioPagoPredeterminarView(RequireClienteMixin, View):
     def post(self, request, *args, **kwargs):
         cliente = self.get_cliente()
         try:
-            medio = MedioPagoCliente.objects.get(pk=kwargs.get("id_medio"), cliente=cliente, activo=True)
+            with transaction.atomic():
+                # Bloqueamos filas del cliente para evitar carreras
+                medio = (MedioPagoCliente.objects
+                         .select_for_update()
+                         .get(pk=kwargs.get("id_medio"), cliente=cliente, activo=True))
+
+                # No permitir predeterminar si el tipo está inactivo
+                if not medio.tipo.activo:
+                    return HttpResponseForbidden("No permitido")
+
+                # Si ya es predeterminado, nada que hacer (evita writes y errores)
+                if medio.predeterminado:
+                    return HttpResponseRedirect(reverse("pagos:clientes_list"))
+
+                # Apagar cualquier otro predeterminado de este cliente
+                (MedioPagoCliente.objects
+                 .select_for_update()
+                 .filter(cliente=cliente, predeterminado=True)
+                 .exclude(pk=medio.pk)
+                 .update(predeterminado=False, actualizado_en=now()))
+
+                # Encender el elegido
+                medio.predeterminado = True
+                medio.actualizado_en = now()
+                medio.save(update_fields=["predeterminado", "actualizado_en"])
+
         except MedioPagoCliente.DoesNotExist:
             return HttpResponseForbidden("No permitido")
-        medio.predeterminado = True
-        medio.save(update_fields=["predeterminado", "actualizado_en"])
-        return HttpResponse(status=204)
+
+        # Mejor redirigir para evitar reenvío del formulario y ver el cambio reflejado
+        return HttpResponseRedirect(reverse("pagos:clientes_list"))
 
     def get(self, *args, **kwargs):
         return HttpResponseForbidden("Método no permitido")
