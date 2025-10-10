@@ -11,33 +11,115 @@
   .ted-screen-view.active{display:block !important}
   @keyframes tedFade{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
 
-  /* Ranuras físicas */
-  .ted-slot{background:linear-gradient(145deg,#cbd5e1,#94a3b8);border-radius:12px;position:relative;overflow:visible}
-  .ted-slot .open{height:8px;border-radius:4px;background:#0b0f1a;box-shadow:inset 0 2px 6px rgba(0,0,0,.7)}
+  /* Ranuras físicas mejoradas */
+  .ted-slot{background:linear-gradient(145deg,#cbd5e1,#94a3b8);border-radius:12px;position:relative;overflow:visible;transition:all .3s ease}
+  .ted-slot .open{height:8px;border-radius:4px;background:#0b0f1a;box-shadow:inset 0 2px 6px rgba(0,0,0,.7);position:relative;overflow:hidden}
+  .ted-slot .open::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent);animation:slotScan 2s ease-in-out infinite}
   .ted-slot .dot{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:999px;background:#ef4444;box-shadow:0 0 10px rgba(220,38,38,.5);transition:.25s}
-  .ted-slot.active .dot{background:#10b981;box-shadow:0 0 14px rgba(16,185,129,.9)}
-  .slot-anim{position:absolute;left:50%;transform:translateX(-50%);top:-6px;pointer-events:none}
-
-  /* Animaciones desde la ranura */
-  .bill-anim,.check-anim{display:none;align-items:center;justify-content:center;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.25);font-weight:800}
-  .bill-anim{width:120px;height:50px;background:linear-gradient(45deg,#85bb65,#6fa855);border:2px solid #5a8a45;color:#fff}
-  .check-anim{width:150px;height:70px;background:linear-gradient(45deg,#e0f2fe,#bae6fd);border:2px solid #0284c7;color:#075985}
-
-  .ted-slot.show-bill .bill-anim{display:flex;animation:slotOutUp 1.15s ease-out}
-  .ted-slot.show-check .check-anim{display:flex;animation:slotOutUp 1.15s ease-out}
-  @keyframes slotOutUp{
-    0%{transform:translateX(-50%) translateY(40px);opacity:0}
-    55%{opacity:1}
-    100%{transform:translateX(-50%) translateY(-28px);opacity:1}
+  .ted-slot.active .dot{background:#10b981;box-shadow:0 0 14px rgba(16,185,129,.9);animation:dotPulse 1.5s ease-in-out infinite}
+  
+  @keyframes slotScan{
+    0%, 100%{left:-100%}
+    50%{left:100%}
+  }
+  @keyframes dotPulse{
+    0%, 100%{transform:translateY(-50%) scale(1);opacity:1}
+    50%{transform:translateY(-50%) scale(1.3);opacity:.7}
   }
 
-  /* Ticket desde ranura */
-  .receipt-anim{display:none;position:relative;width:220px;background:#fff;color:#111827;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:ui-monospace,Consolas,monospace;font-size:12px;padding:16px}
-  .ted-slot.show-receipt .receipt-anim{display:block;animation:printRec 2s ease-out}
-  @keyframes printRec{
-    0%{transform:translateY(40px);opacity:0}
-    65%{opacity:1}
-    100%{transform:translateY(-6px);opacity:1}
+  .slot-anim{position:absolute;left:50%;transform:translateX(-50%);top:-6px;pointer-events:none;z-index:10}
+
+  /* Sistema de billetes múltiples mejorado */
+  .bill-stack{display:none;position:relative;width:130px;height:60px}
+  .bill-item{position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855,#5a8a45);border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+  .bill-item::before{content:"";position:absolute;inset:4px;border:1px dashed rgba(255,255,255,.3);border-radius:4px}
+  .bill-item::after{content:"💵";position:absolute;top:6px;left:8px;font-size:16px;opacity:.6}
+
+  .ted-slot.dispensing-bills .bill-stack{display:block}
+  .ted-slot.dispensing-bills .bill-item:nth-child(1){animation:billOut1 1.8s cubic-bezier(.34,1.56,.64,1)}
+  .ted-slot.dispensing-bills .bill-item:nth-child(2){animation:billOut2 1.8s cubic-bezier(.34,1.56,.64,1) .15s}
+  .ted-slot.dispensing-bills .bill-item:nth-child(3){animation:billOut3 1.8s cubic-bezier(.34,1.56,.64,1) .3s}
+  .ted-slot.dispensing-bills .bill-item:nth-child(4){animation:billOut4 1.8s cubic-bezier(.34,1.56,.64,1) .45s}
+
+  @keyframes billOut1{
+    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:4}
+    25%{opacity:1}
+    100%{transform:translateY(-42px) translateX(-2px) rotate(-1deg);opacity:1;z-index:4}
+  }
+  @keyframes billOut2{
+    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:3}
+    25%{opacity:1}
+    100%{transform:translateY(-38px) translateX(1px) rotate(1deg);opacity:1;z-index:3}
+  }
+  @keyframes billOut3{
+    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:2}
+    25%{opacity:1}
+    100%{transform:translateY(-34px) translateX(-1px) rotate(0deg);opacity:1;z-index:2}
+  }
+  @keyframes billOut4{
+    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:1}
+    25%{opacity:1}
+    100%{transform:translateY(-30px) translateX(2px) rotate(1deg);opacity:1;z-index:1}
+  }
+
+  /* Sistema de inserción de billetes */
+  .bill-insert{display:none;position:relative;width:130px;height:60px}
+  .bill-insert-item{position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855);border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
+
+  .ted-slot.inserting-bills .bill-insert{display:block}
+  .ted-slot.inserting-bills .bill-insert-item{animation:billIn 2.5s cubic-bezier(.65,0,.35,1)}
+
+  @keyframes billIn{
+    0%{transform:translateY(-50px) rotate(2deg);opacity:1}
+    70%{transform:translateY(5px) rotate(-1deg);opacity:.8}
+    85%{transform:translateY(25px) rotate(0deg);opacity:.4}
+    100%{transform:translateY(45px) rotate(0deg);opacity:0}
+  }
+
+  /* Cheque mejorado */
+  .check-anim{display:none;width:170px;height:80px;background:linear-gradient(135deg,#e0f2fe,#bae6fd,#7dd3fc);border:2px solid #0284c7;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,.3);position:relative;overflow:hidden}
+  .check-anim::before{content:"";position:absolute;top:0;left:0;right:0;height:25px;background:linear-gradient(180deg,rgba(2,132,199,.2),transparent);border-bottom:1px dashed rgba(2,132,199,.4)}
+  .check-anim::after{content:"BANCO\ASAMPLE";position:absolute;top:8px;left:12px;font-size:9px;font-weight:700;color:#0369a1;letter-spacing:.5px;white-space:pre}
+  .check-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
+  .check-number{font-size:11px;font-weight:600;color:#075985;margin-top:auto}
+  .check-amount{font-size:18px;font-weight:900;color:#0c4a6e}
+
+  .ted-slot.dispensing-check .check-anim{display:block;animation:checkOut 2s cubic-bezier(.34,1.56,.64,1)}
+  .ted-slot.inserting-check .check-anim{display:block;animation:checkIn 2.5s cubic-bezier(.65,0,.35,1)}
+
+  @keyframes checkOut{
+    0%{transform:translateY(45px) rotate(-3deg);opacity:0}
+    30%{opacity:1}
+    100%{transform:translateY(-35px) rotate(2deg);opacity:1}
+  }
+  @keyframes checkIn{
+    0%{transform:translateY(-50px) rotate(2deg);opacity:1}
+    70%{transform:translateY(5px) rotate(-2deg);opacity:.8}
+    85%{transform:translateY(25px) rotate(0deg);opacity:.4}
+    100%{transform:translateY(45px) rotate(0deg);opacity:0}
+  }
+
+  /* Ticket de recibo mejorado */
+  .receipt-anim{display:none;position:relative;width:240px;background:#fff;color:#111827;border-radius:8px 8px 0 0;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow:hidden}
+  .receipt-paper{padding:16px;padding-bottom:24px;background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,0,0,.02) 20px,rgba(0,0,0,.02) 21px)}
+  .receipt-header{text-align:center;border-bottom:2px dashed #6b7280;padding-bottom:8px;margin-bottom:8px;font-weight:900;font-size:13px}
+  .receipt-line{padding:3px 0;opacity:0;animation:lineAppear .3s ease-out forwards}
+  .receipt-edge{position:absolute;bottom:0;left:0;right:0;height:12px;background:#fff}
+  .receipt-edge::before{content:"";position:absolute;top:0;left:0;right:0;height:100%;background:repeating-linear-gradient(90deg,transparent,transparent 8px,#e5e7eb 8px,#e5e7eb 10px)}
+  .receipt-tear{position:absolute;bottom:12px;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,#fff 0px,#fff 4px,transparent 4px,transparent 6px);filter:drop-shadow(0 1px 2px rgba(0,0,0,.1))}
+
+  .ted-slot.printing-receipt .receipt-anim{display:block;animation:receiptPrint 3s ease-out}
+
+  @keyframes receiptPrint{
+    0%{transform:translateY(-100%);opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(8px);opacity:1}
+  } 
+
+
+  @keyframes lineAppear{
+    from{opacity:0;transform:translateX(-5px)}
+    to{opacity:1;transform:translateX(0)}
   }
 
   /* Cartas del menú */
@@ -47,9 +129,10 @@
   .menu-card:hover{background:rgba(255,255,255,.12);box-shadow:0 0 0 2px var(--brand-soft);transform:translateY(-1px)}
 
   /* Botones */
-  .gx-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.2rem;border-radius:.9rem;font-weight:800;text-decoration:none;border:1px solid transparent;background:var(--brand);color:#fff;box-shadow:0 12px 24px -10px rgba(124,58,237,.35)}
-  .gx-btn:hover{transform:translateY(-1px)}
-  .gx-btn--ghost{background:var(--brand-soft);color:#4c1d95}
+  .gx-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.2rem;border-radius:.9rem;font-weight:800;text-decoration:none;border:1px solid transparent;background:var(--brand);color:#fff;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:all .15s ease}
+  .gx-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
+  .gx-btn:active{transform:translateY(0)}
+  .gx-btn--ghost{background:var(--brand-soft);color:#4c1d95;box-shadow:0 8px 20px -10px rgba(124,58,237,.25)}
 
   /* Logo */
   .logo-badge{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:999px;
@@ -57,13 +140,14 @@
               box-shadow:0 10px 24px -12px rgba(124,58,237,.45); margin:0 auto 10px auto}
   .ted-logo{height:36px;width:auto;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
 
-  .currency-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);font-size:24px;line-height:1;color:#fff;pointer-events:none;user-select:none}
+  .currency-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);font-size:24px;line-height:1;color:#fff;pointer-events:none;user-select:none;transition:all .2s ease}
+  .currency-chip:hover{transform:scale(1.05);background:rgba(255,255,255,.15)}
 
   .welcome-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .7rem;border-radius:999px;
                  background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
                  color:#4c1d95;font-weight:800;box-shadow:0 8px 20px -10px rgba(124,58,237,.45)}
 
-  /* Panel info (hora/serie/ubicación) separado del teclado */
+  /* Panel info */
   .pad-info-card{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;color:#e5e7eb}
   .pad-info-card .clock{font-variant-numeric:tabular-nums;font-weight:900}
   .pad-bezel{background:#0b0b0f;border-radius:18px;padding:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
@@ -77,7 +161,16 @@
   .ted-key:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12), 0 12px 22px rgba(0,0,0,.22)}
   .ted-key:active{transform:translateY(1px);background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.1))}
 
-  /* Alineación superior en desktop */
+  /* Efectos de procesamiento */
+  .processing-dots{display:inline-block}
+  .processing-dots::after{content:'...';animation:dots 1.5s steps(4,end) infinite}
+  @keyframes dots{
+    0%,20%{content:''}
+    40%{content:'.'}
+    60%{content:'..'}
+    80%,100%{content:'...'}
+  }
+
   @media (min-width: 768px){
     .align-top{align-items:flex-start}
   }
@@ -87,9 +180,7 @@
 {% block content %}
 <main class="max-w-4xl mx-auto px-6 py-8">
   <section class="ted-machine p-4 md:p-6">
-    <!-- Pantalla + Keypad -->
     <div class="flex flex-col md:flex-row gap-5 align-top">
-      <!-- Pantalla TED -->
       <div class="flex-1">
         <div class="bg-black rounded-2xl p-3 md:p-5 mb-5">
           <div class="relative ted-screen min-h-[380px] p-5 md:p-7 overflow-hidden">
@@ -201,17 +292,59 @@
               </div>
 
               <!-- PROCESOS/CONFIRMACIONES/RESULTADOS -->
-              <div id="processing-screen" class="ted-screen-view"><div class="text-center"><div class="text-lg font-bold" id="processing-message">Procesando...</div></div></div>
-              <div id="confirm-amount-screen" class="ted-screen-view"><div class="text-center space-y-4"><div class="text-xl font-bold">Confirmación</div><div id="confirm-amount-text" class="text-white/90">¿Desea confirmar el depósito?</div><div class="flex items-center justify-center gap-2"><button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button><button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button></div></div></div>
-              <div id="confirm-cheque-screen" class="ted-screen-view"><div class="text-center space-y-4"><div class="text-xl font-bold">Confirmación</div><div id="confirm-cheque-text" class="text-white/90">¿Desea confirmar el depósito de su cheque?</div><div class="flex items-center justify-center gap-2"><button class="gx-btn gx-btn--ghost" type="button" id="btn-cheque-cancel2">Cancelar</button><button class="gx-btn" type="button" id="btn-cheque-confirm2">Confirmar</button></div></div></div>
-              <div id="success-screen" class="ted-screen-view"><div class="text-center space-y-3"><div class="text-2xl font-extrabold text-emerald-400">¡Operación exitosa!</div><div class="text-white" id="success-message">Listo.</div><div class="flex items-center justify-center gap-2"><button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button><button class="gx-btn" type="button" id="btn-success-print">Imprimir ticket</button></div></div></div>
-              <div id="cancel-screen" class="ted-screen-view"><div class="text-center space-y-3"><div class="text-rose-400 font-extrabold text-2xl">Operación cancelada</div><div class="text-white/90" id="cancel-sub">Recoja su dinero.</div><button class="gx-btn gx-btn--ghost" type="button" id="btn-cancel-exit">Salir</button></div></div>
+              <div id="processing-screen" class="ted-screen-view">
+                <div class="text-center">
+                  <div class="text-lg font-bold">
+                    <span id="processing-message">Procesando</span><span class="processing-dots"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="confirm-amount-screen" class="ted-screen-view">
+                <div class="text-center space-y-4">
+                  <div class="text-xl font-bold">Confirmación</div>
+                  <div id="confirm-amount-text" class="text-white/90">¿Desea confirmar el depósito?</div>
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="confirm-cheque-screen" class="ted-screen-view">
+                <div class="text-center space-y-4">
+                  <div class="text-xl font-bold">Confirmación</div>
+                  <div id="confirm-cheque-text" class="text-white/90">¿Desea confirmar el depósito de su cheque?</div>
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-cheque-cancel2">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-cheque-confirm2">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="success-screen" class="ted-screen-view">
+                <div class="text-center space-y-3">
+                  <div class="text-2xl font-extrabold text-emerald-400">¡Operación exitosa!</div>
+                  <div class="text-white" id="success-message">Listo.</div>
+                  <div class="flex items-center justify-center gap-2">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button>
+                    <button class="gx-btn" type="button" id="btn-success-print">Imprimir ticket</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="cancel-screen" class="ted-screen-view">
+                <div class="text-center space-y-3">
+                  <div class="text-rose-400 font-extrabold text-2xl">Operación cancelada</div>
+                  <div class="text-white/90" id="cancel-sub">Recoja su dinero.</div>
+                  <button class="gx-btn gx-btn--ghost" type="button" id="btn-cancel-exit">Salir</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Lateral: info arriba + keypad abajo -->
       <aside class="w-full md:w-[300px] md:self-start">
         <div class="pad-info-card mb-3">
           <div class="clock" id="ted-clock">--:--:--</div>
@@ -246,24 +379,52 @@
       </aside>
     </div>
 
-    <!-- Ranuras físicas (con elementos de animación internos) -->
+    <!-- Ranuras físicas mejoradas -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
       <div id="bill-slot" class="ted-slot p-3">
-        <div class="open"></div><div class="dot"></div>
-        <div class="slot-anim"><div id="bill-anim" class="bill-anim">$100</div></div>
+        <div class="open"></div>
+        <div class="dot"></div>
+        <div class="slot-anim">
+          <!-- Dispensar billetes (múltiples) -->
+          <div class="bill-stack">
+            <div class="bill-item">$100</div>
+            <div class="bill-item">$100</div>
+            <div class="bill-item">$100</div>
+            <div class="bill-item">$100</div>
+          </div>
+          <!-- Insertar billetes -->
+          <div class="bill-insert">
+            <div class="bill-insert-item">💵</div>
+          </div>
+        </div>
         <div class="text-center font-bold mt-2">Ranura de billetes</div>
       </div>
+
       <div id="check-slot" class="ted-slot p-3">
-        <div class="open"></div><div class="dot"></div>
-        <div class="slot-anim"><div id="check-anim" class="check-anim">CHEQUE</div></div>
+        <div class="open"></div>
+        <div class="dot"></div>
+        <div class="slot-anim">
+          <div class="check-anim">
+            <div class="check-content">
+              <div class="check-amount">CHEQUE</div>
+              <div class="check-number">#000123456</div>
+            </div>
+          </div>
+        </div>
         <div class="text-center font-bold mt-2">Ranura de cheques</div>
       </div>
+
       <div id="receipt-slot" class="ted-slot p-3">
-        <div class="open"></div><div class="dot"></div>
+        <div class="open"></div>
+        <div class="dot"></div>
         <div class="slot-anim">
-          <div id="receipt-anim" class="receipt-anim">
-            <div class="text-center border-b border-dashed border-black/60 pb-2 mb-2 font-bold">GLOBAL EXCHANGE</div>
-            <div id="receipt-body"></div>
+          <div class="receipt-anim">
+            <div class="receipt-paper">
+              <div class="receipt-header">GLOBAL EXCHANGE</div>
+              <div id="receipt-body"></div>
+            </div>
+            <div class="receipt-tear"></div>
+            <div class="receipt-edge"></div>
           </div>
         </div>
         <div class="text-center font-bold mt-2">Salida de tickets</div>
@@ -278,7 +439,7 @@
   const qsa = (s, c=document)=>Array.from(c.querySelectorAll(s));
   const after = (ms,fn)=>setTimeout(fn, ms);
 
-  /* ===== Reloj lateral ===== */
+  /* Reloj lateral */
   function startClock(){
     const el=qs('#ted-clock'); if(!el) return;
     const fmt = new Intl.DateTimeFormat('es-PY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -286,34 +447,69 @@
     tick(); setInterval(tick,1000);
   }
 
-  /* ===== Navegación de pantallas ===== */
+  /* Navegación de pantallas */
   function showScreen(name){
     qsa('.ted-screen-view').forEach(v=>v.classList.remove('active'));
     const el = qs('#'+name+'-screen'); if (el) el.classList.add('active');
-    qsa('.ted-slot').forEach(s=>s.classList.remove('active','show-bill','show-check','show-receipt'));
+    resetAllSlots();
   }
-  function showProcessing(msg){ qs('#processing-message').textContent=msg; showScreen('processing'); }
+  
+  function showProcessing(msg){ 
+    qs('#processing-message').textContent=msg; 
+    showScreen('processing'); 
+  }
 
   let currentOp=null;
 
-  function animBillFromSlot(){
-    const slot=qs('#bill-slot'); if(!slot) return;
-    slot.classList.add('active','show-bill');
-    after(1400, ()=> slot.classList.remove('show-bill'));
+  /* Sistema mejorado de control de ranuras */
+  function resetAllSlots(){
+    qsa('.ted-slot').forEach(s=>{
+      s.classList.remove('active','dispensing-bills','inserting-bills','dispensing-check','inserting-check','printing-receipt');
+    });
   }
-  function animCheckFromSlot(){
-    const slot=qs('#check-slot'); if(!slot) return;
-    slot.classList.add('active','show-check');
-    after(1400, ()=> slot.classList.remove('show-check'));
+
+  function activateSlot(slotId){
+    const slot = qs('#'+slotId);
+    if(slot) slot.classList.add('active');
+  }
+
+  function dispenseBills(){
+    const slot=qs('#bill-slot'); 
+    if(!slot) return;
+    slot.classList.add('active','dispensing-bills');
+    after(2200, ()=> slot.classList.remove('dispensing-bills'));
+  }
+
+  function insertBills(){
+    const slot=qs('#bill-slot');
+    if(!slot) return;
+    slot.classList.add('active','inserting-bills');
+    after(2800, ()=> slot.classList.remove('inserting-bills'));
+  }
+
+  function dispenseCheck(){
+    const slot=qs('#check-slot');
+    if(!slot) return;
+    slot.classList.add('active','dispensing-check');
+    after(2300, ()=> slot.classList.remove('dispensing-check'));
+  }
+
+  function insertCheck(){
+    const slot=qs('#check-slot');
+    if(!slot) return;
+    slot.classList.add('active','inserting-check');
+    after(2800, ()=> slot.classList.remove('inserting-check'));
   }
 
   function showSuccess(msg){
     qs('#success-message').textContent = msg || 'Listo.';
     showScreen('success');
-    if(currentOp==='retiro' || currentOp==='deposito') animBillFromSlot();
-    if(currentOp==='cheque') animCheckFromSlot();
   }
-  function showCancel(_main, subMsg){ qs('#cancel-sub').textContent = subMsg || ''; showScreen('cancel'); }
+  
+  function showCancel(_main, subMsg){ 
+    qs('#cancel-sub').textContent = subMsg || ''; 
+    showScreen('cancel'); 
+  }
 
   document.addEventListener('DOMContentLoaded', ()=>{
     startClock();
@@ -321,21 +517,38 @@
     qs('#account-number')?.focus();
   });
 
-  /* ===== Login ===== */
+  /* Login */
   qs('#btn-login-ingresar')?.addEventListener('click', ()=>{
-    showProcessing('Procesando...');
+    showProcessing('Procesando');
     after(2000, ()=> showScreen('menu'));
   });
 
-  /* ===== Menú ===== */
+  /* Menú */
   qs('#btn-menu-retirar')?.addEventListener('click', ()=>{
-    showScreen('transaction'); currentOp=null; loadRetiroCurrencies(); qs('#bill-slot')?.classList.add('active');
+    showScreen('transaction'); 
+    currentOp='retiro';
+    loadRetiroCurrencies(); 
+    activateSlot('bill-slot');
   });
-  qs('#btn-menu-deposito')?.addEventListener('click', ()=>{ showScreen('deposit'); currentOp=null; qs('#bill-slot')?.classList.add('active'); });
-  qs('#btn-menu-cheque')?.addEventListener('click', ()=>{ showScreen('check'); currentOp=null; qs('#check-slot')?.classList.add('active'); });
-  qs('#btn-menu-salir')?.addEventListener('click', ()=> showScreen('login'));
+  
+  qs('#btn-menu-deposito')?.addEventListener('click', ()=>{ 
+    showScreen('deposit'); 
+    currentOp='deposito';
+    activateSlot('bill-slot');
+  });
+  
+  qs('#btn-menu-cheque')?.addEventListener('click', ()=>{ 
+    showScreen('check'); 
+    currentOp='cheque';
+    activateSlot('check-slot');
+  });
+  
+  qs('#btn-menu-salir')?.addEventListener('click', ()=> {
+    currentOp=null;
+    showScreen('login');
+  });
 
-  /* ===== Flags informativas ===== */
+  /* Flags de divisas */
   const currencyFlagMap={USD:'🇺🇸',EUR:'🇪🇺',ARS:'🇦🇷',BRL:'🇧🇷',PYG:'🇵🇾',CNY:'🇨🇳',JPY:'🇯🇵',GBP:'🇬🇧',UYU:'🇺🇾',CLP:'🇨🇱',COP:'🇨🇴',BOB:'🇧🇴',PEN:'🇵🇪',MXN:'🇲🇽',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',VES:'🇻🇪',VEF:'🇻🇪',RUB:'🇷🇺',ILS:'🇮🇱',CRC:'🇨🇷',DOP:'🇩🇴',NOK:'🇳🇴',SEK:'🇸🇪',DKK:'🇩🇰',ZAR:'🇿🇦',HNL:'🇭🇳',GTQ:'🇬🇹',PAB:'🇵🇦',NIO:'🇳🇮',TRY:'🇹🇷',INR:'🇮🇳',KRW:'🇰🇷',SGD:'🇸🇬',HKD:'🇭🇰'};
   const flagForCurrency=code=>currencyFlagMap[code]||code;
 
@@ -345,108 +558,192 @@
     try{
       const res=await fetch("{% url 'admin_panel:ted:monedas_disponibles' %}",{credentials:'same-origin'});
       if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json(); const monedas=Array.isArray(data.monedas)?data.monedas:[];
-      if(!monedas.length){ cont.innerHTML='<span class="muted">Sin divisas disponibles en este momento.</span>'; return; }
+      const data=await res.json(); 
+      const monedas=Array.isArray(data.monedas)?data.monedas:[];
+      if(!monedas.length){ 
+        cont.innerHTML='<span class="muted">Sin divisas disponibles en este momento.</span>'; 
+        return; 
+      }
       const frag=document.createDocumentFragment();
-      monedas.forEach(code=>{ const chip=document.createElement('span'); chip.className='currency-chip'; chip.title=code; chip.setAttribute('aria-label',code); chip.textContent=flagForCurrency(code); frag.appendChild(chip); });
-      cont.innerHTML=''; cont.appendChild(frag);
-    }catch(e){ console.error(e); cont.innerHTML='<span class="form-alert">No se pudo cargar el stock de divisas.</span>'; }
+      monedas.forEach(code=>{ 
+        const chip=document.createElement('span'); 
+        chip.className='currency-chip'; 
+        chip.title=code; 
+        chip.setAttribute('aria-label',code); 
+        chip.textContent=flagForCurrency(code); 
+        frag.appendChild(chip); 
+      });
+      cont.innerHTML=''; 
+      cont.appendChild(frag);
+    }catch(e){ 
+      console.error(e); 
+      cont.innerHTML='<span class="form-alert">No se pudo cargar el stock de divisas.</span>'; 
+    }
   }
 
-  /* ===== Recibo / impresión desde la ranura ===== */
+  /* Sistema de recibo mejorado */
   let lastReceipt={lines:[]};
-  function prepareReceipt(_title, lines){ lastReceipt={lines}; }
+  
+  function prepareReceipt(_title, lines){ 
+    lastReceipt={lines}; 
+  }
+  
   function printReceipt(){
-    const slot=qs('#receipt-slot'); const rc=qs('#receipt-body'); const el=qs('#receipt-anim');
-    if(!slot || !rc || !el) return;
-    rc.innerHTML=(lastReceipt.lines||[]).map(l=>`<div>${l}</div>`).join('');
-    slot.classList.add('active','show-receipt');
-    after(2200, ()=> slot.classList.remove('show-receipt'));
+    const slot=qs('#receipt-slot'); 
+    const rc=qs('#receipt-body'); 
+    if(!slot || !rc) return;
+    
+    rc.innerHTML='';
+    const lines = lastReceipt.lines||[];
+    
+    lines.forEach((line, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'receipt-line';
+      div.textContent = line;
+      div.style.animationDelay = (idx * 0.15) + 's';
+      rc.appendChild(div);
+    });
+    
+    slot.classList.add('active','printing-receipt');
+    after(3500, ()=> slot.classList.remove('printing-receipt'));
   }
 
-  /* ===== Retiro ===== */
-  qs('#btn-retirar-cancelar')?.addEventListener('click', ()=> showScreen('menu'));
+  /* Retiro de dinero */
+  qs('#btn-retirar-cancelar')?.addEventListener('click', ()=> {
+    currentOp=null;
+    showScreen('menu');
+  });
+  
   qs('#btn-retirar-confirmar')?.addEventListener('click', ()=>{
     const tx=(qs('#transaction-number')?.value||'').trim();
-    if(!tx){ showProcessing('Falta el número de transacción'); return after(700,()=>showScreen('transaction')); }
+    if(!tx){ 
+      showProcessing('Falta el número de transacción'); 
+      return after(700,()=>showScreen('transaction')); 
+    }
     currentOp='retiro';
-    showProcessing('Procesando...');
-    after(1200, ()=>{
-      showProcessing('Retire su dinero…');
-      animBillFromSlot();
-      after(7000, ()=>{
+    showProcessing('Procesando retiro');
+    
+    after(1500, ()=>{
+      showProcessing('Dispensando billetes');
+      dispenseBills();
+      
+      after(2500, ()=>{
         prepareReceipt('Retiro de Dinero',[
           `Operación: Retiro de Dinero`,
           `Transacción: ${tx}`,
-          `Fecha: ${new Date().toLocaleString('es-PY')}`
+          `Monto: $400.00`,
+          `Fecha: ${new Date().toLocaleString('es-PY')}`,
+          `Estado: COMPLETADO`
         ]);
         showSuccess('Retirá tus billetes');
       });
     });
   });
 
-  /* ===== Depósito dinero ===== */
-  qs('#btn-depo-cancelar')?.addEventListener('click', ()=> showScreen('menu'));
+  /* Depósito de dinero */
+  qs('#btn-depo-cancelar')?.addEventListener('click', ()=> {
+    currentOp=null;
+    showScreen('menu');
+  });
+  
   let pendingAmount=null;
+  
   qs('#btn-depo-confirmar')?.addEventListener('click', ()=>{
     const tx=(qs('#deposit-tx')?.value||'').trim();
-    if(!tx){ showProcessing('Falta el número de transacción'); return after(700,()=>showScreen('deposit')); }
+    if(!tx){ 
+      showProcessing('Falta el número de transacción'); 
+      return after(700,()=>showScreen('deposit')); 
+    }
     currentOp='deposito';
-    showProcessing('Inserte su dinero…'); animBillFromSlot();
-    after(7000, ()=>{
-      const v=(Math.floor(Math.random()*18)+3)*100; pendingAmount='$ '+v.toLocaleString('es-PY');
+    showProcessing('Esperando inserción de billetes');
+    insertBills();
+    
+    after(3200, ()=>{
+      const v=(Math.floor(Math.random()*18)+3)*100; 
+      pendingAmount='$ '+v.toLocaleString('es-PY');
       qs('#confirm-amount-text').textContent=`¿Desea confirmar el depósito por ${pendingAmount}?`;
       prepareReceipt('Depósito de Dinero',[
         `Operación: Depósito de Dinero`,
         `Transacción: ${tx}`,
-        `Monto simulado: ${pendingAmount}`,
-        `Fecha: ${new Date().toLocaleString('es-PY')}`
+        `Monto: ${pendingAmount}`,
+        `Fecha: ${new Date().toLocaleString('es-PY')}`,
+        `Estado: PENDIENTE CONFIRMACIÓN`
       ]);
       showScreen('confirm-amount');
     });
   });
+  
   qs('#btn-amount-confirm')?.addEventListener('click', ()=>{
-    showProcessing('Procesando...');
-    after(1200, ()=> showSuccess('Depósito registrado.'));
+    showProcessing('Confirmando depósito');
+    after(1500, ()=> showSuccess('Depósito registrado correctamente'));
   });
+  
   qs('#btn-amount-cancel')?.addEventListener('click', ()=>{
-    showProcessing('Procesando...');
-    after(1200, ()=> showCancel('Operación cancelada','Recoja su dinero.'));
+    showProcessing('Cancelando operación');
+    after(1200, ()=>{
+      dispenseBills();
+      after(500, ()=> showCancel('Operación cancelada','Recoja su dinero'));
+    });
   });
 
-  /* ===== Depósito cheque ===== */
-  qs('#btn-cheque-cancelar')?.addEventListener('click', ()=> showScreen('menu'));
+  /* Depósito de cheque */
+  qs('#btn-cheque-cancelar')?.addEventListener('click', ()=> {
+    currentOp=null;
+    showScreen('menu');
+  });
+  
   qs('#btn-cheque-confirmar')?.addEventListener('click', ()=>{
     const tx=(qs('#check-tx')?.value||'').trim();
-    if(!tx){ showProcessing('Falta el número de transacción'); return after(700,()=>showScreen('check')); }
+    if(!tx){ 
+      showProcessing('Falta el número de transacción'); 
+      return after(700,()=>showScreen('check')); 
+    }
     currentOp='cheque';
-    showProcessing('Inserte su cheque…'); animCheckFromSlot();
-    after(7000, ()=>{
+    showProcessing('Esperando inserción de cheque');
+    insertCheck();
+    
+    after(3200, ()=>{
       qs('#confirm-cheque-text').textContent=`¿Desea confirmar el depósito del cheque de la transacción ${tx}?`;
       prepareReceipt('Depósito de Cheque',[
         `Operación: Depósito de Cheque`,
         `Transacción: ${tx}`,
-        `Fecha: ${new Date().toLocaleString('es-PY')}`
+        `Número de cheque: #000123456`,
+        `Fecha: ${new Date().toLocaleString('es-PY')}`,
+        `Estado: PENDIENTE CONFIRMACIÓN`
       ]);
       showScreen('confirm-cheque');
     });
   });
+  
   qs('#btn-cheque-confirm2')?.addEventListener('click', ()=>{
-    showProcessing('Procesando...');
-    after(1200, ()=> showSuccess('Cheque depositado.'));
+    showProcessing('Procesando cheque');
+    after(1500, ()=> showSuccess('Cheque depositado correctamente'));
   });
+  
   qs('#btn-cheque-cancel2')?.addEventListener('click', ()=>{
-    showProcessing('Procesando...');
-    after(1200, ()=> showCancel('Operación cancelada','Retire su cheque.'));
+    showProcessing('Cancelando operación');
+    after(1200, ()=>{
+      dispenseCheck();
+      after(500, ()=> showCancel('Operación cancelada','Retire su cheque'));
+    });
   });
 
-  /* ===== Éxito / Cancelado ===== */
-  qs('#btn-success-exit')?.addEventListener('click', ()=> { currentOp=null; showScreen('login'); });
+  /* Éxito / Cancelado */
+  qs('#btn-success-exit')?.addEventListener('click', ()=> { 
+    currentOp=null; 
+    showScreen('login'); 
+  });
+  
   qs('#btn-success-print')?.addEventListener('click', printReceipt);
-  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { currentOp=null; showScreen('login'); });
+  
+  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { 
+    currentOp=null; 
+    showScreen('login'); 
+  });
 
-  /* ===== Keypad 0-9 / a-f ===== */
+  /* Keypad 0-9 / a-f */
   let lastFocusedInput=null;
+  
   document.addEventListener('focusin', (e)=>{
     if(e.target instanceof HTMLInputElement && (e.target.type==='text' || e.target.type==='password')){
       lastFocusedInput = e.target;
@@ -460,23 +757,28 @@
     const current = document.querySelector('.ted-screen-view.active');
     return current ? current.querySelector('input[type="text"], input[type="password"]') : null;
   }
+  
   function insertChar(ch){
-    const field = activeInput(); if(!field) return;
+    const field = activeInput();
+    if(!field) return;
     const start = field.selectionStart ?? field.value.length;
     const end   = field.selectionEnd ?? field.value.length;
-    field.value = field.value.slice(0,start) + ch + field.value.slice(end);
-    const pos = start + ch.length;
-    try{ field.setSelectionRange(pos,pos); }catch(_){}
-    field.dispatchEvent(new Event('input',{bubbles:true}));
+    field.value = field.value.slice(0, start) + ch + field.value.slice(end);
+
+    // 👉 lo que faltaba:
+    const pos = start + String(ch).length;
+    field.setSelectionRange(pos, pos);
+    field.dispatchEvent(new Event('input', { bubbles: true }));
     field.focus();
   }
-  const pad = document.querySelector('.ted-pad');
-  pad?.addEventListener('mousedown', (e)=>{ if(e.target.closest('.ted-key')) e.preventDefault(); });
-  pad?.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.ted-key'); if(!btn) return;
-    const key = (btn.dataset.key || '').toString();
-    if(/^[0-9a-f]$/.test(key)) insertChar(key);
+
+  // Vincular el keypad
+  qsa('.ted-key').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      insertChar(btn.dataset.key || '');
+    });
   });
-})();
+
+})();  <!-- cerrar IIFE -->
 </script>
 {% endblock %}
