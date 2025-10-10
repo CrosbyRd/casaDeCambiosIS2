@@ -10,7 +10,7 @@ REGEX_PREDEF_CHOICES = [
     ("", "(sin regex)"),
     (r"^\d+$", "Solo números"),
     (r"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email básico"),      # ← igual al modelo
-    (r"^\+?595\d{7,10}$", "Teléfono (+595)"),             # ← igual al modelo
+    (r"^09\d{8}$", "Teléfono PY (09xxxxxxxx)"),
     (r"^\d{6,8}-\d{1}$", "RUC"),
     (r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$", "Solo letras"),
 ]

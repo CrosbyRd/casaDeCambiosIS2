@@ -17,6 +17,7 @@ from .forms import (
 from django.db import transaction
 from django.utils.timezone import now
 from django.urls import reverse
+from usuarios.mixins import RequireClienteMixin 
 
 # ---------------------------------------------------------------------------
 # Mixins
@@ -28,20 +29,6 @@ class AccessPagosMixin(LoginRequiredMixin, PermissionRequiredMixin):
     def handle_no_permission(self):
         messages.warning(self.request, "No tenés permisos para acceder a Pagos.")
         return redirect("home")
-
-class RequireClienteMixin(LoginRequiredMixin):
-    """Obtiene el cliente asociado al usuario (ajusta a tu modelo)."""
-    def get_cliente(self):
-        # Asumiendo relación M2M: user.clientes; ajusta a tu modelo real
-        user = self.request.user
-        cliente = getattr(user, "clientes", None)
-        if cliente:
-            cliente = cliente.first()
-        if not cliente:
-            messages.error(self.request, "No se encontró un cliente asociado.")
-            redirect_url = reverse_lazy("home")
-            raise Exception(f"Cliente requerido. Redirigir a {redirect_url}")
-        return cliente
 
 # ---------------------------------------------------------------------------
 # Admin – Tipos de medios de pago
@@ -184,11 +171,10 @@ class MedioPagoListView(RequireClienteMixin, ListView):
     template_name = "pagos/clientes_list.html"
     context_object_name = "medios"
 
-    def get_queryset(self):
-        cliente = self.get_cliente()
+    def get_queryset(self):  
         return (
             MedioPagoCliente.objects.select_related("tipo")
-            .filter(cliente=cliente)
+             .filter(cliente=self.cliente)  
             .order_by("-activo", "-predeterminado", "alias")
         )
 
@@ -207,7 +193,7 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-        obj.cliente = self.get_cliente()
+        obj.cliente = self.cliente
         obj.save()
         messages.success(self.request, "Medio de pago creado correctamente.")
         return redirect(self.success_url)
@@ -220,7 +206,7 @@ class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
     pk_url_kwarg = "id_medio"
 
     def get_queryset(self):
-        return MedioPagoCliente.objects.filter(cliente=self.get_cliente())
+        return MedioPagoCliente.objects.filter(cliente=self.cliente) 
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -238,17 +224,16 @@ class MedioPagoDeleteView(RequireClienteMixin, DeleteView):
     pk_url_kwarg = "id_medio"
 
     def get_queryset(self):
-        return MedioPagoCliente.objects.filter(cliente=self.get_cliente())
+        return MedioPagoCliente.objects.filter(cliente=self.cliente)
 
 class MedioPagoPredeterminarView(RequireClienteMixin, View):
     def post(self, request, *args, **kwargs):
-        cliente = self.get_cliente()
         try:
             with transaction.atomic():
                 # Bloqueamos filas del cliente para evitar carreras
                 medio = (MedioPagoCliente.objects
                          .select_for_update()
-                         .get(pk=kwargs.get("id_medio"), cliente=cliente, activo=True))
+                        .get(pk=kwargs.get("id_medio"), cliente=self.cliente, activo=True))
 
                 # No permitir predeterminar si el tipo está inactivo
                 if not medio.tipo.activo:
@@ -261,7 +246,7 @@ class MedioPagoPredeterminarView(RequireClienteMixin, View):
                 # Apagar cualquier otro predeterminado de este cliente
                 (MedioPagoCliente.objects
                  .select_for_update()
-                 .filter(cliente=cliente, predeterminado=True)
+                 .filter(cliente=self.cliente, predeterminado=True)
                  .exclude(pk=medio.pk)
                  .update(predeterminado=False, actualizado_en=now()))
 

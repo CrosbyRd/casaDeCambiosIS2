@@ -69,7 +69,7 @@ class CampoMedioPago(models.Model):
         SOLO_LETRAS   = r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$", "Solo letras" 
         SOLO_NUMEROS = r"^\d+$", "Solo números"
         EMAIL = r"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email básico"
-        TELEFONO_PY = r"^\+?595\d{7,10}$", "Teléfono PY (+595...)"
+        TELEFONO_PY_LOCAL = r"^09\d{8}$", "Teléfono PY (09xxxxxxxx)"
         RUC_PY = r"^\d{6,8}-\d{1}$", "RUC PY (########-#)"
 
     id_campo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -99,11 +99,16 @@ class CampoMedioPago(models.Model):
 class MedioPagoCliente(models.Model):
     id_medio = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    # Ajusta el import del modelo Cliente según tu proyecto
-    cliente = models.ForeignKey("clientes.Cliente", related_name="medios_pago", on_delete=models.CASCADE)
-    tipo = models.ForeignKey(TipoMedioPago, related_name="medios_cliente", on_delete=models.PROTECT)
+    # 🔴 DUEÑO CORRECTO
+    cliente = models.ForeignKey("clientes.Cliente",
+                                related_name="medios_pago",
+                                on_delete=models.CASCADE)
 
-    alias = models.CharField(max_length=120, help_text="Nombre para identificar rápidamente este medio")
+    tipo = models.ForeignKey(TipoMedioPago,
+                             related_name="medios_cliente",
+                             on_delete=models.PROTECT)
+
+    alias = models.CharField(max_length=120)
     datos = models.JSONField(default=dict, blank=True)
 
     activo = models.BooleanField(default=True)
@@ -114,15 +119,18 @@ class MedioPagoCliente(models.Model):
 
     class Meta:
         db_table = "pagos_medio_cliente"
-        verbose_name = "Medio de pago del cliente"
-        verbose_name_plural = "Medios de pago del cliente"
         constraints = [
-            # A lo sumo un predeterminado por cliente
+            # ✅ a lo sumo un predeterminado por CLIENTE
             models.UniqueConstraint(
                 fields=["cliente"],
                 condition=Q(predeterminado=True),
                 name="uniq_medio_pago_predeterminado_por_cliente",
-            )
+            ),
+            # ✅ opcional: alias único por cliente+tipo
+            models.UniqueConstraint(
+                fields=["cliente", "tipo", "alias"],
+                name="uniq_alias_por_cliente_y_tipo",
+            ),
         ]
 
     def __str__(self):
