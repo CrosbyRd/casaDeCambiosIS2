@@ -67,32 +67,41 @@ class TipoPagoCreateView(AccessPagosMixin, CreateView):
     success_url = reverse_lazy("pagos:tipos_list")
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        if self.request.POST:
-            ctx["formset"] = CampoMedioPagoFormSet(self.request.POST, instance=self.object)  # 👈
-        else:
-            ctx["formset"] = CampoMedioPagoFormSet(instance=self.object)                      # 👈
-        return ctx
+            ctx = super().get_context_data(**kwargs)
+            # Determinar engine desde POST o instancia
+            current_engine = self.request.POST.get("engine") if self.request.method == "POST" else getattr(self.object, "engine", None)
+            ctx["skip_formset"] = (current_engine == "stripe")
+            if not ctx["skip_formset"]:
+                ctx["formset"] = CampoMedioPagoFormSet(self.request.POST or None, instance=self.object)
+            else:
+                ctx["formset"] = None
+            return ctx
 
     def form_valid(self, form):
         ctx = self.get_context_data()
-        formset = ctx["formset"]
-        if form.is_valid() and formset.is_valid():
-            self.object = form.save()
-            # Nuevos campos -> activo True por defecto
-            campos = formset.save(commit=False)
-            for c in campos:
-                c.tipo = self.object
-                if c.pk is None:
-                    c.activo = True
-                c.save()
-            for c in formset.deleted_objects:
-                # En creación sí permitimos borrar del formset (no hay referencias todavía)
-                c.delete()
-            messages.success(self.request, "Tipo de medio de pago creado correctamente.")
-            return redirect(self.get_success_url())
-        messages.error(self.request, "Revisá los errores del formulario.")
-        return self.form_invalid(form)
+        skip = ctx.get("skip_formset", False)
+        if not skip:
+            formset = ctx["formset"]
+            if form.is_valid() and formset.is_valid():
+                self.object = form.save()
+                campos = formset.save(commit=False)
+                for c in campos:
+                    c.tipo = self.object
+                    if c.pk is None:
+                        c.activo = True
+                    c.save()
+                for c in formset.deleted_objects:
+                    c.delete()
+                messages.success(self.request, "Tipo de medio de pago creado correctamente.")
+                return redirect(self.get_success_url())
+            messages.error(self.request, "Revisá los errores del formulario.")
+            return self.form_invalid(form)
+
+        # Engine Stripe: guardar sin formset
+        self.object = form.save()
+        messages.success(self.request, "Tipo de medio de pago (Stripe) creado correctamente.")
+        return redirect(self.get_success_url())
+
 
 class TipoPagoUpdateView(AccessPagosMixin, UpdateView):
     model = TipoMedioPago
@@ -103,32 +112,41 @@ class TipoPagoUpdateView(AccessPagosMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        if self.request.POST:
-            ctx["formset"] = CampoMedioPagoFormSet(self.request.POST, instance=self.object)  # 👈
+        current_engine = self.request.POST.get("engine") if self.request.method == "POST" else getattr(self.object, "engine", None)
+        ctx["skip_formset"] = (current_engine == "stripe")
+        if not ctx["skip_formset"]:
+            ctx["formset"] = CampoMedioPagoFormSet(self.request.POST or None, instance=self.object)
         else:
-            ctx["formset"] = CampoMedioPagoFormSet(instance=self.object)                      # 👈
+            ctx["formset"] = None
         return ctx
-
+    
     def form_valid(self, form):
         ctx = self.get_context_data()
-        formset = ctx["formset"]
-        if form.is_valid() and formset.is_valid():
-            self.object = form.save()
-            campos = formset.save(commit=False)
-            # Regla: marcado como DELETE -> desactivar, no borrar
-            for c in formset.deleted_objects:
-                c.activo = False
-                c.save(update_fields=["activo"])
-            for c in campos:
-                c.tipo = self.object
-                # Si vuelve a aparecer en el form sin DELETE, lo reactivamos
-                if c.pk and c.activo is False:
-                    c.activo = True
-                c.save()
-            messages.success(self.request, "Tipo de medio de pago actualizado correctamente.")
-            return redirect(self.get_success_url())
-        messages.error(self.request, "Revisá los errores del formulario.")
-        return self.form_invalid(form)
+        skip = ctx.get("skip_formset", False)
+        if not skip:
+            formset = ctx["formset"]
+            if form.is_valid() and formset.is_valid():
+                self.object = form.save()
+                campos = formset.save(commit=False)
+                # DELETE => desactivar
+                for c in formset.deleted_objects:
+                    c.activo = False
+                    c.save(update_fields=["activo"])
+                for c in campos:
+                    c.tipo = self.object
+                    if c.pk and c.activo is False:
+                        c.activo = True
+                    c.save()
+                messages.success(self.request, "Tipo de medio de pago actualizado correctamente.")
+                return redirect(self.get_success_url())
+            messages.error(self.request, "Revisá los errores del formulario.")
+            return self.form_invalid(form)
+
+    # Engine Stripe: guardar y desactivar cualquier campo que haya quedado
+        self.object = form.save()
+        self.object.campos.update(activo=False)
+        messages.success(self.request, "Tipo (Stripe) actualizado. Los campos fueron desactivados.")
+        return redirect(self.get_success_url())
 
 class TipoPagoDeleteView(AccessPagosMixin, DeleteView):
     model = TipoMedioPago

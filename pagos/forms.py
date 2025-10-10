@@ -4,13 +4,25 @@ from django.forms import inlineformset_factory, BaseInlineFormSet  # 👈 AÑADI
 from .models import TipoMedioPago, CampoMedioPago, MedioPagoCliente
 import re
 
+
+# Presets de regex (value=regex, label=texto que ve el admin)
+REGEX_PREDEF_CHOICES = [
+    ("", "(sin regex)"),
+    (r"^\d+$", "Solo números"),
+    (r"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email básico"),      # ← igual al modelo
+    (r"^\+?595\d{7,10}$", "Teléfono (+595)"),             # ← igual al modelo
+    (r"^\d{6,8}-\d{1}$", "RUC"),
+    (r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$", "Solo letras"),
+]
+
+
 # ------------------------------
 # Admin: Tipo + Campos (inline)
 # ------------------------------
 class TipoMedioPagoForm(forms.ModelForm):
     class Meta:
         model = TipoMedioPago
-        fields = ["nombre", "comision_porcentaje", "descripcion", "activo"]
+        fields = ["nombre", "comision_porcentaje", "descripcion", "activo", "engine", "engine_config"]
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-input w-full"}),
             "comision_porcentaje": forms.NumberInput(attrs={
@@ -19,6 +31,7 @@ class TipoMedioPagoForm(forms.ModelForm):
             }),
             "descripcion": forms.Textarea(attrs={"class": "form-textarea w-full", "rows": 3}),
             "activo": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "engine": forms.Select(attrs={"class": "form-select w-full"}),
         }
 
 class CampoMedioPagoForm(forms.ModelForm):
@@ -42,6 +55,12 @@ class CampoMedioPagoForm(forms.ModelForm):
             "regex_opcional": forms.Select(attrs={"class": "form-select w-full"}),
             "activo": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 👉 aseguramos que el select muestre nuestros presets y guarde el patrón
+        self.fields["regex_opcional"].choices = REGEX_PREDEF_CHOICES
+
 
 class _BaseCampoMedioPagoFormSet(BaseInlineFormSet):
     """
@@ -93,7 +112,7 @@ CampoMedioPagoFormSet = inlineformset_factory(
 class MedioPagoClienteForm(forms.ModelForm):
     # Sobrescribimos 'tipo' para tener control total del widget y la UX
     tipo = forms.ModelChoiceField(
-        queryset=TipoMedioPago.objects.filter(activo=True).order_by("nombre"),
+        queryset=TipoMedioPago.objects.filter(activo=True).exclude(engine='stripe').order_by("nombre"),
         widget=forms.Select(attrs={"class": "form-select w-full"}),
         help_text="Selecciona el tipo de medio de pago",
         required=True,

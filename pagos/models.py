@@ -28,6 +28,17 @@ class TipoMedioPago(models.Model):
     creado_en = models.DateTimeField(default=timezone.now, editable=False)
     actualizado_en = models.DateTimeField(auto_now=True)
 
+    ENGINE_CHOICES = [
+        ('manual', 'Manual'),
+        ('stripe', 'Stripe'),
+        ('sipap', 'SIPAP'),
+    ]
+    engine = models.CharField(max_length=20, choices=ENGINE_CHOICES, default='manual')
+    engine_config = models.JSONField(default=dict, blank=True)
+    
+    def is_stripe(self) -> bool:
+        return self.engine == 'stripe'
+
     class Meta:
         db_table = "pagos_tipo_medio"
         verbose_name = "Tipo de medio de pago"
@@ -38,6 +49,8 @@ class TipoMedioPago(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+
 
 
 # ----------------------------------------------------------------------------
@@ -53,6 +66,7 @@ class CampoMedioPago(models.Model):
 
     class RegexOpciones(models.TextChoices):
         NINGUNO = "", "(sin regex)"
+        SOLO_LETRAS   = r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$", "Solo letras" 
         SOLO_NUMEROS = r"^\d+$", "Solo números"
         EMAIL = r"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email básico"
         TELEFONO_PY = r"^\+?595\d{7,10}$", "Teléfono PY (+595...)"

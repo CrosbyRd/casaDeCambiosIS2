@@ -32,7 +32,8 @@
       <h1 class="h1">{% if object %}Editar tipo de medio de pago{% else %}Nuevo tipo de medio de pago{% endif %}</h1>
       <p class="lead max-w-3xl">
         Definí el medio de pago y su <strong>comisión %</strong>. Después agregá los
-        <strong>campos requeridos</strong> que el cliente deberá completar.
+        <strong>campos requeridos</strong> que el cliente deberá completar
+        <span class="hint">(si elegís Stripe, los datos se piden en el checkout)</span>.
       </p>
     </div>
     <a href="{% url 'pagos:tipos_list' %}" class="btn-secondary self-start">Volver</a>
@@ -86,6 +87,19 @@
           </div>
         </div>
 
+        <!-- Procesador (engine) -->
+        <div class="grid grid-cols-1">
+          <div class="px-4 py-3 head-purple">Procesador</div>
+          <div class="p-4 border-t border-[var(--line)] bg-white">
+            {{ form.engine }}
+            {% if form.engine.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.engine.errors|striptags }}</p>
+            {% else %}
+              <p class="hint mt-1">Elegí: Manual, Stripe o SIPAP. Para Stripe no se requieren campos del cliente.</p>
+            {% endif %}
+          </div>
+        </div>
+
         <!-- Estado -->
         <div class="p-4 border-t border-[var(--line)] bg-white flex items-center gap-3">
           <span class="hint">Estado</span>
@@ -126,7 +140,7 @@
       </div>
 
       <!-- Campos del medio -->
-      <section class="box-narrow">
+      <section class="box-narrow" id="section-campos">
         <div class="flex items-center justify-between mb-3">
           <h2 class="h2">Campos del medio</h2>
           <button type="button" id="add-form" class="btn-secondary">
@@ -277,13 +291,14 @@
         </div>
         <div class="md:col-span-4 cell">
           <label class="font-semibold mb-1 block" for="id_${prefix}-${index}-regex_opcional">Regex (predef.)</label>
-          <select name="${prefix}-${index}-regex_opcional" id="id_${prefix}-${index}-regex_opcional" class="form-select w-full">
-            <option value="">(sin regex)</option>
-            <option value="^\\d+$">Solo números</option>
-            <option value="^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$">Email básico</option>
-            <option value="^\\+?595\\d{7,10}$">Teléfono PY (+595...)</option>
-            <option value="^\\d{6,8}-\\d{1}$">RUC PY (########-#)</option>
-          </select>
+            <select name="${prefix}-${index}-regex_opcional" id="id_${prefix}-${index}-regex_opcional" class="form-select w-full">
+              <option value="">(sin regex)</option>
+              <option value="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\\s]+$">Solo letras</option>
+              <option value="^\\d+$">Solo números</option>
+              <option value="^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$">Email básico</option>
+              <option value="^\\+?595\\d{7,10}$">Teléfono (+595)</option>
+              <option value="^\\d{6,8}-\\d{1}$">RUC</option>
+            </select>
         </div>
         <div class="md:col-span-1 cell flex items-center justify-end gap-2">
           <label class="inline-flex items-center gap-2">
@@ -300,6 +315,27 @@
       totalInp.value=index+1;
       wireDeleteButtons(row);
     });
+  }
+})();
+</script>
+
+<!-- Fallback: ocultar 'Campos del medio' si el engine es Stripe -->
+<script>
+(function(){
+  const engineSel = document.getElementById('id_engine');
+  const camposSec = document.getElementById('section-campos');
+  const addBtn    = document.getElementById('add-form');
+
+  function toggleCamposPorEngine(){
+    if(!engineSel || !camposSec) return;
+    const isStripe = engineSel.value === 'stripe';
+    camposSec.style.display = isStripe ? 'none' : '';
+    if(addBtn) addBtn.disabled = isStripe;
+  }
+
+  if(engineSel){
+    toggleCamposPorEngine();                 // estado inicial
+    engineSel.addEventListener('change', toggleCamposPorEngine);
   }
 })();
 </script>
