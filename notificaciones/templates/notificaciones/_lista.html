@@ -1,0 +1,28 @@
+{% for n in notificaciones %}
+  <div class="p-3 border-b flex justify-between items-start {% if not n.leida %}bg-purple-50{% endif %}">
+    <div>
+      <div class="font-bold">{{ n.titulo }}</div>
+      <div class="text-sm text-neutral-600">{{ n.mensaje|linebreaksbr }}</div>
+      <div class="text-xs text-neutral-400 mt-1">{{ n.fecha_creacion|date:"d/m/Y H:i" }}</div>
+    </div>
+    <div class="flex flex-col items-end gap-2">
+      {% if not n.leida %}
+        <form method="post" action="{% url 'notificaciones:marcar_leida' n.pk %}" class="inline">
+          {% csrf_token %}
+          <button class="gx-btn--ghost px-3 py-1 text-sm">Marcar leída</button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'notificaciones:marcar_no_leida' n.pk %}" class="inline">
+          {% csrf_token %}
+          <button class="gx-btn--ghost px-3 py-1 text-sm">Marcar no leída</button>
+        </form>
+      {% endif %}
+      <form method="post" action="{% url 'notificaciones:silenciar' n.pk %}" class="inline">
+        {% csrf_token %}
+        <button class="text-xs">Silenciar</button>
+      </form>
+    </div>
+  </div>
+{% empty %}
+  <div class="p-4 text-neutral-500">No hay notificaciones.</div>
+{% endfor %}
