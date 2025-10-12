@@ -1,7 +1,8 @@
 #!/bin/bash
 # Este script soluciona un problema de inconsistencia en las migraciones de Django
 # para las aplicaciones 'pagos' y 'simuladores'.
-# "chmod +x fix_migrations.sh" <--- desde la raiz del proyecto meter este comando sin las comillas
+# 1. "chmod +x fix_migrations.sh" <--- desde la raiz del proyecto meter este comando sin las comillas
+# 2. "./fix_migrations.sh" <--- desde la raiz del proyecto meter este comando sin las comillas
 # Poner en pausa el script si cualquier comando falla
 set -e
 
