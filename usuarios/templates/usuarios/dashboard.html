@@ -22,10 +22,12 @@
 {% block content %}
 {% url 'usuarios:dashboard' as dashboard_url %}
 {% url 'medios_acreditacion:clientes_list' as medios_url %}
+{% url 'pagos:clientes_list' as pagos_medios_url %}
 {% url 'usuarios:ted' as ted_url %}
 {% url 'core:iniciar_operacion' as iniciar_operacion_url %}
 {% url 'core:historial_transacciones' as historial_url %}
 {% url 'usuarios:seleccionar_cliente' as seleccionar_cliente_url %}
+
 
 <main class="max-w-[1200px] mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-[260px,1fr] gap-6">
 
@@ -58,6 +60,20 @@
           <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
         </a>
 
+                <!-- NUEVO: Métodos de pago (app pagos) -->
+        <a href="{{ pagos_medios_url }}"
+           aria-current="{% if request.path == pagos_medios_url %}page{% endif %}"
+           class="mt-1 flex items-center justify-between px-4 py-2 rounded-xl transition
+                 {% if request.path == pagos_medios_url %}
+                   bg-white border border-purple-200 text-purple-900 font-semibold shadow-sm
+                 {% else %}
+                   text-purple-900/80 hover:bg-purple-100 hover:text-purple-900
+                 {% endif %}">
+          <span>Métodos de pago</span>
+          <span class="text-xs font-bold text-purple-700/70 opacity-0 hover:opacity-100 transition">›</span>
+        </a>
+
+        
         <!-- NUEVO: Botón TED (apunta a /usuarios/ted/) -->
         <a href="{{ ted_url }}"
            aria-current="{% if request.path == ted_url %}page{% endif %}"
