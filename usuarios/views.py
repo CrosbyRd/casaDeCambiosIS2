@@ -203,8 +203,14 @@ def login_redirect(request):
     if not user.is_authenticated:
         return redirect("login")
     
+    # ROL DE ADMINISTRADOR
     if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
+
+    # ROL DE ANALISTA
+    if user.roles.filter(name__iexact="Analista").exists() \
+       or user.has_perm("analista_panel.access_analista_dashboard"):
+        return redirect("analista_panel:dashboard")
 
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")

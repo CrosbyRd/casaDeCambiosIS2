@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange – Panel del Analista{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-10">
+  <h1 class="text-4xl font-bold mb-10 text-center">📊 Panel del Analista</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+
+    <!-- Gestión de Tasas de Cambio (Ajuste Manual + Auditoría) -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-red-600 text-5xl mb-4">📈</div>
+      <h2 class="text-xl font-bold mb-2">Gestión de Tasas</h2>
+      <p class="text-gray-500 mb-4">Ajuste manual de compra/venta y auditoría de cambios.</p>
+      <!-- Reutiliza el módulo existente de cotizaciones/tasas -->
+      <a href="{% url 'cotizaciones:cotizacion_list' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
+    </section>
+
+    <!-- Ganancias (placeholder) -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-green-600 text-5xl mb-4">💹</div>
+      <h2 class="text-xl font-bold mb-2">Ganancias</h2>
+      <p class="text-gray-500 mb-4">Panel de ganancias globales y por moneda (próximamente).</p>
+      <!-- Botón deshabilitado hasta que el módulo exista -->
+      <button type="button"
+              class="block w-full py-2 rounded-lg font-semibold text-white text-center opacity-60 cursor-not-allowed"
+              style="background:var(--brand);"
+              aria-disabled="true"
+              title="Disponible próximamente">
+        Próximamente
+      </button>
+    </section>
+
+  </div>
+</main>
+{% endblock %}

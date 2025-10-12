@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from analista_panel.models import AnalistaPanelPermissions  # permisos del panel del Analista (managed=False)
 
 from roles.models import Role
 from clientes.models import Cliente
@@ -200,5 +201,99 @@ class Command(BaseCommand):
                 client_user.roles.add(rol_cliente)
             if rol_cliente_dev_otp_bypass not in client_user.roles.all():
                 client_user.roles.add(rol_cliente_dev_otp_bypass)
+
+        
+
+        # --- Rol Analista Cambiario ---
+        rol_analista, _ = Role.objects.get_or_create(
+            name="Analista",
+            defaults={"description": "Rol de Analista cambiario (gestión de tasas y monitoreo)."}
+        )
+
+        # Permisos del panel del Analista (propios del app analista_panel)
+        ct_ap = ContentType.objects.get_for_model(AnalistaPanelPermissions)
+        perm_ap_dashboard, _ = Permission.objects.get_or_create(
+            codename="access_analista_dashboard",
+            content_type=ct_ap,
+            defaults={"name": "Puede acceder al dashboard del Analista"},
+        )
+        perm_ap_rates, _ = Permission.objects.get_or_create(
+            codename="access_exchange_rates",
+            content_type=ct_ap,
+            defaults={"name": "Puede acceder a Gestión de Tasas (ajuste manual + auditoría)"},
+        )
+        perm_ap_profits_view, _ = Permission.objects.get_or_create(
+            codename="view_profits_module",
+            content_type=ct_ap,
+            defaults={"name": "Puede ver el módulo de Ganancias"},
+        )
+
+        # Permisos de apps existentes que necesita el Analista
+        permisos_analista = [perm_ap_dashboard, perm_ap_rates, perm_ap_profits_view]
+
+        # Acceso al módulo de cotizaciones (misma app que usa el admin para tasas)
+        try:
+            perm_access_cot = Permission.objects.get(codename="access_cotizaciones")
+            permisos_analista.append(perm_access_cot)
+        except Permission.DoesNotExist:
+            self.stdout.write(self.style.WARNING("Permiso 'access_cotizaciones' no encontrado; verifique app cotizaciones."))
+
+        # (Opcional) Solo lectura de inventario/terminales si tu Analista debe ver stock TED
+        try:
+            perm_ted_view = Permission.objects.get(codename="puede_gestionar_inventario")
+            permisos_analista.append(perm_ted_view)
+        except Permission.DoesNotExist:
+            self.stdout.write(self.style.WARNING("Permiso 'puede_gestionar_inventario' no encontrado; opcional para Analista."))
+
+        # Asociar permisos al rol Analista (agregar sin pisar los existentes)
+        for p in permisos_analista:
+            rol_analista.permissions.add(p)
+        rol_analista.save()
+        self.stdout.write(self.style.SUCCESS(
+            f"Rol 'Analista' listo con permisos: {[p.codename for p in permisos_analista]}"
+        ))
+
+        
+
+        # --- Usuario Analista Cambiario ---
+        analista_email = "analista1@example.com"
+        analista_password = "password123"
+
+        analista_user, created = User.objects.get_or_create(
+            email=analista_email,
+            defaults={
+                "first_name": "Analista",
+                "last_name": "Cambiario",
+                "is_staff": False,       # no necesita staff; el acceso se controla por permiso/rol
+                "is_superuser": False,
+                "is_active": True,
+                "is_verified": True,
+                "verification_code": None,
+                "code_created_at": None,
+            },
+        )
+        # asegurar password y flags
+        analista_user.set_password(analista_password)
+        analista_user.save()
+
+        # asignar rol Analista
+        if rol_analista not in analista_user.roles.all():
+            analista_user.roles.add(rol_analista)
+
+        self.stdout.write(self.style.SUCCESS(
+            f"Usuario Analista creado/actualizado: {analista_email} (rol Analista asignado)"
+        ))
+
+        # OTP BYPASS para el analista de prueba
+        rol_cliente_dev_otp_bypass, _ = Role.objects.get_or_create(
+            name="Cliente_Dev_OTP_Bypass",
+            defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."}
+        )
+        if rol_cliente_dev_otp_bypass not in analista_user.roles.all():
+            analista_user.roles.add(rol_cliente_dev_otp_bypass)
+
+        self.stdout.write(self.style.SUCCESS(
+            f"Usuario Analista actualizado con OTP bypass ({analista_email})"
+        ))
 
         self.stdout.write(self.style.SUCCESS("Proceso de creación de usuarios y clientes finalizado."))
