@@ -72,28 +72,19 @@
   <h1>Código fuente para cotizaciones.models</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinValueValidator</span>
 <div class="viewcode-block" id="Cotizacion">
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.forms.Cotizacion">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cotizacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Representa la cotización entre un par de monedas en una fecha específica.</span>
-
-<span class="sd">    Almacena el valor de compra y venta, así como las comisiones asociadas</span>
-<span class="sd">    para una transacción entre una moneda base y una moneda de destino.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">moneda_base</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;cotizaciones_base&#39;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Moneda de origen para la cotización.&quot;</span><span class="p">)</span>
-    <span class="n">moneda_destino</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;cotizaciones_destino&#39;</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Moneda de destino para la cotización.&quot;</span><span class="p">)</span>
-    <span class="n">valor_compra</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Precio al que la casa de cambios compra la moneda de destino.&quot;</span><span class="p">)</span>
-    <span class="n">valor_venta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Precio al que la casa de cambios vende la moneda de destino.&quot;</span><span class="p">)</span>
-    <span class="n">comision_compra</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Comisión aplicada sobre la operación de compra.&quot;</span><span class="p">)</span>
-    <span class="n">comision_venta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Comisión aplicada sobre la operación de venta.&quot;</span><span class="p">)</span>
-    <span class="n">fecha_actualizacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de la última actualización de la cotización.&quot;</span><span class="p">)</span>
+    <span class="n">moneda_base</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;cotizaciones_base&#39;</span><span class="p">)</span>
+    <span class="n">moneda_destino</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;cotizaciones_destino&#39;</span><span class="p">)</span>
+    <span class="n">valor_compra</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">MinValueValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">)])</span>
+    <span class="n">valor_venta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">MinValueValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">)])</span>
+    <span class="n">comision_compra</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">MinValueValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">)])</span>
+    <span class="n">comision_venta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">MinValueValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">)])</span>
+    <span class="n">fecha_actualizacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Metadatos para el modelo Cotizacion.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;moneda_base&#39;</span><span class="p">,</span> <span class="s1">&#39;moneda_destino&#39;</span><span class="p">)</span>
 
         <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
@@ -102,32 +93,16 @@
     
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Representación en cadena del objeto Cotizacion.</span>
-
-<span class="sd">        :return: Una cadena que identifica la cotización, ej: &quot;USD a PYG&quot;.</span>
-<span class="sd">        :rtype: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">moneda_destino</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">&quot;</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_compra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calcula el valor total de compra, incluyendo la comisión.</span>
-
-<span class="sd">        :return: El valor de compra más la comisión de compra.</span>
-<span class="sd">        :rtype: Decimal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_compra</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_compra</span>
+        <span class="c1"># La casa de cambios compra la divisa al cliente, la comisión se resta del valor base.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_compra</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_compra</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_venta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calcula el valor total de venta, incluyendo la comisión.</span>
-
-<span class="sd">        :return: El valor de venta más la comisión de venta.</span>
-<span class="sd">        :rtype: Decimal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># La casa de cambios vende la divisa al cliente, la comisión se suma al valor base.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_venta</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_venta</span></div>
 
 </pre></div>

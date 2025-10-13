@@ -1,0 +1,559 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ted.views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">ted.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para ted.views</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ted/views.py — REEMPLAZO COMPLETO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">ROUND_HALF_UP</span><span class="p">,</span> <span class="n">InvalidOperation</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span><span class="p">,</span> <span class="n">permission_required</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionDenied</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_object_or_404</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span><span class="p">,</span> <span class="n">TedDenominacion</span><span class="p">,</span> <span class="n">TedInventario</span><span class="p">,</span> <span class="n">TedMovimiento</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cotizacion_vigente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">AjusteInventarioForm</span>
+
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+<span class="c1"># Config del equipo (mock)</span>
+<span class="n">TED_SERIAL</span> <span class="o">=</span> <span class="s2">&quot;TED-AGSL-0001&quot;</span>
+<span class="n">TED_DIRECCION</span> <span class="o">=</span> <span class="s2">&quot;Campus, San Lorenzo – Paraguay&quot;</span>
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+
+<span class="c1"># Permisos compatibles para Inventario TED (acepta cualquiera de estos)</span>
+<span class="n">PERM_INV_MAIN</span> <span class="o">=</span> <span class="s2">&quot;monedas.puede_gestionar_inventario&quot;</span>
+<span class="n">PERM_INV_ALT1</span> <span class="o">=</span> <span class="s2">&quot;monedas.access_ted_inventory&quot;</span>
+<span class="n">PERM_INV_ALT2</span> <span class="o">=</span> <span class="s2">&quot;ted.puede_gestionar_inventario&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">PERM_INV_MAIN</span><span class="p">)</span> <span class="ow">or</span> <span class="n">u</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">PERM_INV_ALT1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">u</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">PERM_INV_ALT2</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">PermissionDenied</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_pyg</span><span class="p">(</span><span class="n">moneda</span><span class="p">:</span> <span class="n">Moneda</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">moneda</span><span class="o">.</span><span class="n">codigo</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;PYG&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_monedas_operables</span><span class="p">():</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">codigo__iexact</span><span class="o">=</span><span class="s2">&quot;PYG&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;codigo&quot;</span><span class="p">)</span>
+    <span class="n">marcadas</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">admite_terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">marcadas</span> <span class="k">if</span> <span class="n">marcadas</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="n">base</span>
+
+
+<span class="c1"># =========================</span>
+<span class="c1"># Sección OPERATIVA (igual)</span>
+<span class="c1"># =========================</span>
+
+<div class="viewcode-block" id="panel">
+<a class="viewcode-back" href="../../ted.html#ted.views.panel">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@permission_required</span><span class="p">(</span><span class="s2">&quot;ted.puede_operar_terminal&quot;</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">monedas</span> <span class="o">=</span> <span class="n">_monedas_operables</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/panel.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="operar">
+<a class="viewcode-back" href="../../ted.html#ted.views.operar">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@permission_required</span><span class="p">(</span><span class="s2">&quot;ted.puede_operar_terminal&quot;</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">operar</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    COMPRA = el cliente compra extranjera  -&gt; retiramos billetes -&gt; cobramos PYG (usa tasa VENTA)</span>
+<span class="sd">    VENTA  = el cliente vende extranjera   -&gt; depositan billetes -&gt; pagamos PYG (usa tasa COMPRA)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">monedas</span> <span class="o">=</span> <span class="n">_monedas_operables</span><span class="p">()</span>
+    <span class="n">moneda_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">)</span>
+    <span class="n">operacion</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operacion&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span> <span class="k">else</span> <span class="s2">&quot;COMPRA&quot;</span>
+
+    <span class="n">moneda</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">denominaciones</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cotiz</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">moneda_id</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">moneda</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">moneda_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_is_pyg</span><span class="p">(</span><span class="n">moneda</span><span class="p">):</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Solo se permiten operaciones PYG ↔ Moneda extranjera.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:panel&quot;</span><span class="p">)</span>
+            <span class="n">denominaciones</span> <span class="o">=</span> <span class="n">TedDenominacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">moneda</span><span class="o">=</span><span class="n">moneda</span><span class="p">,</span> <span class="n">activa</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;valor&quot;</span><span class="p">)</span>
+            <span class="n">cotiz</span> <span class="o">=</span> <span class="n">get_cotizacion_vigente</span><span class="p">(</span><span class="n">moneda</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">moneda</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moneda</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Seleccione una moneda.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:operar&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cotiz</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cotiz</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vigente&quot;</span><span class="p">):</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No hay una cotización vigente (≤ 15 min). Actualiza las tasas.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">?moneda=</span><span class="si">{</span><span class="n">moneda</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Parseo de cantidades por denominación</span>
+        <span class="n">cantidades</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">total_ext</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">den</span> <span class="ow">in</span> <span class="n">denominaciones</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;den_</span><span class="si">{</span><span class="n">den</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">q</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Cantidades inválidas.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">?moneda=</span><span class="si">{</span><span class="n">moneda</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">q</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">cantidades</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">den</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
+                <span class="n">total_ext</span> <span class="o">+=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">den</span><span class="o">.</span><span class="n">valor</span><span class="p">)</span> <span class="o">*</span> <span class="n">q</span>
+
+        <span class="k">if</span> <span class="n">total_ext</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Ingrese al menos una denominación.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">?moneda=</span><span class="si">{</span><span class="n">moneda</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Determina tasa y signo de inventario</span>
+        <span class="k">if</span> <span class="n">operacion</span> <span class="o">==</span> <span class="s2">&quot;COMPRA&quot;</span><span class="p">:</span>
+            <span class="n">tasa</span> <span class="o">=</span> <span class="n">cotiz</span><span class="p">[</span><span class="s2">&quot;venta&quot;</span><span class="p">]</span>   <span class="c1"># vendemos extranjera → cobramos en PYG</span>
+            <span class="n">motivo</span> <span class="o">=</span> <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">MOTIVO_COMPRA</span>
+            <span class="n">signo</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>              <span class="c1"># retiramos billetes (descarga stock)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">operacion</span> <span class="o">=</span> <span class="s2">&quot;VENTA&quot;</span>
+            <span class="n">tasa</span> <span class="o">=</span> <span class="n">cotiz</span><span class="p">[</span><span class="s2">&quot;compra&quot;</span><span class="p">]</span>  <span class="c1"># compramos extranjera → pagamos en PYG</span>
+            <span class="n">motivo</span> <span class="o">=</span> <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">MOTIVO_VENTA</span>
+            <span class="n">signo</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>              <span class="c1"># depositan billetes (aumenta stock)</span>
+
+        <span class="n">total_pyg</span> <span class="o">=</span> <span class="p">(</span><span class="n">total_ext</span> <span class="o">*</span> <span class="n">tasa</span><span class="p">)</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">),</span> <span class="n">rounding</span><span class="o">=</span><span class="n">ROUND_HALF_UP</span><span class="p">)</span>
+
+        <span class="c1"># Validaciones de stock en COMPRA</span>
+        <span class="k">if</span> <span class="n">signo</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">den</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">cantidades</span><span class="p">:</span>
+                <span class="n">inv</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                    <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cantidad&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">&lt;</span> <span class="n">q</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="n">request</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;Stock insuficiente para </span><span class="si">{</span><span class="n">den</span><span class="o">.</span><span class="n">valor</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">moneda</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">. Disponible: </span><span class="si">{</span><span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">?moneda=</span><span class="si">{</span><span class="n">moneda</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Aplica movimientos e inventario</span>
+        <span class="k">for</span> <span class="n">den</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">cantidades</span><span class="p">:</span>
+            <span class="n">inv</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cantidad&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">+</span> <span class="n">signo</span> <span class="o">*</span> <span class="n">q</span>
+            <span class="n">inv</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+            <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span>
+                <span class="n">delta</span><span class="o">=</span><span class="n">signo</span> <span class="o">*</span> <span class="n">q</span><span class="p">,</span>
+                <span class="n">motivo</span><span class="o">=</span><span class="n">motivo</span><span class="p">,</span>
+                <span class="n">creado_por</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">transaccion_ref</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># mock por ahora</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Guarda ticket en sesión</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;ted_ticket&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fecha&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s2">&quot;operacion&quot;</span><span class="p">:</span> <span class="n">operacion</span><span class="p">,</span>
+            <span class="s2">&quot;moneda&quot;</span><span class="p">:</span> <span class="n">moneda</span><span class="o">.</span><span class="n">codigo</span><span class="p">,</span>
+            <span class="s2">&quot;tasa_aplicada&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">tasa</span><span class="p">),</span>
+            <span class="s2">&quot;total_extranjera&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_ext</span><span class="p">),</span>
+            <span class="s2">&quot;total_pyg&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_pyg</span><span class="p">),</span>
+            <span class="s2">&quot;detalles&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;valor&quot;</span><span class="p">:</span> <span class="n">den</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span> <span class="s2">&quot;cantidad&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">}</span> <span class="k">for</span> <span class="n">den</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">cantidades</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:ticket&quot;</span><span class="p">)</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span>
+        <span class="s2">&quot;moneda&quot;</span><span class="p">:</span> <span class="n">moneda</span><span class="p">,</span>
+        <span class="s2">&quot;denominaciones&quot;</span><span class="p">:</span> <span class="n">denominaciones</span><span class="p">,</span>
+        <span class="s2">&quot;cotiz&quot;</span><span class="p">:</span> <span class="n">cotiz</span><span class="p">,</span>
+        <span class="s2">&quot;operacion&quot;</span><span class="p">:</span> <span class="n">operacion</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/operar.html&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ticket_popup">
+<a class="viewcode-back" href="../../ted.html#ted.views.ticket_popup">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@permission_required</span><span class="p">(</span><span class="s2">&quot;ted.puede_operar_terminal&quot;</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ticket_popup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">ticket</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ted_ticket&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ticket</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Ticket no disponible o expirado.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:panel&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/ticket_popup.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="n">ticket</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="cheque_mock">
+<a class="viewcode-back" href="../../ted.html#ted.views.cheque_mock">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@permission_required</span><span class="p">(</span><span class="s2">&quot;ted.puede_operar_terminal&quot;</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cheque_mock</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">monedas</span> <span class="o">=</span> <span class="n">_monedas_operables</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/cheque_mock.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">})</span></div>
+
+
+
+<span class="c1"># =============================</span>
+<span class="c1"># Sección INVENTARIO (ADMIN)</span>
+<span class="c1"># =============================</span>
+
+<div class="viewcode-block" id="inventario">
+<a class="viewcode-back" href="../../ted.html#ted.views.inventario">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inventario</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista principal de inventario TED.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">den_qs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">TedDenominacion</span><span class="o">.</span><span class="n">objects</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activa</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">moneda__admite_terminal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;moneda__codigo&quot;</span><span class="p">,</span> <span class="s2">&quot;valor&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">inv_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">i</span><span class="o">.</span><span class="n">denominacion_id</span><span class="p">:</span> <span class="n">i</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">denominacion__in</span><span class="o">=</span><span class="n">den_qs</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">grupos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">den</span> <span class="ow">in</span> <span class="n">den_qs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">actual</span> <span class="ow">or</span> <span class="n">actual</span><span class="p">[</span><span class="s2">&quot;moneda&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">den</span><span class="o">.</span><span class="n">moneda_id</span><span class="p">:</span>
+            <span class="n">actual</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;moneda&quot;</span><span class="p">:</span> <span class="n">den</span><span class="o">.</span><span class="n">moneda</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+            <span class="n">grupos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+        <span class="n">stock</span> <span class="o">=</span> <span class="n">inv_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">den</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">actual</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;den&quot;</span><span class="p">:</span> <span class="n">den</span><span class="p">,</span>
+            <span class="s2">&quot;stock&quot;</span><span class="p">:</span> <span class="n">stock</span><span class="o">.</span><span class="n">cantidad</span> <span class="k">if</span> <span class="n">stock</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span>
+        <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span><span class="p">,</span>
+        <span class="s2">&quot;grupos&quot;</span><span class="p">:</span> <span class="n">grupos</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/admin_inventario.html&quot;</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="inventario_ajustar">
+<a class="viewcode-back" href="../../ted.html#ted.views.inventario_ajustar">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inventario_ajustar</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">den_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="n">den</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span>
+        <span class="n">TedDenominacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">),</span>
+        <span class="n">pk</span><span class="o">=</span><span class="n">den_id</span><span class="p">,</span> <span class="n">activa</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">inv</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+        <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cantidad&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">AjusteInventarioForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">]</span>
+            <span class="n">motivo</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;motivo&quot;</span><span class="p">]</span>
+            <span class="n">comentario</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;comentario&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">nuevo</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">+</span> <span class="n">delta</span>
+            <span class="k">if</span> <span class="n">nuevo</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;El ajuste dejaría el stock negativo.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">=</span> <span class="n">nuevo</span>
+                <span class="n">inv</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span>
+                    <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+                    <span class="n">motivo</span><span class="o">=</span><span class="n">motivo</span><span class="p">,</span>
+                    <span class="n">creado_por</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="n">transaccion_ref</span><span class="o">=</span><span class="n">comentario</span><span class="p">[:</span><span class="mi">64</span><span class="p">],</span>  <span class="c1"># breve nota</span>
+                <span class="p">)</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Ajuste aplicado correctamente.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:inventario&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">AjusteInventarioForm</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;delta&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;ted/admin_ajustar.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;den&quot;</span><span class="p">:</span> <span class="n">den</span><span class="p">,</span> <span class="s2">&quot;inv&quot;</span><span class="p">:</span> <span class="n">inv</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span><span class="p">,</span> <span class="s2">&quot;form&quot;</span><span class="p">:</span> <span class="n">form</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="inventario_movimientos">
+<a class="viewcode-back" href="../../ted.html#ted.views.inventario_movimientos">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inventario_movimientos</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="n">movs</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">objects</span>
+        <span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;denominacion&quot;</span><span class="p">,</span> <span class="s2">&quot;denominacion__moneda&quot;</span><span class="p">,</span> <span class="s2">&quot;creado_por&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-created_at&quot;</span><span class="p">)[:</span><span class="mi">200</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;ted/admin_movimientos.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;movs&quot;</span><span class="p">:</span> <span class="n">movs</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+<span class="c1"># NUEVO: crear stock (denominaciones + inventario inicial)</span>
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+<div class="viewcode-block" id="crear_stock">
+<a class="viewcode-back" href="../../ted.html#ted.views.crear_stock">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">crear_stock</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="c1"># Monedas candidatas (todas menos PYG)</span>
+    <span class="n">monedas</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">codigo__iexact</span><span class="o">=</span><span class="s2">&quot;PYG&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;codigo&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">moneda_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moneda_id</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Seleccione una moneda.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/admin_crear_stock.html&quot;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span>
+            <span class="p">})</span>
+
+        <span class="n">moneda</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Moneda</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">moneda_id</span><span class="p">)</span>
+
+        <span class="c1"># Lee arrays del formulario</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s2">&quot;den_valor[]&quot;</span><span class="p">)</span>
+        <span class="n">stocks</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s2">&quot;den_stock[]&quot;</span><span class="p">)</span>
+
+        <span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">stocks</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">valor</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">valor</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidOperation</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Valor de denominación inválido: </span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/admin_crear_stock.html&quot;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span>
+                <span class="p">})</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cantidad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cantidad</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Stock inválido para la denominación </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/admin_crear_stock.html&quot;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span>
+                <span class="p">})</span>
+            <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">valor</span><span class="p">,</span> <span class="n">cantidad</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filas</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Agregue al menos una fila de denominación/stock.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;ted/admin_crear_stock.html&quot;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span>
+            <span class="p">})</span>
+
+        <span class="c1"># Crea/actualiza denominaciones e inventario</span>
+        <span class="k">for</span> <span class="n">valor</span><span class="p">,</span> <span class="n">cantidad</span> <span class="ow">in</span> <span class="n">filas</span><span class="p">:</span>
+            <span class="n">den</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">TedDenominacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                <span class="n">moneda</span><span class="o">=</span><span class="n">moneda</span><span class="p">,</span>
+                <span class="n">valor</span><span class="o">=</span><span class="n">valor</span><span class="p">,</span>
+                <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;activa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">den</span><span class="o">.</span><span class="n">activa</span><span class="p">:</span>
+                <span class="n">den</span><span class="o">.</span><span class="n">activa</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">den</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;activa&quot;</span><span class="p">])</span>
+
+            <span class="n">inv</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cantidad&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span>
+            <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">=</span> <span class="n">cantidad</span>  <span class="c1"># set explícito al valor ingresado</span>
+            <span class="n">inv</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+            <span class="c1"># Registrar movimiento si hay delta y el modelo lo permite</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">-</span> <span class="n">prev</span>
+            <span class="n">motivo_ajuste</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">TedMovimiento</span><span class="p">,</span> <span class="s2">&quot;MOTIVO_AJUSTE&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">motivo_ajuste</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                    <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span>
+                    <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+                    <span class="n">motivo</span><span class="o">=</span><span class="n">motivo_ajuste</span><span class="p">,</span>
+                    <span class="n">creado_por</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="n">transaccion_ref</span><span class="o">=</span><span class="s2">&quot;CREAR_STOCK&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Habilita moneda en la terminal</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">moneda</span><span class="o">.</span><span class="n">admite_terminal</span><span class="p">:</span>
+            <span class="n">moneda</span><span class="o">.</span><span class="n">admite_terminal</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">moneda</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;admite_terminal&quot;</span><span class="p">])</span>
+
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Stock creado/actualizado correctamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:inventario&quot;</span><span class="p">)</span>
+
+    <span class="c1"># GET</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;ted/admin_crear_stock.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s2">&quot;monedas&quot;</span><span class="p">:</span> <span class="n">monedas</span><span class="p">,</span> <span class="s2">&quot;serial&quot;</span><span class="p">:</span> <span class="n">TED_SERIAL</span><span class="p">,</span> <span class="s2">&quot;direccion&quot;</span><span class="p">:</span> <span class="n">TED_DIRECCION</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+<span class="c1"># NUEVO: eliminar denominación (soft-delete: desactivar + limpiar inventario)</span>
+<span class="c1"># ──────────────────────────────────────────────────────────────────────────────</span>
+<div class="viewcode-block" id="eliminar_denominacion">
+<a class="viewcode-back" href="../../ted.html#ted.views.eliminar_denominacion">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eliminar_denominacion</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">den_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">_check_inv_perm</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="n">den</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span>
+        <span class="n">TedDenominacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">&quot;moneda&quot;</span><span class="p">),</span>
+        <span class="n">pk</span><span class="o">=</span><span class="n">den_id</span>
+    <span class="p">)</span>
+    <span class="c1"># Desactivar y poner inventario en 0</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">TedInventario</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">inv</span> <span class="ow">and</span> <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Registrar salida si existe motivo ajuste</span>
+        <span class="n">motivo_ajuste</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">TedMovimiento</span><span class="p">,</span> <span class="s2">&quot;MOTIVO_AJUSTE&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span>
+        <span class="n">inv</span><span class="o">.</span><span class="n">cantidad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">inv</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">motivo_ajuste</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">delta</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">TedMovimiento</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">denominacion</span><span class="o">=</span><span class="n">den</span><span class="p">,</span>
+                <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+                <span class="n">motivo</span><span class="o">=</span><span class="n">motivo_ajuste</span><span class="p">,</span>
+                <span class="n">creado_por</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">transaccion_ref</span><span class="o">=</span><span class="s2">&quot;ELIMINAR_DENOMINACION&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="n">den</span><span class="o">.</span><span class="n">activa</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">den</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;activa&quot;</span><span class="p">])</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Denominación desactivada y stock limpiado.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:ted:inventario&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

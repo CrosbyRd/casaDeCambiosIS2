@@ -1,5 +1,15 @@
 # transacciones/models.py
+"""
+Modelos de la aplicación **transacciones**.
 
+.. module:: transacciones.models
+   :synopsis: Gestión de transacciones de compra/venta de divisas en la Casa de Cambio.
+
+Este módulo define:
+
+- :class:`Transaccion`: Representa operaciones de compra/venta de divisa.
+  Incluye montos, monedas, tasas de cambio, comisiones, estados, medios de acreditación y validación de límites.
+"""
 from django.db import models
 from django.conf import settings
 from monedas.models import Moneda
@@ -11,6 +21,9 @@ from django.core.exceptions import ValidationError
 from configuracion.models import TransactionLimit
 from django.db.models import Sum
 from django.utils.timezone import now
+
+
+
 # Forward declaration for MedioAcreditacion
 class MedioAcreditacion(models.Model):
     class Meta:
@@ -19,8 +32,25 @@ class MedioAcreditacion(models.Model):
 
 class Transaccion(models.Model):
     """
-    Modela una operación de compra o venta de divisa.
-    La perspectiva es siempre desde la Casa de Cambio.
+    Modelo que representa una operación de compra o venta de divisa.
+
+    Perspectiva: Casa de Cambio.
+
+    **Tipos de operación**
+    ----------------------
+    - 'venta': La empresa vende divisa al cliente (cliente compra divisa)
+    - 'compra': La empresa compra divisa al cliente (cliente vende divisa)
+
+    **Estados posibles**
+    -------------------
+    - 'pendiente_pago_cliente': Pendiente de pago del cliente (PYG)
+    - 'pendiente_retiro_tauser': Pendiente de retiro de divisa (Tauser)
+    - 'pendiente_deposito_tauser': Pendiente de depósito de divisa (Tauser)
+    - 'procesando_acreditacion': Procesando acreditación a cliente (PYG)
+    - 'completada': Transacción completada con éxito
+    - 'cancelada': Interrumpida antes del pago/deposito del cliente
+    - 'anulada': Revertida después del pago/deposito
+    - 'error': Error técnico o inesperado
     """
 
     # --- PERSPECTIVA CASA DE CAMBIO ---
@@ -51,7 +81,16 @@ class Transaccion(models.Model):
 
     # --- CAMPOS DEL MODELO ---
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='transacciones')
+    cliente = models.ForeignKey(
+        Cliente,  # <--- ¡CORREGIDO! Usa el modelo Cliente
+        on_delete=models.PROTECT,
+        related_name='transacciones_cliente',
+    )
+    usuario_operador = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='operaciones_realizadas',
+    )
     tipo_operacion = models.CharField(max_length=10, choices=TIPO_OPERACION_CHOICES)
     estado = models.CharField(max_length=30, choices=ESTADO_CHOICES)
     
@@ -136,8 +175,11 @@ class Transaccion(models.Model):
     # ----------------------------
     def clean(self):
         """
-        Valida que el monto no supere el límite definido en la moneda base (PYG),
-        tanto diario como mensual, acumulando por cliente.
+        Valida que el monto de la transacción no supere los límites definidos en PYG.
+
+        Considera:
+        - Límite diario y mensual del cliente.
+        - Acumulado de transacciones previas (excluyendo la propia).
         """
         limite = TransactionLimit.objects.filter(moneda__codigo="PYG").first()
         if not limite:

@@ -42,7 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Módulos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
 
         </div>
@@ -73,9 +73,10 @@
 <span></span><span class="c1"># core/forms.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span> <span class="c1"># Importar el modelo Transaccion</span>
 
 <div class="viewcode-block" id="SimulacionForm">
-<a class="viewcode-back" href="../../source/core.html#core.forms.SimulacionForm">[documentos]</a>
+<a class="viewcode-back" href="../../core.html#core.forms.SimulacionForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimulacionForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
     <span class="n">monto</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Monto a cambiar&quot;</span><span class="p">,</span>
@@ -105,7 +106,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;moneda_destino&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">choices</span>
 
 <div class="viewcode-block" id="SimulacionForm.clean_monto">
-<a class="viewcode-back" href="../../source/core.html#core.forms.SimulacionForm.clean_monto">[documentos]</a>
+<a class="viewcode-back" href="../../core.html#core.forms.SimulacionForm.clean_monto">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_monto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">monto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;monto&#39;</span><span class="p">]</span>
         <span class="n">moneda_origen_codigo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;moneda_origen&#39;</span><span class="p">)</span>
@@ -124,7 +125,7 @@
 
 
 <div class="viewcode-block" id="SimulacionForm.clean">
-<a class="viewcode-back" href="../../source/core.html#core.forms.SimulacionForm.clean">[documentos]</a>
+<a class="viewcode-back" href="../../core.html#core.forms.SimulacionForm.clean">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">cleaned_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="n">origen</span> <span class="o">=</span> <span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda_origen&quot;</span><span class="p">)</span>
@@ -135,6 +136,45 @@
                 <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Las monedas no pueden ser iguales.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">origen</span> <span class="o">!=</span> <span class="s1">&#39;PYG&#39;</span> <span class="ow">and</span> <span class="n">destino</span> <span class="o">!=</span> <span class="s1">&#39;PYG&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;La simulación debe involucrar Guaraníes (PYG).&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cleaned_data</span></div>
+</div>
+
+
+<div class="viewcode-block" id="OperacionForm">
+<a class="viewcode-back" href="../../core.html#core.forms.OperacionForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OperacionForm</span><span class="p">(</span><span class="n">SimulacionForm</span><span class="p">):</span>
+    <span class="n">tipo_operacion</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Tipo de Operación&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">Transaccion</span><span class="o">.</span><span class="n">TIPO_OPERACION_CHOICES</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+    <span class="p">)</span>
+    <span class="n">modalidad_tasa</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ChoiceField</span><span class="p">(</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Modalidad de Tasa&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">Transaccion</span><span class="o">.</span><span class="n">MODALIDAD_TASA_CHOICES</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}),</span>
+        <span class="n">initial</span><span class="o">=</span><span class="s1">&#39;bloqueada&#39;</span><span class="p">,</span> <span class="c1"># Por defecto, la tasa bloqueada</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Elige si la tasa se bloquea por un tiempo o es indicativa.&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="OperacionForm.clean">
+<a class="viewcode-back" href="../../core.html#core.forms.OperacionForm.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cleaned_data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">tipo_operacion</span> <span class="o">=</span> <span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo_operacion&quot;</span><span class="p">)</span>
+        <span class="n">moneda_origen</span> <span class="o">=</span> <span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda_origen&quot;</span><span class="p">)</span>
+        <span class="n">moneda_destino</span> <span class="o">=</span> <span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;moneda_destino&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tipo_operacion</span> <span class="ow">and</span> <span class="n">moneda_origen</span> <span class="ow">and</span> <span class="n">moneda_destino</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;compra&#39;</span><span class="p">:</span> <span class="c1"># Cliente VENDE divisa extranjera a la casa de cambio</span>
+                <span class="k">if</span> <span class="n">moneda_origen</span> <span class="o">==</span> <span class="s1">&#39;PYG&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Para &#39;Compra de Divisa&#39;, la moneda de origen no puede ser PYG.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">moneda_destino</span> <span class="o">!=</span> <span class="s1">&#39;PYG&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Para &#39;Compra de Divisa&#39;, la moneda de destino debe ser PYG.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;venta&#39;</span><span class="p">:</span> <span class="c1"># Cliente COMPRA divisa extranjera de la casa de cambio</span>
+                <span class="k">if</span> <span class="n">moneda_origen</span> <span class="o">!=</span> <span class="s1">&#39;PYG&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Para &#39;Venta de Divisa&#39;, la moneda de origen debe ser PYG.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">moneda_destino</span> <span class="o">==</span> <span class="s1">&#39;PYG&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Para &#39;Venta de Divisa&#39;, la moneda de destino no puede ser PYG.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cleaned_data</span></div>
 </div>
 

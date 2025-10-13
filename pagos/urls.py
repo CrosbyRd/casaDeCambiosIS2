@@ -1,33 +1,19 @@
-"""Rutas URL de la aplicación *pagos*.
-
-Expone las vistas para **listar**, **crear**, **editar**, **eliminar**, **ver detalle**
-y **alternar el estado** (activo/inactivo) de los Tipos de Medio de Pago.
-
-.. rubric:: Nombres de las rutas
-
-- ``pagos:listar_tipos_medio_pago``
-- ``pagos:agregar_tipo_medio_pago``
-- ``pagos:editar_tipo_medio_pago``
-- ``pagos:eliminar_tipo_medio_pago``
-- ``pagos:ver_tipo_medio_pago``
-- ``pagos:toggle_activo``
-"""
 from django.urls import path
 from . import views
 
 app_name = "pagos"
 
 urlpatterns = [
-    # Listado general
-    path("", views.listar_tipos_medio_pago, name="listar_tipos_medio_pago"),
-    # Alta
-    path("agregar/", views.agregar_tipo_medio_pago, name="agregar_tipo_medio_pago"),
-    # Edición
-    path("editar/<int:pk>/", views.editar_tipo_medio_pago, name="editar_tipo_medio_pago"),
-    # Eliminación (con confirmación)
-    path("eliminar/<int:pk>/", views.eliminar_tipo_medio_pago, name="eliminar_tipo_medio_pago"),
-    # Detalle
-    path("ver/<int:pk>/", views.ver_tipo_medio_pago, name="ver_tipo_medio_pago"),
-    # Alternar estado activo/inactivo
-    path("toggle/<int:pk>/", views.toggle_activo_tipo_medio_pago, name="toggle_activo"),
+    # Admin – Tipos de medios
+    path("tipos/", views.TipoPagoListView.as_view(), name="tipos_list"),
+    path("tipos/crear/", views.TipoPagoCreateView.as_view(), name="tipos_create"),
+    path("tipos/<uuid:id_tipo>/editar/", views.TipoPagoUpdateView.as_view(), name="tipos_update"),
+    path("tipos/<uuid:id_tipo>/eliminar/", views.TipoPagoDeleteView.as_view(), name="tipos_delete"),
+
+    # Cliente – Medios
+    path("clientes/", views.MedioPagoListView.as_view(), name="clientes_list"),
+    path("clientes/crear/", views.MedioPagoCreateView.as_view(), name="clientes_create"),
+    path("clientes/<uuid:id_medio>/editar/", views.MedioPagoUpdateView.as_view(), name="clientes_update"),
+    path("clientes/<uuid:id_medio>/eliminar/", views.MedioPagoDeleteView.as_view(), name="clientes_delete"),
+    path("clientes/<uuid:id_medio>/predeterminar/", views.MedioPagoPredeterminarView.as_view(), name="clientes_predeterminar"),
 ]

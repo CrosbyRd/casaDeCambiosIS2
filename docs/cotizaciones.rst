@@ -1,18 +1,11 @@
-cotizaciones package
+paquete cotizaciones
 ====================
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   cotizaciones.migrations
-
-Submodules
+Submódulos
 ----------
 
-cotizaciones.admin module
+módulo cotizaciones.admin
 -------------------------
 
 .. automodule:: cotizaciones.admin
@@ -20,7 +13,7 @@ cotizaciones.admin module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.apps module
+módulo cotizaciones.apps
 ------------------------
 
 .. automodule:: cotizaciones.apps
@@ -28,7 +21,7 @@ cotizaciones.apps module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.forms module
+módulo cotizaciones.forms
 -------------------------
 
 .. automodule:: cotizaciones.forms
@@ -36,7 +29,7 @@ cotizaciones.forms module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.models module
+módulo cotizaciones.models
 --------------------------
 
 .. automodule:: cotizaciones.models
@@ -44,7 +37,7 @@ cotizaciones.models module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.tests module
+módulo cotizaciones.tests
 -------------------------
 
 .. automodule:: cotizaciones.tests
@@ -52,7 +45,7 @@ cotizaciones.tests module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.urls module
+módulo cotizaciones.urls
 ------------------------
 
 .. automodule:: cotizaciones.urls
@@ -60,7 +53,7 @@ cotizaciones.urls module
    :undoc-members:
    :show-inheritance:
 
-cotizaciones.views module
+módulo cotizaciones.views
 -------------------------
 
 .. automodule:: cotizaciones.views
@@ -68,7 +61,7 @@ cotizaciones.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: cotizaciones

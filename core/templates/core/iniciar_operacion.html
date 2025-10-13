@@ -32,6 +32,26 @@
     </div>
   {% endif %}
 
+<!-- Mostrar el límite disponible para el cliente -->
+<div class="mb-6">
+  <h2 class="text-lg font-semibold text-[var(--ink)]">Límite Disponible</h2>
+  <p class="text-md text-[var(--muted)]">
+    El límite disponible para realizar operaciones es de 
+    <strong>{{ limite_disponible|floatformat:2 }} PYG</strong>.
+  </p>
+</div>
+
+<!-- Mostrar información del cliente (si es necesario) -->
+<div class="mb-6">
+  <h2 class="text-lg font-semibold text-[var(--ink)]">Información del Cliente</h2>
+  <p class="text-md text-[var(--muted)]">
+    Cliente: <strong>{{ cliente.nombre }}</strong><br>
+    Categoría: <strong>{{ cliente.get_categoria_display }}</strong><br>
+    Estado: <strong>{{ cliente.esta_activo|yesno:"Activo,Inactivo" }}</strong>
+  </p>
+</div>
+
+
   <!-- Card -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <form method="post" id="form-operacion" novalidate>

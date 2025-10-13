@@ -1,0 +1,45 @@
+cotizaciones.tests package
+==========================
+
+Submodules
+----------
+
+cotizaciones.tests.test\_forms module
+-------------------------------------
+
+.. automodule:: cotizaciones.tests.test_forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cotizaciones.tests.test\_models module
+--------------------------------------
+
+.. automodule:: cotizaciones.tests.test_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cotizaciones.tests.test\_urls module
+------------------------------------
+
+.. automodule:: cotizaciones.tests.test_urls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cotizaciones.tests.test\_views module
+-------------------------------------
+
+.. automodule:: cotizaciones.tests.test_views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cotizaciones.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -63,7 +63,7 @@
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.admin">monedas.admin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.apps">monedas.apps module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.forms">monedas.forms module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.models">monedas.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="monedas.html#module-0">monedas.models module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.tests">monedas.tests module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.urls">monedas.urls module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monedas.html#module-monedas.views">monedas.views module</a></li>
@@ -72,6 +72,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html">roles package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usuarios.html">usuarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">configuracion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">medios_acreditacion package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">operaciones package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">pagos package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">payments package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">transacciones package</a></li>
 </ul>
 </li>
 </ul>
@@ -221,6 +227,44 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.migrations.0006_alter_moneda_options.Migration.operations">
 <span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;AlterModelOptions</span>&#160; <span class="pre">name='moneda',</span> <span class="pre">options={'permissions':</span> <span class="pre">[('access_monedas_section',</span> <span class="pre">'Puede</span> <span class="pre">acceder</span> <span class="pre">a</span> <span class="pre">la</span> <span class="pre">sección</span> <span class="pre">de</span> <span class="pre">Monedas')]}&gt;]</span></em><a class="headerlink" href="#monedas.migrations.0006_alter_moneda_options.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-monedas.migrations.0007_alter_moneda_admite_en_linea_and_more">
+<span id="monedas-migrations-0007-alter-moneda-admite-en-linea-and-more-module"></span><h2>monedas.migrations.0007_alter_moneda_admite_en_linea_and_more module<a class="headerlink" href="#module-monedas.migrations.0007_alter_moneda_admite_en_linea_and_more" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/migrations/0007_alter_moneda_admite_en_linea_and_more.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('monedas',</span> <span class="pre">'0006_alter_moneda_options')]</span></em><a class="headerlink" href="#monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='admite_en_linea',</span> <span class="pre">field=&lt;django.db.models.fields.BooleanField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='admite_terminal',</span> <span class="pre">field=&lt;django.db.models.fields.BooleanField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='codigo',</span> <span class="pre">field=&lt;django.db.models.fields.CharField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='decimales',</span> <span class="pre">field=&lt;django.db.models.fields.PositiveSmallIntegerField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='fecha_creacion',</span> <span class="pre">field=&lt;django.db.models.fields.DateTimeField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='minima_denominacion',</span> <span class="pre">field=&lt;django.db.models.fields.PositiveIntegerField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='nombre',</span> <span class="pre">field=&lt;django.db.models.fields.CharField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='simbolo',</span> <span class="pre">field=&lt;django.db.models.fields.CharField&gt;&gt;,</span> <span class="pre">&lt;AlterField</span>&#160; <span class="pre">model_name='moneda',</span> <span class="pre">name='ultima_actualizacion_tasa',</span> <span class="pre">field=&lt;django.db.models.fields.DateTimeField&gt;&gt;]</span></em><a class="headerlink" href="#monedas.migrations.0007_alter_moneda_admite_en_linea_and_more.Migration.operations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento">
+<span id="monedas-migrations-0008-teddenominacion-tedinventario-tedmovimiento-module"></span><h2>monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento module<a class="headerlink" href="#module-monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.</span></span><span class="sig-name descname"><span class="pre">Migration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/migrations/0008_teddenominacion_tedinventario_tedmovimiento.html#Migration"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Migration</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration.dependencies">
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('monedas',</span> <span class="pre">'0007_alter_moneda_admite_en_linea_and_more'),</span> <span class="pre">('usuarios',</span> <span class="pre">'__first__')]</span></em><a class="headerlink" href="#monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration.dependencies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration.operations">
+<span class="sig-name descname"><span class="pre">operations</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;CreateModel</span>&#160; <span class="pre">name='TedDenominacion',</span> <span class="pre">fields=[('id',</span> <span class="pre">&lt;django.db.models.fields.BigAutoField&gt;),</span> <span class="pre">('valor',</span> <span class="pre">&lt;django.db.models.fields.PositiveIntegerField&gt;),</span> <span class="pre">('activa',</span> <span class="pre">&lt;django.db.models.fields.BooleanField&gt;),</span> <span class="pre">('moneda',</span> <span class="pre">&lt;django.db.models.fields.related.ForeignKey&gt;)],</span> <span class="pre">options={'ordering':</span> <span class="pre">['moneda__codigo',</span> <span class="pre">'valor'],</span> <span class="pre">'permissions':</span> <span class="pre">[('access_ted_inventory',</span> <span class="pre">'Puede</span> <span class="pre">gestionar</span> <span class="pre">el</span> <span class="pre">inventario</span> <span class="pre">del</span> <span class="pre">TED')],</span> <span class="pre">'unique_together':</span> <span class="pre">{('moneda',</span> <span class="pre">'valor')}}&gt;,</span> <span class="pre">&lt;CreateModel</span>&#160; <span class="pre">name='TedInventario',</span> <span class="pre">fields=[('id',</span> <span class="pre">&lt;django.db.models.fields.BigAutoField&gt;),</span> <span class="pre">('cantidad',</span> <span class="pre">&lt;django.db.models.fields.PositiveIntegerField&gt;),</span> <span class="pre">('updated_at',</span> <span class="pre">&lt;django.db.models.fields.DateTimeField&gt;),</span> <span class="pre">('denominacion',</span> <span class="pre">&lt;django.db.models.fields.related.OneToOneField&gt;)],</span> <span class="pre">options={'ordering':</span> <span class="pre">['denominacion__moneda__codigo',</span> <span class="pre">'denominacion__valor']}&gt;,</span> <span class="pre">&lt;CreateModel</span>&#160; <span class="pre">name='TedMovimiento',</span> <span class="pre">fields=[('id',</span> <span class="pre">&lt;django.db.models.fields.BigAutoField&gt;),</span> <span class="pre">('delta',</span> <span class="pre">&lt;django.db.models.fields.IntegerField&gt;),</span> <span class="pre">('motivo',</span> <span class="pre">&lt;django.db.models.fields.CharField&gt;),</span> <span class="pre">('transaccion_ref',</span> <span class="pre">&lt;django.db.models.fields.CharField&gt;),</span> <span class="pre">('created_at',</span> <span class="pre">&lt;django.db.models.fields.DateTimeField&gt;),</span> <span class="pre">('creado_por',</span> <span class="pre">&lt;django.db.models.fields.related.ForeignKey&gt;),</span> <span class="pre">('denominacion',</span> <span class="pre">&lt;django.db.models.fields.related.ForeignKey&gt;)],</span> <span class="pre">options={'ordering':</span> <span class="pre">['-created_at']}&gt;]</span></em><a class="headerlink" href="#monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento.Migration.operations" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
