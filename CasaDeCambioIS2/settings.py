@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "lib",
+    "simuladores",
     "usuarios",
     "clientes",
     "roles",

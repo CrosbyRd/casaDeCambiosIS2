@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="px-6 py-6">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-4xl font-extrabold">{{ object|default:'Nuevo medio de pago' }}</h1>
+    <a href="{% url 'pagos:clientes_list' %}" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Volver</a>
+  </div>
+
+  {% include "partials/messages.html" %}
+
+  <div class="bg-white rounded-xl border border-[var(--line)] shadow p-6">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">{{ form.tipo.label_tag }} {{ form.tipo }}</div>
+        <div class="md:col-span-2">{{ form.alias.label_tag }} {{ form.alias }}</div>
+        <div>{{ form.activo.label_tag }} {{ form.activo }}</div>
+        <div>{{ form.predeterminado.label_tag }} {{ form.predeterminado }}</div>
+      </div>
+
+
+      <hr class="my-6" />
+      <p class="text-xs text-neutral-500">Tipos activos: {{ form.fields.tipo.queryset|length }} · Campos detectados: {{ form.campos_config|length }}</p>
+
+        <h2 class="text-2xl font-bold mb-2">Datos del medio</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for bf in form %}
+            {% if bf.name != 'tipo' and bf.name != 'alias' and bf.name != 'activo' and bf.name != 'predeterminado' %}
+            <div>
+                <label class="font-semibold">{{ bf.label }}</label>
+                {{ bf }}
+                {% if bf.errors %}
+                <p class="text-red-600 text-sm">{{ bf.errors|striptags }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% endfor %}
+        {% if form.campos_config|length == 0 %}
+            <p class="text-sm text-neutral-500 md:col-span-2">
+            No hay campos configurados para este tipo o aún no seleccionaste un tipo.
+            </p>
+        {% endif %}
+        </div>
+
+      <div class="mt-6 flex justify-end">
+        <button class="btn bg-[var(--brand)] text-white">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+<script>
+(function(){
+  const sel = document.getElementById('id_tipo');
+  if(!sel) return;
+  sel.addEventListener('change', function(){
+    const url = new URL(window.location);
+    if (this.value) url.searchParams.set('tipo', this.value);
+    else url.searchParams.delete('tipo');
+    window.location = url.toString();
+  });
+})();
+</script>
