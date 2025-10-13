@@ -23,7 +23,7 @@ def crear_notificacion_por_cambio_tasa(sender, instance, venta_cambio, compra_ca
     # Llama a la tarea de Celery para que se ejecute en segundo plano.
     # .delay() es la forma de ejecutarla asíncronamente.
     # Pasamos IDs en lugar de objetos completos, es una buena práctica.
-    notificar_cambio_de_tasa_a_usuarios.delay(instance.id, mensaje)
+    notificar_cambio_de_tasa_a_usuarios.delay(instance.id, mensaje, compra_cambio, venta_cambio)
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
