@@ -127,6 +127,10 @@
                         data-open-modal="modal-{{ usuario.id }}">
                   ➕ Agregar cliente
                 </button>
+                <a href="{% url 'roles:manage-user-roles' usuario.id %}"
+                   class="px-3 py-2 rounded-lg font-semibold text-white bg-gray-600 hover:bg-gray-700">
+                  Gestionar Roles
+                </a>
               </div>
 
               {# --- Modal Agregar cliente con buscador --- #}

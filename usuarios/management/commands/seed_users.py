@@ -4,27 +4,37 @@ from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-from analista_panel.models import AnalistaPanelPermissions  # permisos del panel del Analista (managed=False)
-
+import json
+import uuid
+from pathlib import Path
+from django.core.management.base import BaseCommand
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from roles.models import Role
 from clientes.models import Cliente
-from ted.models import TedPerms  # <- para el ContentType del permiso TED
-
 
 class Command(BaseCommand):
-    help = "Crea/actualiza usuarios Administradores y Clientes con roles y permisos."
+    help = "Crea o actualiza usuarios de ejemplo (Admin, Analista y Clientes) y los asocia a sus roles."
 
     @transaction.atomic
     def handle(self, *args, **options):
         User = get_user_model()
-        self.stdout.write(self.style.SUCCESS("Iniciando creación de usuarios Administradores y Clientes..."))
+        self.stdout.write(self.style.SUCCESS("Iniciando creación y asignación de roles para usuarios de ejemplo..."))
 
-        # --- Admin app ---
+        # --- Obtener Roles (creados por seed_roles) ---
+        try:
+            rol_admin = Role.objects.get(name="Administrador")
+            rol_cliente = Role.objects.get(name="Cliente")
+            rol_cliente_dev_otp_bypass = Role.objects.get(name="Cliente_Dev_OTP_Bypass")
+            rol_analista = Role.objects.get(name="Analista")
+        except Role.DoesNotExist as e:
+            self.stdout.write(self.style.ERROR(f"Error: Rol no encontrado - {e}. Asegúrate de ejecutar 'python manage.py seed_roles' primero."))
+            return
+
+        # --- Usuario Administrador ---
         admin_email = "globalexchangea2@gmail.com"
         admin_password = "password123"
-        admin_user, created = User.objects.get_or_create(
+        admin_user, created = User.objects.update_or_create(
             email=admin_email,
             defaults={
                 "first_name": "Admin",
@@ -33,99 +43,32 @@ class Command(BaseCommand):
                 "is_superuser": False,
                 "is_active": True,
                 "is_verified": True,
-                "verification_code": None,
-                "code_created_at": None,
             },
         )
-        if created:
-            admin_user.set_password(admin_password)
-            admin_user.save()
-            self.stdout.write(self.style.SUCCESS(f"Usuario Administrador creado: {admin_email}"))
-        else:
-            self.stdout.write(self.style.WARNING(f"Usuario Administrador ya existía: {admin_email}"))
-
-        # Asegurar flags y password
-        defaults = {
-            "first_name": admin_user.first_name,
-            "last_name": admin_user.last_name,
-            "is_staff": True,
-            "is_superuser": False,
-            "is_active": admin_user.is_active,
-            "is_verified": admin_user.is_verified,
-            "verification_code": None,
-            "code_created_at": None,
-        }
-        admin_user, _ = User.objects.update_or_create(email=admin_email, defaults=defaults)
         admin_user.set_password(admin_password)
         admin_user.save()
-
-        # --- Rol Administrador ---
-        rol_admin, _ = Role.objects.get_or_create(name="Administrador", defaults={"description": "Rol de Administrador"})
-
-        # --- Permisos específicos de panel y TED ---
-        faltantes = []
-        permisos_admin_codenames = [
-            "access_admin_dashboard",       # Panel Admin
-            "access_cotizaciones",          # Cotizaciones
-            "access_monedas_section",       # Monedas
-            "access_roles_panel",           # Roles
-            "delete_roles",                 # Roles
-            "access_user_client_management",# Asociación cliente-usuario
-            "access_clientes_panel",        # Clientes
-            "access_medios_acreditacion",   # Medios de acreditación
-            "access_pagos_section",         # Pagos
-            "puede_operar_terminal",
-            "puede_gestionar_inventario",
-        ]
-
-        permisos_admin = []
-        for codename in permisos_admin_codenames:
-            try:
-                perm = Permission.objects.get(codename=codename)
-                permisos_admin.append(perm)
-            except Permission.DoesNotExist:
-                faltantes.append(codename)
-
-        # Permiso TED (propio de la app 'ted')
-        ct_ted = ContentType.objects.get_for_model(TedPerms)
-        perm_ted, _ = Permission.objects.get_or_create(
-            codename="puede_operar_terminal",
-            content_type=ct_ted,
-            defaults={"name": "Puede operar el terminal TED"},
-        )
-        permisos_admin.append(perm_ted)
-
-        # Asignar permisos al rol Administrador
-        if permisos_admin:
-            rol_admin.permissions.set(permisos_admin)
-            rol_admin.save()
-
-        # Rol Cliente
-        rol_cliente, _ = Role.objects.get_or_create(
-            name="Cliente", defaults={"description": "Rol de Cliente estándar para usuarios finales."}
-        )
-        rol_cliente_dev_otp_bypass, _ = Role.objects.get_or_create(
-            name="Cliente_Dev_OTP_Bypass", defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."}
-        )
-
-        # Permisos genéricos del modelo Cliente
-        cliente_ct = ContentType.objects.get_for_model(Cliente)
-        permisos_cliente = list(Permission.objects.filter(content_type=cliente_ct))
-        if permisos_cliente:
-            rol_cliente.permissions.set(permisos_cliente)
-            rol_cliente.save()
-            self.stdout.write(self.style.SUCCESS(
-                f"Rol 'Cliente' asignado con permisos: {[p.codename for p in permisos_cliente]}."
-            ))
-        else:
-            self.stdout.write(self.style.WARNING("Rol 'Cliente' sin permisos específicos (no encontrados)."))
-
-        # Asignar rol Admin al usuario admin
         admin_user.roles.add(rol_admin)
+        self.stdout.write(self.style.SUCCESS(f"Usuario Administrador '{admin_email}' asegurado y asignado al rol 'Administrador'."))
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Usuario {admin_email} asignado al rol Administrador con permisos {[p.codename for p in permisos_admin]}."
-        ))
+        # --- Usuario Analista ---
+        analista_email = "analista1@example.com"
+        analista_password = "password123"
+        analista_user, created = User.objects.update_or_create(
+            email=analista_email,
+            defaults={
+                "first_name": "Analista",
+                "last_name": "Cambiario",
+                "is_staff": False,
+                "is_superuser": False,
+                "is_active": True,
+                "is_verified": True,
+            },
+        )
+        analista_user.set_password(analista_password)
+        analista_user.save()
+        analista_user.roles.add(rol_analista)
+        analista_user.roles.add(rol_cliente_dev_otp_bypass) # Para pruebas
+        self.stdout.write(self.style.SUCCESS(f"Usuario Analista '{analista_email}' asegurado y asignado al rol 'Analista'."))
 
         # --- Cargar fixture de clientes y crear usuarios asociados ---
         project_root = Path(__file__).resolve().parents[3]
@@ -142,42 +85,18 @@ class Command(BaseCommand):
                 continue
 
             fields = item["fields"]
-            pk_str = item.get("pk")
+            cliente, _ = Cliente.objects.update_or_create(
+                nombre=fields["nombre"],
+                defaults={
+                    "categoria": fields["categoria"],
+                    "activo": fields["activo"],
+                }
+            )
 
-            cliente_defaults = {
-                "nombre": fields["nombre"],
-                "categoria": fields["categoria"],
-                "activo": fields["activo"],
-            }
-
-            if pk_str:
-                try:
-                    client_uuid = uuid.UUID(pk_str)
-                except ValueError:
-                    client_uuid = None
-                if client_uuid:
-                    cliente, created_client = Cliente.objects.update_or_create(
-                        id_cliente=client_uuid, defaults=cliente_defaults
-                    )
-                else:
-                    cliente, created_client = Cliente.objects.get_or_create(
-                        nombre=fields["nombre"], defaults=cliente_defaults
-                    )
-            else:
-                cliente, created_client = Cliente.objects.get_or_create(
-                    nombre=fields["nombre"], defaults=cliente_defaults
-                )
-
-            if created_client:
-                self.stdout.write(self.style.SUCCESS(f"Cliente creado: {cliente.nombre} ({cliente.categoria})"))
-            else:
-                self.stdout.write(self.style.WARNING(f"Cliente actualizado: {cliente.nombre} ({cliente.categoria})"))
-
-            # Usuario por cliente
+            # Crear usuario para este cliente
             client_user_email = f"{fields['nombre'].lower().replace(' ', '')}@example.com"
             client_user_password = "password123"
-
-            client_user, created_user = User.objects.get_or_create(
+            client_user, created = User.objects.update_or_create(
                 email=client_user_email,
                 defaults={
                     "first_name": fields["nombre"].split(' ')[0],
@@ -186,114 +105,19 @@ class Command(BaseCommand):
                     "is_superuser": False,
                     "is_active": True,
                     "is_verified": True,
-                    "verification_code": None,
-                    "code_created_at": None,
                 },
             )
             client_user.set_password(client_user_password)
             client_user.save()
+            
+            # Asociar usuario con cliente y roles
+            client_user.clientes.add(cliente)
+            client_user.roles.add(rol_cliente)
+            client_user.roles.add(rol_cliente_dev_otp_bypass)
+            
+            if created:
+                self.stdout.write(self.style.SUCCESS(f"Usuario para cliente '{cliente.nombre}' creado y roles asignados."))
+            else:
+                self.stdout.write(self.style.WARNING(f"Usuario para cliente '{cliente.nombre}' actualizado y roles asignados."))
 
-            if cliente not in client_user.clientes.all():
-                client_user.clientes.add(cliente)
-
-            # Roles cliente
-            if rol_cliente not in client_user.roles.all():
-                client_user.roles.add(rol_cliente)
-            if rol_cliente_dev_otp_bypass not in client_user.roles.all():
-                client_user.roles.add(rol_cliente_dev_otp_bypass)
-
-        
-
-        # --- Rol Analista Cambiario ---
-        rol_analista, _ = Role.objects.get_or_create(
-            name="Analista",
-            defaults={"description": "Rol de Analista cambiario (gestión de tasas y monitoreo)."}
-        )
-
-        # Permisos del panel del Analista (propios del app analista_panel)
-        ct_ap = ContentType.objects.get_for_model(AnalistaPanelPermissions)
-        perm_ap_dashboard, _ = Permission.objects.get_or_create(
-            codename="access_analista_dashboard",
-            content_type=ct_ap,
-            defaults={"name": "Puede acceder al dashboard del Analista"},
-        )
-        perm_ap_rates, _ = Permission.objects.get_or_create(
-            codename="access_exchange_rates",
-            content_type=ct_ap,
-            defaults={"name": "Puede acceder a Gestión de Tasas (ajuste manual + auditoría)"},
-        )
-        perm_ap_profits_view, _ = Permission.objects.get_or_create(
-            codename="view_profits_module",
-            content_type=ct_ap,
-            defaults={"name": "Puede ver el módulo de Ganancias"},
-        )
-
-        # Permisos de apps existentes que necesita el Analista
-        permisos_analista = [perm_ap_dashboard, perm_ap_rates, perm_ap_profits_view]
-
-        # Acceso al módulo de cotizaciones (misma app que usa el admin para tasas)
-        try:
-            perm_access_cot = Permission.objects.get(codename="access_cotizaciones")
-            permisos_analista.append(perm_access_cot)
-        except Permission.DoesNotExist:
-            self.stdout.write(self.style.WARNING("Permiso 'access_cotizaciones' no encontrado; verifique app cotizaciones."))
-
-        # (Opcional) Solo lectura de inventario/terminales si tu Analista debe ver stock TED
-        try:
-            perm_ted_view = Permission.objects.get(codename="puede_gestionar_inventario")
-            permisos_analista.append(perm_ted_view)
-        except Permission.DoesNotExist:
-            self.stdout.write(self.style.WARNING("Permiso 'puede_gestionar_inventario' no encontrado; opcional para Analista."))
-
-        # Asociar permisos al rol Analista (agregar sin pisar los existentes)
-        for p in permisos_analista:
-            rol_analista.permissions.add(p)
-        rol_analista.save()
-        self.stdout.write(self.style.SUCCESS(
-            f"Rol 'Analista' listo con permisos: {[p.codename for p in permisos_analista]}"
-        ))
-
-        
-
-        # --- Usuario Analista Cambiario ---
-        analista_email = "analista1@example.com"
-        analista_password = "password123"
-
-        analista_user, created = User.objects.get_or_create(
-            email=analista_email,
-            defaults={
-                "first_name": "Analista",
-                "last_name": "Cambiario",
-                "is_staff": False,       # no necesita staff; el acceso se controla por permiso/rol
-                "is_superuser": False,
-                "is_active": True,
-                "is_verified": True,
-                "verification_code": None,
-                "code_created_at": None,
-            },
-        )
-        # asegurar password y flags
-        analista_user.set_password(analista_password)
-        analista_user.save()
-
-        # asignar rol Analista
-        if rol_analista not in analista_user.roles.all():
-            analista_user.roles.add(rol_analista)
-
-        self.stdout.write(self.style.SUCCESS(
-            f"Usuario Analista creado/actualizado: {analista_email} (rol Analista asignado)"
-        ))
-
-        # OTP BYPASS para el analista de prueba
-        rol_cliente_dev_otp_bypass, _ = Role.objects.get_or_create(
-            name="Cliente_Dev_OTP_Bypass",
-            defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."}
-        )
-        if rol_cliente_dev_otp_bypass not in analista_user.roles.all():
-            analista_user.roles.add(rol_cliente_dev_otp_bypass)
-
-        self.stdout.write(self.style.SUCCESS(
-            f"Usuario Analista actualizado con OTP bypass ({analista_email})"
-        ))
-
-        self.stdout.write(self.style.SUCCESS("Proceso de creación de usuarios y clientes finalizado."))
+        self.stdout.write(self.style.SUCCESS("Proceso de creación de usuarios de ejemplo finalizado."))

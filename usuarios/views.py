@@ -30,6 +30,15 @@ def register(request):
             user.password = make_password(form.cleaned_data["password"])
             user.save()
 
+            # Asignar el rol de "Cliente" por defecto
+            try:
+                cliente_role = Role.objects.get(name="Cliente")
+                user.roles.add(cliente_role)
+            except Role.DoesNotExist:
+                # Opcional: Manejar el caso en que el rol no exista.
+                # Por ahora, simplemente lo ignoramos, pero podrías loggear un error.
+                pass
+
             user.generate_verification_code()
             send_mail(
                 "Código de verificación",
