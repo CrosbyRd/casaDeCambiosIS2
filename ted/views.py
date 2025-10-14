@@ -10,8 +10,7 @@ Incluye:
 - Panel y flujo operativo (COMPRA/VENTA) sobre el inventario TED.
 - Sección administrativa de inventario (listar, ajustar, crear stock, movimientos).
 - **monedas_disponibles**: endpoint JSON para exponer *solo* los códigos de moneda
-  actualmente disponibles en el TED (sin revelar cantidades), pensado para el
-  modal del mock de usuario.
+  actualmente disponibles en el TED (sin revelar cantidades).
 
 Notas
 -----
@@ -23,7 +22,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, FieldError
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -61,8 +60,47 @@ def _monedas_operables():
     return marcadas if marcadas.exists() else base
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Helpers de inventario (compatibles con modelos con/sin `ubicacion`)
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _inv_manager(for_update: bool = False):
+    return TedInventario.objects.select_for_update() if for_update else TedInventario.objects
+
+
+def _inv_filter_by_ubicacion(qs, ubicacion: str):
+    try:
+        return qs.filter(ubicacion=ubicacion)
+    except FieldError:
+        return qs
+
+
+def _inv_distinct_ubicaciones():
+    try:
+        qs = (TedInventario.objects.values_list("ubicacion", flat=True)
+              .distinct().order_by("ubicacion"))
+        vals = [u for u in qs if (u or "").strip()]
+        return vals or [TED_DIRECCION]
+    except FieldError:
+        return [TED_DIRECCION]
+
+
+def _inv_get_or_create(den, ubicacion: str, for_update: bool = False):
+    mgr = _inv_manager(for_update)
+    try:
+        return mgr.get_or_create(denominacion=den, ubicacion=ubicacion, defaults={"cantidad": 0})
+    except FieldError:
+        return mgr.get_or_create(denominacion=den, defaults={"cantidad": 0})
+
+
+def _inv_get(den, ubicacion: str, for_update: bool = False):
+    mgr = _inv_manager(for_update).filter(denominacion=den)
+    qs = _inv_filter_by_ubicacion(mgr, ubicacion)
+    return qs.first()
+
+
 # =========================
-# Sección OPERATIVA (igual)
+# Sección OPERATIVA
 # =========================
 
 @login_required
@@ -83,6 +121,7 @@ def operar(request):
     monedas = _monedas_operables()
     moneda_id = request.GET.get("moneda") or request.POST.get("moneda")
     operacion = request.POST.get("operacion") if request.method == "POST" else "COMPRA"
+    ubicacion = TED_DIRECCION  # este terminal físico
 
     moneda = None
     denominaciones = []
@@ -145,9 +184,7 @@ def operar(request):
         # Validaciones de stock en COMPRA
         if signo < 0:
             for den, q in cantidades:
-                inv, _ = TedInventario.objects.select_for_update().get_or_create(
-                    denominacion=den, defaults={"cantidad": 0}
-                )
+                inv, _ = _inv_get_or_create(den, ubicacion, for_update=True)
                 if inv.cantidad < q:
                     messages.error(
                         request,
@@ -157,9 +194,7 @@ def operar(request):
 
         # Aplica movimientos e inventario
         for den, q in cantidades:
-            inv, _ = TedInventario.objects.select_for_update().get_or_create(
-                denominacion=den, defaults={"cantidad": 0}
-            )
+            inv, _ = _inv_get_or_create(den, ubicacion, for_update=True)
             inv.cantidad = inv.cantidad + signo * q
             inv.save()
 
@@ -168,7 +203,7 @@ def operar(request):
                 delta=signo * q,
                 motivo=motivo,
                 creado_por=request.user,
-                transaccion_ref="",  # mock por ahora
+                transaccion_ref="",  # mock
             )
 
         # Guarda ticket en sesión
@@ -218,9 +253,9 @@ def cheque_mock(request):
 @login_required
 def inventario(request):
     _check_inv_perm(request)
-    """
-    Vista principal de inventario TED.
-    """
+    ubicacion_sel = (request.GET.get("ubicacion") or "").strip() or None  # None = sin filtro
+    ubicaciones_todas = _inv_distinct_ubicaciones()
+
     den_qs = (
         TedDenominacion.objects
         .filter(activa=True, moneda__admite_terminal=True)
@@ -228,26 +263,59 @@ def inventario(request):
         .order_by("moneda__codigo", "valor")
     )
 
-    inv_map = {
-        i.denominacion_id: i
-        for i in TedInventario.objects.filter(denominacion__in=den_qs)
-    }
-
     grupos = []
-    actual = None
-    for den in den_qs:
-        if not actual or actual["moneda"].id != den.moneda_id:
-            actual = {"moneda": den.moneda, "items": []}
-            grupos.append(actual)
-        stock = inv_map.get(den.id)
-        actual["items"].append({
-            "den": den,
-            "stock": stock.cantidad if stock else 0,
-        })
+
+    if ubicacion_sel:
+        inv_qs = TedInventario.objects.filter(denominacion__in=den_qs)
+        inv_qs = _inv_filter_by_ubicacion(inv_qs, ubicacion_sel)
+        inv_map = {i.denominacion_id: i for i in inv_qs}
+
+        actual = None
+        for den in den_qs:
+            if not actual or actual["moneda"].id != den.moneda_id:
+                actual = {"moneda": den.moneda, "items": []}
+                grupos.append(actual)
+            stock = inv_map.get(den.id)
+            actual["items"].append({"den": den, "stock": stock.cantidad if stock else 0})
+
+        direccion_label = ubicacion_sel
+        filtro_aplicado = True
+    else:
+        # Todas las ubicaciones
+        try:
+            rows = (TedInventario.objects.filter(denominacion__in=den_qs)
+                    .values("denominacion_id", "ubicacion", "cantidad"))
+            inv_por_ubi = {}
+            for r in rows:
+                u = r.get("ubicacion") or TED_DIRECCION
+                inv_por_ubi.setdefault(u, {})[r["denominacion_id"]] = r["cantidad"]
+        except FieldError:
+            inv_map = {i.denominacion_id: i.cantidad for i in TedInventario.objects.filter(denominacion__in=den_qs)}
+            inv_por_ubi = {TED_DIRECCION: inv_map}
+
+        ubic_list = sorted(inv_por_ubi.keys())
+        moneda_denominaciones = {}
+        for den in den_qs:
+            moneda_denominaciones.setdefault(den.moneda_id, []).append(den)
+
+        for moneda_id, dens in moneda_denominaciones.items():
+            moneda = dens[0].moneda
+            grupo = {"moneda": moneda, "secciones": []}
+            for ubic in ubic_list:
+                mapa = inv_por_ubi.get(ubic, {})
+                items = [{"den": den, "stock": mapa.get(den.id, 0)} for den in dens]
+                grupo["secciones"].append({"ubicacion": ubic, "items": items})
+            grupos.append(grupo)
+
+        direccion_label = "Todas las ubicaciones"
+        filtro_aplicado = False
 
     ctx = {
         "serial": TED_SERIAL,
-        "direccion": TED_DIRECCION,
+        "direccion": direccion_label,
+        "ubicaciones": ubicaciones_todas,
+        "filtro_ubicacion": ubicacion_sel,
+        "filtro_aplicado": filtro_aplicado,
         "grupos": grupos,
     }
     return render(request, "ted/admin_inventario.html", ctx)
@@ -257,14 +325,13 @@ def inventario(request):
 @transaction.atomic
 def inventario_ajustar(request, den_id: int):
     _check_inv_perm(request)
+    ubicacion = request.GET.get("ubicacion") or TED_DIRECCION
 
     den = get_object_or_404(
         TedDenominacion.objects.select_related("moneda"),
         pk=den_id, activa=True
     )
-    inv, _ = TedInventario.objects.select_for_update().get_or_create(
-        denominacion=den, defaults={"cantidad": 0}
-    )
+    inv, _ = _inv_get_or_create(den, ubicacion, for_update=True)
 
     if request.method == "POST":
         form = AjusteInventarioForm(request.POST)
@@ -285,24 +352,25 @@ def inventario_ajustar(request, den_id: int):
                     delta=delta,
                     motivo=motivo,
                     creado_por=request.user,
-                    transaccion_ref=comentario[:64],  # breve nota
+                    transaccion_ref=comentario[:64],
                 )
                 messages.success(request, "Ajuste aplicado correctamente.")
-                return redirect("admin_panel:ted:inventario")
+                if request.GET.get("ubicacion"):
+                    return redirect(f"{request.build_absolute_uri('/admin_panel/ted/inventario/')}?ubicacion={ubicacion}")
+                return redirect("/admin_panel/ted/inventario/")
     else:
         form = AjusteInventarioForm(initial={"delta": 0})
 
     return render(
         request,
         "ted/admin_ajustar.html",
-        {"den": den, "inv": inv, "serial": TED_SERIAL, "direccion": TED_DIRECCION, "form": form},
+        {"den": den, "inv": inv, "serial": TED_SERIAL, "direccion": ubicacion, "form": form},
     )
 
 
 @login_required
 def inventario_movimientos(request):
     _check_inv_perm(request)
-
     movs = (
         TedMovimiento.objects
         .select_related("denominacion", "denominacion__moneda", "creado_por")
@@ -316,27 +384,54 @@ def inventario_movimientos(request):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# NUEVO: crear stock (denominaciones + inventario inicial)
+# Crear stock (con modo prefill)
 # ──────────────────────────────────────────────────────────────────────────────
 @login_required
 @transaction.atomic
 def crear_stock(request):
     _check_inv_perm(request)
 
-    # Monedas candidatas (todas menos PYG)
     monedas = Moneda.objects.exclude(codigo__iexact="PYG").order_by("codigo")
 
+    prefill_moneda_id = request.GET.get("moneda") or request.POST.get("moneda_locked")
+    prefill_ubic = (request.GET.get("ubicacion") or request.POST.get("ubicacion_locked") or "").strip()
+
+    moneda_sel = None
+    existentes = []
+    if prefill_moneda_id:
+        try:
+            moneda_sel = Moneda.objects.get(pk=prefill_moneda_id)
+        except Moneda.DoesNotExist:
+            moneda_sel = None
+
+    if moneda_sel and prefill_ubic:
+        den_ids = list(
+            TedInventario.objects.filter(ubicacion=prefill_ubic, denominacion__moneda=moneda_sel)
+            .values_list("denominacion_id", flat=True)
+        )
+        if den_ids:
+            den_qs = TedDenominacion.objects.filter(pk__in=den_ids).order_by("valor")
+            inv_map = {
+                i.denominacion_id: i.cantidad
+                for i in TedInventario.objects.filter(ubicacion=prefill_ubic, denominacion_id__in=den_ids)
+            }
+            existentes = [(den.valor, inv_map.get(den.id, 0)) for den in den_qs]
+
     if request.method == "POST":
-        moneda_id = request.POST.get("moneda")
+        moneda_id = request.POST.get("moneda") or prefill_moneda_id
+        ubicacion = (request.POST.get("ubicacion") or prefill_ubic or "").strip() or TED_DIRECCION
+
         if not moneda_id:
             messages.error(request, "Seleccione una moneda.")
             return render(request, "ted/admin_crear_stock.html", {
-                "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION
+                "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                "prefill": bool(prefill_moneda_id and prefill_ubic),
+                "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                "existentes": existentes, "new_rows": []
             })
 
         moneda = get_object_or_404(Moneda, pk=moneda_id)
 
-        # Lee arrays del formulario
         vals = request.POST.getlist("den_valor[]")
         stocks = request.POST.getlist("den_stock[]")
 
@@ -345,13 +440,16 @@ def crear_stock(request):
             if (v or "").strip() == "" and (s or "").strip() == "":
                 continue
             try:
-                valor = Decimal(v)
+                valor = int(Decimal(v))
                 if valor <= 0:
                     raise InvalidOperation
             except Exception:
                 messages.error(request, f"Valor de denominación inválido: {v!r}")
                 return render(request, "ted/admin_crear_stock.html", {
-                    "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION
+                    "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                    "prefill": bool(prefill_moneda_id and prefill_ubic),
+                    "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                    "existentes": existentes, "new_rows": list(zip(vals, stocks))
                 })
             try:
                 cantidad = int(s)
@@ -360,117 +458,152 @@ def crear_stock(request):
             except Exception:
                 messages.error(request, f"Stock inválido para la denominación {v}.")
                 return render(request, "ted/admin_crear_stock.html", {
-                    "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION
+                    "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                    "prefill": bool(prefill_moneda_id and prefill_ubic),
+                    "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                    "existentes": existentes, "new_rows": list(zip(vals, stocks))
                 })
             filas.append((valor, cantidad))
 
-        if not filas:
-            messages.error(request, "Agregue al menos una fila de denominación/stock.")
+        # Validaciones
+        seen = set()
+        dupe_local = [v for v, _ in filas if (v in seen or seen.add(v))]
+        if dupe_local:
+            messages.error(request, "Hay denominaciones repetidas en las filas nuevas.")
             return render(request, "ted/admin_crear_stock.html", {
-                "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION
+                "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                "prefill": bool(prefill_moneda_id and prefill_ubic),
+                "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                "existentes": existentes, "new_rows": list(zip(vals, stocks))
             })
 
-        # Crea/actualiza denominaciones e inventario
+        existentes_set = set(v for v, _ in existentes)
+        choque = [v for v, _ in filas if v in existentes_set]
+        if choque:
+            mensajes = ", ".join(str(v) for v in sorted(set(choque)))
+            messages.error(request, f"Estas denominaciones ya existen en esta ubicación: {mensajes}.")
+            return render(request, "ted/admin_crear_stock.html", {
+                "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                "prefill": bool(prefill_moneda_id and prefill_ubic),
+                "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                "existentes": existentes, "new_rows": list(zip(vals, stocks))
+            })
+
+        # Persistencia
         for valor, cantidad in filas:
             den, _ = TedDenominacion.objects.get_or_create(
-                moneda=moneda,
-                valor=valor,
-                defaults={"activa": True},
+                moneda=moneda, valor=valor, defaults={"activa": True}
             )
             if not den.activa:
                 den.activa = True
                 den.save(update_fields=["activa"])
 
-            inv, created = TedInventario.objects.select_for_update().get_or_create(
-                denominacion=den, defaults={"cantidad": 0}
-            )
-            prev = inv.cantidad
-            inv.cantidad = cantidad  # set explícito al valor ingresado
+            inv, created = _inv_get_or_create(den, ubicacion, for_update=True)
+            if not created:
+                messages.error(request, f"La denominación {valor} ya existe en {ubicacion}.")
+                return render(request, "ted/admin_crear_stock.html", {
+                    "monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION,
+                    "prefill": bool(prefill_moneda_id and prefill_ubic),
+                    "moneda_sel": moneda_sel, "ubicacion_sel": prefill_ubic,
+                    "existentes": existentes, "new_rows": list(zip(vals, stocks))
+                })
+            inv.cantidad = cantidad
             inv.save()
 
-            # Registrar movimiento si hay delta y el modelo lo permite
-            delta = inv.cantidad - prev
             motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
-            if delta != 0 and motivo_ajuste is not None:
+            if motivo_ajuste is not None and cantidad != 0:
+                TedMovimiento.objects.create(
+                    denominacion=den,
+                    delta=cantidad,
+                    motivo=motivo_ajuste,
+                    creado_por=request.user,
+                    transaccion_ref=f"CREAR_STOCK[{ubicacion}]",
+                )
+
+        if not moneda.admite_terminal:
+            moneda.admite_terminal = True
+            moneda.save(update_fields=["admite_terminal"])
+
+        messages.success(request, "Denominaciones agregadas correctamente.")
+        if prefill_moneda_id and prefill_ubic:
+            return redirect(f"{request.build_absolute_uri('/admin_panel/ted/inventario/')}?ubicacion={prefill_ubic}")
+        return redirect("/admin_panel/ted/inventario/")
+
+    return render(
+        request,
+        "ted/admin_crear_stock.html",
+        {
+            "monedas": monedas,
+            "serial": TED_SERIAL,
+            "direccion": TED_DIRECCION,
+            "prefill": bool(moneda_sel and prefill_ubic),
+            "moneda_sel": moneda_sel,
+            "ubicacion_sel": prefill_ubic,
+            "existentes": existentes,
+            "new_rows": [],
+        },
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Eliminar denominación (ahora con GET de confirmación y POST para ejecutar)
+# ──────────────────────────────────────────────────────────────────────────────
+@login_required
+@transaction.atomic
+def eliminar_denominacion(request, den_id: int):
+    """
+    GET  -> muestra página de confirmación (template: ted/admin_eliminar_den.html).
+    POST -> elimina la **denominación en la ubicación dada**:
+            - Deja delta a 0 (registrando movimiento de ajuste si aplica).
+            - Borra el registro de TedInventario para esa ubicación.
+    """
+    _check_inv_perm(request)
+
+    ubicacion = request.GET.get("ubicacion") or request.POST.get("ubicacion") or TED_DIRECCION
+    den = get_object_or_404(TedDenominacion.objects.select_related("moneda"), pk=den_id)
+    inv = _inv_get(den, ubicacion, for_update=True)
+
+    if request.method == "GET":
+        # Página de confirmación
+        return render(
+            request,
+            "ted/admin_eliminar_den.html",
+            {"den": den, "inv": inv, "serial": TED_SERIAL, "ubicacion": ubicacion},
+        )
+
+    # POST: ejecutar eliminación / ajuste a 0
+    if not inv:
+        messages.info(request, "La denominación no tiene inventario en esta ubicación.")
+    else:
+        if inv.cantidad != 0:
+            motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
+            delta = -inv.cantidad
+            inv.cantidad = 0
+            inv.save()
+            if motivo_ajuste is not None:
                 TedMovimiento.objects.create(
                     denominacion=den,
                     delta=delta,
                     motivo=motivo_ajuste,
                     creado_por=request.user,
-                    transaccion_ref="CREAR_STOCK",
+                    transaccion_ref=f"ELIMINAR_DENOMINACION[{ubicacion}]",
                 )
+        if hasattr(inv, "ubicacion"):
+            inv.delete()
 
-        # Habilita moneda en la terminal
-        if not moneda.admite_terminal:
-            moneda.admite_terminal = True
-            moneda.save(update_fields=["admite_terminal"])
+        messages.success(request, "Denominación eliminada para esta ubicación.")
 
-        messages.success(request, "Stock creado/actualizado correctamente.")
-        return redirect("admin_panel:ted:inventario")
-
-    # GET
-    return render(
-        request,
-        "ted/admin_crear_stock.html",
-        {"monedas": monedas, "serial": TED_SERIAL, "direccion": TED_DIRECCION},
-    )
+    if request.GET.get("ubicacion") or request.POST.get("ubicacion"):
+        return redirect(f"{request.build_absolute_uri('/admin_panel/ted/inventario/')}?ubicacion={ubicacion}")
+    return redirect("/admin_panel/ted/inventario/")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# NUEVO: eliminar denominación (soft-delete: desactivar + limpiar inventario)
-# ──────────────────────────────────────────────────────────────────────────────
-@login_required
-@transaction.atomic
-def eliminar_denominacion(request, den_id: int):
-    _check_inv_perm(request)
-
-    den = get_object_or_404(
-        TedDenominacion.objects.select_related("moneda"),
-        pk=den_id
-    )
-    # Desactivar y poner inventario en 0
-    inv = TedInventario.objects.select_for_update().filter(denominacion=den).first()
-    if inv and inv.cantidad != 0:
-        # Registrar salida si existe motivo ajuste
-        motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
-        delta = -inv.cantidad
-        inv.cantidad = 0
-        inv.save()
-        if motivo_ajuste is not None and delta != 0:
-            TedMovimiento.objects.create(
-                denominacion=den,
-                delta=delta,
-                motivo=motivo_ajuste,
-                creado_por=request.user,
-                transaccion_ref="ELIMINAR_DENOMINACION",
-            )
-
-    den.activa = False
-    den.save(update_fields=["activa"])
-    messages.success(request, "Denominación desactivada y stock limpiado.")
-    return redirect("admin_panel:ted:inventario")
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# NUEVO: Endpoint JSON de monedas disponibles (SIN cantidades)
+# Endpoint JSON de monedas disponibles (SIN cantidades)
 # ──────────────────────────────────────────────────────────────────────────────
 @login_required
 def monedas_disponibles(request):
-    """
-    Devuelve en JSON el listado de **códigos** de moneda disponibles en el TED.
-
-    No expone cantidades ni denominaciones. Filtra:
-      - Solo inventario con ``cantidad > 0``
-      - Denominaciones activas
-      - Monedas con ``admite_terminal=True``
-      - Excluye ``PYG``
-
-    **Respuesta**
-    -------------
-    .. code-block:: json
-
-        { "monedas": ["BRL", "EUR", "USD"] }
-    """
+    ubicacion = TED_DIRECCION
     qs = (
         TedInventario.objects
         .filter(
@@ -479,6 +612,9 @@ def monedas_disponibles(request):
             denominacion__moneda__admite_terminal=True,
         )
         .exclude(denominacion__moneda__codigo__iexact="PYG")
+    )
+    qs = _inv_filter_by_ubicacion(qs, ubicacion)
+    qs = (qs
         .select_related("denominacion__moneda")
         .values_list("denominacion__moneda__codigo", flat=True)
         .distinct()

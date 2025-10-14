@@ -13,6 +13,7 @@
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── backup_pagos.json
 ├── CasaDeCambioIS2
 │   ├── asgi.py
 │   ├── docs
@@ -650,6 +651,7 @@
 │   ├── usuarios.management.commands.rst
 │   ├── usuarios.management.rst
 │   └── usuarios.rst
+├── fix_migrations.sh
 ├── lib
 │   ├── admin.py
 │   ├── apps.py
@@ -754,20 +756,20 @@
 │   ├── apps.py
 │   ├── forms.py
 │   ├── __init__.py
+│   ├── integrations
+│   │   └── router.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
-│   │   ├── 0002_alter_tipomediopago_bonificacion_porcentaje_and_more.py
-│   │   ├── 0003_alter_tipomediopago_options_and_more.py
-│   │   ├── 0004_alter_tipomediopago_options_and_more.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── services.py
 │   ├── templates
 │   │   └── pagos
-│   │       ├── confirmar_eliminacion.html
-│   │       ├── form_tipo_medio_pago.html
-│   │       ├── listar_tipos_medio_pago.html
-│   │       └── ver_tipo_medio_pago.html
+│   │       ├── clientes_form.html
+│   │       ├── clientes_list.html
+│   │       ├── tipos_confirm_delete.html
+│   │       ├── tipos_form.html
+│   │       └── tipos_list.html
 │   ├── tests
 │   │   ├── __init__.py
 │   │   ├── test_forms.py
@@ -813,6 +815,20 @@
 ├── run_tests_H5.py
 ├── run_tests.py
 ├── runtime.txt
+├── simuladores
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── simuladores
+│   │       └── pagina_pago.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── static
 │   ├── css
 │   │   └── styles.css
@@ -1081,4 +1097,4 @@
     ├── utils.py
     └── views.py
 
-153 directories, 929 files
+158 directories, 940 files
