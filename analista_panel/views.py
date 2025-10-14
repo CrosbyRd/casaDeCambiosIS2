@@ -9,7 +9,6 @@ def dashboard(request):
     Patron igual al admin_panel: si no tiene permiso → redirige a 'home'.
     """
     if not request.user.has_perm("analista_panel.access_analista_dashboard"):
-        messages.error(request, "No tenés permiso para acceder al Panel del Analista.")
         return redirect("home")
 
     return render(request, "analista_panel/dashboard.html")
