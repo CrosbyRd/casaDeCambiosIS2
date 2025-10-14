@@ -1,7 +1,8 @@
 # core/forms.py
 from django import forms
 from monedas.models import Moneda
-from transacciones.models import Transaccion # Importar el modelo Transaccion
+from transacciones.models import Transaccion
+from pagos.models import TipoMedioPago
 
 class SimulacionForm(forms.Form):
     monto = forms.DecimalField(
@@ -65,6 +66,12 @@ class OperacionForm(SimulacionForm):
         choices=Transaccion.TIPO_OPERACION_CHOICES,
         widget=forms.Select(attrs={'class': ''})
     )
+    medio_pago = forms.ModelChoiceField(
+        label="Medio de Pago",
+        queryset=TipoMedioPago.objects.filter(activo=True).exclude(engine='manual'),
+        widget=forms.Select(attrs={'class': ''}),
+        required=False, # No es requerido para todas las operaciones (ej. compra de la casa de cambio)
+    )
     modalidad_tasa = forms.ChoiceField(
         label="Modalidad de Tasa",
         choices=Transaccion.MODALIDAD_TASA_CHOICES,
@@ -78,6 +85,7 @@ class OperacionForm(SimulacionForm):
         tipo_operacion = cleaned_data.get("tipo_operacion")
         moneda_origen = cleaned_data.get("moneda_origen")
         moneda_destino = cleaned_data.get("moneda_destino")
+        medio_pago = cleaned_data.get("medio_pago")
 
         if tipo_operacion and moneda_origen and moneda_destino:
             if tipo_operacion == 'compra': # Cliente VENDE divisa extranjera a la casa de cambio
@@ -90,4 +98,8 @@ class OperacionForm(SimulacionForm):
                     raise forms.ValidationError("Para 'Venta de Divisa', la moneda de origen debe ser PYG.")
                 if moneda_destino == 'PYG':
                     raise forms.ValidationError("Para 'Venta de Divisa', la moneda de destino no puede ser PYG.")
+                # Si es una venta (cliente paga), el medio de pago es obligatorio
+                if not medio_pago:
+                    self.add_error('medio_pago', 'Debe seleccionar un medio de pago para esta operación.')
+
         return cleaned_data

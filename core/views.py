@@ -18,7 +18,9 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from django.utils.dateparse import parse_date
 from core.utils import validar_limite_transaccion
-from usuarios.utils import get_cliente_activo 
+from usuarios.utils import get_cliente_activo
+from pagos.models import TipoMedioPago
+from pagos.services import iniciar_cobro_a_cliente
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -119,7 +121,7 @@ def iniciar_operacion(request):
             return render(request, 'core/iniciar_operacion.html', {'form': form})
 
         # Proceder con la operación
-        request.session['operacion_pendiente'] = {
+        operacion_data = {
             'tipo_operacion': tipo_operacion,
             'moneda_origen_codigo': moneda_origen_codigo,
             'monto_origen': str(monto_origen),
@@ -128,6 +130,11 @@ def iniciar_operacion(request):
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
         }
+        # Añadir medio de pago si fue seleccionado
+        if form.cleaned_data.get('medio_pago'):
+            operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_tipo)
+
+        request.session['operacion_pendiente'] = operacion_data
 
         return redirect('core:confirmar_operacion')
 
@@ -176,6 +183,16 @@ def confirmar_operacion(request):
                 # Cliente compra divisa extranjera, paga digitalmente. Garantía de 15 minutos.
                 tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
 
+        # Obtener el medio de pago de la sesión
+        medio_pago_id = operacion_pendiente.get('medio_pago_id')
+        medio_pago_obj = None
+        if medio_pago_id:
+            try:
+                medio_pago_obj = TipoMedioPago.objects.get(id_tipo=medio_pago_id)
+            except TipoMedioPago.DoesNotExist:
+                messages.error(request, "El medio de pago seleccionado ya no es válido.")
+                return redirect('core:iniciar_operacion')
+
         transaccion = Transaccion.objects.create(
             cliente=cliente_activo,
             usuario_operador=request.user,
@@ -189,13 +206,29 @@ def confirmar_operacion(request):
             comision_aplicada=operacion_pendiente['comision_aplicada'],
             codigo_operacion_tauser=codigo_operacion_tauser,
             tasa_garantizada_hasta=tasa_garantizada_hasta,
-            modalidad_tasa=modalidad_tasa, # Guardar la modalidad de tasa en la transacción
+            modalidad_tasa=modalidad_tasa,
+            medio_pago_utilizado=medio_pago_obj, # Guardar el medio de pago
         )
+        request.session.pop('operacion_pendiente', None)
+
+        # --- INTEGRACIÓN PASARELA DE PAGO (GEG-112) ---
+        if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
+            url_pago = iniciar_cobro_a_cliente(transaccion, request, medio_pago_id=medio_pago_id)
+            if url_pago:
+                # Redirigir al cliente a la pasarela de pagos
+                return redirect(url_pago)
+            else:
+                # Si falla la comunicación con la pasarela, se marca la transacción como error
+                transaccion.estado = 'error'
+                transaccion.save()
+                messages.error(request, "No se pudo iniciar el proceso de pago. Por favor, intente nuevamente más tarde.")
+                return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+        
+        # --- Flujo original para otros tipos de operación ---
         messages.success(
             request,
             f"Operación {transaccion.id} creada con éxito. Estado: {transaccion.get_estado_display()}. Código: {codigo_operacion_tauser}"
         )
-        request.session.pop('operacion_pendiente', None)
         return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
     return render(request, 'core/confirmar_operacion.html', {'operacion': operacion_pendiente})

@@ -21,7 +21,7 @@ from django.core.exceptions import ValidationError
 from configuracion.models import TransactionLimit
 from django.db.models import Sum
 from django.utils.timezone import now
-
+from pagos.models import TipoMedioPago
 
 
 # Forward declaration for MedioAcreditacion
@@ -46,7 +46,7 @@ class Transaccion(models.Model):
     - 'pendiente_pago_cliente': Pendiente de pago del cliente (PYG)
     - 'pendiente_retiro_tauser': Pendiente de retiro de divisa (Tauser)
     - 'pendiente_deposito_tauser': Pendiente de depósito de divisa (Tauser)
-    - 'procesando_acreditacion': Procesando acreditación a cliente (PYG)
+    - 'procesando_acreditacion': Procesando Acreditación a Cliente (PYG)
     - 'completada': Transacción completada con éxito
     - 'cancelada': Interrumpida antes del pago/deposito del cliente
     - 'anulada': Revertida después del pago/deposito
@@ -81,8 +81,9 @@ class Transaccion(models.Model):
 
     # --- CAMPOS DEL MODELO ---
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # public_id = models.CharField(max_length=12, unique=True, editable=False, null=True, help_text="Identificador público corto de la transacción.")
     cliente = models.ForeignKey(
-        Cliente,  # <--- ¡CORREGIDO! Usa el modelo Cliente
+        Cliente,
         on_delete=models.PROTECT,
         related_name='transacciones_cliente',
     )
@@ -109,6 +110,7 @@ class Transaccion(models.Model):
 
     # Información operativa
     medio_acreditacion_cliente = models.ForeignKey('clientes.MedioAcreditacion', on_delete=models.PROTECT, null=True, blank=True, help_text="Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).")
+    medio_pago_utilizado = models.ForeignKey(TipoMedioPago, on_delete=models.PROTECT, null=True, blank=True, help_text="Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).")
     tauser_utilizado = models.ForeignKey(Tauser, on_delete=models.PROTECT, null=True, blank=True, help_text="Terminal donde se realizó el depósito/retiro físico.")
     codigo_operacion_tauser = models.CharField(max_length=10, unique=True, help_text="Código único para que el cliente opere en el Tauser.")
 
