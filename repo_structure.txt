@@ -721,6 +721,9 @@
 │   │   ├── 0006_alter_moneda_options.py
 │   │   ├── 0007_alter_moneda_admite_en_linea_and_more.py
 │   │   ├── 0008_teddenominacion_tedinventario_tedmovimiento.py
+│   │   ├── 0009_tedinventario_add_ubicacion_and_fk.py
+│   │   ├── 0010_tedinventario_unique_den_ubicacion.py
+│   │   ├── 0011_alter_tedinventario_options.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -831,7 +834,8 @@
 │   └── views.py
 ├── static
 │   ├── css
-│   │   └── styles.css
+│   │   ├── styles.css
+│   │   └── ted.css
 │   └── img
 │       ├── logo.ico
 │       ├── logo-principal.png
@@ -985,13 +989,13 @@
 │       └── logo-secundario.png
 ├── structurre.txt
 ├── ted
-│   ├── admin_eliminar_den.html
 │   ├── apps.py
 │   ├── forms.py
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
 │   │   ├── 0002_alter_tedperms_options.py
+│   │   ├── 0003_tedterminal.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── services.py
@@ -999,6 +1003,7 @@
 │   │   └── ted
 │   │       ├── admin_ajustar.html
 │   │       ├── admin_crear_stock.html
+│   │       ├── admin_eliminar_den.html
 │   │       ├── admin_inventario.html
 │   │       └── admin_movimientos.html
 │   ├── urls.py
@@ -1097,4 +1102,4 @@
     ├── utils.py
     └── views.py
 
-158 directories, 940 files
+158 directories, 945 files

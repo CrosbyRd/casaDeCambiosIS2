@@ -2,20 +2,6 @@
 """
 Vistas del módulo TED (Terminal).
 =================================
-
-.. module:: ted.views
-   :synopsis: Operación de terminal, inventario y utilidades de consulta.
-
-Incluye:
-- Panel y flujo operativo (COMPRA/VENTA) sobre el inventario TED.
-- Sección administrativa de inventario (listar, ajustar, crear stock, movimientos).
-- **monedas_disponibles**: endpoint JSON para exponer *solo* los códigos de moneda
-  actualmente disponibles en el TED (sin revelar cantidades).
-
-Notas
------
-- No se expone el detalle de stock al usuario final.
-- Se filtran monedas no-PYG y con ``admite_terminal=True``.
 """
 
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
@@ -33,7 +19,7 @@ from .services import get_cotizacion_vigente
 from .forms import AjusteInventarioForm
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Config del equipo (mock)
+# Config del equipo (mock por ahora; tu serie real puede venir de tu modelo)
 TED_SERIAL = "TED-AGSL-0001"
 TED_DIRECCION = "Campus, San Lorenzo – Paraguay"
 # ──────────────────────────────────────────────────────────────────────────────
@@ -121,7 +107,7 @@ def operar(request):
     monedas = _monedas_operables()
     moneda_id = request.GET.get("moneda") or request.POST.get("moneda")
     operacion = request.POST.get("operacion") if request.method == "POST" else "COMPRA"
-    ubicacion = TED_DIRECCION  # este terminal físico
+    ubicacion = TED_DIRECCION  # este terminal físico (mock)
 
     moneda = None
     denominaciones = []
@@ -467,7 +453,7 @@ def crear_stock(request):
 
         # Validaciones
         seen = set()
-        dupe_local = [v for v, _ in filas if (v in seen or seen.add(v))]
+        dupe_local = [v for v in filas if (v in seen or seen.add(v))]
         if dupe_local:
             messages.error(request, "Hay denominaciones repetidas en las filas nuevas.")
             return render(request, "ted/admin_crear_stock.html", {
@@ -546,17 +532,11 @@ def crear_stock(request):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Eliminar denominación (ahora con GET de confirmación y POST para ejecutar)
+# Eliminar denominación (confirmación + ejecución)
 # ──────────────────────────────────────────────────────────────────────────────
 @login_required
 @transaction.atomic
 def eliminar_denominacion(request, den_id: int):
-    """
-    GET  -> muestra página de confirmación (template: ted/admin_eliminar_den.html).
-    POST -> elimina la **denominación en la ubicación dada**:
-            - Deja delta a 0 (registrando movimiento de ajuste si aplica).
-            - Borra el registro de TedInventario para esa ubicación.
-    """
     _check_inv_perm(request)
 
     ubicacion = request.GET.get("ubicacion") or request.POST.get("ubicacion") or TED_DIRECCION
@@ -564,17 +544,13 @@ def eliminar_denominacion(request, den_id: int):
     inv = _inv_get(den, ubicacion, for_update=True)
 
     if request.method == "GET":
-        # Página de confirmación
         return render(
             request,
             "ted/admin_eliminar_den.html",
             {"den": den, "inv": inv, "serial": TED_SERIAL, "ubicacion": ubicacion},
         )
 
-    # POST: ejecutar eliminación / ajuste a 0
-    if not inv:
-        messages.info(request, "La denominación no tiene inventario en esta ubicación.")
-    else:
+    if inv:
         if inv.cantidad != 0:
             motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
             delta = -inv.cantidad
@@ -590,8 +566,9 @@ def eliminar_denominacion(request, den_id: int):
                 )
         if hasattr(inv, "ubicacion"):
             inv.delete()
-
         messages.success(request, "Denominación eliminada para esta ubicación.")
+    else:
+        messages.info(request, "La denominación no tiene inventario en esta ubicación.")
 
     if request.GET.get("ubicacion") or request.POST.get("ubicacion"):
         return redirect(f"{request.build_absolute_uri('/admin_panel/ted/inventario/')}?ubicacion={ubicacion}")
@@ -599,11 +576,17 @@ def eliminar_denominacion(request, den_id: int):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Endpoint JSON de monedas disponibles (SIN cantidades)
+# Endpoints JSON para el kiosco
 # ──────────────────────────────────────────────────────────────────────────────
-@login_required
+
+@login_required  # ← solo login; sin permiso extra
 def monedas_disponibles(request):
-    ubicacion = TED_DIRECCION
+    """
+    Devuelve las monedas con stock (>0) para la ubicación dada.
+    Parámetro: ?ubicacion=...
+    """
+    ubicacion = (request.GET.get("ubicacion") or TED_DIRECCION).strip()
+
     qs = (
         TedInventario.objects
         .filter(
@@ -621,3 +604,11 @@ def monedas_disponibles(request):
         .order_by("denominacion__moneda__codigo")
     )
     return JsonResponse({"monedas": list(qs)})
+
+
+@login_required  # ← solo login; sin permiso extra
+def ubicaciones_disponibles(request):
+    """
+    Devuelve el listado de ubicaciones distintas presentes en TedInventario.
+    """
+    return JsonResponse({"ubicaciones": _inv_distinct_ubicaciones()})

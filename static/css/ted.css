@@ -1,0 +1,236 @@
+/* ========================================================================== */
+/* TED Kiosk styles                                                           */
+/* ========================================================================== */
+
+:root{
+  --brand:#7c3aed;
+  --brand-soft:#ede9fe;
+  --ink:#111827;
+}
+
+/* Contenedor general */
+.ted-machine{
+  background:linear-gradient(145deg,#f3f4f6 60%,#fff);
+  border:1.5px solid #e5e7eb;
+  border-radius:24px;
+  padding:18px;
+}
+
+/* Layout */
+.ted-layout{ display:flex; flex-direction:column; gap:22px; }
+@media (min-width:768px){
+  .ted-layout{ flex-direction:row; align-items:flex-start; }
+  .ted-layout-main{ flex:1; min-width:0; }
+  .ted-layout-aside{ width:320px; flex-shrink:0; position:sticky; top:0; }
+}
+
+/* Pantalla */
+.ted-screen{
+  background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 18%,#1f2937) 0%,#0f172a 60%);
+  border-radius:16px;
+  box-shadow:inset 0 0 0 1px color-mix(in oklab,#fff 8%,transparent);
+  min-height:520px;
+  color:#fff;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+.ted-screen-glow{ position:absolute; inset:0; background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 18%,transparent) 0%,transparent 65%); pointer-events:none; border-radius:16px; }
+.ted-screen-inner{ position:relative; flex:1; display:flex; flex-direction:column; padding:24px 20px 28px; }
+
+/* Header */
+.ted-header{ display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px; text-align:center; }
+.ted-title{ font-size:clamp(18px,4vw,22px); font-weight:900; letter-spacing:.06em; }
+
+/* Vistas */
+.ted-views-container{ flex:1; display:flex; flex-direction:column; }
+.ted-screen-view{ display:none; opacity:0; animation:fadeIn .25s ease-out forwards; }
+.ted-screen-view.active{ display:flex; flex-direction:column; }
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+/* Contenido */
+.view-content{ display:flex; flex-direction:column; align-items:center; gap:16px; padding:12px; flex:1; }
+.view-content--centered{ justify-content:center; text-align:center; }
+.view-content h2,.view-content h3{ margin:0 0 8px; font-weight:800; font-size:clamp(18px,3.5vw,20px); }
+.view-content p{ margin:6px 0; line-height:1.6; font-size:clamp(14px,2.5vw,16px); }
+
+/* Selector de ubicación */
+.location-picker{ display:flex; flex-direction:column; gap:8px; width:100%; max-width:420px; }
+.location-label{ font-weight:700; font-size:clamp(14px,2.4vw,16px); }
+.location-hint{ font-size:clamp(12px,2vw,14px); color:#e5e7eb; opacity:.9; margin-top:-4px; }
+.ted-select{
+  width:100%; max-width:420px; border-radius:12px; border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.06); color:#fff; padding:12px 14px; font-size:clamp(14px,2.5vw,16px);
+  outline:none; transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.ted-select:focus{ border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.1); box-shadow:0 0 0 3px rgba(124,58,237,.3); }
+
+/* Menú */
+.menu-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; max-width:520px; width:100%; margin:0 auto; }
+@media (max-width:420px){ .menu-grid{ grid-template-columns:1fr; } }
+.menu-card{ border-radius:18px; border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); padding:20px 16px; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; backdrop-filter:blur(6px); transition:transform .08s,box-shadow .2s,background .2s; cursor:pointer; }
+.menu-card:hover{ background:rgba(255,255,255,.12); box-shadow:0 0 0 2px var(--brand-soft); transform:translateY(-2px); }
+.menu-icon{ font-size:clamp(28px,6vw,36px); line-height:1; }
+.menu-label{ font-weight:700; font-size:clamp(13px,2.5vw,15px); }
+
+/* Chips moneda */
+.currency-section{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:480px; }
+.currency-label{ font-size:clamp(13px,2.3vw,15px); font-weight:600; text-align:center; }
+.currency-list{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; min-height:48px; align-items:center; }
+.currency-chip{ display:inline-flex; align-items:center; justify-content:center; min-width:52px; height:52px; border-radius:12px; border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.1); font-size:26px; line-height:1; color:#fff; padding:0 8px; }
+
+/* Botones */
+.button-group{ display:flex; gap:12px; margin-top:8px; flex-wrap:wrap; justify-content:center; }
+.gx-btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:clamp(10px,2.5vw,14px) clamp(18px,4vw,24px); border-radius:.9rem; font-weight:800; font-size:clamp(14px,2.5vw,16px); border:1px solid transparent; background:var(--brand); color:#fff; box-shadow:0 12px 24px -10px rgba(124,58,237,.35); transition:transform .15s ease, box-shadow .15s ease, background .15s ease; cursor:pointer; white-space:nowrap; }
+.gx-btn[disabled]{ opacity:.6; cursor:not-allowed; }
+.gx-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 28px -10px rgba(124,58,237,.45); }
+.gx-btn--ghost{ background:var(--brand-soft); color:#4c1d95; box-shadow:0 8px 20px -10px rgba(124,58,237,.2); }
+
+/* Logo/badges */
+.logo-badge{ display:inline-flex; align-items:center; justify-content:center; width:clamp(60px,12vw,72px); height:clamp(60px,12vw,72px); border-radius:999px; background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft))); box-shadow:0 10px 24px -12px rgba(124,58,237,.45); }
+.ted-logo{ height:clamp(30px,6vw,38px); width:auto; display:block; filter:drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+.welcome-badge{ display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .8rem; border-radius:999px; background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft))); color:#4c1d95; font-weight:800; font-size:clamp(12px,2.2vw,14px); box-shadow:0 8px 20px -10px rgba(124,58,237,.45); }
+
+/* Input */
+.ted-input{ width:100%; max-width:420px; text-align:center; border-radius:12px; border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.06); color:#fff; padding:clamp(12px,3vw,16px) clamp(14px,3.5vw,18px); font-size:clamp(15px,3vw,17px); }
+
+/* Lateral (reloj + teclado) */
+.pad-info-card{ border:1px solid rgba(255,255,255,.18); background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%); border-radius:14px; padding:16px; color:#e5e7eb; margin-bottom:14px; }
+.pad-info-card .clock{ font-variant-numeric:tabular-nums; font-weight:900; font-size:clamp(18px,3.5vw,22px); margin-bottom:10px; text-align:center; }
+.info-line{ margin-top:8px; font-size:clamp(12px,2.2vw,14px); line-height:1.4; }
+
+.pad-bezel{ background:#0b0b0f; border-radius:18px; padding:12px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.06); }
+.ted-pad{ border:1px solid rgba(255,255,255,.18); background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%); border-radius:14px; padding:14px; }
+.ted-pad .grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.ted-key{ display:flex; align-items:center; justify-content:center; height:clamp(50px,10vw,58px); border-radius:14px; border:1px solid rgba(255,255,255,.22); background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06)); color:#fff; font-weight:900; font-size:clamp(16px,3.5vw,18px); backdrop-filter:blur(3px); box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 10px 20px rgba(0,0,0,.18); cursor:pointer; }
+
+/* ===================== Ranuras (look pro y tamaño estable) ====================== */
+.slots-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:16px;
+  margin-top:20px;
+}
+@media (min-width:640px){
+  .slots-container{ grid-template-columns:repeat(2, 1fr); }
+}
+
+/* Card más compacta, con “bezel” metálico */
+.ted-slot{
+  width:clamp(240px, 30vw, 360px);
+  max-width:420px;
+  justify-self:center;
+
+  background:linear-gradient(145deg,#cdd6e2,#a5b1c3);
+  border-radius:14px;
+  position:relative;
+  min-height:130px;
+  padding:14px 16px 16px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    inset 0 -1px 0 rgba(0,0,0,.15),
+    0 8px 18px rgba(0,0,0,.12);
+  transition:box-shadow .3s ease, background .3s ease, transform .3s ease;
+}
+
+/* “Tornillos” sutiles para sensación de panel */
+.ted-slot::before,
+.ted-slot::after{
+  content:""; position:absolute; width:8px; height:8px; border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff, #9aa5b4 60%, #6b7280 100%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.08);
+}
+.ted-slot::before{ left:10px; top:10px; }
+.ted-slot::after { right:10px; top:10px; }
+
+/* Abertura con “labio” interno */
+.slot-opening{
+  width:88%;
+  margin:0 auto 10px;
+  height:12px; border-radius:8px; background:#0b0f1a;
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,.75),
+    inset 0 -2px 3px rgba(255,255,255,.06);
+  position:relative; overflow:hidden;
+}
+.slot-opening::after{
+  content:""; position:absolute; inset:2px 4px; border-radius:6px;
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(0,0,0,.25));
+  opacity:.35;
+}
+
+/* LED */
+.slot-indicator{
+  position:absolute; right:12px; top:16px; width:10px; height:10px; border-radius:999px;
+  background:#ef4444;
+  box-shadow:0 0 0 2px rgba(239,68,68,.15), 0 0 10px rgba(220,38,38,.5);
+  transition:.25s;
+}
+.ted-slot.active .slot-indicator{
+  background:#10b981;
+  box-shadow:0 0 0 2px rgba(16,185,129,.25), 0 0 14px rgba(16,185,129,.9);
+  animation:dotPulse 1.6s ease-in-out infinite;
+}
+@keyframes dotPulse{ 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.35);opacity:.85} }
+
+/* Etiqueta */
+.slot-label{
+  text-align:center; font-weight:800;
+  font-size:clamp(12px,2.5vw,14px); letter-spacing:.02em;
+  margin-top:12px; color:#3f4a59;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+
+/* Billetes */
+.bill-stack{ display:none; position:relative; width:clamp(140px,70%,200px); aspect-ratio:2.2/1; margin:12px auto 0; }
+.bill-item{
+  position:absolute; inset:0; background:linear-gradient(135deg,#85bb65,#6fa855,#5a8a45);
+  border:2px solid #4a7335; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:clamp(18px,4vw,24px); text-shadow:0 2px 4px rgba(0,0,0,.3);
+}
+.bill-item::before{ content:""; position:absolute; inset:6px; border:1px dashed rgba(255,255,255,.3); border-radius:4px; }
+.bill-item::after{ content:"💵"; position:absolute; top:8px; left:10px; font-size:clamp(14px,3vw,18px); opacity:.6; }
+.ted-slot.dispensing-bills .bill-stack{ display:block; }
+.ted-slot.dispensing-bills .bill-item{ animation:billDispense 2s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes billDispense{ 0%{transform:translateY(50%);opacity:0} 30%{opacity:1} 100%{transform:translateY(-80%) rotate(-2deg)} }
+
+/* Inserción de billetes */
+.ted-slot.inserting-bills .bill-stack{ display:block; }
+.ted-slot.inserting-bills .bill-item{ animation:billInsert 2.5s cubic-bezier(.65,0,.35,1) forwards; }
+@keyframes billInsert{ 0%{transform:translateY(-80%) rotate(2deg)} 40%{transform:translateY(10%) rotate(-1deg)} 70%{transform:translateY(30%)} 100%{transform:translateY(50%);opacity:0} }
+
+/* Ticket (absoluto para no “engordar” la card) */
+.receipt-anim{
+  display:none;
+  position:absolute;
+  left:50%;
+  transform:translate(-50%,-10px);
+  bottom:14px;
+
+  width:clamp(160px,70%,230px);
+  background:#fff; color:#111827; border-radius:8px 8px 0 0;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  font-family:ui-monospace,Consolas,monospace; font-size:clamp(11px,2vw,13px);
+  overflow:hidden;
+}
+.receipt-paper{ padding:12px 12px 16px; background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,0,0,.02) 20px,rgba(0,0,0,.02) 21px); }
+.receipt-header{ text-align:center; border-bottom:2px dashed #6b7280; padding-bottom:6px; margin-bottom:8px; font-weight:900; font-size:clamp(12px,2.2vw,14px); letter-spacing:.03em; }
+.receipt-line{ padding:3px 0; opacity:0; animation:lineAppear .3s ease-out forwards; font-size:clamp(10px,1.8vw,12px); line-height:1.5; }
+@keyframes lineAppear{ from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+.ted-slot.printing-receipt .receipt-anim{ display:block; animation:receiptPrint 3.1s ease-out forwards; }
+@keyframes receiptPrint{ 0%{transform:translateY(-10px);opacity:0} 18%{opacity:1} 100%{transform:translateY(98px);opacity:1} }
+
+/* Dots */
+.processing-dots{ display:inline-block; }
+.processing-dots::after{ content:'...'; animation:dots 1.5s steps(4,end) infinite; }
+@keyframes dots{ 0%,20%{content:''} 40%{content:'.'} 60%{content:'..'} 80%,100%{content:'...'} }
+
+/* Responsive extra */
+@media (max-width:380px){
+  .ted-machine{ padding:12px; }
+  .menu-grid{ gap:12px; }
+  .button-group{ flex-direction:column; width:100%; }
+  .gx-btn{ width:100%; }
+}

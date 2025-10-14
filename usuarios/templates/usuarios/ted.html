@@ -2,537 +2,181 @@
 {% load static %}
 {% block title %}Global Exchange{% endblock %}
 
-{% block extra_head %}
-<style>
-  .ted-machine{background:linear-gradient(145deg,color-mix(in oklab,#f3f4f6 60%,#fff));border:1.5px solid var(--line);border-radius:24px}
-  
-  /* Pantalla con altura estable */
-  .ted-screen{
-    background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 18%,#1f2937) 0%,#0f172a 60%);
-    border-radius:16px;
-    box-shadow:inset 0 0 0 1px color-mix(in oklab,#fff 8%,transparent);
-    min-height:clamp(420px,55vh,580px);
-    height:clamp(420px,55vh,580px);
-    position:relative;
-    display:flex;
-    flex-direction:column;
-  }
-  
-  @media (min-width:768px){
-    .ted-screen{
-      min-height:clamp(480px,58vh,620px);
-      height:clamp(480px,58vh,620px);
-    }
-  }
-  
-  @supports (height:100dvh){
-    .ted-screen{
-      min-height:clamp(420px,55dvh,580px);
-      height:clamp(420px,55dvh,580px);
-    }
-    @media (min-width:768px){
-      .ted-screen{
-        min-height:clamp(480px,58dvh,620px);
-        height:clamp(480px,58dvh,620px);
-      }
-    }
-  }
-  
-  .ted-screen-glow{position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 18%,transparent) 0%,transparent 65%);pointer-events:none;border-radius:16px}
-  
-  /* Contenedor de vistas con scroll interno */
-  .ted-screen-inner{
-    position:relative;
-    flex:1;
-    overflow-y:auto;
-    overflow-x:hidden;
-    padding:5px 7px;
-    scrollbar-width:thin;
-    scrollbar-color:rgba(124,58,237,.3) transparent;
-  }
-  
-  .ted-screen-inner::-webkit-scrollbar{width:6px}
-  .ted-screen-inner::-webkit-scrollbar-track{background:transparent}
-  .ted-screen-inner::-webkit-scrollbar-thumb{background:rgba(124,58,237,.3);border-radius:3px}
-  .ted-screen-inner::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.5)}
-  
-  /* Vistas apiladas con transiciones */
-  .ted-screen-view{
-    position:absolute;
-    inset:0;
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-    transition:opacity .28s ease-out,visibility .28s ease-out;
-    padding:0;
-    display:flex;
-    flex-direction:column;
-  }
-  
-  .ted-screen-view.active{
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    position: absolute; 
-    inset: 0;           
-  }
-  
-  @media (prefers-reduced-motion:reduce){
-    .ted-screen-view{transition:none}
-  }
-
-  /* Ranuras físicas mejoradas - altura estable */
-  .ted-slot{
-    background:linear-gradient(145deg,#cbd5e1,#94a3b8);
-    border-radius:12px;
-    position:relative;
-    overflow:visible;
-    transition:all .3s ease;
-    min-height:110px;
-    height:110px;
-  }
-  
-  .ted-slot .open{height:8px;border-radius:4px;background:#0b0f1a;box-shadow:inset 0 2px 6px rgba(0,0,0,.7);position:relative;overflow:hidden}
-  .ted-slot .open::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent)}
-  .ted-slot.active .open::before{animation:slotScan 2s ease-in-out infinite}
-  .ted-slot .dot{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:999px;background:#ef4444;box-shadow:0 0 10px rgba(220,38,38,.5);transition:.25s}
-  .ted-slot.active .dot{background:#10b981;box-shadow:0 0 14px rgba(16,185,129,.9);animation:dotPulse 1.5s ease-in-out infinite}
-  
-  @keyframes slotScan{
-    0%,100%{left:-100%}
-    50%{left:100%}
-  }
-  @keyframes dotPulse{
-    0%,100%{transform:translateY(-50%) scale(1);opacity:1}
-    50%{transform:translateY(-50%) scale(1.3);opacity:.7}
-  }
-
-  .slot-anim{position:absolute;left:50%;transform:translateX(-50%);top:-6px;pointer-events:none;z-index:10}
-
-  /* Sistema de billetes múltiples mejorado */
-  .bill-stack{display:none;position:relative;width:130px;height:60px}
-  .bill-item{position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855,#5a8a45);border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,.3)}
-  .bill-item::before{content:"";position:absolute;inset:4px;border:1px dashed rgba(255,255,255,.3);border-radius:4px}
-  .bill-item::after{content:"💵";position:absolute;top:6px;left:8px;font-size:16px;opacity:.6}
-
-  .ted-slot.dispensing-bills .bill-stack{display:block}
-  .ted-slot.dispensing-bills .bill-item:nth-child(1){animation:billOut1 1.8s cubic-bezier(.34,1.56,.64,1)}
-  .ted-slot.dispensing-bills .bill-item:nth-child(2){animation:billOut2 1.8s cubic-bezier(.34,1.56,.64,1) .15s}
-  .ted-slot.dispensing-bills .bill-item:nth-child(3){animation:billOut3 1.8s cubic-bezier(.34,1.56,.64,1) .3s}
-  .ted-slot.dispensing-bills .bill-item:nth-child(4){animation:billOut4 1.8s cubic-bezier(.34,1.56,.64,1) .45s}
-
-  @keyframes billOut1{
-    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:4}
-    25%{opacity:1}
-    100%{transform:translateY(-42px) translateX(-2px) rotate(-1deg);opacity:1;z-index:4}
-  }
-  @keyframes billOut2{
-    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:3}
-    25%{opacity:1}
-    100%{transform:translateY(-38px) translateX(1px) rotate(1deg);opacity:1;z-index:3}
-  }
-  @keyframes billOut3{
-    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:2}
-    25%{opacity:1}
-    100%{transform:translateY(-34px) translateX(-1px) rotate(0deg);opacity:1;z-index:2}
-  }
-  @keyframes billOut4{
-    0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:1}
-    25%{opacity:1}
-    100%{transform:translateY(-30px) translateX(2px) rotate(1deg);opacity:1;z-index:1}
-  }
-
-  /* Sistema de inserción de billetes */
-  .bill-insert{display:none;position:relative;width:130px;height:60px}
-  .bill-insert-item{position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855);border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
-
-  .ted-slot.inserting-bills .bill-insert{display:block}
-  .ted-slot.inserting-bills .bill-insert-item{animation:billIn 2.5s cubic-bezier(.65,0,.35,1)}
-
-  @keyframes billIn{
-    0%{transform:translateY(-50px) rotate(2deg);opacity:1}
-    70%{transform:translateY(5px) rotate(-1deg);opacity:.8}
-    85%{transform:translateY(25px) rotate(0deg);opacity:.4}
-    100%{transform:translateY(45px) rotate(0deg);opacity:0}
-  }
-
-  /* Cheque mejorado */
-  .check-anim{display:none;width:170px;height:80px;background:linear-gradient(135deg,#e0f2fe,#bae6fd,#7dd3fc);border:2px solid #0284c7;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,.3);position:relative;overflow:hidden}
-  .check-anim::before{content:"";position:absolute;top:0;left:0;right:0;height:25px;background:linear-gradient(180deg,rgba(2,132,199,.2),transparent);border-bottom:1px dashed rgba(2,132,199,.4)}
-  .check-anim::after{content:"BANCO\ASAMPLE";position:absolute;top:8px;left:12px;font-size:9px;font-weight:700;color:#0369a1;letter-spacing:.5px;white-space:pre}
-  .check-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
-  .check-number{font-size:11px;font-weight:600;color:#075985;margin-top:auto}
-  .check-amount{font-size:18px;font-weight:900;color:#0c4a6e}
-
-  .ted-slot.dispensing-check .check-anim{display:block;animation:checkOut 2s cubic-bezier(.34,1.56,.64,1)}
-  .ted-slot.inserting-check .check-anim{display:block;animation:checkIn 2.5s cubic-bezier(.65,0,.35,1)}
-
-  @keyframes checkOut{
-    0%{transform:translateY(45px) rotate(-3deg);opacity:0}
-    30%{opacity:1}
-    100%{transform:translateY(-35px) rotate(2deg);opacity:1}
-  }
-  @keyframes checkIn{
-    0%{transform:translateY(-50px) rotate(2deg);opacity:1}
-    70%{transform:translateY(5px) rotate(-2deg);opacity:.8}
-    85%{transform:translateY(25px) rotate(0deg);opacity:.4}
-    100%{transform:translateY(45px) rotate(0deg);opacity:0}
-  }
-
-  /* Ticket de recibo mejorado */
-  .receipt-anim{display:none;position:relative;width:240px;background:#fff;color:#111827;border-radius:8px 8px 0 0;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow:hidden;transform: translateY(-8px)}
-  .receipt-paper{padding:16px;padding-bottom:24px;background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,0,0,.02) 20px,rgba(0,0,0,.02) 21px)}
-  .receipt-header{text-align:center;border-bottom:2px dashed #6b7280;padding-bottom:8px;margin-bottom:8px;font-weight:900;font-size:13px}
-  .receipt-line{padding:3px 0;opacity:0;animation:lineAppear .3s ease-out forwards}
-  .receipt-edge{position:absolute;bottom:0;left:0;right:0;height:12px;background:#fff}
-  .receipt-edge::before{content:"";position:absolute;top:0;left:0;right:0;height:100%;background:repeating-linear-gradient(90deg,transparent,transparent 8px,#e5e7eb 8px,#e5e7eb 10px)}
-  .receipt-tear{position:absolute;bottom:12px;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,#fff 0px,#fff 4px,transparent 4px,transparent 6px);filter:drop-shadow(0 1px 2px rgba(0,0,0,.1))}
-
-  .ted-slot.printing-receipt .receipt-anim{display:block;animation:receiptPrint 3s ease-out}
-
-  @keyframes receiptPrint{
-    0%   { transform: translateY(-8px); opacity: 0; }
-    15%  { opacity: 1; }
-    100% { transform: translateY(110px); opacity: 1; }
-  }
-
-  @keyframes lineAppear{
-    from{opacity:0;transform:translateX(-5px)}
-    to{opacity:1;transform:translateX(0)}
-  }
-
-  /* Cartas del menú */
-  .menu-card{border-radius:18px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
-             padding:22px;min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;
-             gap:.35rem;text-align:center;backdrop-filter:blur(6px);transition:transform .08s,box-shadow .2s,background .2s}
-  .menu-card:hover{background:rgba(255,255,255,.12);box-shadow:0 0 0 2px var(--brand-soft);transform:translateY(-1px)}
-
-  /* Botones */
-  .gx-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.2rem;border-radius:.9rem;font-weight:800;text-decoration:none;border:1px solid transparent;background:var(--brand);color:#fff;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:all .15s ease}
-  .gx-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
-  .gx-btn:active{transform:translateY(0)}
-  .gx-btn--ghost{background:var(--brand-soft);color:#4c1d95;box-shadow:0 8px 20px -10px rgba(124,58,237,.25)}
-
-  /* Logo */
-  .logo-badge{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:999px;
-              background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
-              box-shadow:0 10px 24px -12px rgba(124,58,237,.45);margin:0 auto 10px auto}
-  .ted-logo{height:36px;width:auto;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
-
-  .currency-chip{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);font-size:24px;line-height:1;color:#fff;pointer-events:none;user-select:none;transition:all .2s ease}
-  .currency-chip:hover{transform:scale(1.05);background:rgba(255,255,255,.15)}
-
-  .welcome-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .7rem;border-radius:999px;
-                 background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
-                 color:#4c1d95;font-weight:800;box-shadow:0 8px 20px -10px rgba(124,58,237,.45)}
-
-  /* Panel info - anclado */
-  .pad-info-card{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;color:#e5e7eb}
-  .pad-info-card .clock{font-variant-numeric:tabular-nums;font-weight:900}
-  .pad-bezel{background:#0b0b0f;border-radius:18px;padding:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-  .ted-pad{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;position:relative;overflow:hidden}
-  .ted-pad::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 14%,transparent) 0%,transparent 65%);pointer-events:none}
-  .ted-key{display:flex;align-items:center;justify-content:center;height:56px;border-radius:14px;
-           border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
-           color:#fff;font-weight:900;font-size:18px;backdrop-filter:blur(3px);
-           box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 10px 20px rgba(0,0,0,.18);
-           transition:transform .05s ease,box-shadow .2s ease,background .2s ease}
-  .ted-key:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 12px 22px rgba(0,0,0,.22)}
-  .ted-key:active{transform:translateY(1px);background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.1))}
-
-  /* Efectos de procesamiento */
-  .processing-dots{display:inline-block}
-  .processing-dots::after{content:'...';animation:dots 1.5s steps(4,end) infinite}
-  @keyframes dots{
-    0%,20%{content:''}
-    40%{content:'.'}
-    60%{content:'..'}
-    80%,100%{content:'...'}
-  }
-
-  /* Layout anclado */
-  .ted-layout{display:flex;flex-direction:column;gap:20px}
-  
-  @media (min-width:768px){
-    .ted-layout{flex-direction:row;align-items:flex-start}
-    .ted-layout-main{flex:1;min-width:0}
-    .ted-layout-aside{width:300px;flex-shrink:0;position:sticky;top:0}
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<main class="max-w-4xl mx-auto px-6 py-8">
-  <section class="ted-machine p-4 md:p-6">
+<link rel="stylesheet" href="{% static 'css/ted.css' %}"/>
+
+<main style="max-width:1100px;margin:0 auto;padding:24px">
+  <section class="ted-machine">
     <div class="ted-layout">
+
+      <!-- Pantalla principal -->
       <div class="ted-layout-main">
-        <div class="bg-black rounded-2xl p-3 md:p-5 mb-5">
-          <div class="relative ted-screen p-5 md:p-7">
-            <div class="ted-screen-glow"></div>
+        <div class="ted-screen">
+          <div class="ted-screen-glow"></div>
 
-            <div class="relative z-10 text-white" style="height:100%;display:flex;flex-direction:column">
-              <div class="text-center mb-4" style="flex-shrink:0">
-                <div class="logo-badge">
-                  <img class="ted-logo" src="{% static 'img/logo-secundario.png' %}" alt="Global Exchange">
+          <div class="ted-screen-inner">
+            <!-- Cabecera -->
+            <div class="ted-header">
+              <div class="logo-badge">
+                <img class="ted-logo" src="{% static 'img/logo-secundario.png' %}" alt="Global Exchange">
+              </div>
+              <div class="welcome-badge">👋 Bienvenido</div>
+              <div class="ted-title">GLOBAL EXCHANGE</div>
+            </div>
+
+            <!-- Vistas -->
+            <div class="ted-views-container">
+
+              <!-- VISTA: Inicio con selector de ubicación -->
+              <div id="login-screen" class="ted-screen-view active" aria-live="polite">
+                <div class="view-content">
+                  <p>Hola,
+                    <strong>{% firstof request.user.get_full_name request.user.username request.user.email "Usuario" %}</strong>.
+                  </p>
+
+                  <div class="location-picker">
+                    <label for="select-ubicacion" class="location-label">Ubicación del TED</label>
+                    <select id="select-ubicacion" class="ted-select" aria-required="true">
+                      <option value="">— Seleccioná una terminal —</option>
+                    </select>
+                    <p class="location-hint">Para luego acceder al menu.</p>
+                  </div>
+
+                  <button class="gx-btn" type="button" id="btn-login-ingresar" disabled>Continuar</button>
                 </div>
-                <div class="text-2xl font-extrabold tracking-widest">GLOBAL EXCHANGE</div>
               </div>
 
-              <div class="ted-screen-inner">
-                <!-- LOGIN -->
-                <div id="login-screen" class="ted-screen-view active">
-                  <div class="flex flex-col justify-between min-h-[340px]">
-                    <!-- Parte superior: saludo -->
-                    <div class="text-center">
-                      <span class="welcome-badge">👋 Bienvenido</span>
-                      <p class="text-white/90 mt-3 text-lg">
-                        Hola,
-                        <strong>
-                          {% firstof request.user.get_full_name request.user.username request.user.email "Usuario" %}
-                        </strong>.
-                      </p>
-                    </div>
-
-                    <!-- Parte inferior: instrucción + botón, pegados abajo -->
-                    <div class="text-center pb-1">
-                      <p class="text-white/80 mb-3">Presioná <strong>Continuar</strong> para ingresar al menú.</p>
-                      <button class="gx-btn" type="button" id="btn-login-ingresar">Continuar</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- MENÚ -->
-                <div id="menu-screen" class="ted-screen-view">
-                  <div class="text-center mb-5">
-                    <h2 class="text-white font-bold text-xl">Operaciones disponibles</h2>
-                  </div>
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="btn-menu-retirar" type="button" class="menu-card">
-                      <div class="text-4xl">💵</div>
-                      <div class="font-semibold leading-tight">Retiro de Dinero</div>
+              <!-- VISTA: Menú -->
+              <div id="menu-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content">
+                  <h2 style="text-align:center;margin-bottom:20px">Operaciones disponibles</h2>
+                  <div class="menu-grid">
+                    <button id="btn-menu-retirar" type="button" class="menu-card" aria-label="Retiro de dinero">
+                      <div class="menu-icon">💵</div>
+                      <div class="menu-label">Retiro de Dinero</div>
                     </button>
-                    <button id="btn-menu-deposito" type="button" class="menu-card">
-                      <div class="text-4xl">💰</div>
-                      <div class="font-semibold leading-tight">Depósito de Dinero</div>
-                    </button>
-                    <button id="btn-menu-cheque" type="button" class="menu-card">
-                      <div class="text-4xl">📄</div>
-                      <div class="font-semibold leading-tight">Depósito de Cheque</div>
-                    </button>
-                    <button id="btn-menu-salir" type="button" class="menu-card">
-                      <div class="text-4xl">🚪</div>
-                      <div class="font-semibold leading-tight">Salir</div>
+                    <button id="btn-menu-deposito" type="button" class="menu-card" aria-label="Depósito de dinero">
+                      <div class="menu-icon">💰</div>
+                      <div class="menu-label">Depósito de Dinero</div>
                     </button>
                   </div>
-                </div>
-
-                <!-- RETIRO -->
-                <div id="transaction-screen" class="ted-screen-view">
-                  <div class="h-full flex flex-col justify-between">
-                    <!-- Contenido superior -->
-                    <div class="text-center">
-                      <h3 class="text-white font-bold mb-4">Retiro de Dinero</h3>
-                      <label class="block text-white/85 mb-2" for="transaction-number">Ingrese número de transacción</label>
-                      <input id="transaction-number" type="text"
-                        class="w-full max-w-xs text-center rounded-xl border border-white/30 bg-white/10 text-white placeholder-white/60
-                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent px-4 py-3 mb-4"
-                        placeholder="Número de transacción"/>
-                      <div class="text-white/85 mb-2">Divisas disponibles</div>
-                      <div id="retiro-currency-list" class="flex items-center justify-center flex-wrap gap-3 mb-2"></div>
-                    </div>
-
-                    <!-- CTA al fondo -->
-                    <div class="text-center pb-1">
-                      <div class="flex items-center justify-center gap-2">
-                        <button class="gx-btn gx-btn--ghost" type="button" id="btn-retirar-cancelar">Cancelar</button>
-                        <button class="gx-btn" type="button" id="btn-retirar-confirmar">Confirmar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- DEPÓSITO DINERO -->
-                <div id="deposit-screen" class="ted-screen-view">
-                  <div class="h-full flex flex-col justify-between">
-                    <!-- Contenido superior -->
-                    <div class="text-center">
-                      <h3 class="text-white font-bold mb-4">Depósito de Dinero</h3>
-                      <label class="block text-white/85 mb-2" for="deposit-tx">Ingrese número de transacción</label>
-                      <input id="deposit-tx" type="text"
-                        class="w-full max-w-xs text-center rounded-xl border border-white/30 bg-white/10 text-white placeholder-white/60
-                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent px-4 py-3 mb-6"
-                        placeholder="Número de transacción"/>
-                    </div>
-
-                    <!-- CTA al fondo -->
-                    <div class="text-center pb-1">
-                      <div class="flex items-center justify-center gap-2">
-                        <button class="gx-btn gx-btn--ghost" type="button" id="btn-depo-cancelar">Cancelar</button>
-                        <button class="gx-btn" type="button" id="btn-depo-confirmar">Confirmar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- DEPÓSITO CHEQUE -->
-                <div id="check-screen" class="ted-screen-view">
-                  <div class="h-full flex flex-col justify-between">
-                    <!-- Contenido superior -->
-                    <div class="text-center">
-                      <h3 class="text-white font-bold mb-4">Depósito de Cheque</h3>
-                      <label class="block text-white/85 mb-2" for="check-tx">Ingrese número de transacción</label>
-                      <input id="check-tx" type="text"
-                        class="w-full max-w-xs text-center rounded-xl border border-white/30 bg-white/10 text-white placeholder-white/60
-                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-transparent px-4 py-3 mb-6"
-                        placeholder="Número de transacción"/>
-                    </div>
-
-                    <!-- CTA al fondo -->
-                    <div class="text-center pb-1">
-                      <div class="flex items-center justify-center gap-2">
-                        <button class="gx-btn gx-btn--ghost" type="button" id="btn-cheque-cancelar">Cancelar</button>
-                        <button class="gx-btn" type="button" id="btn-cheque-confirmar">Confirmar</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- PROCESOS/CONFIRMACIONES/RESULTADOS -->
-                <div id="processing-screen" class="ted-screen-view">
-                  <div class="text-center">
-                    <div class="text-lg font-bold">
-                      <span id="processing-message">Procesando</span><span class="processing-dots"></span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div id="confirm-amount-screen" class="ted-screen-view">
-                  <div class="text-center space-y-4">
-                    <div class="text-xl font-bold">Confirmación</div>
-                    <div id="confirm-amount-text" class="text-white/90">¿Desea confirmar el depósito?</div>
-                    <div class="flex items-center justify-center gap-2">
-                      <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
-                      <button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div id="confirm-cheque-screen" class="ted-screen-view">
-                  <div class="text-center space-y-4">
-                    <div class="text-xl font-bold">Confirmación</div>
-                    <div id="confirm-cheque-text" class="text-white/90">¿Desea confirmar el depósito de su cheque?</div>
-                    <div class="flex items-center justify-center gap-2">
-                      <button class="gx-btn gx-btn--ghost" type="button" id="btn-cheque-cancel2">Cancelar</button>
-                      <button class="gx-btn" type="button" id="btn-cheque-confirm2">Confirmar</button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div id="success-screen" class="ted-screen-view">
-                  <div class="text-center space-y-3">
-                    <div class="text-2xl font-extrabold text-emerald-400">¡Operación exitosa!</div>
-                    <div class="text-white" id="success-message">Listo.</div>
-                    <div class="flex items-center justify-center gap-2">
-                      <button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button>
-                      <button class="gx-btn" type="button" id="btn-success-print">Imprimir ticket</button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div id="cancel-screen" class="ted-screen-view">
-                  <div class="text-center space-y-3">
-                    <div class="text-rose-400 font-extrabold text-2xl">Operación cancelada</div>
-                    <div class="text-white/90" id="cancel-sub">Recoja su dinero.</div>
-                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-cancel-exit">Salir</button>
+                  <div style="text-align:center;margin-top:24px">
+                    <button id="btn-menu-salir" type="button" class="gx-btn gx-btn--ghost">🚪 Salir</button>
                   </div>
                 </div>
               </div>
+
+              <!-- VISTAS de flujo (retiro/deposito/confirmación/éxito/cancelado) -->
+              <div id="transaction-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content">
+                  <h3>Retiro de Dinero</h3>
+                  <label for="transaction-number">Ingrese número de transacción</label>
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Número de transacción"/>
+                  <div class="currency-section">
+                    <div class="currency-label">Divisas disponibles</div>
+                    <div id="retiro-currency-list" class="currency-list"></div>
+                  </div>
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-retirar-cancelar">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-retirar-confirmar">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="deposit-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content">
+                  <h3>Depósito de Dinero</h3>
+                  <label for="deposit-tx">Ingrese número de transacción</label>
+                  <input id="deposit-tx" type="text" class="ted-input" placeholder="Número de transacción"/>
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-depo-cancelar">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-depo-confirmar">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="processing-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="processing-text">
+                    <span id="processing-message">Procesando</span><span class="processing-dots"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="confirm-amount-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="confirm-title">Confirmación</div>
+                  <div id="confirm-amount-text" class="confirm-text">¿Desea confirmar el depósito?</div>
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="success-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="status-title status-title--success">¡Operación exitosa!</div>
+                  <div id="success-message" class="status-message">Listo.</div>
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button>
+                    <button class="gx-btn" type="button" id="btn-success-print">Imprimir ticket</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="cancel-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="status-title status-title--cancel">Operación cancelada</div>
+                  <div id="cancel-sub" class="status-message">Recoja su dinero.</div>
+                  <button class="gx-btn gx-btn--ghost" type="button" id="btn-cancel-exit">Salir</button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Panel lateral (reloj + teclado) -->
       <aside class="ted-layout-aside">
-        <div class="pad-info-card mb-3">
+        <div class="pad-info-card">
           <div class="clock" id="ted-clock">--:--:--</div>
-          <div class="mt-1">Nº de serie: <strong>TED-AGSL-0001</strong></div>
-          <div class="mt-1">Ubicación: <strong>Campus, San Lorenzo – Paraguay</strong></div>
+          <div class="info-line">Nº de serie: <strong id="info-serie">—</strong></div>
+          <div class="info-line">Ubicación: <strong id="info-ubicacion">—</strong></div>
         </div>
         <div class="pad-bezel">
-          <div class="ted-pad">
-            <div class="grid grid-cols-4 gap-3">
-              <button class="ted-key" type="button" data-key="1">1</button>
-              <button class="ted-key" type="button" data-key="2">2</button>
-              <button class="ted-key" type="button" data-key="3">3</button>
-              <button class="ted-key" type="button" data-key="a">a</button>
-
-              <button class="ted-key" type="button" data-key="4">4</button>
-              <button class="ted-key" type="button" data-key="5">5</button>
-              <button class="ted-key" type="button" data-key="6">6</button>
-              <button class="ted-key" type="button" data-key="b">b</button>
-
-              <button class="ted-key" type="button" data-key="7">7</button>
-              <button class="ted-key" type="button" data-key="8">8</button>
-              <button class="ted-key" type="button" data-key="9">9</button>
-              <button class="ted-key" type="button" data-key="c">c</button>
-
-              <button class="ted-key" type="button" data-key="0">0</button>
-              <button class="ted-key" type="button" data-key="d">d</button>
-              <button class="ted-key" type="button" data-key="e">e</button>
-              <button class="ted-key" type="button" data-key="f">f</button>
+          <div class="ted-pad" aria-label="Teclado">
+            <div class="grid">
+              {% for key in "123a456b789c0def" %}
+              <button class="ted-key" type="button" data-key="{{ key }}">{{ key }}</button>
+              {% endfor %}
             </div>
           </div>
         </div>
       </aside>
+
     </div>
 
-    <!-- Ranuras físicas mejoradas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-      <div id="bill-slot" class="ted-slot p-3">
-        <div class="open"></div>
-        <div class="dot"></div>
-        <div class="slot-anim">
-          <div class="bill-stack">
-            <div class="bill-item">$100</div>
-            <div class="bill-item">$100</div>
-            <div class="bill-item">$100</div>
-            <div class="bill-item">$100</div>
-          </div>
-          <div class="bill-insert">
-            <div class="bill-insert-item">💵</div>
-          </div>
-        </div>
-        <div class="text-center font-bold mt-2">Ranura de billetes</div>
+    <!-- Ranuras -->
+    <div class="slots-container">
+      <div id="bill-slot" class="ted-slot">
+        <div class="slot-opening"></div>
+        <div class="slot-indicator"></div>
+        <div class="bill-stack"><div class="bill-item">$100</div></div>
+        <div class="slot-label">Ranura de billetes</div>
       </div>
 
-      <div id="check-slot" class="ted-slot p-3">
-        <div class="open"></div>
-        <div class="dot"></div>
-        <div class="slot-anim">
-          <div class="check-anim">
-            <div class="check-content">
-              <div class="check-amount">CHEQUE</div>
-              <div class="check-number">#000123456</div>
-            </div>
+      <div id="receipt-slot" class="ted-slot">
+        <div class="slot-opening"></div>
+        <div class="slot-indicator"></div>
+        <div class="receipt-anim">
+          <div class="receipt-paper">
+            <div class="receipt-header">GLOBAL EXCHANGE</div>
+            <div id="receipt-body"></div>
           </div>
         </div>
-        <div class="text-center font-bold mt-2">Ranura de cheques</div>
-      </div>
-
-      <div id="receipt-slot" class="ted-slot p-3">
-        <div class="open"></div>
-        <div class="dot"></div>
-        <div class="slot-anim">
-          <div class="receipt-anim">
-            <div class="receipt-paper">
-              <div class="receipt-header">GLOBAL EXCHANGE</div>
-              <div id="receipt-body"></div>
-            </div>
-            <div class="receipt-tear"></div>
-            <div class="receipt-edge"></div>
-          </div>
-        </div>
-        <div class="text-center font-bold mt-2">Salida de tickets</div>
+        <div class="slot-label">Salida de tickets</div>
       </div>
     </div>
   </section>
@@ -540,373 +184,171 @@
 
 <script>
 (function(){
-  const qs = (s,c=document)=>c.querySelector(s);
-  const qsa = (s,c=document)=>Array.from(c.querySelectorAll(s));
-  const after = (ms,fn)=>setTimeout(fn,ms);
+  const qs=(s,c=document)=>c.querySelector(s);
+  const qsa=(s,c=document)=>Array.from(c.querySelectorAll(s));
+  const after=(ms,fn)=>setTimeout(fn,ms);
 
-  /* Reloj lateral */
+  /* Reloj */
   function startClock(){
-    const el=qs('#ted-clock');if(!el)return;
+    const el=qs('#ted-clock'); if(!el) return;
     const fmt=new Intl.DateTimeFormat('es-PY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    const tick=()=>{el.textContent=fmt.format(new Date())};
-    tick();setInterval(tick,1000);
+    const tick=()=>{ el.textContent=fmt.format(new Date()); };
+    tick(); setInterval(tick,1000);
   }
 
-  /* Navegación de pantallas mejorada con gestión de foco */
+  /* Pantallas */
   function showScreen(name){
     qsa('.ted-screen-view').forEach(v=>v.classList.remove('active'));
-    const el=qs('#'+name+'-screen');
-    if(el){
-      el.classList.add('active');
-      // Gestión de foco para accesibilidad
-      requestAnimationFrame(()=>{
-        const focusTarget=el.querySelector('button:not([disabled])') || 
-                         el.querySelector('input:not([disabled])') || 
-                         el.querySelector('h2, h3');
-        if(focusTarget){
-          if(focusTarget.tagName==='H2'||focusTarget.tagName==='H3'){
-            focusTarget.setAttribute('tabindex','-1');
-            focusTarget.focus();
-          }else{
-            focusTarget.focus();
-          }
-        }
+    qs('#'+name+'-screen')?.classList.add('active');
+    qsa('.ted-slot').forEach(s=>s.classList.remove('active','dispensing-bills','printing-receipt','inserting-bills'));
+  }
+  function showProcessing(msg){ qs('#processing-message').textContent=msg; showScreen('processing'); }
+
+  /* Slots */
+  function dispenseBills(){ const slot=qs('#bill-slot'); if(!slot) return; slot.classList.add('active','dispensing-bills'); after(2200,()=>slot.classList.remove('dispensing-bills')); }
+  function insertBills(){ const slot=qs('#bill-slot'); if(!slot) return; slot.classList.add('active','inserting-bills'); after(2800,()=>slot.classList.remove('inserting-bills')); }
+
+  /* Ticket */
+  let lastReceipt={lines:[]};
+  function prepareReceipt(_t,lines){ lastReceipt={lines}; }
+  function printReceipt(){
+    const slot=qs('#receipt-slot'), rc=qs('#receipt-body'); if(!slot||!rc) return;
+    rc.innerHTML=''; (lastReceipt.lines||[]).forEach((line,i)=>{ const d=document.createElement('div'); d.className='receipt-line'; d.textContent=line; d.style.animationDelay=(i*0.15)+'s'; rc.appendChild(d); });
+    slot.classList.add('active','printing-receipt'); after(3500,()=>slot.classList.remove('printing-receipt'));
+  }
+
+  /* Ubicación seleccionada */
+  const SELECT = qs('#select-ubicacion');
+  let ubicacionSeleccionada = localStorage.getItem('ted_ubicacion') || "";
+
+  async function cargarUbicaciones(){
+    try{
+      const res = await fetch("{% url 'admin_panel:ted:ubicaciones_disponibles' %}", {credentials:'same-origin'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      (data.ubicaciones || []).forEach(u=>{
+        const opt=document.createElement('option');
+        opt.value=u; opt.textContent=u;
+        if(u===ubicacionSeleccionada) opt.selected=true;
+        SELECT.appendChild(opt);
       });
+      if(ubicacionSeleccionada){
+        activarUbicacion(ubicacionSeleccionada);
+        qs('#btn-login-ingresar').disabled=false;
+      }
+    }catch(_e){
+      // si falla, dejamos el select vacío (además del placeholder)
     }
-    resetAllSlots();
-  }
-  
-  function showProcessing(msg){
-    qs('#processing-message').textContent=msg;
-    showScreen('processing');
   }
 
-  let currentOp=null;
-
-  /* Sistema mejorado de control de ranuras */
-  function resetAllSlots(){
-    qsa('.ted-slot').forEach(s=>{
-      s.classList.remove('active','dispensing-bills','inserting-bills','dispensing-check','inserting-check','printing-receipt');
-    });
+  function activarUbicacion(ubic){
+    ubicacionSeleccionada = ubic;
+    localStorage.setItem('ted_ubicacion', ubicacionSeleccionada);
+    qs('#info-ubicacion').textContent = ubicacionSeleccionada || '—';
+    qs('#info-serie').textContent = 'TED-AGSL-0001';  // si luego leemos de tu modelo, lo cambiamos aquí
   }
 
-  function activateSlot(slotId){
-    const slot=qs('#'+slotId);
-    if(slot)slot.classList.add('active');
-  }
-
-  function dispenseBills(){
-    const slot=qs('#bill-slot');
-    if(!slot)return;
-    slot.classList.add('active','dispensing-bills');
-    after(2200,()=>slot.classList.remove('dispensing-bills'));
-  }
-
-  function insertBills(){
-    const slot=qs('#bill-slot');
-    if(!slot)return;
-    slot.classList.add('active','inserting-bills');
-    after(2800,()=>slot.classList.remove('inserting-bills'));
-  }
-
-  function dispenseCheck(){
-    const slot=qs('#check-slot');
-    if(!slot)return;
-    slot.classList.add('active','dispensing-check');
-    after(2300,()=>slot.classList.remove('dispensing-check'));
-  }
-
-  function insertCheck(){
-    const slot=qs('#check-slot');
-    if(!slot)return;
-    slot.classList.add('active','inserting-check');
-    after(2800,()=>slot.classList.remove('inserting-check'));
-  }
-
-  function showSuccess(msg){
-    qs('#success-message').textContent=msg||'Listo.';
-    showScreen('success');
-  }
-  
-  function showCancel(_main,subMsg){
-    qs('#cancel-sub').textContent=subMsg||'';
-    showScreen('cancel');
-  }
-
-  document.addEventListener('DOMContentLoaded',()=>{
-    startClock();
-    showScreen('login');
+  SELECT?.addEventListener('change', e=>{
+    const val = e.target.value || "";
+    qs('#btn-login-ingresar').disabled = !val;
+    if(val){ activarUbicacion(val); }
   });
 
-  /* Login */
-  qs('#btn-login-ingresar')?.addEventListener('click',()=>{
-    showProcessing('Procesando');
-    after(2000,()=>showScreen('menu'));
-  });
-
-  /* Menú */
-  qs('#btn-menu-retirar')?.addEventListener('click',()=>{
-    showScreen('transaction');
-    currentOp='retiro';
-    loadRetiroCurrencies();
-    activateSlot('bill-slot');
-  });
-  
-  qs('#btn-menu-deposito')?.addEventListener('click',()=>{
-    showScreen('deposit');
-    currentOp='deposito';
-    activateSlot('bill-slot');
-  });
-  
-  qs('#btn-menu-cheque')?.addEventListener('click',()=>{
-    showScreen('check');
-    currentOp='cheque';
-    activateSlot('check-slot');
-  });
-  
-  qs('#btn-menu-salir')?.addEventListener('click',()=>{
-    currentOp=null;
-    showScreen('login');
-  });
-
-  /* Flags de divisas */
-  const currencyFlagMap={USD:'🇺🇸',EUR:'🇪🇺',ARS:'🇦🇷',BRL:'🇧🇷',PYG:'🇵🇾',CNY:'🇨🇳',JPY:'🇯🇵',GBP:'🇬🇧',UYU:'🇺🇾',CLP:'🇨🇱',COP:'🇨🇴',BOB:'🇧🇴',PEN:'🇵🇪',MXN:'🇲🇽',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',VES:'🇻🇪',VEF:'🇻🇪',RUB:'🇷🇺',ILS:'🇮🇱',CRC:'🇨🇷',DOP:'🇩🇴',NOK:'🇳🇴',SEK:'🇸🇪',DKK:'🇩🇰',ZAR:'🇿🇦',HNL:'🇭🇳',GTQ:'🇬🇹',PAB:'🇵🇦',NIO:'🇳🇮',TRY:'🇹🇷',INR:'🇮🇳',KRW:'🇰🇷',SGD:'🇸🇬',HKD:'🇭🇰'};
-  const flagForCurrency=code=>currencyFlagMap[code]||code;
+  /* Divisas por ubicación */
+  const FLAGS={USD:'🇺🇸',EUR:'🇪🇺',ARS:'🇦🇷',BRL:'🇧🇷',PYG:'🇵🇾',CNY:'🇨🇳',JPY:'🇯🇵',GBP:'🇬🇧',UYU:'🇺🇾',CLP:'🇨🇱',COP:'🇨🇴',BOB:'🇧🇴',PEN:'🇵🇪',MXN:'🇲🇽',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',VES:'🇻🇪',VEF:'🇻🇪',RUB:'🇷🇺',ILS:'🇮🇱',CRC:'🇨🇷',DOP:'🇩🇴',NOK:'🇳🇴',SEK:'🇸🇪',DKK:'🇩🇰',ZAR:'🇿🇦',HNL:'🇭🇳',GTQ:'🇬🇹',PAB:'🇵🇦',NIO:'🇳🇮',TRY:'🇹🇷',INR:'🇮🇳',KRW:'🇰🇷',SGD:'🇸🇬',HKD:'🇭🇰'};
+  const flag = c => FLAGS[c] || c;
 
   async function loadRetiroCurrencies(){
-    const cont=qs('#retiro-currency-list');if(!cont)return;
-    cont.innerHTML='<span class="muted">Cargando...</span>';
+    const cont = qs('#retiro-currency-list'); if(!cont) return;
+    cont.textContent = 'Cargando...';
     try{
-      const res=await fetch("{% url 'admin_panel:ted:monedas_disponibles' %}",{credentials:'same-origin'});
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      const monedas=Array.isArray(data.monedas)?data.monedas:[];
-      if(!monedas.length){
-        cont.innerHTML='<span class="muted">Sin divisas disponibles en este momento.</span>';
-        return;
-      }
-      const frag=document.createDocumentFragment();
+      const q = ubicacionSeleccionada ? ('?ubicacion=' + encodeURIComponent(ubicacionSeleccionada)) : '';
+      const res = await fetch("{% url 'admin_panel:ted:monedas_disponibles' %}"+q, {credentials:'same-origin'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      const monedas = Array.isArray(data.monedas)? data.monedas : [];
+      cont.innerHTML = '';
+      if(!monedas.length){ cont.textContent='Sin divisas disponibles.'; return; }
       monedas.forEach(code=>{
-        const chip=document.createElement('span');
-        chip.className='currency-chip';
-        chip.title=code;
-        chip.setAttribute('aria-label',code);
-        chip.textContent=flagForCurrency(code);
-        frag.appendChild(chip);
+        const chip=document.createElement('span'); chip.className='currency-chip'; chip.title=code; chip.textContent=flag(code);
+        cont.appendChild(chip);
       });
-      cont.innerHTML='';
-      cont.appendChild(frag);
     }catch(e){
-      console.error(e);
-      cont.innerHTML='<span class="form-alert">No se pudo cargar el stock de divisas.</span>';
+      cont.textContent='No se pudo cargar.';
     }
   }
 
-  /* Sistema de recibo mejorado */
-  let lastReceipt={lines:[]};
-  
-  function prepareReceipt(_title,lines){
-    lastReceipt={lines};
-  }
-  
-  // Imprime el ticket de ARRIBA hacia ABAJO
-  function printReceipt(){
-    const slot = qs('#receipt-slot');
-    const rc   = qs('#receipt-body');
-    if(!slot || !rc) return;
-
-    // Limpia y fuerza apilado top→down (evita que se alinee al fondo)
-    rc.innerHTML = '';
-    rc.style.display = 'flex';
-    rc.style.flexDirection = 'column';
-    rc.style.justifyContent = 'flex-start';
-    rc.style.alignItems = 'stretch';
-
-    const lines = lastReceipt.lines || [];
-
-    // Agrega las líneas en orden con retardo incremental
-    lines.forEach((line, idx) => {
-      const div = document.createElement('div');
-      div.className = 'receipt-line';
-      div.textContent = line;
-      div.style.animationDelay = (idx * 0.15) + 's';
-      rc.appendChild(div); // se apilan de arriba hacia abajo
-    });
-
-    // Animación del slot de recibo
-    slot.classList.add('active','printing-receipt');
-    after(3500, () => slot.classList.remove('printing-receipt'));
-  }
-
-  /* Retiro de dinero */
-  qs('#btn-retirar-cancelar')?.addEventListener('click',()=>{
-    currentOp=null;
-    showScreen('menu');
+  /* Navegación */
+  document.addEventListener('DOMContentLoaded',()=>{
+    startClock();
+    cargarUbicaciones();
+    showScreen('login');
   });
-  
+
+  qs('#btn-login-ingresar')?.addEventListener('click',()=>{
+    if(!ubicacionSeleccionada) return;
+    showProcessing('Preparando terminal');
+    after(700,()=>showScreen('menu'));
+  });
+
+  qs('#btn-menu-retirar')?.addEventListener('click',()=>{ showScreen('transaction'); loadRetiroCurrencies(); });
+  qs('#btn-menu-deposito')?.addEventListener('click',()=>{ showScreen('deposit'); });
+  qs('#btn-menu-salir')?.addEventListener('click',()=>{ showScreen('login'); });
+
+  /* Retiro */
+  qs('#btn-retirar-cancelar')?.addEventListener('click',()=>{ showScreen('menu'); });
   qs('#btn-retirar-confirmar')?.addEventListener('click',()=>{
     const tx=(qs('#transaction-number')?.value||'').trim();
-    if(!tx){
-      showProcessing('Falta el número de transacción');
-      return after(700,()=>showScreen('transaction'));
-    }
-    currentOp='retiro';
-    showProcessing('Procesando retiro');
-    
-    after(1500,()=>{
-      showProcessing('Dispensando billetes');
-      dispenseBills();
-      
-      after(2500,()=>{
-        prepareReceipt('Retiro de Dinero',[
-          `Operación: Retiro de Dinero`,
-          `Transacción: ${tx}`,
-          `Monto: $400.00`,
-          `Fecha: ${new Date().toLocaleString('es-PY')}`,
-          `Estado: COMPLETADO`
-        ]);
-        showSuccess('Retirá tus billetes');
-      });
+    if(!tx){ showProcessing('Falta el número de transacción'); return after(700,()=>showScreen('transaction')); }
+    showProcessing('Dispensando billetes');
+    dispenseBills();
+    after(2500,()=>{
+      prepareReceipt('Retiro de Dinero',[
+        `Operación: Retiro de Dinero`,
+        `Transacción: ${tx}`,
+        `Ubicación: ${ubicacionSeleccionada||'—'}`,
+        `Monto: $400.00`,
+        `Fecha: ${new Date().toLocaleString('es-PY')}`,
+        `Estado: COMPLETADO`
+      ]);
+      showScreen('success');
+      qs('#success-message').textContent='Retirá tus billetes';
     });
   });
 
-  /* Depósito de dinero */
-  qs('#btn-depo-cancelar')?.addEventListener('click',()=>{
-    currentOp=null;
-    showScreen('menu');
-  });
-  
-  let pendingAmount=null;
-  
+  /* Depósito */
+  qs('#btn-depo-cancelar')?.addEventListener('click',()=>{ showScreen('menu'); });
   qs('#btn-depo-confirmar')?.addEventListener('click',()=>{
     const tx=(qs('#deposit-tx')?.value||'').trim();
-    if(!tx){
-      showProcessing('Falta el número de transacción');
-      return after(700,()=>showScreen('deposit'));
-    }
-    currentOp='deposito';
+    if(!tx){ showProcessing('Falta el número de transacción'); return after(700,()=>showScreen('deposit')); }
     showProcessing('Esperando inserción de billetes');
     insertBills();
-    
-    after(3200,()=>{
+    after(3000,()=>{
       const v=(Math.floor(Math.random()*18)+3)*100;
-      pendingAmount='$ '+v.toLocaleString('es-PY');
-      qs('#confirm-amount-text').textContent=`¿Desea confirmar el depósito por ${pendingAmount}?`;
-      prepareReceipt('Depósito de Dinero',[
-        `Operación: Depósito de Dinero`,
-        `Transacción: ${tx}`,
-        `Monto: ${pendingAmount}`,
-        `Fecha: ${new Date().toLocaleString('es-PY')}`,
-        `Estado: PENDIENTE CONFIRMACIÓN`
-      ]);
+      qs('#confirm-amount-text').textContent=`¿Desea confirmar el depósito por $ ${v.toLocaleString('es-PY')}?`;
       showScreen('confirm-amount');
     });
   });
-  
-    qs('#btn-amount-confirm')?.addEventListener('click',()=>{
-      showProcessing('Confirmando depósito');
-      after(1500,()=>showSuccess('Depósito registrado correctamente'));
-    });
+  qs('#btn-amount-confirm')?.addEventListener('click',()=>{ showProcessing('Confirmando'); after(1200,()=>{ showScreen('success'); qs('#success-message').textContent='Depósito registrado correctamente'; }); });
+  qs('#btn-amount-cancel')?.addEventListener('click',()=>{ showProcessing('Cancelando'); after(900,()=>{ showScreen('cancel'); }); });
 
-    qs('#btn-amount-cancel')?.addEventListener('click',()=>{
-      showProcessing('Cancelando operación');
-      after(1200, ()=>{
-        dispenseBills();
-        after(500, ()=> showCancel('Operación cancelada','Recoja su dinero'));
-      });
-    });
+  /* Éxito / impresión */
+  qs('#btn-success-exit')?.addEventListener('click',()=>{ showScreen('login'); });
+  qs('#btn-success-print')?.addEventListener('click', printReceipt);
 
-    /* Depósito de cheque */
-    qs('#btn-cheque-cancelar')?.addEventListener('click', ()=>{
-      currentOp=null;
-      showScreen('menu');
-    });
-
-    qs('#btn-cheque-confirmar')?.addEventListener('click', ()=>{
-      const tx=(qs('#check-tx')?.value||'').trim();
-      if(!tx){
-        showProcessing('Falta el número de transacción');
-        return after(700, ()=> showScreen('check'));
-      }
-      currentOp='cheque';
-      showProcessing('Esperando inserción de cheque');
-      insertCheck();
-
-      after(3200, ()=>{
-        const chequeNumber='#000123456';
-        qs('#confirm-cheque-text').textContent=`¿Desea confirmar el depósito de su cheque ${chequeNumber}?`;
-        prepareReceipt('Depósito de Cheque',[
-          `Operación: Depósito de Cheque`,
-          `Transacción: ${tx}`,
-          `Número de cheque: ${chequeNumber}`,
-          `Fecha: ${new Date().toLocaleString('es-PY')}`,
-          `Estado: PENDIENTE CONFIRMACIÓN`
-        ]);
-        showScreen('confirm-cheque');
-      });
-    });
-
-    qs('#btn-cheque-confirm2')?.addEventListener('click', ()=>{
-      showProcessing('Procesando cheque');
-      after(1500, ()=> showSuccess('Cheque depositado correctamente'));
-    });
-
-    qs('#btn-cheque-cancel2')?.addEventListener('click', ()=>{
-      showProcessing('Cancelando operación');
-      after(1200, ()=>{
-        dispenseCheck();
-        after(500, ()=> showCancel('Operación cancelada','Retire su cheque'));
-      });
-    });
-
-    /* Éxito / Cancelado */
-    qs('#btn-success-exit')?.addEventListener('click', ()=> {
-      currentOp=null;
-      showScreen('login');
-    });
-
-    qs('#btn-success-print')?.addEventListener('click', printReceipt);
-
-    qs('#btn-cancel-exit')?.addEventListener('click', ()=> {
-      currentOp=null;
-      showScreen('login');
-    });
-
-    /* Keypad (opcional) */
-    let lastFocusedInput=null;
-    document.addEventListener('focusin', (e)=>{
-      const t=e.target;
-      if(t && t.tagName==='INPUT' && (t.type==='text' || t.type==='password')){
-        lastFocusedInput=t;
-      }
-    }, true);
-
-    function activeInput(){
-      const ae=document.activeElement;
-      if(ae && ae.tagName==='INPUT' && (ae.type==='text' || ae.type==='password')) return ae;
-      if(lastFocusedInput && document.body.contains(lastFocusedInput)) return lastFocusedInput;
-      const current = qs('.ted-screen-view.active');
-      return current ? current.querySelector('input[type="text"], input[type="password"]') : null;
-    }
-
-    function insertChar(ch){
-      const field = activeInput();
-      if(!field) return;
-      const start = field.selectionStart ?? field.value.length;
-      const end   = field.selectionEnd ?? field.value.length;
-      field.value = field.value.slice(0, start) + ch + field.value.slice(end);
-      const pos = start + String(ch).length;
-      field.setSelectionRange(pos, pos);
-      field.dispatchEvent(new Event('input', { bubbles: true }));
-      field.focus();
-    }
-
-    // Vincular el keypad físico
-    qsa('.ted-key').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        insertChar(btn.dataset.key || '');
-      });
-    });
-
-})();</script>
+  /* Teclado on-screen */
+  function activeInput(){
+    const a=document.activeElement;
+    if(a && a.tagName==='INPUT') return a;
+    return qs('.ted-screen-view.active input');
+  }
+  function insertChar(ch){
+    const f=activeInput(); if(!f) return;
+    const s=f.selectionStart??f.value.length, e=f.selectionEnd??f.value.length;
+    f.value=f.value.slice(0,s)+ch+f.value.slice(e);
+    const p=s+String(ch).length; f.setSelectionRange(p,p); f.focus();
+  }
+  Array.from(document.querySelectorAll('.ted-key')).forEach(b=>b.addEventListener('click',()=>insertChar(b.dataset.key||'')));
+})();
+</script>
 {% endblock %}
