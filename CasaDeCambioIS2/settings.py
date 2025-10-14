@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "configuracion",
     "payments",
     "ted",
+    "django_extensions"
 ]
 
 # --- Middleware ---

@@ -32,6 +32,7 @@ class TipoMedioPago(models.Model):
         ('manual', 'Manual'),
         ('stripe', 'Stripe'),
         ('sipap', 'SIPAP'),
+        ('simulador', 'Simulador Interno'),
     ]
     engine = models.CharField(max_length=20, choices=ENGINE_CHOICES, default='manual')
     engine_config = models.JSONField(default=dict, blank=True)

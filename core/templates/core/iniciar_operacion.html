@@ -122,6 +122,31 @@
         </p>
       </div>
 
+      <!-- Bloque: Medio de Pago (se muestra condicionalmente) -->
+      <div id="medio-pago-block" class="hidden">
+        <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Medio de Pago</div>
+        <div class="p-5">
+          <label for="{{ form.medio_pago.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+            {{ form.medio_pago.label }}
+          </label>
+          {{ form.medio_pago }}
+          {% if form.medio_pago.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Errores Generales del Formulario -->
+      {% if form.non_field_errors %}
+        <div class="p-5">
+          <div class="px-4 py-3 rounded-xl border bg-red-50 border-red-300 text-red-800">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
       <!-- Acciones -->
       <div class="p-5 border-t" style="border-color:var(--line)">
         <div class="flex flex-col md:flex-row gap-3 md:justify-end">
@@ -144,14 +169,15 @@
 <!-- Estilos: aplicados por ID nativo (sin filtros ni as_widget) -->
 <style>
   /* Inputs y selects con la estética del proyecto */
-  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa {
+  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago {
     width:100%; border:1.5px solid var(--line); border-radius:12px;
     padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
     transition: box-shadow .15s ease, border-color .15s ease;
   }
-  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus, #id_modalidad_tasa:focus {
+  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus, #id_modalidad_tasa:focus, #id_medio_pago:focus {
     outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
   }
+  .hidden { display: none; }
 </style>
 
 <!-- JS opcional: habilita/deshabilita submit según reglas del negocio (frontend) -->
@@ -162,6 +188,7 @@
   const dst  = document.getElementById('id_moneda_destino');
   const monto= document.getElementById('id_monto');
   const btn  = document.getElementById('btn-submit');
+  const medioPagoBlock = document.getElementById('medio-pago-block');
 
   const isPYG = v => String(v||'').toUpperCase()==='PYG';
   const isForeign = v => v && !isPYG(v);
@@ -172,6 +199,13 @@
     const o = ori?.value  || '';
     const d = dst?.value  || '';
     const m = parseFloat(monto?.value || '0');
+
+    // Lógica para mostrar/ocultar el bloque de medio de pago
+    if (t === 'venta') { // Cliente compra divisa, necesita pagar
+      medioPagoBlock.classList.remove('hidden');
+    } else {
+      medioPagoBlock.classList.add('hidden');
+    }
 
     if (t === 'compra') {          // cliente vende divisa a la casa (resultado en PYG)
       if (isPYG(o) || isForeign(d)) ok = false; // origen no PYG, destino PYG
