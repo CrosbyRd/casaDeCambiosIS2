@@ -612,3 +612,37 @@ def ubicaciones_disponibles(request):
     Devuelve el listado de ubicaciones distintas presentes en TedInventario.
     """
     return JsonResponse({"ubicaciones": _inv_distinct_ubicaciones()})
+
+# --- JSON API para el kiosco -------------------------------------------------
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
+# Import robusto según dónde tengas el modelo
+try:
+    from ted.models import TedInventario  # tu modelo de stock por (denominacion, ubicacion)
+except Exception:  # si lo definiste en 'monedas'
+    from monedas.models import TedInventario
+
+
+@login_required
+def ubicaciones_disponibles(request):
+    """Devuelve todas las ubicaciones donde hay inventario."""
+    ubicaciones = list(
+        TedInventario.objects.values_list("ubicacion", flat=True)
+        .distinct()
+        .order_by("ubicacion")
+    )
+    return JsonResponse({"ubicaciones": ubicaciones})
+
+
+@login_required
+def monedas_disponibles(request):
+    """Devuelve los códigos de monedas disponibles para una ubicación (o todas)."""
+    ubic = request.GET.get("ubicacion")
+    qs = TedInventario.objects.all()
+    if ubic:
+        qs = qs.filter(ubicacion=ubic)
+
+    # Camino de relación: inventario -> denominacion -> moneda -> codigo
+    codigos = sorted(set(qs.values_list("denominacion__moneda__codigo", flat=True)))
+    return JsonResponse({"monedas": codigos})
