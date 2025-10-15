@@ -229,6 +229,9 @@ from transacciones.models import Transaccion
 
 @login_required
 def dashboard(request):
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
     
     # 1. OBTENER el cliente activo
     cliente_activo = get_cliente_activo(request)
@@ -298,6 +301,9 @@ def quitar_cliente(request, user_id, cliente_id):
 
 @login_required
 def seleccionar_cliente(request):
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
     
         # 🚨 SOLUCIÓN: Cargar el CustomUser fresco directamente de la DB
     try:
@@ -312,7 +318,8 @@ def seleccionar_cliente(request):
 
     if not clientes.exists():
         messages.warning(request, "Aún no tenés clientes asociados a tu usuario.")
-        return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})
+        next_url = request.GET.get("next") or request.META.get("HTTP_REFERER") or "usuarios:dashboard"
+        return redirect(next_url)
 
     if request.method == "POST":
         cid = request.POST.get("cliente_id")
