@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "configuracion",
     "payments",
     "ted",
-    "django_extensions"
+    "django_extensions",
     "analista_panel",
 ]
 
