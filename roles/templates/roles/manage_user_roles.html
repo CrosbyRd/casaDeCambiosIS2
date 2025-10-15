@@ -1,38 +1,99 @@
 {% extends "base.html" %}
 
-{% block title %}Gestionar Roles de {{ user_to_manage.email }}{% endblock %}
+{% block title %}Global Exchange – Gestionar Roles de {{ user_to_manage.email }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Gestionar Roles para <strong>{{ user_to_manage.email }}</strong></h2>
-    <p>Selecciona los roles que deseas asignar a este usuario.</p>
+<main class="max-w-5xl mx-auto px-6 py-10">
 
-    <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    {% for role in all_roles %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="roles" value="{{ role.id }}" id="role_{{ role.id }}"
-                            {% if role in user_roles %}checked{% endif %}>
-                        <label class="form-check-label" for="role_{{ role.id }}">
-                            <strong>{{ role.name }}</strong>
-                            {% if role.description %}
-                                <small class="text-muted">- {{ role.description }}</small>
-                            {% endif %}
-                        </label>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <hr>
-                
-                <a href="{% url 'usuarios:listar_usuarios' %}" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </form>
-        </div>
+  {# Header #}
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">🔐 Gestionar Roles</h1>
+      <p class="text-lg leading-relaxed max-w-2xl" style="color:var(--muted)">
+        Seleccioná los <strong>roles</strong> que deseás asignar al usuario.
+      </p>
+      <p class="mt-2 text-sm" style="color:var(--muted)">
+        Usuario: <span class="font-semibold">{{ user_to_manage.first_name }} {{ user_to_manage.last_name }}</span>
+        — <span class="font-mono">{{ user_to_manage.email }}</span>
+      </p>
     </div>
-</div>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'roles:role-panel' %}"
+         class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">⬅ Volver</a>
+    </div>
+  </header>
+
+  {# Tarjeta principal #}
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="px-6 py-4" style="background:var(--brand); color:#fff;">
+      <h2 class="text-xl font-bold">Roles disponibles</h2>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="p-6 space-y-6">
+
+        {# Acciones rápidas #}
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btnSelectAll"
+                  class="px-3 py-2 rounded-lg font-semibold text-white"
+                  style="background:var(--brand)">Seleccionar todo</button>
+          <button type="button" id="btnClearAll"
+                  class="px-3 py-2 rounded-lg font-semibold bg-[var(--brand-soft)]"
+                  style="color:var(--brand-dark)">Limpiar selección</button>
+        </div>
+
+        {# Lista de roles #}
+        <div class="max-h-[60vh] overflow-auto border rounded-lg" style="border-color:var(--line)">
+          <ul class="divide-y" style="--tw-divide-color:var(--line)">
+            {% for role in all_roles %}
+              <li class="flex items-start justify-between px-4 py-3 hover:bg-[var(--brand-soft)]">
+                <label for="role_{{ role.id }}" class="flex items-start gap-3 cursor-pointer">
+                  <input id="role_{{ role.id }}" class="mt-1 rounded border"
+                         style="border-color:var(--line)" type="checkbox" name="roles" value="{{ role.id }}"
+                         {% if role in user_roles %}checked{% endif %}>
+                  <div>
+                    <div class="font-semibold text-[var(--ink)]">{{ role.name }}</div>
+                    {% if role.description %}
+                      <div class="text-sm text-neutral-500">{{ role.description }}</div>
+                    {% endif %}
+                  </div>
+                </label>
+              </li>
+            {% empty %}
+              <li class="px-4 py-8 text-center text-neutral-500">No hay roles definidos.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="px-6 py-4 border-t flex items-center justify-end gap-3" style="border-color:var(--line)">
+        <a href="{% url 'roles:role-panel' %}"
+           class="px-4 py-2 rounded-lg font-semibold bg-[var(--brand-soft)]"
+           style="color:var(--brand-dark)">Cancelar</a>
+        <button type="submit"
+                class="px-4 py-2 rounded-lg font-semibold text-white"
+                style="background:var(--brand)">Guardar Cambios</button>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+{# JS mínimo para Select all / Clear all #}
+<script>
+  (function(){
+    const selectAll = document.getElementById('btnSelectAll');
+    const clearAll  = document.getElementById('btnClearAll');
+
+    selectAll?.addEventListener('click', ()=>{
+      document.querySelectorAll('input[type="checkbox"][name="roles"]').forEach(cb => cb.checked = true);
+    });
+    clearAll?.addEventListener('click', ()=>{
+      document.querySelectorAll('input[type="checkbox"][name="roles"]').forEach(cb => cb.checked = false);
+    });
+  })();
+</script>
 {% endblock %}

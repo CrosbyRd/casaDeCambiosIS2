@@ -26,6 +26,27 @@
     </div>
   {% endif %}
 
+  {# --- Barra de filtros: por rol y por nombre/correo --- #}
+  <section class="bg-white border rounded-xl shadow-sm p-4 mb-6" style="border-color:var(--line)">
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="return false;">
+      <div class="md:col-span-2">
+        <label for="filtroTexto" class="block text-sm font-medium mb-1" style="color:var(--muted)">Buscar por nombre o correo</label>
+        <input id="filtroTexto" type="search" placeholder="Ej: ana, @empresa.com"
+               class="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
+               style="border-color:var(--line); --tw-ring-color:var(--brand);" />
+      </div>
+      <div>
+        <label for="filtroRol" class="block text-sm font-medium mb-1" style="color:var(--muted)">Filtrar por rol</label>
+        <select id="filtroRol"
+                class="w-full rounded-lg border px-3 py-2 bg-white outline-none focus:ring-2"
+                style="border-color:var(--line); --tw-ring-color:var(--brand);">
+          <option value="">Todos</option>
+          {# Se hidrata automáticamente con los roles presentes en la tabla #}
+        </select>
+      </div>
+    </form>
+  </section>
+
   <!-- Tabla de Usuarios -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
@@ -38,9 +59,11 @@
             <th class="px-6 py-3 text-center">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tbodyUsuarios">
           {% for usuario in usuarios %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)"
+              data-text="{{ usuario.first_name }} {{ usuario.last_name }} {{ usuario.email|lower }}"
+              data-roles="{% for rol in usuario.roles.all %}{{ rol.name }}{% if not forloop.last %}|{% endif %}{% endfor %}">
             <td class="px-6 py-4 font-semibold text-[var(--ink)]">
               {{ usuario.first_name }} {{ usuario.last_name }}
             </td>
@@ -78,4 +101,49 @@
   </section>
 
 </main>
+
+{# --- JS de filtrado (rol + texto) sin dependencias --- #}
+<script>
+  // Debounce util para inputs
+  function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+
+  const filtroTexto = document.getElementById('filtroTexto');
+  const filtroRol   = document.getElementById('filtroRol');
+  const tbody       = document.getElementById('tbodyUsuarios');
+  const rows        = [...tbody.querySelectorAll('tr[data-text]')];
+
+  // Hidratar el <select> de roles a partir de los chips presentes en la tabla
+  (function hydrateRoleFilter(){
+    const set = new Set();
+    rows.forEach(tr=>{
+      const roles = (tr.dataset.roles || '').split('|').map(s=>s.trim()).filter(Boolean);
+      roles.forEach(r => set.add(r));
+    });
+    [...set].sort().forEach(r=>{
+      const opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = r;
+      filtroRol.appendChild(opt);
+    });
+  })();
+
+  function aplicarFiltros(){
+    const q   = (filtroTexto.value || '').toLowerCase().trim();
+    const rol = (filtroRol.value || '').toLowerCase();
+
+    rows.forEach(tr=>{
+      const txt   = (tr.dataset.text || '').toLowerCase();
+      const roles = (tr.dataset.roles || '').toLowerCase().split('|').map(s=>s.trim());
+
+      const matchTxt = !q || txt.includes(q);
+      const matchRol = !rol || roles.includes(rol);
+
+      tr.style.display = (matchTxt && matchRol) ? '' : 'none';
+    });
+  }
+
+  const filtrar = debounce(aplicarFiltros, 150);
+  filtroTexto.addEventListener('input', filtrar);
+  filtroRol.addEventListener('change', aplicarFiltros);
+</script>
 {% endblock %}

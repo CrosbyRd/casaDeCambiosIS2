@@ -15,7 +15,6 @@ def role_panel(request):
     Solo accesible con permiso específico.
     """
     if not request.user.has_perm("roles.access_roles_panel"):
-        messages.error(request, "No tienes permiso para acceder a la gestión de roles de usuarios.")
         return redirect("home")
 
     usuarios = CustomUser.objects.all().order_by('first_name', 'last_name')
@@ -31,7 +30,6 @@ def manage_user_roles(request, user_id):
     Asigna o desasigna roles a un usuario específico.
     """
     if not request.user.has_perm("usuarios.access_user_client_management"):
-        messages.error(request, "No tienes permiso para gestionar roles de usuarios.")
         return redirect("home")
 
     user_to_manage = get_object_or_404(CustomUser, id=user_id)
@@ -47,7 +45,7 @@ def manage_user_roles(request, user_id):
             user_to_manage.roles.add(role)
         
         messages.success(request, f"Roles para {user_to_manage.email} actualizados correctamente.")
-        return redirect('usuarios:listar_usuarios')
+        return redirect("roles:role-panel")
 
     # Para el método GET, mostrar el formulario
     all_roles = Role.objects.all()
