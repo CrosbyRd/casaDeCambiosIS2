@@ -77,7 +77,6 @@ class Command(BaseCommand):
             "access_exchange_rates",
             "view_profits_module",
             "access_cotizaciones",
-            "puede_gestionar_inventario",
         ])
         # Analista NO debe tocar clientes ni configuración
         analista.permissions.set(analista_perms)

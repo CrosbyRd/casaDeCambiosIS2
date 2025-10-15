@@ -31,10 +31,15 @@ PERM_INV_ALT2 = "ted.puede_gestionar_inventario"
 
 
 def _check_inv_perm(request):
-    u = request.user
-    if not (u.has_perm(PERM_INV_MAIN) or u.has_perm(PERM_INV_ALT1) or u.has_perm(PERM_INV_ALT2)):
-        raise PermissionDenied
-
+    """
+    Verifica permiso de inventario. Si no lo tiene:
+    - muestra mensaje
+    - REDIRIGE a 'home'
+    Devuelve None si OK, o un HttpResponseRedirect si NO OK.
+    """
+    if not request.user.has_perm("ted.puede_gestionar_inventario"):
+        return redirect("home")
+    return None
 
 def _is_pyg(moneda: Moneda) -> bool:
     return moneda.codigo.upper() == "PYG"
@@ -238,6 +243,10 @@ def cheque_mock(request):
 
 @login_required
 def inventario(request):
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+    
     _check_inv_perm(request)
     ubicacion_sel = (request.GET.get("ubicacion") or "").strip() or None  # None = sin filtro
     ubicaciones_todas = _inv_distinct_ubicaciones()
@@ -310,6 +319,10 @@ def inventario(request):
 @login_required
 @transaction.atomic
 def inventario_ajustar(request, den_id: int):
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+    
     _check_inv_perm(request)
     ubicacion = request.GET.get("ubicacion") or TED_DIRECCION
 
@@ -356,6 +369,11 @@ def inventario_ajustar(request, den_id: int):
 
 @login_required
 def inventario_movimientos(request):
+
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+
     _check_inv_perm(request)
     movs = (
         TedMovimiento.objects
@@ -375,6 +393,10 @@ def inventario_movimientos(request):
 @login_required
 @transaction.atomic
 def crear_stock(request):
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+    
     _check_inv_perm(request)
 
     monedas = Moneda.objects.exclude(codigo__iexact="PYG").order_by("codigo")
@@ -537,6 +559,10 @@ def crear_stock(request):
 @login_required
 @transaction.atomic
 def eliminar_denominacion(request, den_id: int):
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+
     _check_inv_perm(request)
 
     ubicacion = request.GET.get("ubicacion") or request.POST.get("ubicacion") or TED_DIRECCION
