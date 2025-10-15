@@ -38,12 +38,13 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "pagos",
     "medios_acreditacion",
-    'operaciones',
-    'transacciones',
-    'configuracion',
-    'payments',
     'notificaciones',
-
+    "operaciones",
+    "transacciones",
+    "configuracion",
+    "payments",
+    "ted",
+    "analista_panel",
 
 ]
 

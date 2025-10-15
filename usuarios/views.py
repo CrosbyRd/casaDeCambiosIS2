@@ -30,6 +30,15 @@ def register(request):
             user.password = make_password(form.cleaned_data["password"])
             user.save()
 
+            # Asignar el rol de "Cliente" por defecto
+            try:
+                cliente_role = Role.objects.get(name="Cliente")
+                user.roles.add(cliente_role)
+            except Role.DoesNotExist:
+                # Opcional: Manejar el caso en que el rol no exista.
+                # Por ahora, simplemente lo ignoramos, pero podrías loggear un error.
+                pass
+
             user.generate_verification_code()
             send_mail(
                 "Código de verificación",
@@ -203,8 +212,14 @@ def login_redirect(request):
     if not user.is_authenticated:
         return redirect("login")
     
+    # ROL DE ADMINISTRADOR
     if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
+
+    # ROL DE ANALISTA
+    if user.roles.filter(name__iexact="Analista").exists() \
+       or user.has_perm("analista_panel.access_analista_dashboard"):
+        return redirect("analista_panel:dashboard")
 
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")
@@ -214,6 +229,9 @@ from transacciones.models import Transaccion
 
 @login_required
 def dashboard(request):
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
     
     # 1. OBTENER el cliente activo
     cliente_activo = get_cliente_activo(request)
@@ -283,6 +301,9 @@ def quitar_cliente(request, user_id, cliente_id):
 
 @login_required
 def seleccionar_cliente(request):
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
     
         # 🚨 SOLUCIÓN: Cargar el CustomUser fresco directamente de la DB
     try:
@@ -297,7 +318,8 @@ def seleccionar_cliente(request):
 
     if not clientes.exists():
         messages.warning(request, "Aún no tenés clientes asociados a tu usuario.")
-        return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})
+        next_url = request.GET.get("next") or request.META.get("HTTP_REFERER") or "usuarios:dashboard"
+        return redirect(next_url)
 
     if request.method == "POST":
         cid = request.POST.get("cliente_id")

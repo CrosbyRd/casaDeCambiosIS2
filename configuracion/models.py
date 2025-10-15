@@ -55,6 +55,10 @@ class TransactionLimit(models.Model):
         verbose_name = "Límite de Transacción"
         verbose_name_plural = "Límites de Transacción"
 
+        permissions = [
+            ("access_config_panel", "Puede acceder al panel de Configuración"),
+        ]
+
     def __str__(self):
         """
         Representación legible del límite de transacción.

@@ -40,3 +40,4 @@ class TransactionLimitForm(forms.ModelForm):
             'monto_diario': forms.NumberInput(attrs={'placeholder': 'Monto Diario PYG'}),
             'monto_mensual': forms.NumberInput(attrs={'placeholder': 'Monto Mensual PYG'}),
         }
+
