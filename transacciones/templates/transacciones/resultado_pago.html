@@ -27,7 +27,13 @@
             <p>Tu pago ha sido confirmado. Ya puedes retirar tus divisas en el Tauser más cercano.</p>
             <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Monto a Retirar:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
                 <p><strong>Tu código de retiro es:</strong></p>
                 <p class="code">{{ transaccion.codigo_operacion_tauser }}</p>
             </div>
@@ -36,13 +42,26 @@
             <p>La operación fue cancelada y el pago no se procesó.</p>
              <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
             </div>
         {% elif transaccion.estado == 'pendiente_pago_cliente' and url_continuar_pago %}
             <h1 class="status-warning">Pago Pendiente</h1>
             <p>Tu operación está pendiente de pago. Haz clic en el botón para continuar con el proceso de pago.</p>
             <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
                 <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
             </div>
             <div class="actions">
                 <a href="{{ url_continuar_pago }}" class="btn btn-primary">Continuar Pago</a>
@@ -52,12 +71,20 @@
             <p>El estado de tu operación aún se está procesando. Por favor, espera unos momentos y revisa tu historial.</p>
              <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
                 <p><strong>Estado Actual:</strong> {{ transaccion.get_estado_display }}</p>
             </div>
         {% endif %}
 
         <div class="actions">
             <a href="{% url 'core:historial_transacciones' %}" class="btn btn-primary">Ver Historial de Transacciones</a>
+            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary" style="background-color: #6c757d; color: white;">Volver a Detalles de Operación</a>
         </div>
     </div>
 </body>

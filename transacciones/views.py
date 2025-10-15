@@ -39,6 +39,29 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
         transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
 
         if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
+            # Si la modalidad de tasa es flotante, actualizar la tasa de cambio aplicada
+            if transaccion.modalidad_tasa == 'flotante':
+                from cotizaciones.models import Cotizacion
+                try:
+                    # Obtener la cotización actual para la moneda de origen (PYG) y destino (USD)
+                    # Asumimos que la moneda de origen es PYG y la de destino es la divisa extranjera
+                    cotizacion = Cotizacion.objects.get(
+                        moneda_base=transaccion.moneda_origen,
+                        moneda_destino=transaccion.moneda_destino
+                    )
+                    # Actualizar la tasa de cambio aplicada con el valor de venta total (incluyendo comisiones)
+                    transaccion.tasa_cambio_aplicada = cotizacion.total_venta
+                    # Recalcular el monto destino con la nueva tasa final
+                    transaccion.monto_destino = transaccion.monto_origen / cotizacion.total_venta
+                    transaccion.save()
+                    messages.info(request, f"Tasa de cambio actualizada a {cotizacion.total_venta} (final con comisiones) para la operación flotante.")
+                except Cotizacion.DoesNotExist:
+                    messages.error(request, "No se encontró una cotización válida para actualizar la tasa.")
+                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+                except Exception as e:
+                    messages.error(request, f"Error al actualizar la tasa de cambio: {e}")
+                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+
             # Obtener el medio de pago utilizado en la transacción
             medio_pago_id = transaccion.medio_pago_utilizado.id_tipo if transaccion.medio_pago_utilizado else None
             
@@ -75,27 +98,17 @@ class WebhookConfirmacionPagoView(View):
         transaccion_id = data.get('referencia_comercio')
         estado_pago = data.get('estado')
 
-        if not transaccion_id or not estado_pago:
-            return JsonResponse({"error": "Faltan 'referencia_comercio' o 'estado' en el webhook."}, status=400)
+        # Delegar el procesamiento del webhook al orquestador de pagos
+        from pagos.services import handle_payment_webhook
+        result = handle_payment_webhook(data) # Pasar el payload completo al orquestador
 
-        # Buscar la transacción en la base de datos
-        transaccion = get_object_or_404(Transaccion, id=transaccion_id)
-
-        # Actualizar el estado de la transacción
-        if transaccion.estado == 'pendiente_pago_cliente':
-            if estado_pago == 'EXITOSO':
-                transaccion.estado = 'pendiente_retiro_tauser'
-                print(f"INFO: [WEBHOOK] Transacción {transaccion.id} actualizada a 'pendiente_retiro_tauser'.")
-            elif estado_pago == 'RECHAZADO':
-                transaccion.estado = 'cancelada'
-                print(f"INFO: [WEBHOOK] Transacción {transaccion.id} actualizada a 'cancelada'.")
-            
-            transaccion.save()
-        else:
-            # Evita procesar el webhook dos veces si ya se actualizó el estado
-            print(f"WARN: [WEBHOOK] La transacción {transaccion.id} ya no estaba pendiente de pago. Estado actual: {transaccion.estado}")
-
-        return JsonResponse({"status": "ok"})
+        # El orquestador ya actualizó el estado de la transacción.
+        # Aquí solo devolvemos la respuesta adecuada al emisor del webhook.
+        if result.get('status') == 'ERROR':
+            print(f"ERROR: [WEBHOOK] Error al procesar webhook: {result.get('message', 'Error desconocido')}")
+            return JsonResponse({"error": result.get('message', 'Error al procesar webhook.')}, status=500)
+        
+        return JsonResponse({"status": "ok", "message": result.get('message', 'Webhook procesado.')})
 
 class ResultadoPagoView(TemplateView):
     """
@@ -107,10 +120,15 @@ class ResultadoPagoView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         transaccion_id = self.kwargs['transaccion_id']
+        # Recargar la transacción para asegurar que tenemos el estado más reciente
         transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+        transaccion.refresh_from_db() # Recargar la instancia desde la base de datos
+        
         context['transaccion'] = transaccion
+        context['url_continuar_pago'] = None # Inicializar a None
 
-        # Si la transacción está pendiente de pago, intentar obtener la URL de la pasarela
+        # Solo ofrecer continuar pago si la transacción está *realmente* pendiente de pago
+        # y tiene un medio de pago asociado.
         if transaccion.estado == 'pendiente_pago_cliente' and transaccion.medio_pago_utilizado:
             # Llamar al orquestador para obtener la URL de pago
             # No se crea una nueva transacción, solo se obtiene la URL para la existente

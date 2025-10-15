@@ -24,11 +24,17 @@
         
         {% if error %}
             <p class="error">{{ error }}</p>
-        {% elif pago %}
+        {% elif pago and transaccion %}
             <div class="payment-details">
-                <p><strong>Descripción:</strong> {{ pago.descripcion }}</p>
-                <p><strong>Monto a Pagar:</strong> {{ pago.monto }} {{ pago.moneda }}</p>
-                <p><strong>Referencia:</strong> {{ pago.referencia_comercio }}</p>
+                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
+                <p><strong>Referencia de Pago:</strong> {{ pago.referencia_comercio }}</p>
             </div>
             
             <form action="{% url 'simuladores:confirmar_pago' pago.id %}" method="post" class="actions">
@@ -36,8 +42,11 @@
                 <button type="submit" name="accion" value="pagar" class="btn btn-success">Pagar Ahora</button>
                 <button type="submit" name="accion" value="cancelar" class="btn btn-danger">Cancelar Pago</button>
             </form>
+            <div class="actions" style="margin-top: 20px;">
+                <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn" style="background-color: #6c757d; color: white;">Volver a Detalles de Operación</a>
+            </div>
         {% else %}
-             <p class="error">No se encontraron detalles de la transacción.</p>
+             <p class="error">No se encontraron detalles de la transacción o del pago.</p>
         {% endif %}
     </div>
 </body>

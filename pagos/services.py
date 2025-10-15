@@ -45,10 +45,18 @@ def iniciar_cobro_a_cliente(transaccion: Transaccion, request: HttpRequest, medi
         return None
 
     # 3. Delegar la ejecución al gateway
-    if hasattr(gateway_module, 'iniciar_pago'):
-        return gateway_module.iniciar_pago(transaccion, request)
-    else:
-        print(f"ERROR: [PAGOS] La función 'iniciar_pago' no está definida en {gateway_module_name}")
+    try:
+        # Asumimos que la clase del gateway se llama igual que el engine pero con CamelCase
+        gateway_class_name = f"{engine_name.capitalize()}Gateway"
+        gateway_class = getattr(gateway_module, gateway_class_name)
+        
+        gateway_instance = gateway_class()
+        return gateway_instance.initiate_payment(transaccion, request)
+    except AttributeError:
+        print(f"ERROR: [PAGOS] La clase '{gateway_class_name}' o el método 'initiate_payment' no está definido en {gateway_module_name}")
+        return None
+    except Exception as e:
+        print(f"ERROR: [PAGOS] Error al iniciar pago con gateway {engine_name}: {e}")
         return None
 
 
@@ -69,3 +77,78 @@ def ejecutar_acreditacion_a_cliente(transaccion):
     print("="*50)
     
     return True
+
+def handle_payment_webhook(payload: dict):
+    """
+    Orquestador de webhooks para procesar notificaciones de pasarelas de pago.
+
+    Esta función determina qué pasarela de pago manejó el webhook
+    y delega el procesamiento al gateway específico.
+
+    Args:
+        payload (dict): El payload del webhook recibido de la pasarela.
+
+    Returns:
+        dict: Un diccionario con el resultado del procesamiento del webhook.
+    """
+    # Determinar el gateway a utilizar basándose en la referencia_comercio
+    # o algún otro identificador en el payload.
+    # Para la pasarela local, el payload ya contiene 'referencia_comercio'
+    # que es el ID de la Transaccion.
+    
+    transaccion_id = payload.get('referencia_comercio')
+    if not transaccion_id:
+        print("ERROR: [PAGOS WEBHOOK] Payload no contiene 'referencia_comercio'.")
+        return {'status': 'ERROR', 'message': 'Payload inválido.'}
+
+    try:
+        transaccion = Transaccion.objects.get(id=transaccion_id)
+        medio_pago = transaccion.medio_pago_utilizado
+    except Transaccion.DoesNotExist:
+        print(f"ERROR: [PAGOS WEBHOOK] Transacción {transaccion_id} no encontrada.")
+        return {'status': 'ERROR', 'message': 'Transacción no encontrada.'}
+    except AttributeError:
+        print(f"ERROR: [PAGOS WEBHOOK] Transacción {transaccion_id} no tiene medio de pago asociado.")
+        return {'status': 'ERROR', 'message': 'Medio de pago no asociado.'}
+
+    if not medio_pago or not medio_pago.activo or medio_pago.engine == 'manual':
+        print(f"ERROR: [PAGOS WEBHOOK] Medio de pago '{medio_pago.nombre if medio_pago else 'N/A'}' no válido para webhook.")
+        return {'status': 'ERROR', 'message': 'Medio de pago no válido.'}
+
+    engine_name = medio_pago.engine
+    gateway_module_name = f"pagos.gateways.{engine_name}_gateway"
+
+    try:
+        gateway_module = importlib.import_module(gateway_module_name)
+        gateway_class_name = f"{engine_name.capitalize()}Gateway"
+        gateway_class = getattr(gateway_module, gateway_class_name)
+        
+        gateway_instance = gateway_class()
+        webhook_result = gateway_instance.handle_webhook(payload)
+
+        # Actualizar el estado de la transacción basándose en el resultado del gateway
+        if webhook_result.get('status') == 'EXITOSO':
+            if transaccion.estado == 'pendiente_pago_cliente':
+                transaccion.estado = 'pendiente_retiro_tauser'
+                transaccion.save()
+                print(f"INFO: [PAGOS WEBHOOK] Transacción {transaccion.id} actualizada a 'pendiente_retiro_tauser'.")
+            else:
+                print(f"WARN: [PAGOS WEBHOOK] Transacción {transaccion.id} ya no estaba pendiente de pago. Estado actual: {transaccion.estado}")
+        elif webhook_result.get('status') == 'RECHAZADO':
+            if transaccion.estado == 'pendiente_pago_cliente':
+                transaccion.estado = 'cancelada'
+                transaccion.save()
+                print(f"INFO: [PAGOS WEBHOOK] Transacción {transaccion.id} actualizada a 'cancelada'.")
+            else:
+                print(f"WARN: [PAGOS WEBHOOK] Transacción {transaccion.id} ya no estaba pendiente de pago. Estado actual: {transaccion.estado}")
+        
+        return webhook_result # Devolver el resultado original del gateway
+    except ImportError:
+        print(f"ERROR: [PAGOS WEBHOOK] No se pudo encontrar el módulo de gateway: {gateway_module_name}")
+        return {'status': 'ERROR', 'message': 'Gateway no encontrado.'}
+    except AttributeError:
+        print(f"ERROR: [PAGOS WEBHOOK] La clase '{gateway_class_name}' o el método 'handle_webhook' no está definido en {gateway_module_name}")
+        return {'status': 'ERROR', 'message': 'Método de webhook no implementado.'}
+    except Exception as e:
+        print(f"ERROR: [PAGOS WEBHOOK] Error al manejar webhook con gateway {engine_name}: {e}")
+        return {'status': 'ERROR', 'message': f'Error interno: {e}'}

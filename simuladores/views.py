@@ -10,48 +10,9 @@ from .models import PagoSimulado
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-@method_decorator(csrf_exempt, name='dispatch')
-class IniciarPagoAPIView(View):
-    """
-    Endpoint API que recibe la solicitud de inicio de pago y crea un registro
-    en la base de datos para persistir la sesión de pago.
-    """
-    def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Cuerpo de la petición inválido."}, status=400)
-
-        required_keys = ["monto", "moneda", "descripcion", "referencia_comercio", "url_confirmacion", "url_retorno"]
-        if not all(key in data for key in required_keys):
-            return JsonResponse({"error": "Faltan datos requeridos."}, status=400)
-
-        # Crear el objeto de pago en la base de datos
-        pago = PagoSimulado.objects.create(
-            referencia_comercio=data['referencia_comercio'],
-            monto=data['monto'],
-            moneda=data['moneda'],
-            descripcion=data['descripcion'],
-            url_confirmacion=data['url_confirmacion'],
-            url_retorno=data['url_retorno']
-        )
-        
-        print(f"INFO: [SIMULADOR] PagoSimulado creado: {pago.id}")
-
-        # Construir la URL de redirección a la página de pago
-        url_redirect = request.build_absolute_uri(
-            reverse('simuladores:pagina_pago', args=[pago.id])
-        )
-        
-        return JsonResponse({
-            "status": "ok",
-            "transaccion_id": pago.id,
-            "url_redirect": url_redirect
-        })
-
 class PaginaPagoSimuladaView(TemplateView):
     """
-    Renderiza la página HTML donde el usuario "paga" (confirma o cancela).
+    Renderiza la pรกgina HTML donde el usuario "paga" (confirma o cancela).
     """
     template_name = 'simuladores/pagina_pago.html'
 
@@ -61,11 +22,20 @@ class PaginaPagoSimuladaView(TemplateView):
         pago = get_object_or_404(PagoSimulado, id=pago_id, estado='PENDIENTE')
         
         context['pago'] = pago
+        
+        # Obtener la transacciรณn real asociada al pago simulado
+        from transacciones.models import Transaccion
+        try:
+            transaccion = get_object_or_404(Transaccion, id=pago.referencia_comercio)
+            context['transaccion'] = transaccion
+        except Transaccion.DoesNotExist:
+            context['error'] = "No se encontrรณ la transacciรณn asociada a este pago."
+
         return context
 
 class ConfirmarPagoSimuladoView(View):
     """
-    Procesa la confirmación del usuario, envía el webhook y redirige.
+    Procesa la confirmaciรณn del usuario, envรญa el webhook y redirige.
     """
     def post(self, request, *args, **kwargs):
         pago_id = self.kwargs['transaccion_id']
@@ -80,19 +50,19 @@ class ConfirmarPagoSimuladoView(View):
         else:
             return HttpResponseBadRequest("Acción no válida.")
 
-        # Enviar Webhook
-        try:
-            webhook_payload = {
-                'transaccion_id_pasarela': str(pago.id),
-                'referencia_comercio': str(pago.referencia_comercio),
-                'estado': estado_final,
-                'monto': str(pago.monto)
-            }
-            requests.post(pago.url_confirmacion, json=webhook_payload, timeout=5)
-        except requests.exceptions.RequestException as e:
-            print(f"ERROR: [SIMULADOR] No se pudo enviar el webhook: {e}")
+        # Enviar Webhook a través del orquestador de pagos
+        from pagos.services import handle_payment_webhook
+        webhook_payload = {
+            'transaccion_id_pasarela': str(pago.id),
+            'referencia_comercio': str(pago.referencia_comercio),
+            'estado': estado_final,
+            'monto': str(pago.monto)
+        }
+        
+        # Llamar al orquestador para manejar el webhook
+        handle_payment_webhook(webhook_payload)
 
-        # Actualizar estado y redirigir
+        # Actualizar estado del pago simulado y redirigir
         pago.estado = 'PROCESADO'
         pago.save()
         
