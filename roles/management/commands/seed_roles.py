@@ -5,43 +5,31 @@ from django.contrib.contenttypes.models import ContentType
 
 from roles.models import Role
 from clientes.models import Cliente
+from configuracion.models import TransactionLimit  # para CRUD de límites
 
 class Command(BaseCommand):
-    help = "Crea o actualiza los roles y sus permisos en el sistema."
+    help = "Crea/actualiza roles y permisos."
 
-    @transaction.atomic
-    def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS("Iniciando la configuración de roles y permisos..."))
-
-        # --- Helpers ---
-        def get_perms_by_codenames(codenames):
-            perms = []
-            for code in codenames:
-                try:
-                    perms.append(Permission.objects.get(codename=code))
-                except Permission.DoesNotExist:
-                    self.stdout.write(self.style.WARNING(f"Permiso '{code}' no encontrado. ¿Falta migración?"))
-                except Permission.MultipleObjectsReturned:
-                    self.stdout.write(self.style.ERROR(f"Múltiples permisos con codename '{code}'. Revisar modelos."))
-            return perms
-
-        def get_model_perms(model, only=None, exclude=None):
+    def _get_perms(self, *, codenames=None, model=None, only=None):
+        if codenames:
+            return list(Permission.objects.filter(codename__in=codenames))
+        if model:
             ct = ContentType.objects.get_for_model(model)
             qs = Permission.objects.filter(content_type=ct)
             if only:
                 qs = qs.filter(codename__in=only)
-            if exclude:
-                qs = qs.exclude(codename__in=exclude)
             return list(qs)
+        return []
+
+    @transaction.atomic
+    def handle(self, *args, **opts):
+        self.stdout.write(self.style.SUCCESS("Configurando roles…"))
 
         # === ADMINISTRADOR ===
-        rol_admin, _ = Role.objects.get_or_create(
-            name="Administrador",
-            defaults={"description": "Rol de Administrador con acceso total."}
-        )
+        admin, _ = Role.objects.get_or_create(name="Administrador",
+                                              defaults={"description": "Acceso total."})
 
-        admin_codenames = [
-            # permisos “de aplicación” (no atados a un modelo específico)
+        admin_custom = self._get_perms(codenames=[
             "access_admin_dashboard",
             "access_cotizaciones",
             "access_monedas_section",
@@ -53,52 +41,45 @@ class Command(BaseCommand):
             "access_pagos_section",
             "puede_operar_terminal",
             "puede_gestionar_inventario",
-            "access_config_panel"
-        ]
-        admin_perms = get_perms_by_codenames(admin_codenames)
-
-        # + permisos del modelo Cliente (CRUD)
-        admin_perms += get_model_perms(Cliente, only=[
-            "add_cliente", "change_cliente", "delete_cliente", "view_cliente"
+            "access_config_panel",  # permiso custom en configuracion
+        ])
+        admin_clientes_crud = self._get_perms(model=Cliente, only=[
+            "add_cliente","change_cliente","delete_cliente","view_cliente"
+        ])
+        admin_limits_crud = self._get_perms(model=TransactionLimit, only=[
+            "add_transactionlimit","change_transactionlimit",
+            "delete_transactionlimit","view_transactionlimit"
         ])
 
-        rol_admin.permissions.set(admin_perms)
-        self.stdout.write(self.style.SUCCESS(f"Rol 'Administrador' configurado con {len(admin_perms)} permisos."))
+        admin.permissions.set(admin_custom + admin_clientes_crud + admin_limits_crud)
 
         # === CLIENTE ===
-        rol_cliente, _ = Role.objects.get_or_create(
-            name="Cliente",
-            defaults={"description": "Rol de Cliente estándar para usuarios finales."}
-        )
+        cliente, _ = Role.objects.get_or_create(name="Cliente",
+                                                defaults={"description": "Usuario final cliente."})
 
-        # Versión A: sin permisos sobre Cliente (ni ver el panel, ni CRUD)
-        rol_cliente.permissions.set([])  # ← vaciamos cualquier permiso previo
-        self.stdout.write(self.style.SUCCESS("Rol 'Cliente' configurado SIN permisos sobre el modelo Cliente."))
+        # PRINCIPIO DE MÍNIMO PRIVILEGIO:
+        # Solo ver su entidad Cliente si tu UI lo necesita (view_cliente),
+        # NO add/change/delete, NO access_clientes_panel, NO access_config_panel.
+        cliente_perms = self._get_perms(model=Cliente, only=["view_cliente"])
 
-        # === CLIENTE_Dev_OTP_Bypass (solo existencia, sin permisos especiales) ===
-        Role.objects.get_or_create(
-            name="Cliente_Dev_OTP_Bypass",
-            defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."}
-        )
-        self.stdout.write(self.style.SUCCESS("Rol 'Cliente_Dev_OTP_Bypass' asegurado."))
+        # Si tu flujo de transacciones exige un permiso para habilitar la validación/confirmación,
+        # agrégalo explícitamente acá (por ejemplo, "access_pagos_section" o uno propio de tu app de pagos).
+        # EJEMPLO (descomentar/ajustar si corresponde):
+        # cliente_perms += self._get_perms(codenames=["access_pagos_section"])  # ← AJUSTAR si tu flujo lo exige
+
+        cliente.permissions.set(cliente_perms)
 
         # === ANALISTA ===
-        rol_analista, _ = Role.objects.get_or_create(
-            name="Analista",
-            defaults={"description": "Rol de Analista cambiario (gestión de tasas y monitoreo)."}
-        )
-
-        analista_codenames = [
+        analista, _ = Role.objects.get_or_create(name="Analista",
+                                                defaults={"description": "Analista cambiario."})
+        analista_perms = self._get_perms(codenames=[
             "access_analista_dashboard",
             "access_exchange_rates",
             "view_profits_module",
             "access_cotizaciones",
             "puede_gestionar_inventario",
-        ]
-        analista_perms = get_perms_by_codenames(analista_codenames)
+        ])
+        # Analista NO debe tocar clientes ni configuración
+        analista.permissions.set(analista_perms)
 
-        # Analista NO debe tener permisos sobre Cliente (ni panel ni CRUD)
-        rol_analista.permissions.set(analista_perms)
-        self.stdout.write(self.style.SUCCESS(f"Rol 'Analista' configurado con {len(analista_perms)} permisos."))
-
-        self.stdout.write(self.style.SUCCESS("Configuración de roles y permisos finalizada."))
+        self.stdout.write(self.style.SUCCESS("Roles configurados."))
