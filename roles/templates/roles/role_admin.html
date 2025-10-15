@@ -1,26 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange{% endblock %}
+{% block title %}Global Exchange - Gestión de Roles por Usuario{% endblock %}
 
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
 
-  <header class="flex items-center justify-between mb-8">
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Roles</h1>
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Roles por Usuario</h1>
       <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
-        Gestioná los roles del sistema: crear, ver descripción, asignar permisos y eliminar.
+        Asigna o quita roles a cada usuario del sistema.
       </p>
     </div>
-    <div class="space-x-3 flex">
+    <div class="flex items-center gap-3">
       <a href="{% url 'admin_panel:dashboard' %}"
-         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-         style="color:var(--brand-dark)">
-        ⬅ Volver al Panel
-      </a>
-      <button type="button" id="btn-toggle-crear"
-              class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
-        ➕ Crear Rol
-      </button>
+         class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">⬅ Volver al Panel</a>
     </div>
   </header>
 
@@ -32,58 +26,50 @@
     </div>
   {% endif %}
 
-  <!-- Formulario crear rol -->
-  <section id="crearRolForm" class="hidden mb-6 bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
-    <form method="post">
-      {% csrf_token %}
-      <div class="mb-4">
-        <label for="nombre" class="block mb-1 font-semibold">Nombre del Rol</label>
-        <input type="text" id="nombre" name="nombre"
-               class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-      </div>
-      <div class="mb-4">
-        <label for="descripcion" class="block mb-1 font-semibold">Descripción</label>
-        <textarea id="descripcion" name="descripcion" rows="3"
-                  class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
-      </div>
-      <button type="submit" class="px-6 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
-        Guardar Rol
-      </button>
-    </form>
-  </section>
-
-  <!-- Tabla de Roles -->
+  <!-- Tabla de Usuarios -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse min-w-[640px]">
+      <table class="w-full text-left border-collapse min-w-[800px]">
         <thead style="background:var(--brand); color:#fff">
           <tr>
-            <th class="px-6 py-3">Nombre</th>
-            <th class="px-6 py-3">Descripción</th>
+            <th class="px-6 py-3">Usuario</th>
+            <th class="px-6 py-3">Correo</th>
+            <th class="px-6 py-3">Roles Asignados</th>
             <th class="px-6 py-3 text-center">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {% for rol in roles %}
+          {% for usuario in usuarios %}
           <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
-            <td class="px-6 py-4 font-bold text-[var(--brand-dark)]">{{ rol.name }}</td>
-            <td class="px-6 py-4">{{ rol.description|default:"—" }}</td>
+            <td class="px-6 py-4 font-semibold text-[var(--ink)]">
+              {{ usuario.first_name }} {{ usuario.last_name }}
+            </td>
+            <td class="px-6 py-4 text-neutral-600">
+              {{ usuario.email }}
+            </td>
             <td class="px-6 py-4">
-              <div class="flex justify-center gap-2">
-                <form action="{% url 'roles:role-delete' rol.pk %}" method="post"
-                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar este rol?');">
-                  {% csrf_token %}
-                  <button type="submit"
-                          class="w-24 text-center px-4 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">
-                    Eliminar
-                  </button>
-                </form>
+              {% if usuario.roles.all %}
+                <div class="flex flex-wrap gap-2">
+                  {% for rol in usuario.roles.all %}
+                    <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-xs font-semibold">{{ rol.name }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <span class="text-neutral-400 text-sm">Sin rol</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex justify-center">
+                <a href="{% url 'roles:manage-user-roles' usuario.id %}"
+                   class="px-4 py-2 rounded-lg font-semibold text-white bg-gray-600 hover:bg-gray-700">
+                  Gestionar Roles
+                </a>
               </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="3" class="px-6 py-6 text-center" style="color:var(--muted)">No hay roles registrados.</td>
+            <td colspan="4" class="px-6 py-10 text-center text-neutral-500">No hay usuarios para mostrar.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -92,14 +78,4 @@
   </section>
 
 </main>
-
-<script>
-  (function(){
-    const btn = document.getElementById('btn-toggle-crear');
-    const panel = document.getElementById('crearRolForm');
-    if(btn && panel){
-      btn.addEventListener('click', ()=> panel.classList.toggle('hidden'));
-    }
-  })();
-</script>
 {% endblock %}

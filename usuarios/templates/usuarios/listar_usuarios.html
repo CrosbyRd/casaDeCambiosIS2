@@ -24,7 +24,8 @@
     <div>
       <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
       <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
-        Asigna o quita clientes a cada usuario. Usa los filtros de arriba para encontrar rápido.
+        En este apartado solo se muestran usuarios con rol <span class="font-semibold">Cliente</span>.
+        Usá el buscador y el filtro de “sin clientes” para encontrar rápido.
       </p>
     </div>
     <div class="flex items-center gap-3">
@@ -34,23 +35,14 @@
     </div>
   </header>
 
-  {# ---- Barra de filtros ---- #}
+  {# ---- Barra de filtros (sin filtro de rol) ---- #}
   <section class="bg-white border rounded-xl shadow-sm p-4 mb-6" style="border-color:var(--line)">
     <form class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="return false;">
-      <div>
+      <div class="md:col-span-2">
         <label for="filtroTexto" class="block text-sm font-medium mb-1" style="color:var(--muted)">Buscar (nombre o email)</label>
         <input id="filtroTexto" type="search" placeholder="Ej: ana, @empresa.com"
                class="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
                style="border-color:var(--line); --tw-ring-color:var(--brand);" />
-      </div>
-      <div>
-        <label for="filtroRol" class="block text-sm font-medium mb-1" style="color:var(--muted)">Filtrar por rol</label>
-        <select id="filtroRol"
-                class="w-full rounded-lg border px-3 py-2 bg-white outline-none focus:ring-2"
-                style="border-color:var(--line); --tw-ring-color:var(--brand);">
-          <option value="">Todos</option>
-          {# Opcional: si envías "roles" desde la vista puedes renderizarlos aquí #}
-        </select>
       </div>
       <div class="flex items-end">
         <label class="inline-flex items-center gap-2 text-sm" style="color:var(--muted)">
@@ -65,14 +57,14 @@
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
       <table class="w-full min-w-[900px] text-left border-collapse">
-        <caption class="sr-only">Tabla de usuarios y clientes asociados</caption>
+        <caption class="sr-only">Tabla de usuarios (solo rol Cliente) y clientes asociados</caption>
         <thead class="sticky top-0 z-10" style="background:var(--brand); color:#fff">
           <tr>
             <th class="px-6 py-3">Usuario</th>
             <th class="px-6 py-3">Correo</th>
             <th class="px-6 py-3">Roles</th>
             <th class="px-6 py-3">Clientes Asociados</th>
-            <th class="px-6 py-3 w-[260px]">Acciones</th>
+            <th class="px-6 py-3 w-[300px]">Acciones</th>
           </tr>
         </thead>
         <tbody id="tbodyUsuarios">
@@ -108,7 +100,7 @@
                   <li class="flex items-center justify-between bg-neutral-100 rounded px-2 py-1">
                     <span class="truncate">{{ cliente.nombre }}</span>
                     <a href="{% url 'usuarios:quitar_cliente' usuario.id cliente.id_cliente %}"
-                       class="px-2 py-1 rounded-md text-sm bg-red-600 hover:bg-red-700 text-white"
+                       class="px-2 py-1 rounded-md text-sm bg-red-600 hover:bg-red-700 text-white quitar-cliente"
                        title="Quitar cliente">Quitar</a>
                   </li>
                 {% endfor %}
@@ -118,7 +110,7 @@
               {% endif %}
             </td>
 
-            {# Acciones: abrir modal "Agregar cliente" #}
+            {# Acciones: Agregar cliente + Gestionar Roles #}
             <td class="px-6 py-4">
               <div class="flex flex-col sm:flex-row gap-2">
                 <button type="button"
@@ -127,11 +119,7 @@
                         data-open-modal="modal-{{ usuario.id }}">
                   ➕ Agregar cliente
                 </button>
-                <a href="{% url 'roles:manage-user-roles' usuario.id %}"
-                   class="px-3 py-2 rounded-lg font-semibold text-white bg-gray-600 hover:bg-gray-700">
-                  Gestionar Roles
-                </a>
-              </div>
+
 
               {# --- Modal Agregar cliente con buscador --- #}
               <dialog id="modal-{{ usuario.id }}" class="rounded-2xl p-0 w-full max-w-xl">
@@ -232,51 +220,45 @@
 
 {# ---------- JS mínimo, accesible y sin dependencias ---------- #}
 <script>
-  // Debounce simple para evitar filtrar en cada tecla
+  // Debounce simple
   function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
 
-  // Construir opciones del filtro de roles a partir de las chips de la tabla (si no las envías desde la vista)
-  (function hydrateRoleFilter(){
-    const sel = document.getElementById('filtroRol');
-    if (!sel) return;
-    const set = new Set();
-    document.querySelectorAll('#tbodyUsuarios [data-roles]').forEach(tr=>{
-      tr.dataset.roles.split('|').filter(Boolean).forEach(r=>set.add(r.trim()));
-    });
-    [...set].sort().forEach(r=>{
-      const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o);
+  const filtroTexto = document.getElementById('filtroTexto');
+  const soloSin     = document.getElementById('soloSinClientes');
+  const tbody       = document.getElementById('tbodyUsuarios');
+
+  // 1) Eliminar del DOM las filas cuya lista de roles NO incluya "Cliente"
+  (function onlyShowClienteRole(){
+    const rows = [...tbody.querySelectorAll('tr')];
+    rows.forEach(tr=>{
+      const roles = (tr.dataset.roles || '').toLowerCase().split('|').map(s=>s.trim());
+      if (!roles.includes('cliente')) {
+        tr.remove(); // no aparece en la tabla
+      }
     });
   })();
 
-  // Lógica de filtrado
-  const filtroTexto = document.getElementById('filtroTexto');
-  const filtroRol   = document.getElementById('filtroRol');
-  const soloSin     = document.getElementById('soloSinClientes');
-  const rows        = [...document.querySelectorAll('#tbodyUsuarios > tr')];
-
+  // 2) Filtrado por texto y por "solo sin clientes"
   function aplicarFiltros(){
     const q = (filtroTexto.value || '').toLowerCase().trim();
-    const rol = (filtroRol.value || '').toLowerCase();
     const onlyEmpty = !!soloSin.checked;
+    const rows = [...tbody.querySelectorAll('tr')];
 
     rows.forEach(tr=>{
-      const txt  = tr.dataset.text.toLowerCase();
-      const roles = tr.dataset.roles.toLowerCase();
+      const txt  = (tr.dataset.text || '').toLowerCase();
       const sin = tr.dataset.sinclientes === '1';
 
       const matchTxt = !q || txt.includes(q);
-      const matchRol = !rol || roles.split('|').includes(rol);
       const matchSin = !onlyEmpty || sin;
 
-      tr.style.display = (matchTxt && matchRol && matchSin) ? '' : 'none';
+      tr.style.display = (matchTxt && matchSin) ? '' : 'none';
     });
   }
   const filtrar = debounce(aplicarFiltros, 150);
   filtroTexto.addEventListener('input', filtrar);
-  filtroRol.addEventListener('change', aplicarFiltros);
   soloSin.addEventListener('change', aplicarFiltros);
 
-  // Modales: abrir/cerrar (Agregar cliente)
+  // 3) Modales: abrir/cerrar (Agregar cliente)
   document.querySelectorAll('[data-open-modal]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const dlg = document.getElementById(btn.dataset.openModal);
@@ -284,7 +266,7 @@
     });
   });
 
-  // Buscador dentro de cada modal de "Agregar cliente"
+  // 4) Buscador dentro de cada modal de "Agregar cliente"
   document.querySelectorAll('input[data-search-list]').forEach(inp=>{
     const listId = inp.getAttribute('data-search-list');
     const list = document.getElementById(listId);
@@ -298,7 +280,7 @@
     }, 100));
   });
 
-  // --- Confirmación al quitar cliente (estilo tipos_list) ---
+  // 5) Confirmación al quitar cliente
   (function(){
     const modal = document.getElementById('confirmQuitarModal');
     const txt   = document.getElementById('confirmQuitarText');
@@ -307,7 +289,7 @@
 
     let pendingHref = null;
 
-    function openModal(href, usuarioNombre, clienteNombre){
+    function openConfirm(href, usuarioNombre, clienteNombre){
       pendingHref = href;
       if (usuarioNombre || clienteNombre){
         txt.textContent = `¿Seguro que querés quitar “${clienteNombre||'este cliente'}” de “${usuarioNombre||'este usuario'}”?`;
@@ -315,28 +297,33 @@
       modal.style.display = 'flex';
       modal.setAttribute('aria-hidden','false');
     }
-    function closeModal(){
+    function closeConfirm(){
       modal.style.display = 'none';
       modal.setAttribute('aria-hidden','true');
       pendingHref = null;
     }
 
-    // Interceptar SOLO los links con title="Quitar cliente"
-    document.querySelectorAll('a[title="Quitar cliente"]').forEach(a=>{
-      a.addEventListener('click', (e)=>{
-        e.preventDefault();
-        // Buscar nombres para copiar al mensaje
-        const tr = a.closest('tr');
-        const usuarioNombre = tr ? tr.querySelector('td:first-child')?.textContent.trim() : '';
-        const clienteNombre = a.closest('li')?.querySelector('span')?.textContent.trim() || '';
-        openModal(a.getAttribute('href'), usuarioNombre, clienteNombre);
+    // Bind a todos los links de quitar visibles
+    function bindQuitar(){
+      document.querySelectorAll('a.quitar-cliente[title="Quitar cliente"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const tr = a.closest('tr');
+          const usuarioNombre = tr ? tr.querySelector('td:first-child')?.textContent.trim() : '';
+          const clienteNombre = a.closest('li')?.querySelector('span')?.textContent.trim() || '';
+          openConfirm(a.getAttribute('href'), usuarioNombre, clienteNombre);
+        });
       });
-    });
+    }
+    bindQuitar();
 
     btnOk.addEventListener('click', ()=>{ if(pendingHref) window.location.href = pendingHref; });
-    btnNo.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
-    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+    btnNo.addEventListener('click', closeConfirm);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeConfirm(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeConfirm(); });
   })();
+
+  // Ejecutar primer filtrado (por si quedó activo el checkbox)
+  aplicarFiltros();
 </script>
 {% endblock %}

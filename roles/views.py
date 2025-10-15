@@ -11,43 +11,18 @@ from usuarios.models import CustomUser
 @login_required
 def role_panel(request):
     """
-    Renderiza la página para administrar Roles y maneja la creación de nuevos roles.
+    Renderiza la página para administrar Roles de usuarios.
     Solo accesible con permiso específico.
     """
     if not request.user.has_perm("roles.access_roles_panel"):
-        messages.error(request, "No tienes permiso para acceder a Roles.")
+        messages.error(request, "No tienes permiso para acceder a la gestión de roles de usuarios.")
         return redirect("home")
 
-    if request.method == 'POST':
-        nombre_rol = request.POST.get('nombre')
-        descripcion_rol = request.POST.get('descripcion')
-        
-        if nombre_rol:
-            Role.objects.create(name=nombre_rol, description=descripcion_rol)
-            messages.success(request, f"Rol '{nombre_rol}' creado exitosamente.")
-        else:
-            messages.error(request, "El nombre del rol no puede estar vacío.")
-        
-        return redirect('roles:role-panel')  # Redirigimos para evitar reenvío del formulario
-
-    roles = Role.objects.all()
+    usuarios = CustomUser.objects.all().order_by('first_name', 'last_name')
     context = {
-        'roles': roles
+        'usuarios': usuarios
     }
     return render(request, 'roles/role_admin.html', context)
-
-
-@login_required
-def role_delete(request, pk):
-    if not request.user.has_perm("roles.delete_roles"):
-        messages.error(request, "No tienes permiso para eliminar roles.")
-        return redirect("home")
-
-    rol_a_eliminar = get_object_or_404(Role, pk=pk)
-    rol_nombre = rol_a_eliminar.name   # 👈 cambio aquí
-    rol_a_eliminar.delete()
-    messages.success(request, f"Rol '{rol_nombre}' eliminado exitosamente.")
-    return redirect('roles:role-panel')
 
 
 @login_required
