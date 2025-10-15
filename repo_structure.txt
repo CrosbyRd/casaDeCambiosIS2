@@ -13,11 +13,12 @@
 │   ├── tests.py
 │   ├── urls.py
 │   └── views.py
+├── backup_pagos.json
 ├── CasaDeCambioIS2
 │   ├── asgi.py
 │   ├── docs
 │   │   ├── Chats.txt
-│   │   └── Conversaciones.md
+│   │   └── Conversaciones-hito-5.md
 │   ├── __init__.py
 │   ├── settings.py
 │   ├── urls.py
@@ -60,6 +61,7 @@
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_transactionlimit_monto_diario_and_more.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -67,6 +69,9 @@
 │   │       ├── editar_limite.html
 │   │       ├── eliminar_limite.html
 │   │       └── lista_limites.html
+│   ├── templatetags
+│   │   ├── configuracion_extras.py
+│   │   └── __init__.py
 │   ├── tests
 │   │   ├── __init__.py
 │   │   ├── test_forms.py
@@ -88,6 +93,8 @@
 │   ├── templates
 │   │   └── core
 │   │       ├── confirmar_operacion.html
+│   │       ├── detalle_operacion_tauser.html
+│   │       ├── detalle_transaccion.html
 │   │       ├── historial_transacciones.html
 │   │       └── iniciar_operacion.html
 │   ├── tests.py
@@ -135,7 +142,6 @@
 │   └── views.py
 ├── db.sqlite3
 ├── docs
-│   ├── admin_panel.migrations.rst
 │   ├── admin_panel.rst
 │   ├── _build
 │   │   ├── doctrees
@@ -144,21 +150,38 @@
 │   │   │   ├── CasaDeCambioIS2.doctree
 │   │   │   ├── clientes.doctree
 │   │   │   ├── clientes.migrations.doctree
+│   │   │   ├── configuracion.doctree
+│   │   │   ├── configuracion.migrations.doctree
+│   │   │   ├── configuracion.tests.doctree
 │   │   │   ├── core.doctree
 │   │   │   ├── correo.doctree
 │   │   │   ├── correo.migrations.doctree
 │   │   │   ├── cotizaciones.doctree
 │   │   │   ├── cotizaciones.migrations.doctree
+│   │   │   ├── cotizaciones.tests.doctree
 │   │   │   ├── environment.pickle
 │   │   │   ├── index.doctree
 │   │   │   ├── lib.doctree
 │   │   │   ├── lib.migrations.doctree
 │   │   │   ├── manage.doctree
+│   │   │   ├── medios_acreditacion.doctree
+│   │   │   ├── medios_acreditacion.migrations.doctree
+│   │   │   ├── medios_acreditacion.tests.doctree
 │   │   │   ├── modules.doctree
 │   │   │   ├── monedas.doctree
 │   │   │   ├── monedas.migrations.doctree
+│   │   │   ├── monedas.test.doctree
+│   │   │   ├── operaciones.doctree
+│   │   │   ├── operaciones.migrations.doctree
+│   │   │   ├── pagos.doctree
+│   │   │   ├── pagos.migrations.doctree
+│   │   │   ├── pagos.tests.doctree
+│   │   │   ├── payments.doctree
+│   │   │   ├── payments.migrations.doctree
 │   │   │   ├── roles.doctree
 │   │   │   ├── roles.migrations.doctree
+│   │   │   ├── run_tests.doctree
+│   │   │   ├── run_tests_H5.doctree
 │   │   │   ├── source
 │   │   │   │   ├── admin_panel.doctree
 │   │   │   │   ├── admin_panel.migrations.doctree
@@ -182,6 +205,10 @@
 │   │   │   │   ├── usuarios.management.commands.doctree
 │   │   │   │   ├── usuarios.management.doctree
 │   │   │   │   └── usuarios.migrations.doctree
+│   │   │   ├── ted.doctree
+│   │   │   ├── ted.migrations.doctree
+│   │   │   ├── transacciones.doctree
+│   │   │   ├── transacciones.migrations.doctree
 │   │   │   ├── usuarios.doctree
 │   │   │   ├── usuarios.management.commands.doctree
 │   │   │   ├── usuarios.management.doctree
@@ -196,16 +223,23 @@
 │   │       ├── CasaDeCambioIS2.html
 │   │       ├── clientes.html
 │   │       ├── clientes.migrations.html
+│   │       ├── configuracion.html
+│   │       ├── configuracion.migrations.html
+│   │       ├── configuracion.tests.html
 │   │       ├── core.html
 │   │       ├── correo.html
 │   │       ├── correo.migrations.html
 │   │       ├── cotizaciones.html
 │   │       ├── cotizaciones.migrations.html
+│   │       ├── cotizaciones.tests.html
 │   │       ├── genindex.html
 │   │       ├── index.html
 │   │       ├── lib.html
 │   │       ├── lib.migrations.html
 │   │       ├── manage.html
+│   │       ├── medios_acreditacion.html
+│   │       ├── medios_acreditacion.migrations.html
+│   │       ├── medios_acreditacion.tests.html
 │   │       ├── _modules
 │   │       │   ├── admin_panel
 │   │       │   │   ├── apps.html
@@ -220,9 +254,27 @@
 │   │       │   │   ├── forms.html
 │   │       │   │   ├── migrations
 │   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_cliente_user.html
 │   │       │   │   │   ├── 0002_remove_cliente_correo_electronico.html
-│   │       │   │   │   └── 0003_alter_cliente_options.html
+│   │       │   │   │   ├── 0003_alter_cliente_options.html
+│   │       │   │   │   ├── 0003_remove_cliente_user.html
+│   │       │   │   │   ├── 0004_merge_20250914_0029.html
+│   │       │   │   │   ├── 0004_merge_20250914_0108.html
+│   │       │   │   │   ├── 0005_merge_20250914_2011.html
+│   │       │   │   │   └── 0006_medioacreditacion.html
 │   │       │   │   ├── models.html
+│   │       │   │   └── views.html
+│   │       │   ├── configuracion
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   └── 0001_initial.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── tests
+│   │       │   │   │   ├── test_forms.html
+│   │       │   │   │   ├── test_models.html
+│   │       │   │   │   ├── test_urls.html
+│   │       │   │   │   └── test_views.html
 │   │       │   │   └── views.html
 │   │       │   ├── core
 │   │       │   │   ├── apps.html
@@ -239,8 +291,14 @@
 │   │       │   │   │   ├── 0001_initial.html
 │   │       │   │   │   ├── 0002_alter_cotizacion_options.html
 │   │       │   │   │   ├── 0002_cotizacion_comision_compra_cotizacion_comision_venta.html
-│   │       │   │   │   └── 0003_merge_20250906_2230.html
+│   │       │   │   │   ├── 0003_merge_20250906_2230.html
+│   │       │   │   │   └── 0004_alter_cotizacion_comision_compra_and_more.html
 │   │       │   │   ├── models.html
+│   │       │   │   ├── tests
+│   │       │   │   │   ├── test_forms.html
+│   │       │   │   │   ├── test_models.html
+│   │       │   │   │   ├── test_urls.html
+│   │       │   │   │   └── test_views.html
 │   │       │   │   └── views.html
 │   │       │   ├── django
 │   │       │   │   ├── db
@@ -257,6 +315,33 @@
 │   │       │   │   ├── models.html
 │   │       │   │   └── views.html
 │   │       │   ├── manage.html
+│   │       │   ├── medios_acreditacion
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_tipomedioacreditacion_delete_medioacreditacion.html
+│   │       │   │   │   ├── 0003_medioacreditacion_delete_tipomedioacreditacion_and_more.html
+│   │       │   │   │   ├── 0004_remove_medioacreditacion_uniq_medio_cuenta_por_cliente_and_more.html
+│   │       │   │   │   ├── 0005_tipomedioacreditacion_delete_medioacreditacion.html
+│   │       │   │   │   ├── 0006_alter_tipomedioacreditacion_options_and_more.html
+│   │       │   │   │   ├── 0007_categoriamedio_remove_tipomedioacreditacion_codigo_and_more.html
+│   │       │   │   │   ├── 0008_alter_categoriamedio_options_and_more.html
+│   │       │   │   │   ├── 0009_alter_categoriamedio_codigo_and_more.html
+│   │       │   │   │   ├── 0010_remove_categoriamedio_nombre.html
+│   │       │   │   │   ├── 0011_campomedioacreditacion_medioacreditacioncliente_and_more.html
+│   │       │   │   │   ├── 0012_alter_campomedioacreditacion_regex.html
+│   │       │   │   │   ├── 0013_campomedioacreditacion_activo.html
+│   │       │   │   │   ├── 0014_alter_tipomedioacreditacion_options.html
+│   │       │   │   │   ├── 0015_medioacreditacioncliente_alias.html
+│   │       │   │   │   └── 0016_medioacreditacioncliente_predeterminado_and_more.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── tests
+│   │       │   │   │   ├── test_forms.html
+│   │       │   │   │   ├── test_models.html
+│   │       │   │   │   ├── test_urls.html
+│   │       │   │   │   └── test_views.html
+│   │       │   │   └── views.html
 │   │       │   ├── monedas
 │   │       │   │   ├── apps.html
 │   │       │   │   ├── forms.html
@@ -266,8 +351,42 @@
 │   │       │   │   │   ├── 0003_alter_moneda_minima_denominacion.html
 │   │       │   │   │   ├── 0004_remove_moneda_limite_transaccion.html
 │   │       │   │   │   ├── 0005_remove_moneda_admite_efectivo_and_more.html
-│   │       │   │   │   └── 0006_alter_moneda_options.html
+│   │       │   │   │   ├── 0006_alter_moneda_options.html
+│   │       │   │   │   ├── 0007_alter_moneda_admite_en_linea_and_more.html
+│   │       │   │   │   └── 0008_teddenominacion_tedinventario_tedmovimiento.html
 │   │       │   │   ├── models.html
+│   │       │   │   ├── test
+│   │       │   │   │   ├── test_forms.html
+│   │       │   │   │   ├── test_models.html
+│   │       │   │   │   ├── test_urls.html
+│   │       │   │   │   └── test_views.html
+│   │       │   │   └── views.html
+│   │       │   ├── operaciones
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   └── 0001_initial.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── tests.html
+│   │       │   │   └── views.html
+│   │       │   ├── pagos
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_alter_tipomediopago_bonificacion_porcentaje_and_more.html
+│   │       │   │   │   ├── 0003_alter_tipomediopago_options_and_more.html
+│   │       │   │   │   └── 0004_alter_tipomediopago_options_and_more.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── services.html
+│   │       │   │   ├── tests
+│   │       │   │   │   ├── test_forms.html
+│   │       │   │   │   ├── test_models.html
+│   │       │   │   │   ├── test_urls.html
+│   │       │   │   │   └── test_views.html
+│   │       │   │   └── views.html
+│   │       │   ├── payments
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── stripe_service.html
 │   │       │   │   └── views.html
 │   │       │   ├── roles
 │   │       │   │   ├── apps.html
@@ -277,6 +396,23 @@
 │   │       │   │   ├── models.html
 │   │       │   │   ├── serializers.html
 │   │       │   │   └── views.html
+│   │       │   ├── ted
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── forms.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   └── 0002_alter_tedperms_options.html
+│   │       │   │   ├── models.html
+│   │       │   │   ├── services.html
+│   │       │   │   └── views.html
+│   │       │   ├── transacciones
+│   │       │   │   ├── apps.html
+│   │       │   │   ├── migrations
+│   │       │   │   │   ├── 0001_initial.html
+│   │       │   │   │   ├── 0002_alter_transaccion_estado.html
+│   │       │   │   │   ├── 0003_transaccion_tasa_garantizada_hasta_and_more.html
+│   │       │   │   │   └── 0004_transaccion_modalidad_tasa.html
+│   │       │   │   └── models.html
 │   │       │   └── usuarios
 │   │       │       ├── apps.html
 │   │       │       ├── forms.html
@@ -305,10 +441,20 @@
 │   │       ├── modules.html
 │   │       ├── monedas.html
 │   │       ├── monedas.migrations.html
+│   │       ├── monedas.test.html
 │   │       ├── objects.inv
+│   │       ├── operaciones.html
+│   │       ├── operaciones.migrations.html
+│   │       ├── pagos.html
+│   │       ├── pagos.migrations.html
+│   │       ├── pagos.tests.html
+│   │       ├── payments.html
+│   │       ├── payments.migrations.html
 │   │       ├── py-modindex.html
 │   │       ├── roles.html
 │   │       ├── roles.migrations.html
+│   │       ├── run_tests_H5.html
+│   │       ├── run_tests.html
 │   │       ├── search.html
 │   │       ├── searchindex.js
 │   │       ├── source
@@ -340,20 +486,37 @@
 │   │       │   ├── CasaDeCambioIS2.rst.txt
 │   │       │   ├── clientes.migrations.rst.txt
 │   │       │   ├── clientes.rst.txt
+│   │       │   ├── configuracion.migrations.rst.txt
+│   │       │   ├── configuracion.rst.txt
+│   │       │   ├── configuracion.tests.rst.txt
 │   │       │   ├── core.rst.txt
 │   │       │   ├── correo.migrations.rst.txt
 │   │       │   ├── correo.rst.txt
 │   │       │   ├── cotizaciones.migrations.rst.txt
 │   │       │   ├── cotizaciones.rst.txt
+│   │       │   ├── cotizaciones.tests.rst.txt
 │   │       │   ├── index.rst.txt
 │   │       │   ├── lib.migrations.rst.txt
 │   │       │   ├── lib.rst.txt
 │   │       │   ├── manage.rst.txt
+│   │       │   ├── medios_acreditacion.migrations.rst.txt
+│   │       │   ├── medios_acreditacion.rst.txt
+│   │       │   ├── medios_acreditacion.tests.rst.txt
 │   │       │   ├── modules.rst.txt
 │   │       │   ├── monedas.migrations.rst.txt
 │   │       │   ├── monedas.rst.txt
+│   │       │   ├── monedas.test.rst.txt
+│   │       │   ├── operaciones.migrations.rst.txt
+│   │       │   ├── operaciones.rst.txt
+│   │       │   ├── pagos.migrations.rst.txt
+│   │       │   ├── pagos.rst.txt
+│   │       │   ├── pagos.tests.rst.txt
+│   │       │   ├── payments.migrations.rst.txt
+│   │       │   ├── payments.rst.txt
 │   │       │   ├── roles.migrations.rst.txt
 │   │       │   ├── roles.rst.txt
+│   │       │   ├── run_tests_H5.rst.txt
+│   │       │   ├── run_tests.rst.txt
 │   │       │   ├── source
 │   │       │   │   ├── admin_panel.migrations.rst.txt
 │   │       │   │   ├── admin_panel.rst.txt
@@ -377,6 +540,10 @@
 │   │       │   │   ├── usuarios.management.rst.txt
 │   │       │   │   ├── usuarios.migrations.rst.txt
 │   │       │   │   └── usuarios.rst.txt
+│   │       │   ├── ted.migrations.rst.txt
+│   │       │   ├── ted.rst.txt
+│   │       │   ├── transacciones.migrations.rst.txt
+│   │       │   ├── transacciones.rst.txt
 │   │       │   ├── usuarios.management.commands.rst.txt
 │   │       │   ├── usuarios.management.rst.txt
 │   │       │   ├── usuarios.migrations.rst.txt
@@ -449,34 +616,42 @@
 │   │       │   ├── sphinx_highlight.js
 │   │       │   ├── _sphinx_javascript_frameworks_compat.js
 │   │       │   └── translations.js
+│   │       ├── ted.html
+│   │       ├── ted.migrations.html
+│   │       ├── transacciones.html
+│   │       ├── transacciones.migrations.html
 │   │       ├── usuarios.html
 │   │       ├── usuarios.management.commands.html
 │   │       ├── usuarios.management.html
 │   │       └── usuarios.migrations.html
 │   ├── CasaDeCambioIS2.rst
-│   ├── clientes.migrations.rst
 │   ├── clientes.rst
+│   ├── configuracion.rst
+│   ├── configuracion.tests.rst
 │   ├── conf.py
 │   ├── core.rst
-│   ├── correo.migrations.rst
 │   ├── correo.rst
-│   ├── cotizaciones.migrations.rst
 │   ├── cotizaciones.rst
 │   ├── index.rst
-│   ├── lib.migrations.rst
 │   ├── lib.rst
 │   ├── make.bat
 │   ├── Makefile
 │   ├── manage.rst
+│   ├── medios_acreditacion.rst
+│   ├── medios_acreditacion.tests.rst
 │   ├── modules.rst
-│   ├── monedas.migrations.rst
 │   ├── monedas.rst
-│   ├── roles.migrations.rst
+│   ├── operaciones.rst
+│   ├── pagos.rst
+│   ├── pagos.tests.rst
+│   ├── payments.rst
 │   ├── roles.rst
+│   ├── ted.rst
+│   ├── transacciones.rst
 │   ├── usuarios.management.commands.rst
 │   ├── usuarios.management.rst
-│   ├── usuarios.migrations.rst
 │   └── usuarios.rst
+├── fix_migrations.sh
 ├── lib
 │   ├── admin.py
 │   ├── apps.py
@@ -546,6 +721,9 @@
 │   │   ├── 0006_alter_moneda_options.py
 │   │   ├── 0007_alter_moneda_admite_en_linea_and_more.py
 │   │   ├── 0008_teddenominacion_tedinventario_tedmovimiento.py
+│   │   ├── 0009_tedinventario_add_ubicacion_and_fk.py
+│   │   ├── 0010_tedinventario_unique_den_ubicacion.py
+│   │   ├── 0011_alter_tedinventario_options.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── templates
@@ -573,6 +751,7 @@
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── tests.py
+│   ├── urls.py
 │   └── views.py
 ├── output.png
 ├── pagos
@@ -580,19 +759,20 @@
 │   ├── apps.py
 │   ├── forms.py
 │   ├── __init__.py
+│   ├── integrations
+│   │   └── router.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
-│   │   ├── 0002_alter_tipomediopago_bonificacion_porcentaje_and_more.py
-│   │   ├── 0003_alter_tipomediopago_options_and_more.py
-│   │   ├── 0004_alter_tipomediopago_options_and_more.py
 │   │   └── __init__.py
 │   ├── models.py
+│   ├── services.py
 │   ├── templates
 │   │   └── pagos
-│   │       ├── confirmar_eliminacion.html
-│   │       ├── form_tipo_medio_pago.html
-│   │       ├── listar_tipos_medio_pago.html
-│   │       └── ver_tipo_medio_pago.html
+│   │       ├── clientes_form.html
+│   │       ├── clientes_list.html
+│   │       ├── tipos_confirm_delete.html
+│   │       ├── tipos_form.html
+│   │       └── tipos_list.html
 │   ├── tests
 │   │   ├── __init__.py
 │   │   ├── test_forms.py
@@ -638,9 +818,24 @@
 ├── run_tests_H5.py
 ├── run_tests.py
 ├── runtime.txt
+├── simuladores
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── templates
+│   │   └── simuladores
+│   │       └── pagina_pago.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── static
 │   ├── css
-│   │   └── styles.css
+│   │   ├── styles.css
+│   │   └── ted.css
 │   └── img
 │       ├── logo.ico
 │       ├── logo-principal.png
@@ -795,18 +990,22 @@
 ├── structurre.txt
 ├── ted
 │   ├── apps.py
+│   ├── forms.py
 │   ├── __init__.py
 │   ├── migrations
 │   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_tedperms_options.py
+│   │   ├── 0003_tedterminal.py
 │   │   └── __init__.py
 │   ├── models.py
 │   ├── services.py
 │   ├── templates
 │   │   └── ted
-│   │       ├── cheque_mock.html
-│   │       ├── operar.html
-│   │       ├── panel.html
-│   │       └── ticket_popup.html
+│   │       ├── admin_ajustar.html
+│   │       ├── admin_crear_stock.html
+│   │       ├── admin_eliminar_den.html
+│   │       ├── admin_inventario.html
+│   │       └── admin_movimientos.html
 │   ├── urls.py
 │   └── views.py
 ├── templates
@@ -846,9 +1045,19 @@
 │   ├── migrations
 │   │   ├── 0001_initial.py
 │   │   ├── 0002_alter_transaccion_estado.py
-│   │   └── __init__.py
+│   │   ├── 0003_transaccion_tasa_garantizada_hasta_and_more.py
+│   │   ├── 0004_transaccion_modalidad_tasa.py
+│   │   ├── 0005_alter_transaccion_estado.py
+│   │   ├── 0006_remove_transaccion_cliente.py
+│   │   ├── 0007_transaccion_cliente_transaccion_usuario_operador.py
+│   │   ├── 0008_alter_transaccion_cliente_and_more.py
+│   │   ├── __init__.py
+│   │   └── tets
+│   │       ├── __init__.py
+│   │       └── test_models.py
 │   ├── models.py
 │   ├── tests.py
+│   ├── urls.py
 │   └── views.py
 └── usuarios
     ├── admin.py
@@ -877,6 +1086,8 @@
     │   ├── 0011_merge_20250822_1119.py
     │   ├── 0012_remove_customuser_role_customuser_code_created_at_and_more.py
     │   ├── 0013_usuariospermissions.py
+    │   ├── 0014_alter_customuser_clientes.py
+    │   ├── 0015_alter_customuser_clientes.py
     │   └── __init__.py
     ├── mixins.py
     ├── models.py
@@ -884,10 +1095,11 @@
     │   └── usuarios
     │       ├── dashboard.html
     │       ├── listar_usuarios.html
-    │       └── seleccionar_cliente.html
+    │       ├── seleccionar_cliente.html
+    │       └── ted.html
     ├── tests.py
     ├── urls.py
     ├── utils.py
     └── views.py
 
-133 directories, 758 files
+158 directories, 945 files
