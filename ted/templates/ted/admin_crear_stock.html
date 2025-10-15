@@ -1,157 +1,242 @@
 {% extends "base.html" %}
-{% block title %}Global Exchange{% endblock %}
+{% block title %}Crear stock (TED){% endblock %}
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
-  <!-- Encabezado -->
-  <header class="flex items-center justify-between mb-8">
+  <!-- HEADER -->
+  <header class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Crear stock</h1>
-      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
-        Complete el formulario para registrar denominaciones y stock inicial en la terminal.
-        Nº de serie: <strong>{{ serial }}</strong> · Ubicación: <strong>{{ direccion }}</strong>
-      </p>
+      <h1 class="text-3xl font-extrabold text-[var(--ink)]">🧳 Crear inventario</h1>
+      <p class="text-[var(--muted)] mt-1">Completa los datos generales y añade nuevas denominaciones.</p>
     </div>
-
-    <a href="{% url 'admin_panel:ted:inventario' %}"
-       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-       style="color:var(--brand-dark)">⬅ Volver</a>
+    <a href="{% if ubicacion_sel %}{% url 'admin_panel:ted:inventario' %}?ubicacion={{ ubicacion_sel|urlencode }}{% else %}{% url 'admin_panel:ted:inventario' %}{% endif %}"
+       class="px-4 py-2 rounded-lg font-bold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">
+      ⬅ Volver
+    </a>
   </header>
 
-  <!-- Formulario -->
-  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-    <form method="post" id="stock-form" class="pb-6">
-      {% csrf_token %}
+  <p class="text-[var(--muted)] mb-6">
+    N.º de serie: <strong>{{ serial }}</strong> ·
+    Ubicación actual: <strong>{{ direccion }}</strong>
+  </p>
 
-      <!-- Moneda -->
-      <div class="overflow-x-auto">
-        <div class="w-full min-w-[560px] rounded-xl overflow-hidden border" style="border-color:var(--line)">
-          <table class="w-full border-collapse">
-            <thead class="bg-[var(--brand)] text-white">
-              <tr><th class="px-4 py-3 text-left">Moneda</th></tr>
+  {% if messages %}
+  <div class="max-w-5xl mx-auto px-0 mt-2 space-y-3">
+    {% for message in messages %}
+      <div class="rounded-lg px-4 py-3 border
+           {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+           {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+           {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+           {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post" class="bg-white border rounded-2xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    {% csrf_token %}
+
+    <!-- DATOS GENERALES -->
+    <div class="p-6 border-b" style="border-color:var(--line)">
+      <h2 class="text-lg font-bold text-[var(--ink)] mb-4">📋 Datos generales</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Moneda -->
+        <div>
+          <label class="block font-semibold mb-2 text-[var(--ink)]">Moneda</label>
+          {% if prefill and moneda_sel %}
+            <input id="display_moneda_locked" type="text"
+                   class="w-full bg-[var(--surface)] border rounded-lg px-3 py-2"
+                   style="border-color:var(--line)"
+                   value="{{ moneda_sel.codigo }} — {{ moneda_sel.nombre }}" disabled>
+            <input type="hidden" name="moneda_locked" value="{{ moneda_sel.id }}">
+          {% else %}
+            <select id="id_moneda" name="moneda" required
+                    class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                    style="border-color:var(--line); color:var(--ink);">
+              <option value="">— Selecciona una moneda —</option>
+              {% for m in monedas %}
+                <option value="{{ m.id }}"
+                        data-code="{{ m.codigo }}"
+                        data-name="{{ m.nombre }}"
+                        {% if moneda_sel and m.id == moneda_sel.id %}selected{% endif %}>
+                  {{ m.codigo }} — {{ m.nombre }}
+                </option>
+              {% endfor %}
+            </select>
+            <p class="text-sm text-[var(--muted)] mt-1">No incluye PYG (solo monedas extranjeras).</p>
+          {% endif %}
+        </div>
+
+        <!-- Ubicación -->
+        <div>
+          <label class="block font-semibold mb-2 text-[var(--ink)]">Ubicación del TED</label>
+          {% if prefill and ubicacion_sel %}
+            <input type="text" class="w-full bg-[var(--surface)] border rounded-lg px-3 py-2"
+                   style="border-color:var(--line)" value="{{ ubicacion_sel }}" disabled>
+            <input type="hidden" name="ubicacion_locked" value="{{ ubicacion_sel }}">
+            <p class="text-sm text-[var(--muted)] mt-1">La ubicación está fijada porque entraste desde Inventario.</p>
+          {% else %}
+            <input type="text" name="ubicacion" class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                   value="{{ direccion }}" style="border-color:var(--line)">
+            <p class="text-sm text-[var(--muted)] mt-1">Este dato prepara el sistema para múltiples terminales.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if prefill and existentes %}
+      <!-- EXISTENTES (solo lectura) -->
+      <div class="px-6 pt-6">
+        <h3 class="text-lg font-bold text-[var(--ink)] mb-3">🏷️ Denominaciones existentes</h3>
+        <div class="overflow-x-auto rounded-xl border" style="border-color:var(--line)">
+          <table class="min-w-full">
+            <thead>
+              <tr class="bg-[var(--brand)] text-white">
+                <th class="px-6 py-3 text-left">Denominación (valor)</th>
+                <th class="px-6 py-3 text-right">Inventario</th>
+              </tr>
             </thead>
             <tbody>
-              <tr class="hover:bg-[var(--brand-soft)] bg-white">
-                <td class="px-4 py-3">
-                  <select id="id_moneda" name="moneda" class="w-full max-w-[380px]">
-                    <option value="">— Seleccione —</option>
-                    {% for m in monedas %}
-                      <option value="{{ m.id }}">{{ m.codigo }} — {{ m.nombre }}</option>
-                    {% endfor %}
-                  </select>
-                  <p class="text-sm mt-2 text-[var(--muted)]">
-                    Al guardar, la moneda quedará habilitada para operar en la terminal.
-                  </p>
-                </td>
-              </tr>
+              {% for valor, cant in existentes %}
+                <tr class="border-t odd:bg-[var(--surface)]" style="border-color:var(--line)">
+                  <td class="px-6 py-3">{{ valor }}</td>
+                  <td class="px-6 py-3 text-right">{{ cant }}</td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
+    {% endif %}
 
-      <!-- Denominaciones / Stock -->
-      <div class="overflow-x-auto mt-6">
-        <table class="w-full border-collapse min-w-[560px]">
-          <colgroup>
-            <col style="width:55%">
-            <col style="width:35%">
-            <col style="width:10%">
-          </colgroup>
-          <thead class="bg-[var(--brand)] text-white">
-            <tr>
-              <th class="px-4 py-3 text-left">Denominación (valor)</th>
-              <th class="px-4 py-3 text-left">Stock</th>
-              <th class="px-4 py-3 text-center">Acción</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-denoms">
-            <!-- filas dinámicas -->
-          </tbody>
-        </table>
+    <!-- NUEVAS DENOMINACIONES -->
+    <div class="px-6 pt-6 pb-2">
+      <h3 class="text-lg font-bold text-[var(--ink)] mb-2">➕ Agregar nuevas denominaciones</h3>
+      <p class="text-sm text-[var(--muted)] mb-4">
+        Solo podrás guardar denominaciones que no existan aún en esta moneda/ubicación.
+      </p>
+
+      <div id="rows">
+        {% if new_rows and new_rows|length > 0 %}
+          {% for v, s in new_rows %}
+            <div class="grid grid-cols-12 gap-3 mb-3">
+              <div class="col-span-6 md:col-span-5">
+                <input type="number" name="den_valor[]" min="1" step="1"
+                       class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                       style="border-color:var(--line)" placeholder="Ej.: 100" value="{{ v }}">
+              </div>
+              <div class="col-span-5 md:col-span-5">
+                <input type="number" name="den_stock[]" min="0" step="1"
+                       class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                       style="border-color:var(--line)" value="{{ s }}">
+              </div>
+              <div class="col-span-1 flex items-center">
+                <button type="button" class="px-3 py-2 rounded-md bg-red-600 text-white"
+                        onclick="this.closest('.grid').remove()">Eliminar</button>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="grid grid-cols-12 gap-3 mb-3">
+            <div class="col-span-6 md:col-span-5">
+              <input type="number" name="den_valor[]" min="1" step="1"
+                     class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                     style="border-color:var(--line)" placeholder="Ej.: 100">
+            </div>
+            <div class="col-span-5 md:col-span-5">
+              <input type="number" name="den_stock[]" min="0" step="1"
+                     class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                     style="border-color:var(--line)" value="0">
+            </div>
+            <div class="col-span-1 flex items-center">
+              <button type="button" class="px-3 py-2 rounded-md bg-red-600 text-white"
+                      onclick="this.closest('.grid').remove()">Eliminar</button>
+            </div>
+          </div>
+        {% endif %}
       </div>
-    </form>
-  </section>
 
-  <!-- Botones -->
-  <div class="flex justify-between items-center">
-    <button type="button"
-            class="px-4 py-2 rounded-lg font-semibold bg-white border hover:bg-gray-50"
-            style="border-color:var(--line); color:var(--ink)"
-            onclick="addRow()">
-      + Agregar fila
-    </button>
-
-    <div class="flex gap-3">
-      <a href="{% url 'admin_panel:ted:inventario' %}"
-         class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
-        Cancelar
-      </a>
-      <button type="submit" form="stock-form"
-              class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
-              style="background:var(--brand)">
-        Guardar
+      <button type="button" id="addRow"
+              class="mt-2 px-4 py-2 rounded-lg font-bold bg-white border hover:bg-[var(--surface)]"
+              style="border-color:var(--line); color:var(--ink);">
+        ➕ Añadir fila
       </button>
     </div>
-  </div>
+
+    <!-- FOOTER -->
+    <div class="p-6 border-t flex justify-end gap-3" style="border-color:var(--line)">
+      <a href="{% if ubicacion_sel %}{% url 'admin_panel:ted:inventario' %}?ubicacion={{ ubicacion_sel|urlencode }}{% else %}{% url 'admin_panel:ted:inventario' %}{% endif %}"
+         class="px-5 py-2 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700">Cancelar</a>
+      <button type="submit"
+              class="px-5 py-2 rounded-lg font-bold text-white"
+              style="background:var(--brand)">Guardar</button>
+    </div>
+  </form>
 </main>
 
-<style>
-  /* Inputs con el mismo look que “Crear Moneda” */
-  #id_moneda,
-  .den-input,
-  .stk-input{
-    width:100%;
-    max-width:380px;
-    background:#fff;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    height:48px;
-    font-size:1rem;
-    color:var(--ink);
-    box-shadow:0 1px 2px rgba(0,0,0,.03);
-    transition:box-shadow .2s,border-color .2s;
-  }
-  #id_moneda:focus,
-  .den-input:focus,
-  .stk-input:focus{
-    outline:none;border-color:var(--brand);
-    box-shadow:0 0 0 3px rgba(115,60,255,.15);
-  }
-  .remove-btn{
-    display:inline-flex;align-items:center;justify-content:center;
-    padding:10px 12px;border-radius:10px;
-    background:#ef4444;color:#fff;font-weight:600;
-  }
-  .remove-btn:hover{ filter:brightness(.95); }
-</style>
-
 <script>
-  function trTemplate(){
-    return `
-      <tr class="hover:bg-[var(--brand-soft)]">
-        <td class="px-4 py-3 align-middle">
-          <input type="number" step="0.01" min="0.01" name="den_valor[]" placeholder="Ej: 100.00" class="den-input" required>
-        </td>
-        <td class="px-4 py-3 align-middle">
-          <input type="number" step="1" min="0" name="den_stock[]" placeholder="0" class="stk-input" required>
-        </td>
-        <td class="px-4 py-3 align-middle text-center">
-          <button type="button" class="remove-btn" onclick="removeRow(this)">✖</button>
-        </td>
-      </tr>`;
-  }
-  function addRow(){
-    const tbody = document.getElementById('tbody-denoms');
-    const wrapper = document.createElement('tbody'); // temporal para parsear
-    wrapper.innerHTML = trTemplate();
-    tbody.appendChild(wrapper.firstElementChild);
-  }
-  function removeRow(btn){
-    const tr = btn.closest('tr');
-    if(tr) tr.remove();
-  }
-  // 3 filas iniciales
-  addRow(); addRow(); addRow();
+  // Mapa de emojis por código de moneda
+  (function () {
+    const FLAG = {
+      USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴", PYG:"🇵🇾",
+      UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵", CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭",
+      MXN:"🇲🇽", PEN:"🇵🇪", BOB:"🇧🇴"
+    };
+
+    // 1) Poner emojis dentro del <select> de monedas
+    const sel = document.getElementById('id_moneda');
+    if (sel) {
+      Array.from(sel.options).forEach(opt => {
+        if (!opt.value) return; // skip placeholder
+        const code = (opt.dataset.code || '').toUpperCase();
+        const name = opt.dataset.name || '';
+        const emoji = FLAG[code] || "💱";
+        opt.textContent = `${emoji} ${code} — ${name}`;
+      });
+    }
+
+    // 2) Si es prefill, agregar emoji al campo de solo lectura
+    const lockedHidden = document.querySelector('input[name="moneda_locked"]');
+    const lockedDisplay = document.getElementById('display_moneda_locked');
+    if (lockedHidden && lockedDisplay) {
+      const opt = document.querySelector(`#id_moneda option[value="${lockedHidden.value}"]`);
+      if (opt) {
+        const code = (opt.dataset.code || '').toUpperCase();
+        const name = opt.dataset.name || '';
+        const emoji = FLAG[code] || "💱";
+        lockedDisplay.value = `${emoji} ${code} — ${name}`;
+      } else {
+        // fallback si no existe option (por seguridad)
+        const raw = lockedDisplay.value || "";
+        lockedDisplay.value = `💱 ${raw}`;
+      }
+    }
+
+    // 3) UX: al añadir fila, enfocar el primer input de valor
+    document.getElementById('addRow')?.addEventListener('click', function(){
+      const tpl = `
+        <div class="grid grid-cols-12 gap-3 mb-3">
+          <div class="col-span-6 md:col-span-5">
+            <input type="number" name="den_valor[]" min="1" step="1"
+                   class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                   style="border-color:var(--line)" placeholder="Ej.: 100">
+          </div>
+          <div class="col-span-5 md:col-span-5">
+            <input type="number" name="den_stock[]" min="0" step="1"
+                   class="w-full bg-white border rounded-lg px-3 py-2 focus:outline-none focus:ring-2"
+                   style="border-color:var(--line)" value="0">
+          </div>
+          <div class="col-span-1 flex items-center">
+            <button type="button" class="px-3 py-2 rounded-md bg-red-600 text-white"
+                    onclick="this.closest('.grid').remove()">Eliminar</button>
+          </div>
+        </div>`;
+      const cont = document.getElementById('rows');
+      cont.insertAdjacentHTML('beforeend', tpl);
+      const last = cont.querySelector('div.grid:last-child input[name="den_valor[]"]');
+      last && last.focus();
+    });
+  })();
 </script>
 {% endblock %}

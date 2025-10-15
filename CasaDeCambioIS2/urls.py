@@ -81,4 +81,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     path('configuracion/', include('configuracion.urls')),
+
+    path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
 ]

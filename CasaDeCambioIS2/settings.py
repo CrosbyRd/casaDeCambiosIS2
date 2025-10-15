@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "payments",
     "ted",
     "django_extensions"
+    "analista_panel",
 ]
 
 # --- Middleware ---
