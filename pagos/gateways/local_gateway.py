@@ -23,7 +23,7 @@ class LocalGateway(BasePaymentGateway):
                 monto=transaccion.monto_origen,
                 moneda=transaccion.moneda_origen.codigo,
                 descripcion=f"Pago por transacción {transaccion.id}",
-                url_confirmacion=request.build_absolute_uri(reverse('transacciones:webhook_confirmacion_pago')),
+                url_confirmacion=request.build_absolute_uri(reverse('transacciones:webhook_pago_confirmado')), # Corregido el nombre de la URL
                 url_retorno=request.build_absolute_uri(reverse('transacciones:resultado_pago', args=[transaccion.id]))
             )
             
