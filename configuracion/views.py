@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from .models import TransactionLimit
 from .forms import TransactionLimitForm
 
-
+@login_required
 def configuracion_panel(request):
     """
     Renderiza el panel principal de configuración.
@@ -32,11 +32,16 @@ def configuracion_panel(request):
     -----------
     HttpResponse
         Página HTML con el panel de configuración.
+
     """
+
+    if not request.user.has_perm("configuracion.access_config_panel"):
+        return redirect("home")
+    
     return render(request, "configuracion/configuracion_panel.html")
 
 # Lista de límites
-#@login_required
+@login_required
 def lista_limites(request):
     """
     Lista todos los límites de transacciones configurados.
@@ -59,13 +64,15 @@ def lista_limites(request):
     HttpResponse
         Página HTML con el listado de límites.
     """
-    # if not request.user.has_perm("configuracion.access_configuracion"):
-    #     return redirect("home")  # Redirige si no tiene permiso
+
+    if not request.user.has_perm("configuracion.access_config_panel"):
+        return redirect("home")
+  
     limites = TransactionLimit.objects.all()
     return render(request, "configuracion/lista_limites.html", {"limites": limites})
 
 # Crear límite
-#@login_required
+@login_required
 def crear_limite(request):
     """
     Crea un nuevo límite de transacciones.
@@ -93,6 +100,10 @@ def crear_limite(request):
     HttpResponse
         Página con el formulario de creación.
     """
+
+    if not request.user.has_perm("configuracion.access_config_panel"):
+        return redirect("home")
+
     if request.method == "POST":
         form = TransactionLimitForm(request.POST)
         if form.is_valid():
@@ -109,7 +120,7 @@ def crear_limite(request):
 
 
 # Editar límite
-#@login_required
+@login_required
 def editar_limite(request, pk):
     """
     Edita un límite de transacciones existente.
@@ -144,6 +155,12 @@ def editar_limite(request, pk):
     HttpResponse
         Página con el formulario de edición.
     """
+
+
+    if not request.user.has_perm("configuracion.access_config_panel"):
+        return redirect("home")
+    
+
     limite = get_object_or_404(TransactionLimit, pk=pk)
     if request.method == "POST":
         form = TransactionLimitForm(request.POST, instance=limite)
@@ -161,7 +178,7 @@ def editar_limite(request, pk):
 
 
 # Eliminar límite
-#@login_required
+@login_required
 def eliminar_limite(request, pk):
     """
     Elimina un límite de transacciones.
@@ -194,8 +211,11 @@ def eliminar_limite(request, pk):
     HttpResponse
         Página de confirmación o redirección tras eliminar.
     """
-    # if not request.user.has_perm("configuracion.access_configuracion"):
-    #     return redirect("home")
+    
+
+    if not request.user.has_perm("configuracion.access_config_panel"):
+        return redirect("home")
+    
     limite = get_object_or_404(TransactionLimit, pk=pk)
     if request.method == "POST":
         limite.delete()

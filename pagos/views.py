@@ -27,7 +27,6 @@ class AccessPagosMixin(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = False
 
     def handle_no_permission(self):
-        messages.warning(self.request, "No tenés permisos para acceder a Pagos.")
         return redirect("home")
 
 # ---------------------------------------------------------------------------

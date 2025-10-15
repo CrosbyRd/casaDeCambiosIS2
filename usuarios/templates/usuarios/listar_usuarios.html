@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Global Exchange{% endblock %}
+{% block title %}Global Exchange – Gestión de Usuarios y Clientes{% endblock %}
 {% block extra_head %}
 <link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
 {% endblock %}
@@ -8,6 +8,7 @@
 {% block content %}
 <main class="max-w-6xl mx-auto px-6 py-10">
 
+  {# ---- Mensajes del sistema ---- #}
   {% if messages %}
   <div class="mb-6">
     {% for message in messages %}
@@ -18,84 +19,311 @@
   </div>
   {% endif %}
 
+  {# ---- Header consistente con la guía de UI ---- #}
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
-      <p class="text-base sm:text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
-        Aquí puedes asignar y quitar clientes a cada usuario del sistema.
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">👥 Gestión de Usuarios y Clientes</h1>
+      <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+        En este apartado solo se muestran usuarios con rol <span class="font-semibold">Cliente</span>.
+        Usá el buscador y el filtro de “sin clientes” para encontrar rápido.
       </p>
     </div>
-    <div>
-      <a href="{% url 'admin_panel:dashboard' %}" 
-         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-         style="color:var(--brand-dark)">
-        ⬅ Volver al Panel
-      </a>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95"
+         style="color:var(--brand-dark)">⬅ Volver al Panel</a>
     </div>
   </header>
 
+  {# ---- Barra de filtros (sin filtro de rol) ---- #}
+  <section class="bg-white border rounded-xl shadow-sm p-4 mb-6" style="border-color:var(--line)">
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="return false;">
+      <div class="md:col-span-2">
+        <label for="filtroTexto" class="block text-sm font-medium mb-1" style="color:var(--muted)">Buscar (nombre o email)</label>
+        <input id="filtroTexto" type="search" placeholder="Ej: ana, @empresa.com"
+               class="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
+               style="border-color:var(--line); --tw-ring-color:var(--brand);" />
+      </div>
+      <div class="flex items-end">
+        <label class="inline-flex items-center gap-2 text-sm" style="color:var(--muted)">
+          <input id="soloSinClientes" type="checkbox" class="rounded border"
+                 style="border-color:var(--line)"> Solo usuarios sin clientes
+        </label>
+      </div>
+    </form>
+  </section>
+
+  {# ---- Tabla ---- #}
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <div class="overflow-x-auto">
       <table class="w-full min-w-[900px] text-left border-collapse">
-        <caption class="sr-only">Tabla de usuarios y clientes asociados</caption>
-        <thead style="background:var(--brand); color:#fff">
+        <caption class="sr-only">Tabla de usuarios (solo rol Cliente) y clientes asociados</caption>
+        <thead class="sticky top-0 z-10" style="background:var(--brand); color:#fff">
           <tr>
             <th class="px-6 py-3">Usuario</th>
-            <th class="px-6 py-3">Correo Electrónico</th>
-            <th class="px-6 py-3">Rol</th>
+            <th class="px-6 py-3">Correo</th>
+            <th class="px-6 py-3">Roles</th>
             <th class="px-6 py-3">Clientes Asociados</th>
-            <th class="px-6 py-3">Clientes Disponibles</th>
+            <th class="px-6 py-3 w-[300px]">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tbodyUsuarios">
           {% for usuario in usuarios %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+          <tr class="border-b hover:bg-[var(--brand-soft)] transition"
+              style="border-color:var(--line)"
+              data-text="{{ usuario.first_name }} {{ usuario.last_name }} {{ usuario.email|lower }}"
+              data-roles="{% for rol in usuario.roles.all %}{{ rol.name }}{% if not forloop.last %}|{% endif %}{% endfor %}"
+              data-sinclientes="{% if usuario.clientes.count == 0 %}1{% else %}0{% endif %}">
             <td class="px-6 py-4 font-semibold text-[var(--ink)]">
               {{ usuario.first_name }} {{ usuario.last_name }}
             </td>
             <td class="px-6 py-4 text-neutral-600">
               {{ usuario.email }}
             </td>
-            <td class="px-6 py-4 text-neutral-600">
+            <td class="px-6 py-4">
               {% if usuario.roles.all %}
-                {% for rol in usuario.roles.all %}
-                  <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-sm font-medium">{{ rol.name }}</span>
-                {% endfor %}
+                <div class="flex flex-wrap gap-2">
+                  {% for rol in usuario.roles.all %}
+                    <span class="bg-[var(--brand-soft)] text-[var(--brand-dark)] px-2 py-1 rounded-lg text-xs font-semibold">{{ rol.name }}</span>
+                  {% endfor %}
+                </div>
               {% else %}
-                <span class="text-neutral-400">Sin rol</span>
+                <span class="text-neutral-400 text-sm">Sin rol</span>
               {% endif %}
             </td>
+
+            {# Clientes asociados #}
             <td class="px-6 py-4">
-              {% for cliente in usuario.clientes.all %}
-                <div class="flex items-center justify-between mb-1 bg-neutral-100 rounded px-2 py-1">
-                  <span>{{ cliente.nombre }}</span>
-                  <a href="{% url 'usuarios:quitar_cliente' usuario.id cliente.id_cliente %}" 
-                     class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md text-sm">
-                    Quitar
-                  </a>
-                </div>
-              {% empty %}
-                <span class="text-neutral-400">Ninguno</span>
-              {% endfor %}
+              {% if usuario.clientes.all %}
+                <ul class="space-y-1">
+                {% for cliente in usuario.clientes.all %}
+                  <li class="flex items-center justify-between bg-neutral-100 rounded px-2 py-1">
+                    <span class="truncate">{{ cliente.nombre }}</span>
+                    <a href="{% url 'usuarios:quitar_cliente' usuario.id cliente.id_cliente %}"
+                       class="px-2 py-1 rounded-md text-sm bg-red-600 hover:bg-red-700 text-white quitar-cliente"
+                       title="Quitar cliente">Quitar</a>
+                  </li>
+                {% endfor %}
+                </ul>
+              {% else %}
+                <span class="text-neutral-400 text-sm">Ninguno</span>
+              {% endif %}
             </td>
+
+            {# Acciones: Agregar cliente + Gestionar Roles #}
             <td class="px-6 py-4">
-              {% for cliente in todos_clientes %}
-                {% if cliente not in usuario.clientes.all %}
-                  <div class="flex items-center justify-between mb-1 bg-neutral-50 rounded px-2 py-1">
-                    <span>{{ cliente.nombre }}</span>
-                    <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}" 
-                       class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-md text-sm">
-                      Agregar
-                    </a>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <button type="button"
+                        class="px-3 py-2 rounded-lg font-semibold text-white"
+                        style="background:var(--brand)"
+                        data-open-modal="modal-{{ usuario.id }}">
+                  ➕ Agregar cliente
+                </button>
+
+
+              {# --- Modal Agregar cliente con buscador --- #}
+              <dialog id="modal-{{ usuario.id }}" class="rounded-2xl p-0 w-full max-w-xl">
+                <form method="dialog">
+                  <header class="px-6 py-4 border-b" style="border-color:var(--line)">
+                    <h3 class="text-xl font-bold" style="color:var(--ink)">Agregar cliente a {{ usuario.first_name }}</h3>
+                  </header>
+                  <div class="p-6 space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium mb-1" style="color:var(--muted)">Buscar cliente</label>
+                      <input type="search" placeholder="Escribe para filtrar…"
+                             class="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
+                             style="border-color:var(--line); --tw-ring-color:var(--brand);"
+                             data-search-list="list-{{ usuario.id }}">
+                    </div>
+                    <div class="max-h-72 overflow-auto border rounded-lg" style="border-color:var(--line)">
+                      <ul id="list-{{ usuario.id }}" class="divide-y" style="--tw-divide-color:var(--line)">
+                        {% for cliente in todos_clientes %}
+                          {% if cliente not in usuario.clientes.all %}
+                            <li class="flex items-center justify-between px-4 py-2 hover:bg-[var(--brand-soft)]">
+                              <span class="truncate">{{ cliente.nombre }}</span>
+                              <a href="{% url 'usuarios:agregar_cliente' usuario.id cliente.id_cliente %}"
+                                 class="px-2 py-1 rounded-md text-sm bg-green-600 hover:bg-green-700 text-white">
+                                Agregar
+                              </a>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    </div>
                   </div>
-                {% endif %}
-              {% endfor %}
+                  <footer class="px-6 py-4 border-t flex justify-end" style="border-color:var(--line)">
+                    <button class="px-4 py-2 rounded-lg font-semibold bg-[var(--brand-soft)]"
+                            style="color:var(--brand-dark)">Cerrar</button>
+                  </footer>
+                </form>
+              </dialog>
             </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-6 py-10 text-center text-neutral-500">No hay usuarios para mostrar.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </section>
+
+  <!-- === MODAL: Confirmación para quitar cliente de un usuario (estilo tipos_list) === -->
+  <style>
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(17,24,39,.45);
+      display:none; align-items:center; justify-content:center; z-index:60;
+    }
+    .modal-card{
+      width:min(92vw,560px); background:#fff; border-radius:16px;
+      border:1px solid var(--line); box-shadow:0 20px 50px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .modal-head{ background:#b91c1c; color:#fff; font-weight:900; padding:14px 16px; }
+    .modal-body{ padding:16px; background:#fef2f2; color:#7f1d1d; }
+    .modal-actions{ padding:12px 16px; display:flex; justify-content:flex-end; gap:8px; }
+    .icon-warning{ width:22px; height:22px; flex:0 0 22px; color:#b91c1c; margin-right:.5rem; }
+  </style>
+
+  <div id="confirmQuitarModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">Quitar cliente del usuario</div>
+      <div class="modal-body">
+        <div class="flex items-start gap-2">
+          <svg class="icon-warning" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 9v4m0 4h.01M10.29 3.86l-8.4 14.55A2 2 0 0 0 3.6 21h16.8a2 2 0 0 0 1.71-2.59L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <p id="confirmQuitarText" class="font-bold">
+              ¿Seguro que querés quitar este cliente del usuario?
+            </p>
+            <p class="text-sm mt-1">La relación se eliminará y el usuario ya no podrá operar con ese cliente.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button"
+                class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] text-[var(--brand-dark)]"
+                id="confirmQuitarCancel">Cancelar</button>
+        <button type="button"
+                class="px-4 py-2 rounded-lg font-bold text-white"
+                style="background:#dc2626"
+                id="confirmQuitarOk">Quitar</button>
+      </div>
+    </div>
+  </div>
+  <!-- === FIN MODAL === -->
+
 </main>
+
+{# ---------- JS mínimo, accesible y sin dependencias ---------- #}
+<script>
+  // Debounce simple
+  function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+
+  const filtroTexto = document.getElementById('filtroTexto');
+  const soloSin     = document.getElementById('soloSinClientes');
+  const tbody       = document.getElementById('tbodyUsuarios');
+
+  // 1) Eliminar del DOM las filas cuya lista de roles NO incluya "Cliente"
+  (function onlyShowClienteRole(){
+    const rows = [...tbody.querySelectorAll('tr')];
+    rows.forEach(tr=>{
+      const roles = (tr.dataset.roles || '').toLowerCase().split('|').map(s=>s.trim());
+      if (!roles.includes('cliente')) {
+        tr.remove(); // no aparece en la tabla
+      }
+    });
+  })();
+
+  // 2) Filtrado por texto y por "solo sin clientes"
+  function aplicarFiltros(){
+    const q = (filtroTexto.value || '').toLowerCase().trim();
+    const onlyEmpty = !!soloSin.checked;
+    const rows = [...tbody.querySelectorAll('tr')];
+
+    rows.forEach(tr=>{
+      const txt  = (tr.dataset.text || '').toLowerCase();
+      const sin = tr.dataset.sinclientes === '1';
+
+      const matchTxt = !q || txt.includes(q);
+      const matchSin = !onlyEmpty || sin;
+
+      tr.style.display = (matchTxt && matchSin) ? '' : 'none';
+    });
+  }
+  const filtrar = debounce(aplicarFiltros, 150);
+  filtroTexto.addEventListener('input', filtrar);
+  soloSin.addEventListener('change', aplicarFiltros);
+
+  // 3) Modales: abrir/cerrar (Agregar cliente)
+  document.querySelectorAll('[data-open-modal]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const dlg = document.getElementById(btn.dataset.openModal);
+      if (dlg && typeof dlg.showModal === 'function') dlg.showModal();
+    });
+  });
+
+  // 4) Buscador dentro de cada modal de "Agregar cliente"
+  document.querySelectorAll('input[data-search-list]').forEach(inp=>{
+    const listId = inp.getAttribute('data-search-list');
+    const list = document.getElementById(listId);
+    const items = list ? [...list.querySelectorAll('li')] : [];
+    inp.addEventListener('input', debounce(()=>{
+      const q = inp.value.toLowerCase().trim();
+      items.forEach(li=>{
+        const name = (li.querySelector('span')?.textContent || '').toLowerCase();
+        li.style.display = !q || name.includes(q) ? '' : 'none';
+      });
+    }, 100));
+  });
+
+  // 5) Confirmación al quitar cliente
+  (function(){
+    const modal = document.getElementById('confirmQuitarModal');
+    const txt   = document.getElementById('confirmQuitarText');
+    const btnOk = document.getElementById('confirmQuitarOk');
+    const btnNo = document.getElementById('confirmQuitarCancel');
+
+    let pendingHref = null;
+
+    function openConfirm(href, usuarioNombre, clienteNombre){
+      pendingHref = href;
+      if (usuarioNombre || clienteNombre){
+        txt.textContent = `¿Seguro que querés quitar “${clienteNombre||'este cliente'}” de “${usuarioNombre||'este usuario'}”?`;
+      }
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeConfirm(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+      pendingHref = null;
+    }
+
+    // Bind a todos los links de quitar visibles
+    function bindQuitar(){
+      document.querySelectorAll('a.quitar-cliente[title="Quitar cliente"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const tr = a.closest('tr');
+          const usuarioNombre = tr ? tr.querySelector('td:first-child')?.textContent.trim() : '';
+          const clienteNombre = a.closest('li')?.querySelector('span')?.textContent.trim() || '';
+          openConfirm(a.getAttribute('href'), usuarioNombre, clienteNombre);
+        });
+      });
+    }
+    bindQuitar();
+
+    btnOk.addEventListener('click', ()=>{ if(pendingHref) window.location.href = pendingHref; });
+    btnNo.addEventListener('click', closeConfirm);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeConfirm(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeConfirm(); });
+  })();
+
+  // Ejecutar primer filtrado (por si quedó activo el checkbox)
+  aplicarFiltros();
+</script>
 {% endblock %}
