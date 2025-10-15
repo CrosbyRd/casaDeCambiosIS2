@@ -58,7 +58,7 @@ body{
 .btn:hover{ transform:translateY(-1px); }
 
 .btn-secondary{
-  background:var(--brand-soft); color:#4c1d95;  /* texto morado oscuro */
+  background:var(--brand-soft); color:#4c1d95;
 }
 .btn-secondary:hover{ filter:brightness(0.98); }
 
@@ -90,13 +90,13 @@ body{
   font-weight:800; color:var(--ink);
 }
 
-/* Banderas (funciona con emoji nativo o Twemoji <img class="emoji">) */
+/* Banderas */
 .emoji, img.emoji{
   width:1.4rem; height:1.4rem; display:inline-block;
   vertical-align:-0.2rem; margin-right:.2rem;
 }
 
-/* Boxes “Por qué elegirnos” */
+/* Boxes */
 .box{
   border:1px solid var(--line);
   border-radius:.9rem; padding:1.25rem; background:#fff;
@@ -120,12 +120,12 @@ body{
   background: var(--brand);
 }
 
-/* === Modal básico (como el index original) === */
+/* Modal básico */
 .modal{ position: fixed; inset: 0; z-index: 50; }
 .modal.hidden{ display: none; }
 .modal-overlay{
   position: absolute; inset: 0;
-  background: rgba(15,23,42,.55); /* slate-900/55 */
+  background: rgba(15,23,42,.55);
   backdrop-filter: blur(2px);
 }
 .modal__panel{
@@ -134,139 +134,251 @@ body{
   box-shadow: 0 30px 60px -15px rgba(15,23,42,.35);
 }
 
-/* ====== Formularios genéricos ====== */
-.form p{              /* cada fila del form.as_p */
-  display: flex;
-  flex-direction: column;
-  gap: .35rem;
-  margin: 0 0 1rem;
+/* Formularios */
+.form p{
+  display: flex; flex-direction: column; gap: .35rem; margin: 0 0 1rem;
 }
-
-.form label{
-  font-weight: 700;
+.form label{ font-weight: 700; }
+.form input[type="text"], .form input[type="number"], .form input[type="email"],
+.form input[type="password"], .form select, .form textarea{
+  width: 100%; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: .9rem;
+  background: #fff; font: inherit; outline: none; transition: box-shadow .15s ease, border-color .15s ease;
 }
-
-.form input[type="text"],
-.form input[type="number"],
-.form input[type="email"],
-.form input[type="password"],
-.form select,
-.form textarea{
-  width: 100%;
-  padding: .85rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: .9rem;
-  background: #fff;
-  font: inherit;
-  outline: none;
-  transition: box-shadow .15s ease, border-color .15s ease;
-}
-
-.form input:focus,
-.form select:focus,
-.form textarea:focus{
+.form input:focus, .form select:focus, .form textarea:focus{
   border-color: var(--brand);
   box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 20%, transparent);
 }
-
-/* mensajes de ayuda/errores de Django */
 .form .helptext{ color: var(--muted); font-size: .9rem; }
 .form ul.errorlist{ margin: .25rem 0 0; padding: 0 0 0 1rem; color: #b91c1c; }
 .form-alert{
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  border-radius: .9rem;
-  padding: .75rem 1rem;
-  margin: 0 0 1rem;
+  background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+  border-radius: .9rem; padding: .75rem 1rem; margin: 0 0 1rem;
 }
 
-/* Alineación de acciones como en login */
-.actions{
-  display: flex; gap: .75rem; margin-top: 1rem;
+/* Acciones en tablas/listas */
+.actions{ display: flex; gap: .75rem; margin-top: 1rem; }
+.table .action-row .btn-ghost, .table .action-row .btn-secondary,
+.table td .btn-ghost, .table td .btn-secondary{
+  width: auto; margin-top: 0; padding: .6rem 1rem;
 }
-
-/* --- Correcciones de botones en tablas/listados --- */
-.table .action-row .btn-ghost,
-.table .action-row .btn-secondary,
-.table td .btn-ghost,
-.table td .btn-secondary{
-  width: auto;         /* que no ocupen todo el ancho */
-  margin-top: 0;       /* sin salto vertical extra */
-  padding: .6rem 1rem; /* tamaño compacto para celdas */
-}
-
 .table .action-row{ gap: .5rem; flex-wrap: wrap; }
 
-/* ====== Variantes compactas para listas y formularios ====== */
+/* Variantes compactas */
 .h1--sm{ font-size: clamp(1.75rem, 2.2vw + 1rem, 2.25rem); line-height:1.2; margin: .5rem 0 .75rem; }
 .container--tight{ padding: 1.25rem; }
 .box--tight{ padding: .75rem; }
 .page-header--tight{ margin-bottom: .5rem; }
 .page-header--tight .btn{ padding: .5rem .85rem; border-radius: .75rem; }
-.table--compact th,
-.table--compact td{ padding: .55rem .75rem; }
+.table--compact th, .table--compact td{ padding: .55rem .75rem; }
 .table--compact thead tr{ height: auto; }
 .table .action-row{ gap: .4rem; }
-.table .action-row .btn-secondary,
-.table .action-row .btn-ghost{
-  padding: .45rem .7rem;
-  font-weight: 600;
+.table .action-row .btn-secondary, .table .action-row .btn-ghost{
+  padding: .45rem .7rem; font-weight: 600;
 }
 .form--compact p{ margin: 0 0 .75rem; }
-.form--compact input,
-.form--compact select,
-.form--compact textarea{ padding: .7rem .9rem; }
+.form--compact input, .form--compact select, .form--compact textarea{ padding: .7rem .9rem; }
 .table-wrap--max{ max-width: 920px; }
 
-/* ====== Helpers responsive ====== */
+/* Helpers responsive */
 img, svg, video{ max-width:100%; height:auto; }
-
-/* En pantallas pequeñas: pilas acciones, filas de rates y espaciados menores */
 @media (max-width: 640px){
   .actions{ flex-direction: column; }
   .rates-row{ flex-direction: column; align-items: flex-start; gap:.25rem; }
   .container--tight{ padding: 1rem; }
   .box--tight{ padding: .6rem; }
 }
-
-/* En tablets: reduce padding general en tarjetas/tablas */
 @media (max-width: 768px){
   .rates-card{ padding: 1rem; }
   .table--compact th, .table--compact td{ padding: .5rem .6rem; }
 }
-
-/* Utilidad: contenedor con scroll horizontal para tablas anchas (por si no usas Tailwind en algún template) */
 .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
-/* ===== Mostrar/Ocultar contraseña ===== */
+/* Mostrar/Ocultar contraseña */
 .password-field{ position: relative; }
-.password-field input[type="password"],
-.password-field input[type="text"]{
-  padding-right: 2.5rem; /* espacio para el botón ojo */
-}
+.password-field input[type="password"], .password-field input[type="text"]{ padding-right: 2.5rem; }
 .pw-toggle{
-  position: absolute;
-  right: .6rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem; height: 2rem;
-  border: 1px solid transparent;
-  border-radius: .5rem;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
+  position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border: 1px solid transparent; border-radius: .5rem; background: transparent; color: var(--muted); cursor: pointer;
 }
 .pw-toggle:hover{ color: var(--ink); }
 .pw-toggle:focus-visible{
-  outline: none;
-  border-color: var(--brand);
+  outline: none; border-color: var(--brand);
   box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 20%, transparent);
 }
 .pw-icon{ width: 1.25rem; height: 1.25rem; }
-.pw-icon--on{ display: none; }            /* ojo abierto oculto por defecto */
+.pw-icon--on{ display: none; }
 .pw-toggle[aria-pressed="true"] .pw-icon--on{ display: block; }
 .pw-toggle[aria-pressed="true"] .pw-icon--off{ display: none; }
+
+/* =========================================================
+   TED KIOSK (estilos movidos desde el template)
+   ========================================================= */
+.ted-machine{background:linear-gradient(145deg,color-mix(in oklab,#f3f4f6 60%,#fff));border:1.5px solid var(--line);border-radius:24px}
+
+/* Pantalla con altura estable */
+.ted-screen{
+  background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 18%,#1f2937) 0%,#0f172a 60%);
+  border-radius:16px;
+  box-shadow:inset 0 0 0 1px color-mix(in oklab,#fff 8%,transparent);
+  min-height:clamp(420px,55vh,580px);
+  height:clamp(420px,55vh,580px);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+@media (min-width:768px){
+  .ted-screen{ min-height:clamp(480px,58vh,620px); height:clamp(480px,58vh,620px); }
+}
+@supports (height:100dvh){
+  .ted-screen{ min-height:clamp(420px,55dvh,580px); height:clamp(420px,55dvh,580px); }
+  @media (min-width:768px){
+    .ted-screen{ min-height:clamp(480px,58dvh,620px); height:clamp(480px,58dvh,620px); }
+  }
+}
+.ted-screen-glow{position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 18%,transparent) 0%,transparent 65%);pointer-events:none;border-radius:16px}
+
+/* Contenedor de vistas con scroll interno */
+.ted-screen-inner{
+  position:relative; flex:1; overflow-y:auto; overflow-x:hidden; padding:5px 7px;
+  scrollbar-width:thin; scrollbar-color:rgba(124,58,237,.3) transparent;
+}
+.ted-screen-inner::-webkit-scrollbar{width:6px}
+.ted-screen-inner::-webkit-scrollbar-track{background:transparent}
+.ted-screen-inner::-webkit-scrollbar-thumb{background:rgba(124,58,237,.3);border-radius:3px}
+.ted-screen-inner::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.5)}
+
+/* Vistas apiladas con transiciones */
+.ted-screen-view{
+  position:absolute; inset:0; opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .28s ease-out,visibility .28s ease-out; padding:0; display:flex; flex-direction:column;
+}
+.ted-screen-view.active{
+  opacity: 1; visibility: visible; pointer-events: auto; position: absolute; inset: 0;
+}
+@media (prefers-reduced-motion:reduce){ .ted-screen-view{transition:none} }
+
+/* Ranuras físicas */
+.ted-slot{
+  background:linear-gradient(145deg,#cbd5e1,#94a3b8);
+  border-radius:12px; position:relative; overflow:visible; transition:all .3s ease;
+  min-height:110px; height:110px;
+}
+.ted-slot .open{height:8px;border-radius:4px;background:#0b0f1a;box-shadow:inset 0 2px 6px rgba(0,0,0,.7);position:relative;overflow:hidden}
+.ted-slot .open::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent)}
+.ted-slot.active .open::before{animation:slotScan 2s ease-in-out infinite}
+.ted-slot .dot{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:999px;background:#ef4444;box-shadow:0 0 10px rgba(220,38,38,.5);transition:.25s}
+.ted-slot.active .dot{background:#10b981;box-shadow:0 0 14px rgba(16,185,129,.9);animation:dotPulse 1.5s ease-in-out infinite}
+@keyframes slotScan{ 0%,100%{left:-100%} 50%{left:100%} }
+@keyframes dotPulse{ 0%,100%{transform:translateY(-50%) scale(1);opacity:1} 50%{transform:translateY(-50%) scale(1.3);opacity:.7} }
+
+.slot-anim{position:absolute;left:50%;transform:translateX(-50%);top:-6px;pointer-events:none;z-index:10}
+
+/* Sistema de billetes múltiples */
+.bill-stack{display:none;position:relative;width:130px;height:60px}
+.bill-item{
+  position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855,#5a8a45);
+  border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,.3)
+}
+.bill-item::before{content:"";position:absolute;inset:4px;border:1px dashed rgba(255,255,255,.3);border-radius:4px}
+.bill-item::after{content:"💵";position:absolute;top:6px;left:8px;font-size:16px;opacity:.6}
+
+.ted-slot.dispensing-bills .bill-stack{display:block}
+.ted-slot.dispensing-bills .bill-item:nth-child(1){animation:billOut1 1.8s cubic-bezier(.34,1.56,.64,1)}
+.ted-slot.dispensing-bills .bill-item:nth-child(2){animation:billOut2 1.8s cubic-bezier(.34,1.56,.64,1) .15s}
+.ted-slot.dispensing-bills .bill-item:nth-child(3){animation:billOut3 1.8s cubic-bezier(.34,1.56,.64,1) .3s}
+.ted-slot.dispensing-bills .bill-item:nth-child(4){animation:billOut4 1.8s cubic-bezier(.34,1.56,.64,1) .45s}
+@keyframes billOut1{0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:4}25%{opacity:1}100%{transform:translateY(-42px) translateX(-2px) rotate(-1deg);opacity:1;z-index:4}}
+@keyframes billOut2{0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:3}25%{opacity:1}100%{transform:translateY(-38px) translateX(1px) rotate(1deg);opacity:1;z-index:3}}
+@keyframes billOut3{0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:2}25%{opacity:1}100%{transform:translateY(-34px) translateX(-1px) rotate(0deg);opacity:1;z-index:2}}
+@keyframes billOut4{0%{transform:translateY(45px) rotate(0deg);opacity:0;z-index:1}25%{opacity:1}100%{transform:translateY(-30px) translateX(2px) rotate(1deg);opacity:1;z-index:1}}
+
+/* Inserción de billetes */
+.bill-insert{display:none;position:relative;width:130px;height:60px}
+.bill-insert-item{
+  position:absolute;width:130px;height:60px;background:linear-gradient(135deg,#85bb65,#6fa855);
+  border:2px solid #4a7335;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px
+}
+.ted-slot.inserting-bills .bill-insert{display:block}
+.ted-slot.inserting-bills .bill-insert-item{animation:billIn 2.5s cubic-bezier(.65,0,.35,1)}
+@keyframes billIn{0%{transform:translateY(-50px) rotate(2deg);opacity:1}70%{transform:translateY(5px) rotate(-1deg);opacity:.8}85%{transform:translateY(25px) rotate(0deg);opacity:.4}100%{transform:translateY(45px) rotate(0deg);opacity:0}}
+
+/* Ticket de recibo */
+.receipt-anim{display:none;position:relative;width:240px;background:#fff;color:#111827;border-radius:8px 8px 0 0;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow:hidden;transform: translateY(-8px)}
+.receipt-paper{padding:16px;padding-bottom:24px;background:repeating-linear-gradient(0deg,transparent,transparent 20px,rgba(0,0,0,.02) 20px,rgba(0,0,0,.02) 21px)}
+.receipt-header{text-align:center;border-bottom:2px dashed #6b7280;padding-bottom:8px;margin-bottom:8px;font-weight:900;font-size:13px}
+.receipt-line{padding:3px 0;opacity:0;animation:lineAppear .3s ease-out forwards}
+.receipt-edge{position:absolute;bottom:0;left:0;right:0;height:12px;background:#fff}
+.receipt-edge::before{content:"";position:absolute;top:0;left:0;right:0;height:100%;background:repeating-linear-gradient(90deg,transparent,transparent 8px,#e5e7eb 8px,#e5e7eb 10px)}
+.receipt-tear{position:absolute;bottom:12px;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,#fff 0px,#fff 4px,transparent 4px,transparent 6px);filter:drop-shadow(0 1px 2px rgba(0,0,0,.1))}
+.ted-slot.printing-receipt .receipt-anim{display:block;animation:receiptPrint 3s ease-out}
+@keyframes receiptPrint{0%{ transform: translateY(-8px); opacity: 0; }15%{ opacity: 1; }100%{ transform: translateY(110px); opacity: 1; }}
+@keyframes lineAppear{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+
+/* Cartas del menú */
+.menu-card{
+  border-radius:18px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
+  padding:22px;min-height:128px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.35rem;text-align:center;backdrop-filter:blur(6px);transition:transform .08s,box-shadow .2s,background .2s
+}
+.menu-card:hover{background:rgba(255,255,255,.12);box-shadow:0 0 0 2px var(--brand-soft);transform:translateY(-1px)}
+
+/* Botones TED */
+.gx-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 1.2rem;border-radius:.9rem;font-weight:800;text-decoration:none;border:1px solid transparent;background:var(--brand);color:#fff;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:all .15s ease
+}
+.gx-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
+.gx-btn:active{transform:translateY(0)}
+.gx-btn--ghost{background:var(--brand-soft);color:#4c1d95;box-shadow:0 8px 20px -10px rgba(124,58,237,.25)}
+
+/* Logo */
+.logo-badge{
+  display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:999px;
+  background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
+  box-shadow:0 10px 24px -12px rgba(124,58,237,.45);margin:0 auto 10px auto
+}
+.ted-logo{height:36px;width:auto;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+
+/* Chips de moneda */
+.currency-chip{
+  display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);font-size:24px;line-height:1;color:#fff;pointer-events:none;user-select:none;transition:all .2s ease
+}
+.currency-chip:hover{transform:scale(1.05);background:rgba(255,255,255,.15)}
+
+/* Badge welcome */
+.welcome-badge{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .7rem;border-radius:999px;
+  background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
+  color:#4c1d95;font-weight:800;box-shadow:0 8px 20px -10px rgba(124,58,237,.45)
+}
+
+/* Panel lateral */
+.pad-info-card{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;color:#e5e7eb}
+.pad-info-card .clock{font-variant-numeric:tabular-nums;font-weight:900}
+.pad-bezel{background:#0b0b0f;border-radius:18px;padding:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.ted-pad{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.ted-pad::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 14%,transparent) 0%,transparent 65%);pointer-events:none}
+.ted-key{
+  display:flex;align-items:center;justify-content:center;height:56px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
+  color:#fff;font-weight:900;font-size:18px;backdrop-filter:blur(3px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 10px 20px rgba(0,0,0,.18);
+  transition:transform .05s ease,box-shadow .2s ease,background .2s ease
+}
+.ted-key:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 12px 22px rgba(0,0,0,.22)}
+.ted-key:active{transform:translateY(1px);background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.1))}
+
+/* Efecto “procesando” */
+.processing-dots{display:inline-block}
+.processing-dots::after{content:'...';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+
+/* Layout */
+.ted-layout{display:flex;flex-direction:column;gap:20px}
+@media (min-width:768px){
+  .ted-layout{flex-direction:row;align-items:flex-start}
+  .ted-layout-main{flex:1;min-width:0}
+  .ted-layout-aside{width:300px;flex-shrink:0;position:sticky;top:0}
+}

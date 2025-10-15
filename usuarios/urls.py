@@ -12,6 +12,7 @@ Se añade la ruta ``/usuarios/ted/`` que renderiza la plantilla
 
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required  # ← agregado
 from . import views
 
 # Espacio de nombres de la app
@@ -29,10 +30,10 @@ urlpatterns = [
     # --- Dashboard de usuario autenticado ---
     path("dashboard/", views.dashboard, name="dashboard"),
 
-    # --- TED (render directo de plantilla) ---
+    # --- TED (render directo de plantilla) protegido con login ---
     path(
         "ted/",
-        TemplateView.as_view(template_name="usuarios/ted.html"),
+        login_required(TemplateView.as_view(template_name="usuarios/ted.html")),
         name="ted",
     ),
 
@@ -41,7 +42,7 @@ urlpatterns = [
     path("agregar-cliente/<int:user_id>/<uuid:cliente_id>/", views.agregar_cliente, name="agregar_cliente"),
     path("quitar-cliente/<int:user_id>/<uuid:cliente_id>/", views.quitar_cliente, name="quitar_cliente"),
 
-    # Rutas del módulo admin_panel (si existe)
+    # Rutas del módulo admin_panel
     path("admin_panel/", include("admin_panel.urls")),
     path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
