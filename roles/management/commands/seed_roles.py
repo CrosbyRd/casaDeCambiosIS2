@@ -5,8 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 
 from roles.models import Role
 from clientes.models import Cliente
-from ted.models import TedPerms
-from analista_panel.models import AnalistaPanelPermissions
 
 class Command(BaseCommand):
     help = "Crea o actualiza los roles y sus permisos en el sistema."
@@ -15,10 +13,35 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS("Iniciando la configuración de roles y permisos..."))
 
-        # --- Rol Administrador ---
-        rol_admin, _ = Role.objects.get_or_create(name="Administrador", defaults={"description": "Rol de Administrador con acceso total."})
+        # --- Helpers ---
+        def get_perms_by_codenames(codenames):
+            perms = []
+            for code in codenames:
+                try:
+                    perms.append(Permission.objects.get(codename=code))
+                except Permission.DoesNotExist:
+                    self.stdout.write(self.style.WARNING(f"Permiso '{code}' no encontrado. ¿Falta migración?"))
+                except Permission.MultipleObjectsReturned:
+                    self.stdout.write(self.style.ERROR(f"Múltiples permisos con codename '{code}'. Revisar modelos."))
+            return perms
 
-        permisos_admin_codenames = [
+        def get_model_perms(model, only=None, exclude=None):
+            ct = ContentType.objects.get_for_model(model)
+            qs = Permission.objects.filter(content_type=ct)
+            if only:
+                qs = qs.filter(codename__in=only)
+            if exclude:
+                qs = qs.exclude(codename__in=exclude)
+            return list(qs)
+
+        # === ADMINISTRADOR ===
+        rol_admin, _ = Role.objects.get_or_create(
+            name="Administrador",
+            defaults={"description": "Rol de Administrador con acceso total."}
+        )
+
+        admin_codenames = [
+            # permisos “de aplicación” (no atados a un modelo específico)
             "access_admin_dashboard",
             "access_cotizaciones",
             "access_monedas_section",
@@ -30,60 +53,52 @@ class Command(BaseCommand):
             "access_pagos_section",
             "puede_operar_terminal",
             "puede_gestionar_inventario",
+            "access_config_panel"
         ]
+        admin_perms = get_perms_by_codenames(admin_codenames)
 
-        permisos_admin = []
-        for codename in permisos_admin_codenames:
-            try:
-                # Buscamos el permiso sin importar a qué app pertenezca
-                perm = Permission.objects.get(codename=codename)
-                permisos_admin.append(perm)
-            except Permission.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f"Permiso '{codename}' no encontrado. Asegúrate de que las migraciones de las apps correspondientes se hayan ejecutado."))
-            except Permission.MultipleObjectsReturned:
-                self.stdout.write(self.style.ERROR(f"Error: Múltiples permisos encontrados para el codename '{codename}'. Por favor, revisa tus modelos."))
+        # + permisos del modelo Cliente (CRUD)
+        admin_perms += get_model_perms(Cliente, only=[
+            "add_cliente", "change_cliente", "delete_cliente", "view_cliente"
+        ])
 
+        rol_admin.permissions.set(admin_perms)
+        self.stdout.write(self.style.SUCCESS(f"Rol 'Administrador' configurado con {len(admin_perms)} permisos."))
 
-        # Asignar permisos al rol Administrador
-        rol_admin.permissions.set(permisos_admin)
-        self.stdout.write(self.style.SUCCESS(f"Rol 'Administrador' configurado con {len(permisos_admin)} permisos."))
+        # === CLIENTE ===
+        rol_cliente, _ = Role.objects.get_or_create(
+            name="Cliente",
+            defaults={"description": "Rol de Cliente estándar para usuarios finales."}
+        )
 
-        # --- Rol Cliente ---
-        rol_cliente, _ = Role.objects.get_or_create(name="Cliente", defaults={"description": "Rol de Cliente estándar para usuarios finales."})
-        
-        cliente_ct = ContentType.objects.get_for_model(Cliente)
-        permisos_cliente = list(Permission.objects.filter(content_type=cliente_ct))
-        if permisos_cliente:
-            rol_cliente.permissions.set(permisos_cliente)
-            self.stdout.write(self.style.SUCCESS(f"Rol 'Cliente' configurado con permisos para el modelo Cliente."))
-        else:
-            self.stdout.write(self.style.WARNING("No se encontraron permisos específicos para el modelo Cliente."))
+        # Versión A: sin permisos sobre Cliente (ni ver el panel, ni CRUD)
+        rol_cliente.permissions.set([])  # ← vaciamos cualquier permiso previo
+        self.stdout.write(self.style.SUCCESS("Rol 'Cliente' configurado SIN permisos sobre el modelo Cliente."))
 
-        # --- Rol Cliente_Dev_OTP_Bypass ---
-        Role.objects.get_or_create(name="Cliente_Dev_OTP_Bypass", defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."})
+        # === CLIENTE_Dev_OTP_Bypass (solo existencia, sin permisos especiales) ===
+        Role.objects.get_or_create(
+            name="Cliente_Dev_OTP_Bypass",
+            defaults={"description": "Rol especial para clientes en desarrollo que salta el OTP."}
+        )
         self.stdout.write(self.style.SUCCESS("Rol 'Cliente_Dev_OTP_Bypass' asegurado."))
 
+        # === ANALISTA ===
+        rol_analista, _ = Role.objects.get_or_create(
+            name="Analista",
+            defaults={"description": "Rol de Analista cambiario (gestión de tasas y monitoreo)."}
+        )
 
-        # --- Rol Analista Cambiario ---
-        rol_analista, _ = Role.objects.get_or_create(name="Analista", defaults={"description": "Rol de Analista cambiario (gestión de tasas y monitoreo)."})
-
-        permisos_analista_codenames = [
+        analista_codenames = [
             "access_analista_dashboard",
             "access_exchange_rates",
             "view_profits_module",
             "access_cotizaciones",
             "puede_gestionar_inventario",
         ]
-        
-        permisos_analista = []
-        for codename in permisos_analista_codenames:
-            try:
-                perm = Permission.objects.get(codename=codename)
-                permisos_analista.append(perm)
-            except Permission.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f"Permiso '{codename}' para Analista no encontrado."))
+        analista_perms = get_perms_by_codenames(analista_codenames)
 
-        rol_analista.permissions.set(permisos_analista)
-        self.stdout.write(self.style.SUCCESS(f"Rol 'Analista' configurado con {len(permisos_analista)} permisos."))
+        # Analista NO debe tener permisos sobre Cliente (ni panel ni CRUD)
+        rol_analista.permissions.set(analista_perms)
+        self.stdout.write(self.style.SUCCESS(f"Rol 'Analista' configurado con {len(analista_perms)} permisos."))
 
         self.stdout.write(self.style.SUCCESS("Configuración de roles y permisos finalizada."))
