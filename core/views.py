@@ -129,6 +129,7 @@ def iniciar_operacion(request):
             'monto_recibido': str(resultado_simulacion['monto_recibido']),
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
+            'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Añadir modalidad de tasa
         }
         # Añadir medio de pago si fue seleccionado
         if form.cleaned_data.get('medio_pago'):
@@ -175,6 +176,7 @@ def confirmar_operacion(request):
 
         # Lógica de Bloqueo de Tasa (GEG-105)
         tasa_garantizada_hasta = None
+        # Solo se establece una fecha de expiración si la modalidad es 'bloqueada'
         if modalidad_tasa == 'bloqueada':
             if operacion_pendiente['tipo_operacion'] == 'compra':
                 # Cliente vende divisa extranjera, deposita en Tauser. Garantía de 2 horas.
@@ -182,6 +184,7 @@ def confirmar_operacion(request):
             elif operacion_pendiente['tipo_operacion'] == 'venta':
                 # Cliente compra divisa extranjera, paga digitalmente. Garantía de 15 minutos.
                 tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
+        # Si la modalidad es 'flotante', tasa_garantizada_hasta permanece como None
 
         # Obtener el medio de pago de la sesión
         medio_pago_id = operacion_pendiente.get('medio_pago_id')
@@ -212,17 +215,11 @@ def confirmar_operacion(request):
         request.session.pop('operacion_pendiente', None)
 
         # --- INTEGRACIÓN PASARELA DE PAGO (GEG-112) ---
+        # Si la operación es de venta y está pendiente de pago por el cliente,
+        # se redirige al detalle de la transacción para que el cliente inicie el pago desde allí.
         if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
-            url_pago = iniciar_cobro_a_cliente(transaccion, request, medio_pago_id=medio_pago_id)
-            if url_pago:
-                # Redirigir al cliente a la pasarela de pagos
-                return redirect(url_pago)
-            else:
-                # Si falla la comunicación con la pasarela, se marca la transacción como error
-                transaccion.estado = 'error'
-                transaccion.save()
-                messages.error(request, "No se pudo iniciar el proceso de pago. Por favor, intente nuevamente más tarde.")
-                return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            messages.info(request, "Operación creada. Por favor, procede al pago desde el detalle de la transacción.")
+            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
         
         # --- Flujo original para otros tipos de operación ---
         messages.success(

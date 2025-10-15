@@ -5,9 +5,8 @@ from . import views
 app_name = 'transacciones'
 
 urlpatterns = [
-    # URL para que el cliente inicie la compra de divisas
     path('comprar/', views.IniciarCompraDivisaView.as_view(), name='iniciar_compra'),
-    
+    path('iniciar_pago/<uuid:transaccion_id>/', views.IniciarPagoTransaccionView.as_view(), name='iniciar_pago'),
     # URL del webhook que recibe la confirmación de pago desde la pasarela
     path('webhook/pago_confirmado/', views.WebhookConfirmacionPagoView.as_view(), name='webhook_pago_confirmado'),
 

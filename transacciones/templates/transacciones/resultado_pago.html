@@ -37,6 +37,16 @@
              <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
             </div>
+        {% elif transaccion.estado == 'pendiente_pago_cliente' and url_continuar_pago %}
+            <h1 class="status-warning">Pago Pendiente</h1>
+            <p>Tu operación está pendiente de pago. Haz clic en el botón para continuar con el proceso de pago.</p>
+            <div class="transaction-details">
+                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
+            </div>
+            <div class="actions">
+                <a href="{{ url_continuar_pago }}" class="btn btn-primary">Continuar Pago</a>
+            </div>
         {% else %}
             <h1 class="status-warning">Operación Pendiente</h1>
             <p>El estado de tu operación aún se está procesando. Por favor, espera unos momentos y revisa tu historial.</p>

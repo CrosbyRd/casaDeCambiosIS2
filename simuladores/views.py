@@ -7,7 +7,10 @@ from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from .models import PagoSimulado
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
+@method_decorator(csrf_exempt, name='dispatch')
 class IniciarPagoAPIView(View):
     """
     Endpoint API que recibe la solicitud de inicio de pago y crea un registro

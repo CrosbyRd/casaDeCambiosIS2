@@ -16,7 +16,6 @@ from monedas.models import Moneda
 from clientes.models import Cliente 
 from operaciones.models import Tauser
 import uuid
-#nuevo
 from django.core.exceptions import ValidationError
 from configuracion.models import TransactionLimit
 from django.db.models import Sum
@@ -81,7 +80,6 @@ class Transaccion(models.Model):
 
     # --- CAMPOS DEL MODELO ---
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # public_id = models.CharField(max_length=12, unique=True, editable=False, null=True, help_text="Identificador público corto de la transacción.")
     cliente = models.ForeignKey(
         Cliente,
         on_delete=models.PROTECT,
