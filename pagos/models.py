@@ -1,3 +1,15 @@
+"""
+Módulo de modelos para la aplicación **Pagos**.
+
+Contiene las definiciones de los modelos relacionados con los medios de pago
+aceptados por los clientes, incluyendo la configuración de tipos, campos
+personalizados, y validaciones dinámicas por cliente.
+
+Modelos incluidos:
+    - TipoMedioPago
+    - CampoMedioPago
+    - MedioPagoCliente
+"""
 import uuid
 from decimal import Decimal
 from django.conf import settings
@@ -11,6 +23,23 @@ from django.utils import timezone
 # 1) TipoMedioPago: define el tipo de método de pago + comisión %
 # ----------------------------------------------------------------------------
 class TipoMedioPago(models.Model):
+    """
+    Representa un **tipo de medio de pago** disponible en el sistema
+    (por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).
+
+    Incluye la configuración de la comisión que aplica cada medio, el motor
+    de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.
+
+    :param uuid id_tipo: Identificador único del tipo de medio de pago.
+    :param str nombre: Nombre único que identifica el medio de pago.
+    :param Decimal comision_porcentaje: Porcentaje de comisión aplicado (0–100).
+    :param str descripcion: Descripción adicional o instrucciones.
+    :param bool activo: Indica si el medio está disponible para uso.
+    :param datetime creado_en: Fecha de creación del registro.
+    :param datetime actualizado_en: Fecha de última actualización.
+    :param str engine: Motor o integración usada para procesar pagos.
+    :param dict engine_config: Configuración JSON específica del motor.
+    """
     id_tipo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=100, unique=True)
 
@@ -58,6 +87,22 @@ class TipoMedioPago(models.Model):
 # 2) CampoMedioPago: define los campos dinámicos por tipo
 # ----------------------------------------------------------------------------
 class CampoMedioPago(models.Model):
+    """
+    Define un **campo dinámico** asociado a un tipo de medio de pago.
+
+    Cada tipo puede tener múltiples campos requeridos (por ejemplo,
+    número de cuenta, RUC, alias, email) con validaciones opcionales
+    mediante expresiones regulares predefinidas.
+
+    :param uuid id_campo: Identificador único del campo.
+    :param TipoMedioPago tipo: Relación con el tipo de medio de pago.
+    :param str nombre_campo: Nombre del campo visible o técnico.
+    :param str tipo_dato: Tipo de dato (texto, número, teléfono, email, RUC).
+    :param bool obligatorio: Indica si el campo es obligatorio.
+    :param str regex_opcional: Patrón regex opcional de validación.
+    :param bool activo: Define si el campo está activo.
+    """
+
     class TipoDato(models.TextChoices):
         TEXTO = "texto", "Texto"
         NUMERO = "numero", "Número"
@@ -98,6 +143,22 @@ class CampoMedioPago(models.Model):
 # 3) MedioPagoCliente: instancia del cliente con datos dinámicos + predeterminado
 # ----------------------------------------------------------------------------
 class MedioPagoCliente(models.Model):
+    """
+    Representa un **medio de pago configurado por un cliente**.
+
+    Contiene los datos específicos de ese cliente (guardados como JSON),
+    y permite designar un medio predeterminado para operaciones futuras.
+
+    :param uuid id_medio: Identificador único del medio de pago del cliente.
+    :param Cliente cliente: Relación con el cliente propietario.
+    :param TipoMedioPago tipo: Tipo de medio de pago utilizado.
+    :param str alias: Nombre personalizado asignado por el cliente.
+    :param dict datos: Información dinámica del medio (ej. número de cuenta).
+    :param bool activo: Indica si el medio está activo.
+    :param bool predeterminado: Indica si es el medio preferido por el cliente.
+    :param datetime creado_en: Fecha de creación.
+    :param datetime actualizado_en: Última modificación.
+    """
     id_medio = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # 🔴 DUEÑO CORRECTO
@@ -146,6 +207,13 @@ class MedioPagoCliente(models.Model):
 
     # Validación: verificar que los datos cumplan con los campos activos del tipo
     def clean(self):
+        """
+        Valida que los datos JSON del medio de pago cumplan con los
+        campos activos y sus reglas de validación definidas.
+
+        :raises ValidationError: Si faltan campos obligatorios, o si
+                                 los valores no cumplen con el formato esperado.
+        """
         errors = {}
         campos_activos = list(self.tipo.campos.filter(activo=True))
         datos = self.datos or {}
@@ -195,6 +263,12 @@ class MedioPagoCliente(models.Model):
 
     # Lógica de predeterminado y desactivación
     def save(self, *args, **kwargs):
+        """
+        Guarda el medio de pago aplicando la lógica de consistencia:
+        - Si se desactiva, se quita el estado de predeterminado.
+        - Si se marca como predeterminado, desmarca los otros medios
+          predeterminados del mismo cliente.
+        """
         # Si se inactiva, también pierde el estado de predeterminado
         if not self.activo and self.predeterminado:
             self.predeterminado = False

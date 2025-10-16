@@ -1,4 +1,13 @@
 # notificaciones/urls.py (NUEVO ARCHIVO)
+"""
+Módulo de enrutamiento de la aplicación de notificaciones.
+
+Define las rutas (URLs) que permiten acceder a las vistas relacionadas con la gestión
+de notificaciones y las preferencias del usuario en el sistema Global Exchange.
+
+
+"""
+
 from django.urls import path
 from .views import (
     NotificacionListView,
