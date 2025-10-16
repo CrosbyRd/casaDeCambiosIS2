@@ -1,7 +1,9 @@
 # core/forms.py
 from django import forms
 from monedas.models import Moneda
-from transacciones.models import Transaccion # Importar el modelo Transaccion
+from transacciones.models import Transaccion
+from pagos.models import TipoMedioPago, MedioPagoCliente
+from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente
 
 class SimulacionForm(forms.Form):
     monto = forms.DecimalField(
@@ -29,8 +31,7 @@ class SimulacionForm(forms.Form):
             choices = [('PYG', 'Guaraní')]
 
         self.fields['moneda_origen'].choices = choices
-        self.fields['moneda_destino'].choices = choices
-
+        self.fields['moneda_destino'].choices = choices # Añadido para corregir el problema
     def clean_monto(self):
         monto = self.cleaned_data['monto']
         moneda_origen_codigo = self.cleaned_data.get('moneda_origen')
@@ -65,6 +66,18 @@ class OperacionForm(SimulacionForm):
         choices=Transaccion.TIPO_OPERACION_CHOICES,
         widget=forms.Select(attrs={'class': ''})
     )
+    medio_pago = forms.ModelChoiceField(
+        label="Mi Medio de Pago",
+        queryset=MedioPagoCliente.objects.none(), # Se inicializará en __init__
+        widget=forms.Select(attrs={'class': ''}),
+        required=False, # No es requerido para todas las operaciones (ej. compra de la casa de cambio)
+    )
+    medio_acreditacion = forms.ChoiceField(
+        label="Mi Medio de Acreditación",
+        choices=[], # Se inicializará en __init__
+        widget=forms.Select(attrs={'class': ''}),
+        required=False, # No es requerido para todas las operaciones (ej. venta de la casa de cambio)
+    )
     modalidad_tasa = forms.ChoiceField(
         label="Modalidad de Tasa",
         choices=Transaccion.MODALIDAD_TASA_CHOICES,
@@ -73,11 +86,29 @@ class OperacionForm(SimulacionForm):
         help_text="Elige si la tasa se bloquea por un tiempo o es indicativa."
     )
 
+    def __init__(self, *args, **kwargs):
+        self.cliente = kwargs.pop('cliente', None) # Obtener el cliente
+        super().__init__(*args, **kwargs) # Llama al __init__ de SimulacionForm para cargar las monedas
+        if self.cliente:
+            self.fields['medio_pago'].queryset = MedioPagoCliente.objects.filter(
+                cliente=self.cliente, activo=True
+            ).select_related('tipo') # Optimizar consulta
+
+            # Configurar opciones para medio_acreditacion
+            acreditacion_choices = [('efectivo', 'Efectivo (Retiro en Tauser)')]
+            medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(
+                cliente=self.cliente, activo=True
+            ).select_related('tipo')
+            acreditacion_choices.extend([(str(m.id_medio), f"{m.alias} ({m.tipo.nombre})") for m in medios_acreditacion_cliente])
+            self.fields['medio_acreditacion'].choices = acreditacion_choices
+
     def clean(self):
         cleaned_data = super().clean()
         tipo_operacion = cleaned_data.get("tipo_operacion")
         moneda_origen = cleaned_data.get("moneda_origen")
         moneda_destino = cleaned_data.get("moneda_destino")
+        medio_pago = cleaned_data.get("medio_pago")
+        medio_acreditacion = cleaned_data.get("medio_acreditacion")
 
         if tipo_operacion and moneda_origen and moneda_destino:
             if tipo_operacion == 'compra': # Cliente VENDE divisa extranjera a la casa de cambio
@@ -85,9 +116,16 @@ class OperacionForm(SimulacionForm):
                     raise forms.ValidationError("Para 'Compra de Divisa', la moneda de origen no puede ser PYG.")
                 if moneda_destino != 'PYG':
                     raise forms.ValidationError("Para 'Compra de Divisa', la moneda de destino debe ser PYG.")
+                # Si es una compra (cliente recibe dinero), el medio de acreditación es obligatorio
+                if not medio_acreditacion:
+                    self.add_error('medio_acreditacion', 'Debe seleccionar un medio de acreditación para esta operación.')
             elif tipo_operacion == 'venta': # Cliente COMPRA divisa extranjera de la casa de cambio
                 if moneda_origen != 'PYG':
                     raise forms.ValidationError("Para 'Venta de Divisa', la moneda de origen debe ser PYG.")
                 if moneda_destino == 'PYG':
                     raise forms.ValidationError("Para 'Venta de Divisa', la moneda de destino no puede ser PYG.")
+                # Si es una venta (cliente paga), el medio de pago es obligatorio
+                if not medio_pago:
+                    self.add_error('medio_pago', 'Debe seleccionar un medio de pago para esta operación.')
+
         return cleaned_data
