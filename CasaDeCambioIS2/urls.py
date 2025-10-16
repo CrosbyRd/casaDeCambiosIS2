@@ -82,4 +82,7 @@ urlpatterns = [
     path('configuracion/', include('configuracion.urls')),
 
     path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
+
+
+    path('notificaciones/', include('notificaciones.urls', namespace='notificaciones')),
 ]
