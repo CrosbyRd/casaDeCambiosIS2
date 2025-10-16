@@ -50,7 +50,18 @@
                 <td class="px-4 py-3">{{ form.moneda_destino }}</td>
               </tr>
               <tr class="hover:bg-[var(--brand-soft)]">
-                <td class="px-4 py-3">{{ form.monto }}</td>
+                <td class="px-4 py-3">
+                  {{ form.monto }}
+                  <!-- Input visible SOLO para mostrar/editar con miles -->
+                  <input
+                    type="text"
+                    id="id_monto_visible"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="0"
+                    class="gx-input mt-2"
+                  />
+                </td>
                 <td class="px-4 py-3">
                   <input id="out-amount" class="gx-input" type="text" readonly
                          value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
@@ -127,6 +138,16 @@
 
   .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
   @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
+
+  /* 🔒 Ocultamos SOLO visualmente el input real de monto (no rompe POST/validaciones) */
+  #id_monto{
+    position:absolute !important;
+    left:-99999px !important;
+    width:1px !important;
+    height:1px !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
 </style>
 
 <script>
@@ -225,16 +246,69 @@
   enforceRules();          // estado inicial
   updateResultFlag();      // y bandera inicial
 
-  // No se necesita la lógica del botón, ya que ahora es un botón de submit.
-
   // BORRAR
   btnClr?.addEventListener('click', () => {
-    if (monto) { monto.value = ''; monto.focus(); }
+    if (monto) { monto.value = ''; }
+    const inputVisible = document.getElementById('id_monto_visible');
+    if (inputVisible) inputVisible.value = '';
     if (out) out.value = '';
     if (res) res.textContent = '';
     if (wrap) wrap.style.display = 'none';
     enforceRules('amount');
+    inputVisible?.focus();
   });
+
+  /* ====== Formateo de miles en el campo de entrada (visual) ====== */
+  const inputHidden  = document.getElementById('id_monto');
+  const inputVisible = document.getElementById('id_monto_visible');
+
+  function cleanFormat(str){
+    return String(str || '').replace(/\./g,'').replace(/\s+/g,'').replace(/[^0-9]/g,'');
+  }
+  function applyFormat(rawStr){
+    const clean = cleanFormat(rawStr);
+    if (!clean) return '';
+    const normalized = clean.replace(/^0+(?=\d)/,'');
+    return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(Number(normalized));
+  }
+  function setFormattedValuePreservingCaret(input, nextFormatted){
+    const prev = input.value;
+    const start = input.selectionStart || 0;
+    const digitsBefore = prev.slice(0,start).replace(/\D/g,'').length;
+    input.value = nextFormatted;
+    let pos = 0, consumed = 0;
+    while (pos < nextFormatted.length && consumed < digitsBefore) {
+      if (/\d/.test(nextFormatted[pos])) consumed++;
+      pos++;
+    }
+    input.setSelectionRange(pos, pos);
+  }
+
+  if (inputHidden && inputVisible) {
+    // Inicializar visible desde el hidden (si viene un valor)
+    inputVisible.value = applyFormat(inputHidden.value || '');
+
+    inputVisible.addEventListener('focus', () => {
+      inputVisible.style.borderColor = 'var(--brand)';
+      inputVisible.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18)';
+    });
+    inputVisible.addEventListener('blur', () => {
+      inputVisible.style.borderColor = 'var(--line)';
+      inputVisible.style.boxShadow = 'none';
+    });
+
+    inputVisible.addEventListener('input', () => {
+      const formatted = applyFormat(inputVisible.value);
+      setFormattedValuePreservingCaret(inputVisible, formatted);
+      inputHidden.value = cleanFormat(formatted);           // valor limpio para el POST/lógica
+      inputHidden.dispatchEvent(new Event('input', { bubbles: true }));  // mantiene la lógica existente
+      inputHidden.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    inputHidden.addEventListener('change', () => {
+      inputVisible.value = applyFormat(inputHidden.value);
+    });
+  }
 })();
 </script>
 

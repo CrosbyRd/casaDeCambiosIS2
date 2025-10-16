@@ -15,7 +15,7 @@
   </header>
 
   {% if messages %}
-    <div class="mb-3 space-y-2">
+    <div id="flash-messages" class="mb-3 space-y-2">
       {% for message in messages %}
         <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
           {{ message }}
@@ -45,10 +45,11 @@
 
   <!-- Card -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <form method="post" id="form-operacion" novalidate>
+    <form method="post" id="form-operacion" novalidate
+          {% if form.non_field_errors or messages %} data-has-errors="1"{% endif %}>
       {% csrf_token %}
 
-      <!-- ENCABEZADO: Tipo de operación COMO TÍTULO PRINCIPAL -->
+      <!-- Tipo de operación -->
       <div class="px-4 py-3 font-semibold text-white" style="background:var(--brand);">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <span class="text-white">Tipo de operación</span>
@@ -66,7 +67,7 @@
         </div>
       {% endif %}
 
-      <!-- FILA INMEDIATA: Moneda origen y destino EN LA MISMA FILA -->
+      <!-- Monedas -->
       <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <label for="{{ form.moneda_origen.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
@@ -88,9 +89,8 @@
         </div>
       </div>
 
-      <!-- Monto + Modalidad de Tasa EN LA MISMA FILA (SOLO ESTÉTICO) -->
+      <!-- Monto + Modalidad de Tasa -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- Columna: Monto -->
         <div>
           <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Monto</div>
           <div class="p-4">
@@ -100,7 +100,7 @@
 
             {{ form.monto }}
 
-            <!-- Espejo visible (miles) -->
+            <!-- Espejo visible con miles -->
             <input
               type="text"
               id="id_monto_visible"
@@ -122,7 +122,6 @@
           </div>
         </div>
 
-        <!-- Columna: Modalidad de Tasa -->
         <div>
           <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Modalidad de Tasa</div>
           <div class="p-4">
@@ -140,7 +139,7 @@
         </div>
       </div>
 
-      <!-- Método de pago (VENTA) — SOLO CAMBIO DE TÍTULO VISIBLE -->
+      <!-- Método de pago (VENTA) -->
       <div id="medio-pago-block" class="hidden">
         <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Método de pago</div>
         <div class="p-4">
@@ -198,7 +197,7 @@
 
       {% if form.non_field_errors %}
         <div class="p-4">
-          <div class="px-3 py-2 rounded-xl border bg-red-50 border-red-300 text-red-800">
+          <div id="limit-error-box" class="px-3 py-2 rounded-xl border bg-red-50 border-red-300 text-red-800">
             {% for error in form.non_field_errors %}
               <p class="text-sm">{{ error }}</p>
             {% endfor %}
@@ -206,7 +205,7 @@
         </div>
       {% endif %}
 
-      <!-- Acciones pegajosas -->
+      <!-- Acciones -->
       <div class="p-4 border-t sticky-actions" style="border-color:var(--line)">
         <div class="flex flex-col md:flex-row gap-2 md:justify-end">
           <a href="{% url 'home' %}"
@@ -225,9 +224,8 @@
   </section>
 </main>
 
-<!-- Estilos: SOLO compactación y reorden visual -->
+<!-- Estilos: presentación -->
 <style>
-  /* Inputs / selects con estética del proyecto */
   #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago, #id_medio_acreditacion {
     width:100%; border:1.5px solid var(--line); border-radius:12px;
     padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
@@ -238,7 +236,7 @@
     outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
   }
 
-  /* Ocultar input nativo del monto (solo visual; se usa en POST) */
+  /* Input real de monto oculto visualmente (POST intacto) */
   #id_monto {
     position: absolute !important;
     left: -99999px !important;
@@ -248,7 +246,6 @@
     pointer-events: none !important;
   }
 
-  /* Barra de acciones pegajosa: menos scroll */
   .sticky-actions {
     position: sticky; bottom: 0;
     background: #fff;
@@ -258,7 +255,7 @@
   }
 </style>
 
-<!-- JS (NO se altera la lógica existente; solo se mantiene el formateo visual del monto) -->
+<!-- JS (presentación: visibilidad correcta en error + miles + formateo mensajes) -->
 <script>
 (function () {
   const tipo = document.getElementById('id_tipo_operacion');
@@ -281,10 +278,13 @@
   const detalleTipoAcreditacion = document.getElementById('detalle-tipo-acreditacion');
   const detalleCamposDinamicosAcreditacion = document.getElementById('detalle-campos-dinamicos-acreditacion');
 
+  const form = document.getElementById('form-operacion');
+  const hasErrors = form && form.dataset.hasErrors === '1';
+
   const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
 
-  const mediosPagoData = JSON.parse('{{ medios_pago_json|escapejs }}');
-  const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|escapejs }}');
+  const mediosPagoData = JSON.parse('{{ medios_pago_json|default:"{}"|escapejs }}');
+  const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|default:"{}"|escapejs }}');
 
   const isPYG = v => String(v||'').toUpperCase()==='PYG';
   const isForeign = v => v && !isPYG(v);
@@ -296,21 +296,34 @@
     const d = dst?.value  || '';
     const m = parseFloat(monto?.value || '0');
 
+    /* Visibilidad según tipo */
     if (t === 'venta') {
-      medioPagoBlock.classList.remove('hidden');
-      medioAcreditacionBlock.classList.add('hidden');
-      medioAcreditacionDetalles.classList.add('hidden');
+      medioPagoBlock?.classList.remove('hidden');
+      medioAcreditacionBlock?.classList.add('hidden');
+      medioAcreditacionDetalles?.classList.add('hidden');
     } else if (t === 'compra') {
-      medioAcreditacionBlock.classList.remove('hidden');
-      medioPagoBlock.classList.add('hidden');
-      medioPagoDetalles.classList.add('hidden');
+      medioAcreditacionBlock?.classList.remove('hidden');
+      medioPagoBlock?.classList.add('hidden');
+      medioPagoDetalles?.classList.add('hidden');
     } else {
-      medioPagoBlock.classList.add('hidden');
-      medioPagoDetalles.classList.add('hidden');
-      medioAcreditacionBlock.classList.add('hidden');
-      medioAcreditacionDetalles.classList.add('hidden');
+      medioPagoBlock?.classList.add('hidden');
+      medioPagoDetalles?.classList.add('hidden');
+      medioAcreditacionBlock?.classList.add('hidden');
+      medioAcreditacionDetalles?.classList.add('hidden');
     }
 
+    /* En caso de errores/mensajes (límite, etc.), MANTENER SOLO el que corresponde al tipo actual */
+    if (hasErrors) {
+      if (t === 'venta') {
+        medioPagoBlock?.classList.remove('hidden');
+        medioAcreditacionBlock?.classList.add('hidden');
+      } else if (t === 'compra') {
+        medioAcreditacionBlock?.classList.remove('hidden');
+        medioPagoBlock?.classList.add('hidden');
+      }
+    }
+
+    /* Habilitación del botón (lógica visual) */
     if (t === 'compra') {
       if (isPYG(o) || isForeign(d)) ok = false;
     } else if (t === 'venta') {
@@ -318,7 +331,6 @@
     } else {
       ok = false;
     }
-
     if (!t || !o || !d || o === d || !(m > 0)) ok = false;
     if (btn) btn.disabled = !ok;
   }
@@ -333,18 +345,18 @@
     const id = medioPagoSelect?.value;
     if (id && mediosPagoData[id]) {
       const medio = mediosPagoData[id];
-      detalleAliasPago.textContent = medio.alias;
-      detalleTipoPago.textContent = medio.tipo_nombre;
+      detalleAliasPago.textContent = medio.alias || '';
+      detalleTipoPago.textContent = medio.tipo_nombre || '';
       detalleCamposDinamicosPago.innerHTML = '';
-      for (const campo of medio.campos) {
+      (medio.campos || []).forEach(campo=>{
         const p = document.createElement('p');
         p.className = 'text-sm text-[var(--muted)]';
         p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
         detalleCamposDinamicosPago.appendChild(p);
-      }
-      medioPagoDetalles.classList.remove('hidden');
+      });
+      medioPagoDetalles?.classList.remove('hidden');
     } else {
-      medioPagoDetalles.classList.add('hidden');
+      medioPagoDetalles?.classList.add('hidden');
     }
   }
 
@@ -352,18 +364,18 @@
     const id = medioAcreditacionSelect?.value;
     if (id && mediosAcreditacionData[id]) {
       const medio = mediosAcreditacionData[id];
-      detalleAliasAcreditacion.textContent = medio.alias;
-      detalleTipoAcreditacion.textContent = medio.tipo_nombre;
+      detalleAliasAcreditacion.textContent = medio.alias || '';
+      detalleTipoAcreditacion.textContent = medio.tipo_nombre || '';
       detalleCamposDinamicosAcreditacion.innerHTML = '';
-      for (const campo of medio.campos) {
+      (medio.campos || []).forEach(campo=>{
         const p = document.createElement('p');
         p.className = 'text-sm text-[var(--muted)]';
         p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
         detalleCamposDinamicosAcreditacion.appendChild(p);
-      }
-      medioAcreditacionDetalles.classList.remove('hidden');
+      });
+      medioAcreditacionDetalles?.classList.remove('hidden');
     } else {
-      medioAcreditacionDetalles.classList.add('hidden');
+      medioAcreditacionDetalles?.classList.add('hidden');
     }
   }
 
@@ -374,7 +386,7 @@
   mostrarDetallesMedioPago();
   mostrarDetallesMedioAcreditacion();
 
-  /* === Formateo visual del monto (manteniendo hidden limpio) === */
+  /* === Formateo visual del monto (input espejo) === */
   function cleanFormat(str) {
     return String(str || '').replace(/\./g, '').replace(/\s+/g, '').replace(/[^0-9]/g, '');
   }
@@ -386,9 +398,8 @@
   }
   function setFormattedValuePreservingCaret(input, nextFormatted) {
     const prev = input.value;
-    const start = input.selectionStart;
-    const beforePrev = prev.slice(0, start);
-    const digitsBefore = beforePrev.replace(/\D/g, '').length;
+    const start = input.selectionStart || 0;
+    const digitsBefore = prev.slice(0, start).replace(/\D/g, '').length;
     input.value = nextFormatted;
     let pos = 0, consumed = 0;
     while (pos < nextFormatted.length && consumed < digitsBefore) {
@@ -417,16 +428,33 @@
     inputVisible.addEventListener('input', () => {
       const formatted = applyFormat(inputVisible.value);
       setFormattedValuePreservingCaret(inputVisible, formatted);
-      inputHidden.value = cleanFormat(formatted);
-      inputHidden.dispatchEvent(new Event('input', { bubbles: true }));
-      inputHidden.dispatchEvent(new Event('change', { bubbles: true }));
+      inputHidden.value = cleanFormat(formatted);            // limpio para POST
+      inputHidden.dispatchEvent(new Event('input',  {bubbles:true}));
+      inputHidden.dispatchEvent(new Event('change', {bubbles:true}));
     });
 
     inputHidden.addEventListener('change', () => {
-      const formatted = applyFormat(inputHidden.value);
-      inputVisible.value = formatted;
+      inputVisible.value = applyFormat(inputHidden.value);
     });
   }
+
+  /* === Formateo de números con miles en mensajes/errores === */
+  function formatNumbersIn(container){
+    if (!container) return;
+    const nf = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
+    container.querySelectorAll('*').forEach(node=>{
+      node.childNodes?.forEach(ch=>{
+        if (ch.nodeType === Node.TEXT_NODE) {
+          const text = ch.nodeValue;
+          const replaced = text.replace(/\b(\d{4,})\b/g, (m)=> nf.format(Number(m)));
+          if (replaced !== text) ch.nodeValue = replaced;
+        }
+      });
+    });
+  }
+  formatNumbersIn(document.getElementById('limit-error-box'));
+  formatNumbersIn(document.getElementById('flash-messages'));
+
 })();
 </script>
 {% endblock %}
