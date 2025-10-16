@@ -4,104 +4,103 @@
 {% block title %}Iniciar Operación - Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-6 py-10">
+<main class="max-w-5xl mx-auto px-6 py-6">
 
-  <!-- Header (mismo patrón que tus pantallas de crear) -->
-  <header class="mb-6">
-    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">💱 Iniciar Operación</h1>
-    <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+  <!-- Header compacto -->
+  <header class="mb-4">
+    <h1 class="text-4xl font-extrabold mb-1 text-[var(--ink)]">💱 Iniciar Operación</h1>
+    <p class="text-base leading-relaxed max-w-2xl text-[var(--muted)]">
       Seleccioná el tipo de operación y completá los datos para continuar con la confirmación.
     </p>
-    <div class="mt-4">
-      <a href="{% url 'home' %}"
-         class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
-         style="background:var(--brand-soft); color:var(--brand-dark); border-color:var(--brand-soft);">
-        ⬅️ Volver
-      </a>
-    </div>
   </header>
 
-  <!-- Mensajes del framework -->
   {% if messages %}
-    <div class="mb-4 space-y-2">
+    <div class="mb-3 space-y-2">
       {% for message in messages %}
-        <div class="px-4 py-3 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+        <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
           {{ message }}
         </div>
       {% endfor %}
     </div>
   {% endif %}
 
-<!-- Mostrar el límite disponible para el cliente -->
-<div class="mb-6">
-  <h2 class="text-lg font-semibold text-[var(--ink)]">Límite Disponible</h2>
-  <p class="text-md text-[var(--muted)]">
-    El límite disponible para realizar operaciones es de 
-    <strong>{{ limite_disponible|floatformat:0|formatear_moneda }} PYG</strong>
-  </p>
-</div>
-
-<!-- Mostrar información del cliente (si es necesario) -->
-<div class="mb-6">
-  <h2 class="text-lg font-semibold text-[var(--ink)]">Información del Cliente</h2>
-  <p class="text-md text-[var(--muted)]">
-    Cliente: <strong>{{ cliente.nombre }}</strong><br>
-    Categoría: <strong>{{ cliente.get_categoria_display }}</strong><br>
-    Estado: <strong>{{ cliente.esta_activo|yesno:"Activo,Inactivo" }}</strong>
-  </p>
-</div>
-
+  <!-- Info superior en 2 columnas (compacto) -->
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <div>
+      <h2 class="text-base font-semibold text-[var(--ink)]">Límite Disponible</h2>
+      <p class="text-sm text-[var(--muted)]">
+        El límite disponible para realizar operaciones es de
+        <strong>{{ limite_disponible|floatformat:0|formatear_moneda }} PYG</strong>
+      </p>
+    </div>
+    <div>
+      <h2 class="text-base font-semibold text-[var(--ink)]">Información del Cliente</h2>
+      <p class="text-sm text-[var(--muted)]">
+        Cliente: <strong>{{ cliente.nombre }}</strong><br>
+        Categoría: <strong>{{ cliente.get_categoria_display }}</strong><br>
+        Estado: <strong>{{ cliente.esta_activo|yesno:"Activo,Inactivo" }}</strong>
+      </p>
+    </div>
+  </div>
 
   <!-- Card -->
   <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
     <form method="post" id="form-operacion" novalidate>
       {% csrf_token %}
 
-      <!-- Bloque: Tipo de operación -->
-      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Tipo de operación</div>
-      <div class="p-5">
-        <label for="{{ form.tipo_operacion.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
-          {{ form.tipo_operacion.label }}
-        </label>
-        {{ form.tipo_operacion }}
-        {% if form.tipo_operacion.errors %}
-          <p class="mt-2 text-sm text-red-600">{{ form.tipo_operacion.errors.as_text|cut:"* " }}</p>
-        {% endif %}
+      <!-- ENCABEZADO: Tipo de operación COMO TÍTULO PRINCIPAL -->
+      <div class="px-4 py-3 font-semibold text-white" style="background:var(--brand);">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <span class="text-white">Tipo de operación</span>
+          <div class="w-full md:w-auto">
+            <label for="{{ form.tipo_operacion.id_for_label }}" class="sr-only">
+              {{ form.tipo_operacion.label }}
+            </label>
+            {{ form.tipo_operacion }}
+          </div>
+        </div>
       </div>
+      {% if form.tipo_operacion.errors %}
+        <div class="px-4 pt-2">
+          <p class="text-sm text-red-600">{{ form.tipo_operacion.errors.as_text|cut:"* " }}</p>
+        </div>
+      {% endif %}
 
-      <!-- Bloque: Monedas -->
-      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Monedas</div>
-      <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- FILA INMEDIATA: Moneda origen y destino EN LA MISMA FILA -->
+      <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label for="{{ form.moneda_origen.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+          <label for="{{ form.moneda_origen.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
             {{ form.moneda_origen.label }}
           </label>
           {{ form.moneda_origen }}
           {% if form.moneda_origen.errors %}
-            <p class="mt-2 text-sm text-red-600">{{ form.moneda_origen.errors.as_text|cut:"* " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.moneda_origen.errors.as_text|cut:"* " }}</p>
           {% endif %}
         </div>
         <div>
-          <label for="{{ form.moneda_destino.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+          <label for="{{ form.moneda_destino.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
             {{ form.moneda_destino.label }}
           </label>
           {{ form.moneda_destino }}
           {% if form.moneda_destino.errors %}
-            <p class="mt-2 text-sm text-red-600">{{ form.moneda_destino.errors.as_text|cut:"* " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.moneda_destino.errors.as_text|cut:"* " }}</p>
           {% endif %}
         </div>
       </div>
 
-      <!-- Bloque: Monto -->
-      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Monto</div>
-      <div class="p-5">
-        <label for="{{ form.monto.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
-          {{ form.monto.label }}
-        </label>
+      <!-- Monto + Modalidad de Tasa EN LA MISMA FILA (SOLO ESTÉTICO) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Columna: Monto -->
+        <div>
+          <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Monto</div>
+          <div class="p-4">
+            <label for="{{ form.monto.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
+              {{ form.monto.label }}
+            </label>
 
-        {{ form.monto }}
+            {{ form.monto }}
 
-          {# Espejo visible (solo visualización con miles) #}
+            <!-- Espejo visible (miles) -->
             <input
               type="text"
               id="id_monto_visible"
@@ -110,38 +109,42 @@
               placeholder="0"
               class="mt-2 w-full"
               style="width:100%; border:1.5px solid var(--line); border-radius:12px;
-                    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
-                    transition: box-shadow .15s ease, border-color .15s ease;"
+                     padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
+                     transition: box-shadow .15s ease, border-color .15s ease;"
             />
 
-        {% if form.monto.errors %}
-          <p class="mt-2 text-sm text-red-600">{{ form.monto.errors.as_text|cut:"* " }}</p>
-        {% endif %}
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          La operación debe involucrar PYG. El monto mínimo puede depender de la denominación de la moneda.
-        </p>
+            {% if form.monto.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.monto.errors.as_text|cut:"* " }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-[var(--muted)]">
+              La operación debe involucrar PYG. El monto mínimo puede depender de la denominación de la moneda.
+            </p>
+          </div>
+        </div>
+
+        <!-- Columna: Modalidad de Tasa -->
+        <div>
+          <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Modalidad de Tasa</div>
+          <div class="p-4">
+            <label for="{{ form.modalidad_tasa.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
+              {{ form.modalidad_tasa.label }}
+            </label>
+            {{ form.modalidad_tasa }}
+            {% if form.modalidad_tasa.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.modalidad_tasa.errors.as_text|cut:"* " }}</p>
+            {% endif %}
+            <p class="mt-2 text-sm text-[var(--muted)]">
+              {{ form.modalidad_tasa.help_text }}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <!-- Bloque: Modalidad de Tasa -->
-      <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Modalidad de Tasa</div>
-      <div class="p-5">
-        <label for="{{ form.modalidad_tasa.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
-          {{ form.modalidad_tasa.label }}
-        </label>
-        {{ form.modalidad_tasa }}
-        {% if form.modalidad_tasa.errors %}
-          <p class="mt-2 text-sm text-red-600">{{ form.modalidad_tasa.errors.as_text|cut:"* " }}</p>
-        {% endif %}
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          {{ form.modalidad_tasa.help_text }}
-        </p>
-      </div>
-
-      <!-- Bloque: Medio de Pago (se muestra condicionalmente para VENTA) -->
+      <!-- Método de pago (VENTA) — SOLO CAMBIO DE TÍTULO VISIBLE -->
       <div id="medio-pago-block" class="hidden">
-        <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Medio de Pago</div>
-        <div class="p-5">
-          <label for="{{ form.medio_pago.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+        <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Método de pago</div>
+        <div class="p-4">
+          <label for="{{ form.medio_pago.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
             {{ form.medio_pago.label }}
           </label>
           <div class="flex items-center gap-2">
@@ -153,24 +156,23 @@
             </a>
           </div>
           {% if form.medio_pago.errors %}
-            <p class="mt-2 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
           {% endif %}
 
-          <!-- Contenedor para mostrar los detalles del medio de pago seleccionado -->
-          <div id="medio-pago-detalles" class="mt-4 p-4 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
-            <h3 class="text-md font-semibold text-[var(--ink)] mb-2">Detalles del Medio de Pago</h3>
+          <div id="medio-pago-detalles" class="mt-3 p-3 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
+            <h3 class="text-sm font-semibold text-[var(--ink)] mb-1">Detalles del Método de pago</h3>
             <p class="text-sm text-[var(--muted)]">Alias: <strong id="detalle-alias-pago"></strong></p>
             <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo-pago"></strong></p>
-            <div id="detalle-campos-dinamicos-pago" class="mt-2 space-y-1"></div>
+            <div id="detalle-campos-dinamicos-pago" class="mt-1 space-y-1"></div>
           </div>
         </div>
       </div>
 
-      <!-- Bloque: Medio de Acreditación (se muestra condicionalmente para COMPRA) -->
+      <!-- Medio de Acreditación (COMPRA) -->
       <div id="medio-acreditacion-block" class="hidden">
-        <div class="px-5 py-3 font-semibold text-white" style="background:var(--brand);">Medio de Acreditación</div>
-        <div class="p-5">
-          <label for="{{ form.medio_acreditacion.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
+        <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Medio de Acreditación</div>
+        <div class="p-4">
+          <label for="{{ form.medio_acreditacion.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
             {{ form.medio_acreditacion.label }}
           </label>
           <div class="flex items-center gap-2">
@@ -182,33 +184,31 @@
             </a>
           </div>
           {% if form.medio_acreditacion.errors %}
-            <p class="mt-2 text-sm text-red-600">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</p>
+            <p class="mt-1 text-sm text-red-600">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</p>
           {% endif %}
 
-          <!-- Contenedor para mostrar los detalles del medio de acreditación seleccionado -->
-          <div id="medio-acreditacion-detalles" class="mt-4 p-4 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
-            <h3 class="text-md font-semibold text-[var(--ink)] mb-2">Detalles del Medio de Acreditación</h3>
+          <div id="medio-acreditacion-detalles" class="mt-3 p-3 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
+            <h3 class="text-sm font-semibold text-[var(--ink)] mb-1">Detalles del Medio de Acreditación</h3>
             <p class="text-sm text-[var(--muted)]">Alias: <strong id="detalle-alias-acreditacion"></strong></p>
             <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo-acreditacion"></strong></p>
-            <div id="detalle-campos-dinamicos-acreditacion" class="mt-2 space-y-1"></div>
+            <div id="detalle-campos-dinamicos-acreditacion" class="mt-1 space-y-1"></div>
           </div>
         </div>
       </div>
 
-      <!-- Errores Generales del Formulario -->
       {% if form.non_field_errors %}
-        <div class="p-5">
-          <div class="px-4 py-3 rounded-xl border bg-red-50 border-red-300 text-red-800">
+        <div class="p-4">
+          <div class="px-3 py-2 rounded-xl border bg-red-50 border-red-300 text-red-800">
             {% for error in form.non_field_errors %}
-              <p>{{ error }}</p>
+              <p class="text-sm">{{ error }}</p>
             {% endfor %}
           </div>
         </div>
       {% endif %}
 
-      <!-- Acciones -->
-      <div class="p-5 border-t" style="border-color:var(--line)">
-        <div class="flex flex-col md:flex-row gap-3 md:justify-end">
+      <!-- Acciones pegajosas -->
+      <div class="p-4 border-t sticky-actions" style="border-color:var(--line)">
+        <div class="flex flex-col md:flex-row gap-2 md:justify-end">
           <a href="{% url 'home' %}"
              class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
              style="background:#e11d48; color:#fff;">
@@ -225,19 +225,20 @@
   </section>
 </main>
 
-<!-- Estilos: aplicados por ID nativo (sin filtros ni as_widget) -->
+<!-- Estilos: SOLO compactación y reorden visual -->
 <style>
-  /* Inputs y selects con la estética del proyecto */
-  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago {
+  /* Inputs / selects con estética del proyecto */
+  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago, #id_medio_acreditacion {
     width:100%; border:1.5px solid var(--line); border-radius:12px;
-    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
+    padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
     transition: box-shadow .15s ease, border-color .15s ease;
   }
-  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus, #id_modalidad_tasa:focus, #id_medio_pago:focus {
+  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus,
+  #id_modalidad_tasa:focus, #id_medio_pago:focus, #id_medio_acreditacion:focus {
     outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
   }
-  .hidden { display: none; }
 
+  /* Ocultar input nativo del monto (solo visual; se usa en POST) */
   #id_monto {
     position: absolute !important;
     left: -99999px !important;
@@ -246,9 +247,18 @@
     opacity: 0 !important;
     pointer-events: none !important;
   }
+
+  /* Barra de acciones pegajosa: menos scroll */
+  .sticky-actions {
+    position: sticky; bottom: 0;
+    background: #fff;
+    backdrop-filter: saturate(1.1) blur(4px);
+    box-shadow: 0 -6px 16px rgba(0,0,0,0.06);
+    z-index: 20;
+  }
 </style>
 
-<!-- JS opcional: habilita/deshabilita submit según reglas del negocio (frontend) -->
+<!-- JS (NO se altera la lógica existente; solo se mantiene el formateo visual del monto) -->
 <script>
 (function () {
   const tipo = document.getElementById('id_tipo_operacion');
@@ -256,6 +266,7 @@
   const dst  = document.getElementById('id_moneda_destino');
   const monto= document.getElementById('id_monto');
   const btn  = document.getElementById('btn-submit');
+
   const medioPagoBlock = document.getElementById('medio-pago-block');
   const medioPagoSelect = document.getElementById('id_medio_pago');
   const medioPagoDetalles = document.getElementById('medio-pago-detalles');
@@ -272,8 +283,6 @@
 
   const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
 
-
-  // Datos de los medios de pago y acreditación pasados desde la vista
   const mediosPagoData = JSON.parse('{{ medios_pago_json|escapejs }}');
   const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|escapejs }}');
 
@@ -287,12 +296,11 @@
     const d = dst?.value  || '';
     const m = parseFloat(monto?.value || '0');
 
-    // Lógica para mostrar/ocultar los bloques de medios
-    if (t === 'venta') { // Cliente compra divisa, necesita pagar
+    if (t === 'venta') {
       medioPagoBlock.classList.remove('hidden');
       medioAcreditacionBlock.classList.add('hidden');
       medioAcreditacionDetalles.classList.add('hidden');
-    } else if (t === 'compra') { // Cliente vende divisa, necesita acreditar
+    } else if (t === 'compra') {
       medioAcreditacionBlock.classList.remove('hidden');
       medioPagoBlock.classList.add('hidden');
       medioPagoDetalles.classList.add('hidden');
@@ -303,10 +311,10 @@
       medioAcreditacionDetalles.classList.add('hidden');
     }
 
-    if (t === 'compra') {          // cliente vende divisa a la casa (resultado en PYG)
-      if (isPYG(o) || isForeign(d)) ok = false; // origen no PYG, destino PYG
-    } else if (t === 'venta') {    // cliente compra divisa a la casa (origen PYG)
-      if (isForeign(o) || isPYG(d)) ok = false; // origen PYG, destino no PYG
+    if (t === 'compra') {
+      if (isPYG(o) || isForeign(d)) ok = false;
+    } else if (t === 'venta') {
+      if (isForeign(o) || isPYG(d)) ok = false;
     } else {
       ok = false;
     }
@@ -320,16 +328,14 @@
     dst?.addEventListener(ev, enforce);
     monto?.addEventListener(ev, enforce);
   });
-  
-  // Lógica para mostrar los detalles del medio de pago seleccionado
+
   function mostrarDetallesMedioPago() {
-    const selectedMedioPagoId = medioPagoSelect.value;
-    if (selectedMedioPagoId && mediosPagoData[selectedMedioPagoId]) {
-      const medio = mediosPagoData[selectedMedioPagoId];
+    const id = medioPagoSelect?.value;
+    if (id && mediosPagoData[id]) {
+      const medio = mediosPagoData[id];
       detalleAliasPago.textContent = medio.alias;
       detalleTipoPago.textContent = medio.tipo_nombre;
-
-      detalleCamposDinamicosPago.innerHTML = ''; // Limpiar campos anteriores
+      detalleCamposDinamicosPago.innerHTML = '';
       for (const campo of medio.campos) {
         const p = document.createElement('p');
         p.className = 'text-sm text-[var(--muted)]';
@@ -342,15 +348,13 @@
     }
   }
 
-  // Lógica para mostrar los detalles del medio de acreditación seleccionado
   function mostrarDetallesMedioAcreditacion() {
-    const selectedMedioAcreditacionId = medioAcreditacionSelect.value;
-    if (selectedMedioAcreditacionId && mediosAcreditacionData[selectedMedioAcreditacionId]) {
-      const medio = mediosAcreditacionData[selectedMedioAcreditacionId];
+    const id = medioAcreditacionSelect?.value;
+    if (id && mediosAcreditacionData[id]) {
+      const medio = mediosAcreditacionData[id];
       detalleAliasAcreditacion.textContent = medio.alias;
       detalleTipoAcreditacion.textContent = medio.tipo_nombre;
-
-      detalleCamposDinamicosAcreditacion.innerHTML = ''; // Limpiar campos anteriores
+      detalleCamposDinamicosAcreditacion.innerHTML = '';
       for (const campo of medio.campos) {
         const p = document.createElement('p');
         p.className = 'text-sm text-[var(--muted)]';
@@ -367,35 +371,25 @@
   medioAcreditacionSelect?.addEventListener('change', mostrarDetallesMedioAcreditacion);
 
   enforce();
-  mostrarDetallesMedioPago(); // Mostrar detalles al cargar si ya hay una selección
-  mostrarDetallesMedioAcreditacion(); // Mostrar detalles al cargar si ya hay una selección
+  mostrarDetallesMedioPago();
+  mostrarDetallesMedioAcreditacion();
 
-  console.log('Valor inicial de tipo_operacion:', tipo?.value);
-  console.log('Opciones de tipo_operacion:', Array.from(tipo?.options || []).map(opt => ({ value: opt.value, text: opt.text, selected: opt.selected })));
-
+  /* === Formateo visual del monto (manteniendo hidden limpio) === */
   function cleanFormat(str) {
-    // Quita puntos/espacios, deja solo dígitos
     return String(str || '').replace(/\./g, '').replace(/\s+/g, '').replace(/[^0-9]/g, '');
   }
-
   function applyFormat(rawStr) {
     const clean = cleanFormat(rawStr);
     if (!clean) return '';
-    // Evita ceros a la izquierda innecesarios
     const normalized = clean.replace(/^0+(?=\d)/, '');
     return nfPY.format(Number(normalized));
   }
-
-  // Mantener posición del cursor al agregar/quitar separadores
   function setFormattedValuePreservingCaret(input, nextFormatted) {
     const prev = input.value;
     const start = input.selectionStart;
     const beforePrev = prev.slice(0, start);
     const digitsBefore = beforePrev.replace(/\D/g, '').length;
-
     input.value = nextFormatted;
-
-    // Recorremos nextFormatted hasta consumir 'digitsBefore' dígitos
     let pos = 0, consumed = 0;
     while (pos < nextFormatted.length && consumed < digitsBefore) {
       if (/\d/.test(nextFormatted[pos])) consumed++;
@@ -408,11 +402,9 @@
   const inputVisible = document.getElementById('id_monto_visible');
 
   if (inputHidden && inputVisible) {
-    // Inicializar visible desde el hidden (si viene un valor inicial)
     const initial = inputHidden.value || '';
     inputVisible.value = applyFormat(initial);
 
-    // Estilos de focus iguales a los tuyos
     inputVisible.addEventListener('focus', () => {
       inputVisible.style.borderColor = 'var(--brand)';
       inputVisible.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18)';
@@ -422,25 +414,19 @@
       inputVisible.style.boxShadow = 'none';
     });
 
-    // Formatear mientras escribe y sincronizar al hidden
     inputVisible.addEventListener('input', () => {
       const formatted = applyFormat(inputVisible.value);
       setFormattedValuePreservingCaret(inputVisible, formatted);
-
-      // Escribir el valor limpio (sin puntos) en el hidden para el POST
       inputHidden.value = cleanFormat(formatted);
-      // Disparar 'input' para que tu lógica de habilitar botón reaccione
       inputHidden.dispatchEvent(new Event('input', { bubbles: true }));
       inputHidden.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
-    // Si por cualquier razón alguien modifica el hidden, reflejar en visible
     inputHidden.addEventListener('change', () => {
       const formatted = applyFormat(inputHidden.value);
       inputVisible.value = formatted;
     });
   }
-
 })();
 </script>
 {% endblock %}
