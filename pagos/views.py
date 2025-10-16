@@ -183,6 +183,13 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
     template_name = "pagos/clientes_form.html"
     success_url = reverse_lazy("pagos:clientes_list")
 
+    def get_success_url(self):
+        # Si hay un parámetro 'next' en la URL, redirigir a esa URL
+        next_url = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user

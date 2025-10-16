@@ -141,11 +141,14 @@ class MedioPagoClienteForm(forms.ModelForm):
         # b) Si viene por POST (form enviado) o por initial / querystring
         if tipo_obj is None:
             tipo_pk = self.data.get("tipo") or self.initial.get("tipo")
+            print(f"DEBUG MedioPagoClienteForm: tipo_pk obtenido: {tipo_pk}") # Debugging
             if tipo_pk:
                 try:
                     tipo_obj = TipoMedioPago.objects.get(pk=tipo_pk, activo=True)
+                    print(f"DEBUG MedioPagoClienteForm: tipo_obj encontrado: {tipo_obj.nombre}") # Debugging
                 except TipoMedioPago.DoesNotExist:
                     tipo_obj = None
+                    print("DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo.") # Debugging
 
         # c) Fallback UX: si no hay selección y hay al menos un tipo activo, usamos el primero
         if tipo_obj is None:
@@ -153,12 +156,14 @@ class MedioPagoClienteForm(forms.ModelForm):
             if first_tipo is not None:
                 tipo_obj = first_tipo
                 self.initial["tipo"] = first_tipo.pk
+                print(f"DEBUG MedioPagoClienteForm: Usando primer tipo activo como fallback: {first_tipo.nombre}") # Debugging
 
         # 2) Construir campos dinámicos si tenemos tipo
         self._campos_config = []
         if tipo_obj:
             self.fields["tipo"].initial = tipo_obj.pk
             campos_qs = CampoMedioPago.objects.filter(tipo=tipo_obj, activo=True).order_by("nombre_campo")
+            print(f"DEBUG MedioPagoClienteForm: Campos dinámicos para {tipo_obj.nombre}: {list(campos_qs)}") # Debugging
             for campo in campos_qs:
                 nombre = campo.nombre_campo
                 requerido = campo.obligatorio
@@ -170,6 +175,8 @@ class MedioPagoClienteForm(forms.ModelForm):
                 if getattr(self.instance, "pk", None):
                     self.fields[nombre].initial = (self.instance.datos or {}).get(nombre, "")
                 self._campos_config.append(campo)
+        else:
+            print("DEBUG MedioPagoClienteForm: No hay tipo_obj, no se construyen campos dinámicos.") # Debugging
 
     @property
     def campos_config(self):

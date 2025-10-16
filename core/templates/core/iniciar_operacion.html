@@ -131,7 +131,7 @@
           </label>
           <div class="flex items-center gap-2">
             {{ form.medio_pago }}
-            <a href="{% url 'pagos:clientes_create' %}"
+            <a href="{% url 'pagos:clientes_create' %}?next={{ request.get_full_path|urlencode }}"
                class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap"
                style="background:var(--brand-soft); color:var(--brand-dark);">
               ➕ Agregar
