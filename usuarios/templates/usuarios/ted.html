@@ -5,6 +5,44 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/ted.css' %}"/>
 
+<!-- Estilos mínimos SOLO para el bloque de confirmación -->
+<style>
+  .confirm-box{
+    display:none;
+    margin:18px auto 8px auto;
+    max-width:640px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border:1.5px solid rgba(255,255,255,0.16);
+    border-radius:18px;
+    padding:18px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.25) inset, 0 10px 30px rgba(0,0,0,0.10);
+  }
+  .confirm-box .cb-top{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;
+  }
+  .confirm-box .cb-chip{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px;
+    background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18);
+    font-weight:700; letter-spacing:.3px;
+  }
+  .confirm-box .cb-flag{ font-size:18px; line-height:1; }
+  .confirm-box .cb-code{ opacity:.95 }
+  .confirm-box .cb-mode{ font-size:14px; opacity:.85 }
+  .confirm-box .cb-value{
+    font-weight:900; line-height:1.15; letter-spacing:.2px;
+    font-size:36px; margin:6px 0 2px 0;
+    text-shadow:0 1px 0 rgba(0,0,0,0.35);
+  }
+  .confirm-box .cb-value .cb-code{
+    font-size:18px; font-weight:800; margin-left:6px; opacity:.9;
+  }
+  .confirm-box .cb-sub{
+    margin-top:6px; font-size:14px; opacity:.9;
+  }
+  #confirm-amount-text.hidden { display:none !important; }
+</style>
+
 <main style="max-width:1100px;margin:0 auto;padding:24px">
   <section class="ted-machine">
     <div class="ted-layout">
@@ -109,7 +147,13 @@
               <section id="confirm-amount-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content view-content--centered">
                   <div class="confirm-title">Confirmación</div>
+
+                  <!-- NUEVO bloque visual -->
+                  <div id="confirm-amount-box" class="confirm-box" aria-live="polite"></div>
+
+                  <!-- Fallback de texto plano (se ocultará si hay box) -->
                   <div id="confirm-amount-text" class="confirm-text">¿Desea confirmar la operación?</div>
+
                   <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button>
@@ -205,7 +249,7 @@
   }
   const csrfToken=getCookie('csrftoken');
 
-  /* Reloj: hacerlo resiliente para que siempre prenda */
+  /* Reloj */
   function startClock(){
     try{
       const el=qs('#ted-clock'); if(!el) return;
@@ -213,7 +257,6 @@
       const tick=()=>{ el.textContent=fmt.format(new Date()); };
       tick(); setInterval(tick,1000);
     }catch(e){
-      // fallback simple si Intl falla por alguna razón
       const el=qs('#ted-clock'); if(!el) return;
       const pad=n=>String(n).padStart(2,'0');
       const tick=()=>{
@@ -229,6 +272,7 @@
     qsa('.ted-screen-view').forEach(v=>v.classList.remove('active'));
     const screen = qs('#'+name+'-screen');
     if(screen) screen.classList.add('active');
+    // Limpia cualquier animación residual en las ranuras
     qsa('.ted-slot').forEach(s=>s.classList.remove('active','dispensing-bills','printing-receipt','inserting-bills'));
     const welcomeBadge = qs('#welcome-badge');
     const header = qs('.ted-header');
@@ -248,19 +292,51 @@
     showScreen('processing'); 
   }
 
-  /* Slots */
-  function dispenseBills(){ 
-    const slot=qs('#bill-slot'); 
-    if(!slot) return; 
-    slot.classList.add('active','dispensing-bills'); 
-    after(2500,()=>slot.classList.remove('dispensing-bills')); 
+  /* === Helpers de animación de ranura === */
+  function restartBillAnimation(mode){ // mode: 'out' | 'in'
+    const slot = qs('#bill-slot'); if(!slot) return;
+    // Limpia clases previas
+    slot.classList.remove('dispensing-bills','inserting-bills');
+    // Reinicia anim de cada billete para permitir re-disparo
+    qsa('#bill-slot .bill-item').forEach(el=>{
+      el.style.animation='none';
+      // fuerza reflow
+      void el.offsetWidth;
+      el.style.animation='';
+    });
+    // fuerza reflow del contenedor
+    void slot.offsetWidth;
+    slot.classList.add('active', mode==='out' ? 'dispensing-bills' : 'inserting-bills');
   }
-  function insertBills(){ 
-    const slot=qs('#bill-slot'); 
-    if(!slot) return; 
-    slot.classList.add('active','inserting-bills'); 
-    after(3000,()=>slot.classList.remove('inserting-bills')); 
-  }
+function dispenseBills(){
+  const slot = document.querySelector('#bill-slot');
+  if(!slot) return;
+
+  // Programar para el siguiente frame (después de mostrar "Procesando")
+  requestAnimationFrame(()=> {
+    requestAnimationFrame(()=> {
+      restartBillAnimation('out');            // ← añade .dispensing-bills
+      setTimeout(()=>{ 
+        slot.classList.remove('dispensing-bills'); 
+      }, 2600);
+    });
+  });
+}
+
+function insertBills(){
+  const slot = document.querySelector('#bill-slot');
+  if(!slot) return;
+
+  // Programar para el siguiente frame (después de mostrar "Procesando")
+  requestAnimationFrame(()=> {
+    requestAnimationFrame(()=> {
+      restartBillAnimation('in');             // ← añade .inserting-bills
+      setTimeout(()=>{ 
+        slot.classList.remove('inserting-bills'); 
+      }, 3200);
+    });
+  });
+}
 
   /* Ticket */
   let lastReceipt={lines:[]};
@@ -293,7 +369,7 @@
     const btnLogin=qs('#btn-login-ingresar'); if(btnLogin) btnLogin.disabled = !ubicacionSeleccionada;
   }
 
-  // Normaliza respuestas: admite {ubicaciones:[]}, {data:[]}, {results:[]}, [].
+  // Normaliza respuestas
   function pickUbicaciones(data){
     if(Array.isArray(data)) return data;
     if(data && Array.isArray(data.ubicaciones)) return data.ubicaciones;
@@ -321,7 +397,6 @@
       }
       activarUbicacion(SELECT?.value || ubicacionSeleccionada || "");
     }catch(e){
-      // No bloquee el resto del flujo si falla; deja el default
       console.error('No se pudieron cargar ubicaciones:', e);
       activarUbicacion(ubicacionSeleccionada || "");
     }
@@ -373,14 +448,17 @@
     raw: null           // payload completo del backend
   };
 
-  function formatAmount(a, code){
+  function formatAmountRaw(a){
     try{
       const n = Number(a);
       if (Number.isFinite(n)){
-        return new Intl.NumberFormat('es-PY',{maximumFractionDigits:2}).format(n) + ' ' + code;
+        return new Intl.NumberFormat('es-PY',{maximumFractionDigits:2}).format(n);
       }
     }catch(e){}
-    return a + ' ' + code;
+    return String(a);
+  }
+  function formatAmount(a, code){
+    return `${formatAmountRaw(a)} ${code}`;
   }
 
   async function validarCodigo(code, modo){
@@ -395,29 +473,51 @@
     return data.data;
   }
 
+  // === Bloque visual de confirmación (con bandera y monto grande) ===
+  function renderConfirmBox(){
+    const box = qs('#confirm-amount-box');
+    const textEl = qs('#confirm-amount-text');
+    if(!box) return;
+
+    if(txCtx && txCtx.moneda && txCtx.monto){
+      const emoji = flag(txCtx.moneda);
+      const modoLabel = txCtx.modo === 'deposito' ? 'Depósito' : 'Retiro';
+      const amount = formatAmountRaw(txCtx.monto);
+      const code = txCtx.code || (txCtx.raw && txCtx.raw.codigo) || '';
+
+      box.innerHTML = `
+        <div class="cb-top">
+          <span class="cb-chip"><span class="cb-flag">${emoji}</span><span class="cb-code">${txCtx.moneda}</span></span>
+          <div class="cb-mode">${modoLabel}</div>
+        </div>
+        <div class="cb-value"><span class="cb-number">${amount}</span> <span class="cb-code">${txCtx.moneda}</span></div>
+        <div class="cb-sub">Transacción <code>${code}</code></div>
+      `;
+      box.style.display = 'block';
+      textEl && textEl.classList.add('hidden'); // ocultar fallback
+    }else{
+      box.style.display = 'none';
+      box.innerHTML = '';
+      textEl && textEl.classList.remove('hidden');
+    }
+  }
+
   function confirmOperationView(text){
     const el = qs('#confirm-amount-text');
-    if(el) el.textContent = text;
+    if(el && text){ el.textContent = text; }
     showScreen('confirm-amount');
+    renderConfirmBox();
   }
 
   /* Navegación / bindings */
   document.addEventListener('DOMContentLoaded',()=>{
-    // Enciende reloj pase lo que pase
     startClock();
-
-    // Inicializa info
     qs('#info-serie') && (qs('#info-serie').textContent = '—');
     qs('#info-ubicacion') && (qs('#info-ubicacion').textContent = '—');
-
-    // Carga ubicaciones de forma tolerante
     cargarUbicaciones();
-
-    // Pantalla inicial
     showScreen('login');
   });
 
-  // Selección de ubicación
   SELECT && SELECT.addEventListener('change', e=>{
     activarUbicacion(e.target.value || "");
   });
@@ -447,7 +547,7 @@
   qs('#btn-retirar-cancelar') && qs('#btn-retirar-cancelar').addEventListener('click',()=> showScreen('menu'));
   qs('#btn-depo-cancelar') && qs('#btn-depo-cancelar').addEventListener('click',()=> showScreen('menu'));
 
-  // Confirmar RETIRO → valida código y restringe moneda a la de la transacción
+  // Confirmar RETIRO  (mostrar processing -> disparar animación)
   qs('#btn-retirar-confirmar') && qs('#btn-retirar-confirmar').addEventListener('click', async ()=>{
     const code = (qs('#transaction-number')?.value || '').trim();
     if(!code) return;
@@ -461,11 +561,8 @@
       txCtx.raw = info;
 
       qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
-        if (ch.dataset.code === info.moneda){
-          ch.classList.add('match');
-        }else{
-          ch.classList.add('dimmed');
-        }
+        if (ch.dataset.code === info.moneda){ ch.classList.add('match'); }
+        else{ ch.classList.add('dimmed'); }
       });
 
       confirmOperationView(
@@ -477,7 +574,7 @@
     }
   });
 
-  // Confirmar DEPÓSITO → valida código
+  // Confirmar DEPÓSITO  (mostrar processing -> disparar animación)
   qs('#btn-depo-confirmar') && qs('#btn-depo-confirmar').addEventListener('click', async ()=>{
     const code = (qs('#deposit-tx')?.value || '').trim();
     if(!code) return;
@@ -502,6 +599,7 @@
   // Confirmación final
   qs('#btn-amount-confirm') && qs('#btn-amount-confirm').addEventListener('click', ()=>{
     if(!txCtx.modo) return;
+
     const lines = [
       `Operación: ${txCtx.modo.toUpperCase()}`,
       `Código: ${txCtx.code}`,
@@ -512,15 +610,17 @@
     prepareReceipt(null, lines);
 
     if(txCtx.modo === 'retiro'){
-      dispenseBills();
+      // 1) mostramos processing, 2) luego disparamos animación de salida
       showProcessing('Entregando billetes');
+      after(30, dispenseBills);
       after(2600, ()=>{
         showScreen('success');
         qs('#success-message') && (qs('#success-message').textContent = `Retiro de ${formatAmount(txCtx.monto, txCtx.moneda)} completado.`);
       });
     }else{
-      insertBills();
+      // 1) mostramos processing, 2) luego disparamos animación de inserción
       showProcessing('Recibiendo billetes');
+      after(30, insertBills);
       after(3200, ()=>{
         showScreen('success');
         qs('#success-message') && (qs('#success-message').textContent = `Depósito de ${formatAmount(txCtx.monto, txCtx.moneda)} registrado.`);
@@ -534,7 +634,7 @@
   qs('#btn-cancel-exit') && qs('#btn-cancel-exit').addEventListener('click', ()=> showScreen('menu'));
   qs('#btn-success-print') && qs('#btn-success-print').addEventListener('click', ()=> printReceipt());
 
-  /* Teclado lateral → escribe en input activo (si es un <input>) */
+  /* Teclado lateral */
   let activeInput = null;
   ['#transaction-number', '#deposit-tx'].forEach(sel=>{
     qs(sel) && qs(sel).addEventListener('focus', e=> activeInput = e.target);
