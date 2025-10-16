@@ -129,10 +129,25 @@
           <label for="{{ form.medio_pago.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-2">
             {{ form.medio_pago.label }}
           </label>
-          {{ form.medio_pago }}
+          <div class="flex items-center gap-2">
+            {{ form.medio_pago }}
+            <a href="{% url 'pagos:clientes_create' %}"
+               class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap"
+               style="background:var(--brand-soft); color:var(--brand-dark);">
+              ➕ Agregar
+            </a>
+          </div>
           {% if form.medio_pago.errors %}
             <p class="mt-2 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
           {% endif %}
+
+          <!-- Contenedor para mostrar los detalles del medio de pago seleccionado -->
+          <div id="medio-pago-detalles" class="mt-4 p-4 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
+            <h3 class="text-md font-semibold text-[var(--ink)] mb-2">Detalles del Medio de Pago</h3>
+            <p class="text-sm text-[var(--muted)]">Alias: <strong id="detalle-alias"></strong></p>
+            <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo"></strong></p>
+            <div id="detalle-campos-dinamicos" class="mt-2 space-y-1"></div>
+          </div>
         </div>
       </div>
 
@@ -189,6 +204,14 @@
   const monto= document.getElementById('id_monto');
   const btn  = document.getElementById('btn-submit');
   const medioPagoBlock = document.getElementById('medio-pago-block');
+  const medioPagoSelect = document.getElementById('id_medio_pago');
+  const medioPagoDetalles = document.getElementById('medio-pago-detalles');
+  const detalleAlias = document.getElementById('detalle-alias');
+  const detalleTipo = document.getElementById('detalle-tipo');
+  const detalleCamposDinamicos = document.getElementById('detalle-campos-dinamicos');
+
+  // Datos de los medios de pago pasados desde la vista (se inyectará en la vista)
+  const mediosPagoData = JSON.parse('{{ medios_pago_json|escapejs }}');
 
   const isPYG = v => String(v||'').toUpperCase()==='PYG';
   const isForeign = v => v && !isPYG(v);
@@ -205,6 +228,7 @@
       medioPagoBlock.classList.remove('hidden');
     } else {
       medioPagoBlock.classList.add('hidden');
+      medioPagoDetalles.classList.add('hidden'); // Ocultar detalles si no es venta
     }
 
     if (t === 'compra') {          // cliente vende divisa a la casa (resultado en PYG)
@@ -224,7 +248,36 @@
     dst?.addEventListener(ev, enforce);
     monto?.addEventListener(ev, enforce);
   });
+  
+  // Lógica para mostrar los detalles del medio de pago seleccionado
+  function mostrarDetallesMedioPago() {
+    const selectedMedioPagoId = medioPagoSelect.value;
+    if (selectedMedioPagoId && mediosPagoData[selectedMedioPagoId]) {
+      const medio = mediosPagoData[selectedMedioPagoId];
+      detalleAlias.textContent = medio.alias;
+      detalleTipo.textContent = medio.tipo_nombre;
+
+      detalleCamposDinamicos.innerHTML = ''; // Limpiar campos anteriores
+      for (const campo of medio.campos) {
+        const p = document.createElement('p');
+        p.className = 'text-sm text-[var(--muted)]';
+        p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
+        detalleCamposDinamicos.appendChild(p);
+      }
+      medioPagoDetalles.classList.remove('hidden');
+    } else {
+      medioPagoDetalles.classList.add('hidden');
+    }
+  }
+
+  medioPagoSelect?.addEventListener('change', mostrarDetallesMedioPago);
+
   enforce();
+  mostrarDetallesMedioPago(); // Mostrar detalles al cargar si ya hay una selección
+
+  console.log('Valor inicial de tipo_operacion:', tipo?.value); // Nuevo console.log
+  console.log('Opciones de tipo_operacion:', Array.from(tipo?.options || []).map(opt => ({ value: opt.value, text: opt.text, selected: opt.selected }))); // Nuevo console.log
+
 })();
 </script>
 {% endblock %}

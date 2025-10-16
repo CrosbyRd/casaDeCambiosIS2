@@ -19,8 +19,10 @@ from django.db.models import Q, Sum
 from django.utils.dateparse import parse_date
 from core.utils import validar_limite_transaccion
 from usuarios.utils import get_cliente_activo
-from pagos.models import TipoMedioPago
+import json
+from pagos.models import TipoMedioPago, MedioPagoCliente, CampoMedioPago
 from pagos.services import iniciar_cobro_a_cliente
+from django.urls import reverse
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -84,8 +86,33 @@ def iniciar_operacion(request):
                 'tipo_operacion': 'venta' if moneda_origen_from_url == 'PYG' else 'compra'
             }
 
-    form = OperacionForm(request.POST or initial_data)
+    # Obtener los medios de pago del cliente
+    medios_pago_cliente = MedioPagoCliente.objects.filter(cliente=cliente, activo=True)
+
+    # Si es una operación de venta y el cliente no tiene medios de pago, redirigir
+    if initial_data.get('tipo_operacion') == 'venta' and not medios_pago_cliente.exists():
+        messages.info(request, "Necesitas tener al menos un medio de pago creado para realizar una venta. Por favor, crea uno.")
+        return redirect(reverse("pagos:clientes_create"))
+
+    form = OperacionForm(request.POST or initial_data, cliente=cliente)
     resultado_simulacion = None
+
+    # Preparar datos de medios de pago para JavaScript
+    medios_pago_para_js = {}
+    for medio in medios_pago_cliente.prefetch_related('tipo__campos').all():
+        campos_data = []
+        for campo in medio.tipo.campos.filter(activo=True):
+            campos_data.append({
+                'nombre_campo': campo.nombre_campo,
+                'valor': medio.datos.get(campo.nombre_campo, ''),
+            })
+        medios_pago_para_js[str(medio.id_medio)] = {
+            'id_medio': str(medio.id_medio),
+            'alias': medio.alias,
+            'tipo_nombre': medio.tipo.nombre,
+            'campos': campos_data,
+        }
+    medios_pago_json = json.dumps(medios_pago_para_js)
 
     # Calcular el límite disponible para el cliente
     limite_cfg = TransactionLimit.objects.filter(moneda__codigo='PYG').first()  # Límite en PYG
@@ -131,9 +158,9 @@ def iniciar_operacion(request):
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
             'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Añadir modalidad de tasa
         }
-        # Añadir medio de pago si fue seleccionado
+        # Añadir medio de pago si fue seleccionado (ahora es un MedioPagoCliente)
         if form.cleaned_data.get('medio_pago'):
-            operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_tipo)
+            operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
 
         request.session['operacion_pendiente'] = operacion_data
 
@@ -144,7 +171,8 @@ def iniciar_operacion(request):
         'form': form,
         'resultado_simulacion': resultado_simulacion,
         'limite_disponible': limite_disponible,  # Pasamos el límite disponible al template
-        'cliente': cliente  # Pasamos el cliente al template
+        'cliente': cliente,  # Pasamos el cliente al template
+        'medios_pago_json': medios_pago_json, # Pasamos los datos de medios de pago para JS
     })
 
 
@@ -186,14 +214,14 @@ def confirmar_operacion(request):
                 tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
         # Si la modalidad es 'flotante', tasa_garantizada_hasta permanece como None
 
-        # Obtener el medio de pago de la sesión
+        # Obtener el medio de pago del cliente de la sesión
         medio_pago_id = operacion_pendiente.get('medio_pago_id')
-        medio_pago_obj = None
+        medio_pago_cliente_obj = None
         if medio_pago_id:
             try:
-                medio_pago_obj = TipoMedioPago.objects.get(id_tipo=medio_pago_id)
-            except TipoMedioPago.DoesNotExist:
-                messages.error(request, "El medio de pago seleccionado ya no es válido.")
+                medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
+            except MedioPagoCliente.DoesNotExist:
+                messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
                 return redirect('core:iniciar_operacion')
 
         transaccion = Transaccion.objects.create(
@@ -210,7 +238,7 @@ def confirmar_operacion(request):
             codigo_operacion_tauser=codigo_operacion_tauser,
             tasa_garantizada_hasta=tasa_garantizada_hasta,
             modalidad_tasa=modalidad_tasa,
-            medio_pago_utilizado=medio_pago_obj, # Guardar el medio de pago
+            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None, # Guardar el TipoMedioPago asociado
         )
         request.session.pop('operacion_pendiente', None)
 

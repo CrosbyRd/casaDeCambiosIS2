@@ -2,7 +2,7 @@
 from django import forms
 from monedas.models import Moneda
 from transacciones.models import Transaccion
-from pagos.models import TipoMedioPago
+from pagos.models import TipoMedioPago, MedioPagoCliente
 
 class SimulacionForm(forms.Form):
     monto = forms.DecimalField(
@@ -30,8 +30,7 @@ class SimulacionForm(forms.Form):
             choices = [('PYG', 'Guaraní')]
 
         self.fields['moneda_origen'].choices = choices
-        self.fields['moneda_destino'].choices = choices
-
+        self.fields['moneda_destino'].choices = choices # Añadido para corregir el problema
     def clean_monto(self):
         monto = self.cleaned_data['monto']
         moneda_origen_codigo = self.cleaned_data.get('moneda_origen')
@@ -67,8 +66,8 @@ class OperacionForm(SimulacionForm):
         widget=forms.Select(attrs={'class': ''})
     )
     medio_pago = forms.ModelChoiceField(
-        label="Medio de Pago",
-        queryset=TipoMedioPago.objects.filter(activo=True).exclude(engine='manual'),
+        label="Mi Medio de Pago",
+        queryset=MedioPagoCliente.objects.none(), # Se inicializará en __init__
         widget=forms.Select(attrs={'class': ''}),
         required=False, # No es requerido para todas las operaciones (ej. compra de la casa de cambio)
     )
@@ -79,6 +78,14 @@ class OperacionForm(SimulacionForm):
         initial='bloqueada', # Por defecto, la tasa bloqueada
         help_text="Elige si la tasa se bloquea por un tiempo o es indicativa."
     )
+
+    def __init__(self, *args, **kwargs):
+        self.cliente = kwargs.pop('cliente', None) # Obtener el cliente
+        super().__init__(*args, **kwargs) # Llama al __init__ de SimulacionForm para cargar las monedas
+        if self.cliente:
+            self.fields['medio_pago'].queryset = MedioPagoCliente.objects.filter(
+                cliente=self.cliente, activo=True
+            ).select_related('tipo') # Optimizar consulta
 
     def clean(self):
         cleaned_data = super().clean()
