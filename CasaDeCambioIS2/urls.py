@@ -33,6 +33,7 @@ urlpatterns = [
     path("core/", include("core.urls")), # Incluir las URLs de la app core
     path("", include("payments.urls")),
     path("simulador/", include("simuladores.urls")),
+    path("transacciones/", include("transacciones.urls", namespace="transacciones")),
     
     # Autenticación (OTP + reset)
     path("cuentas/login/", usuarios_views.login_view, name="login"),

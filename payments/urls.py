@@ -13,6 +13,9 @@ urlpatterns = [
     # URL para la página de éxito
     path('payment-success/', views.payment_success_view, name='payment_success'),
 
-    # URL del endpoint de la API para crear el Payment Intent
-    path('api/create-payment-intent/', views.create_payment_intent_view, name='create_payment_intent'),
+    # URL para la página de pago de Stripe (maneja el client_secret)
+    path('stripe-payment/', views.stripe_payment_page, name='stripe_payment_page'),
+    # La URL del endpoint de la API para crear el Payment Intent ya no es necesaria aquí,
+    # ya que la lógica se movió al StripeGateway.
+    # path('api/create-payment-intent/', views.create_payment_intent_view, name='create_payment_intent'),
 ]

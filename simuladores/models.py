@@ -2,30 +2,48 @@
 from django.db import models
 import uuid
 
-class PedidoPagoSimulado(models.Model):
+class PagoSimulado(models.Model):
     """
-    Almacena los datos de un pedido de pago simulado, imitando un flujo de pasarela de pagos genérica.
-    Cada pedido se identifica por un hash único.
+    Representa una transacción de pago dentro de la pasarela simulada.
+
+    Este modelo almacena la información necesaria para procesar un pago desde
+    que se inicia hasta que se confirma, reemplazando la necesidad de un
+    diccionario en memoria y haciendo el flujo más robusto y realista.
     """
-    hash = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, help_text="El hash único que identifica el pedido en la pasarela.")
+    ESTADO_CHOICES = [
+        ('PENDIENTE', 'Pendiente de confirmación del usuario'),
+        ('PROCESADO', 'Procesado (Webhook enviado)'),
+    ]
+
+    # ID interno de la pasarela
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
-    # ID de la transacción en nuestro sistema, equivalente a un 'id_pedido_comercio'
-    transaccion_id = models.CharField(max_length=36, unique=True)
+    # ID de la transacción en el sistema principal (nuestra app)
+    referencia_comercio = models.UUIDField(
+        help_text="El ID de la Transaccion en el sistema principal."
+    )
+    
+    # Datos del pago
+    monto = models.DecimalField(max_digits=15, decimal_places=2)
+    moneda = models.CharField(max_length=3)
+    descripcion = models.CharField(max_length=255)
 
-    # Almacena el JSON completo enviado en la creación del pedido para referencia
-    datos_pedido = models.JSONField()
+    # URLs para la comunicación
+    url_confirmacion = models.URLField(
+        help_text="URL (webhook) a la que se notificará el resultado del pago."
+    )
+    url_retorno = models.URLField(
+        help_text="URL a la que se redirigirá al cliente después del pago."
+    )
 
-    # URLs para el flujo de retorno y notificación (webhook)
-    url_notificacion = models.URLField()
-    url_retorno = models.URLField()
-
-    # Timestamps
+    # Control de estado y tiempo
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='PENDIENTE')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Pedido Simulado: {self.hash} para Transacción: {self.transaccion_id}"
+        return f"Pago Simulado {self.id} para {self.referencia_comercio} - {self.estado}"
 
     class Meta:
-        verbose_name = "Pedido de Pago Simulado"
-        verbose_name_plural = "Pedidos de Pago Simulados"
+        verbose_name = "Pago Simulado"
+        verbose_name_plural = "Pagos Simulados"
         ordering = ['-fecha_creacion']
