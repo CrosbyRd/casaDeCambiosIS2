@@ -22,6 +22,7 @@ from usuarios.utils import get_cliente_activo
 import json
 from pagos.models import TipoMedioPago, MedioPagoCliente, CampoMedioPago
 from pagos.services import iniciar_cobro_a_cliente
+from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente, CampoMedioAcreditacion
 from django.urls import reverse
 
 def calculadora_view(request):
@@ -88,11 +89,18 @@ def iniciar_operacion(request):
 
     # Obtener los medios de pago del cliente
     medios_pago_cliente = MedioPagoCliente.objects.filter(cliente=cliente, activo=True)
+    medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(cliente=cliente, activo=True)
 
     # Si es una operación de venta y el cliente no tiene medios de pago, redirigir
     if initial_data.get('tipo_operacion') == 'venta' and not medios_pago_cliente.exists():
         messages.info(request, "Necesitas tener al menos un medio de pago creado para realizar una venta. Por favor, crea uno.")
         return redirect(reverse("pagos:clientes_create"))
+    
+    # Si es una operación de compra y el cliente no tiene medios de acreditación (y no es efectivo), redirigir
+    if initial_data.get('tipo_operacion') == 'compra' and not medios_acreditacion_cliente.exists():
+        messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra, o seleccionar 'Efectivo'. Por favor, crea uno.")
+        return redirect(reverse("medios_acreditacion:clientes_create"))
+
 
     form = OperacionForm(request.POST or initial_data, cliente=cliente)
     resultado_simulacion = None
@@ -113,6 +121,30 @@ def iniciar_operacion(request):
             'campos': campos_data,
         }
     medios_pago_json = json.dumps(medios_pago_para_js)
+
+    # Preparar datos de medios de acreditación para JavaScript
+    medios_acreditacion_para_js = {
+        'efectivo': {
+            'id_medio': 'efectivo',
+            'alias': 'Efectivo',
+            'tipo_nombre': 'Retiro en Tauser',
+            'campos': [],
+        }
+    }
+    for medio in medios_acreditacion_cliente.prefetch_related('tipo__campos').all():
+        campos_data = []
+        for campo in medio.tipo.campos.filter(activo=True):
+            campos_data.append({
+                'nombre_campo': campo.nombre,
+                'valor': medio.datos.get(campo.nombre, ''),
+            })
+        medios_acreditacion_para_js[str(medio.id_medio)] = {
+            'id_medio': str(medio.id_medio),
+            'alias': medio.alias,
+            'tipo_nombre': medio.tipo.nombre,
+            'campos': campos_data,
+        }
+    medios_acreditacion_json = json.dumps(medios_acreditacion_para_js)
 
     # Calcular el límite disponible para el cliente
     limite_cfg = TransactionLimit.objects.filter(moneda__codigo='PYG').first()  # Límite en PYG
@@ -159,8 +191,12 @@ def iniciar_operacion(request):
             'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Añadir modalidad de tasa
         }
         # Añadir medio de pago si fue seleccionado (ahora es un MedioPagoCliente)
-        if form.cleaned_data.get('medio_pago'):
+        if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
             operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
+        
+        # Añadir medio de acreditación si fue seleccionado
+        if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
+            operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion'] # Puede ser 'efectivo' o un ID
 
         request.session['operacion_pendiente'] = operacion_data
 
@@ -173,6 +209,7 @@ def iniciar_operacion(request):
         'limite_disponible': limite_disponible,  # Pasamos el límite disponible al template
         'cliente': cliente,  # Pasamos el cliente al template
         'medios_pago_json': medios_pago_json, # Pasamos los datos de medios de pago para JS
+        'medios_acreditacion_json': medios_acreditacion_json, # Pasamos los datos de medios de acreditación para JS
     })
 
 
@@ -238,9 +275,15 @@ def confirmar_operacion(request):
             codigo_operacion_tauser=codigo_operacion_tauser,
             tasa_garantizada_hasta=tasa_garantizada_hasta,
             modalidad_tasa=modalidad_tasa,
-            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None, # Guardar el TipoMedioPago asociado
+            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None, # Guardar el TipoMedioPago asociado (nulo para compras)
+            # medio_acreditacion_utilizado se manejará a nivel de sesión y frontend, no se persiste en Transaccion
         )
         request.session.pop('operacion_pendiente', None)
+
+        # Si es una operación de compra y el medio de acreditación es efectivo, se redirige al detalle
+        if transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
+            messages.info(request, "Operación creada. Por favor, espera la confirmación de Tauser para el retiro en efectivo.")
+            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
         # --- INTEGRACIÓN PASARELA DE PAGO (GEG-112) ---
         # Si la operación es de venta y está pendiente de pago por el cliente,
