@@ -30,3 +30,25 @@ class Cotizacion(models.Model):
     def total_venta(self):
         # La casa de cambios vende la divisa al cliente, la comisión se suma al valor base.
         return self.valor_venta + self.comision_venta
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Guardar los valores originales para comparar en save()
+        self.__original_valor_venta = self.valor_venta
+        self.__original_valor_compra = self.valor_compra
+
+    def save(self, *args, **kwargs):
+        # Lógica para detectar cambio y enviar señal
+        super().save(*args, **kwargs) # Guardar primero
+        
+        venta_cambio = self.valor_venta != self.__original_valor_venta
+        compra_cambio = self.valor_compra != self.__original_valor_compra
+
+        if venta_cambio or compra_cambio:
+            from .signals import cotizacion_actualizada
+            cotizacion_actualizada.send(
+                sender=self.__class__,
+                instance=self,
+                venta_cambio=venta_cambio,
+                compra_cambio=compra_cambio
+            )
