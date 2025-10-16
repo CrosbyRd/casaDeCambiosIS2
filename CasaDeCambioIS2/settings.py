@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "core.apps.CoreConfig",
     "pagos",
     "medios_acreditacion",
+    'notificaciones',
     "operaciones",
     "transacciones",
     "configuracion",
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     "ted",
     "django_extensions",
     "analista_panel",
+
 ]
 
 # --- Middleware ---
@@ -130,6 +132,16 @@ LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "usuarios:login_redirect"
 LOGOUT_REDIRECT_URL = "/"
 
+
+
+# --- CELERY SETTINGS ---NOTIFICACION DE TASAS
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 # --- TED / Cotizaciones ---
 # Minutos de vigencia considerados "recientes" para una cotización.
 # Puedes sobreescribirlo con la variable de entorno TED_COTIZACION_VIGENCIA_MINUTES.
@@ -138,3 +150,4 @@ TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES
 # En desarrollo, permite operar con cotizaciones vencidas si se activa.
 # TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
+
