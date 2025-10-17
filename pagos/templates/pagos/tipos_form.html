@@ -22,6 +22,13 @@
   .row-removed{opacity:.55;filter:grayscale(15%)}
   .hint{font-size:.75rem;color:var(--muted)}
   .head-purple{background:var(--brand);color:#fff;font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+
+  .btn-same{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:.65rem 1rem;            /* mismo padding */
+    border-radius:12px;             /* mismo radio */
+    font-weight:800; line-height:1; /* misma tipografía/altura */
+  }
 </style>
 {% endblock %}
 
@@ -29,14 +36,16 @@
 <div class="px-6 py-6">
   <div class="mb-6 box-narrow flex items-start justify-between gap-4">
     <div>
-      <h1 class="h1">{% if object %}Editar tipo de medio de pago{% else %}Nuevo tipo de medio de pago{% endif %}</h1>
+      <h1 class="h1">{% if object %}Editar tipo de método de pago{% else %}Nuevo tipo de método de pago{% endif %}</h1>
       <p class="lead max-w-3xl">
-        Definí el medio de pago y su <strong>comisión %</strong>. Después agregá los
+        Definí el método de pago y su <strong>comisión %</strong>. Después agregá los
         <strong>campos requeridos</strong> que el cliente deberá completar
         <span class="hint">(si elegís Stripe, los datos se piden en el checkout)</span>.
       </p>
     </div>
-    <a href="{% url 'pagos:tipos_list' %}" class="btn-secondary self-start">Volver</a>
+    <a href="{% url 'pagos:tipos_list' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+          ⬅ Volver
+        </a>
   </div>
 
   {% include "partials/messages.html" %}
@@ -142,7 +151,7 @@
       <!-- Campos del medio -->
       <section class="box-narrow" id="section-campos">
         <div class="flex items-center justify-between mb-3">
-          <h2 class="h2">Campos del medio</h2>
+          <h2 class="h2">Campos del método</h2>
           <button type="button" id="add-form" class="btn-secondary">
             <span class="text-xl leading-none">＋</span> Agregar campo
           </button>
@@ -237,10 +246,13 @@
         </div>
       </section>
 
-      <!-- Acciones (alineadas al extremo derecho del ancho principal) -->
-      <div class="flex justify-end">
-        <button type="submit" name="_save" class="btn">Guardar</button>
-      </div>
+        <!-- Acciones (alineadas al extremo derecho del ancho principal) -->
+        <div class="flex justify-end items-center gap-3">
+          <a href="{% url 'pagos:tipos_list' %}" class="btn btn-same btn-danger">Cancelar</a>
+          <button type="submit" name="_save" class="btn btn-same">Guardar</button>
+        </div>
+
+
     </div>
   </form>
 </div>
