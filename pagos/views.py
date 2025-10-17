@@ -183,6 +183,13 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
     template_name = "pagos/clientes_form.html"
     success_url = reverse_lazy("pagos:clientes_list")
 
+    def get_success_url(self):
+        # Si hay un parámetro 'next' en la URL, redirigir a esa URL
+        next_url = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["user"] = self.request.user
@@ -195,7 +202,7 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
         obj.cliente = self.cliente
         obj.save()
         messages.success(self.request, "Medio de pago creado correctamente.")
-        return redirect(self.success_url)
+        return redirect(self.get_success_url())
 
 class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
     model = MedioPagoCliente
@@ -212,9 +219,15 @@ class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def get_success_url(self):
+        next_url = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+
     def form_valid(self, form):
         messages.success(self.request, "Medio de pago actualizado correctamente.")
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
 
 class MedioPagoDeleteView(RequireClienteMixin, DeleteView):
     model = MedioPagoCliente
@@ -224,6 +237,12 @@ class MedioPagoDeleteView(RequireClienteMixin, DeleteView):
 
     def get_queryset(self):
         return MedioPagoCliente.objects.filter(cliente=self.cliente)
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
 
 class MedioPagoPredeterminarView(RequireClienteMixin, View):
     def post(self, request, *args, **kwargs):

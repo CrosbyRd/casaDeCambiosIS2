@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Iniciar Compra de Divisa{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  {% include "partials/page_header.html" with title="Iniciar Compra de Divisa" subtitle="Completa los detalles para tu operación" %}
+  {% include "partials/messages.html" %}
+
+  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
+    <div class="px-4 py-4">
+      <h2 class="text-2xl font-bold text-[var(--ink)] mb-4">Formulario de Compra</h2>
+      <p>Aquí irá el formulario para iniciar la compra de divisas.</p>
+      <p>Esta es una plantilla placeholder.</p>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -34,6 +34,28 @@
           }'>
       {% csrf_token %}
 
+      <!-- RATE CARD: Tasa de cambio actual -->
+      <div id="fx-rate-card" class="rate-card hidden" aria-live="polite">
+        <div class="flex items-center gap-3">
+          <span id="fx-emoji" style="font-size:1.35rem">💱</span>
+          <div class="rate-card__title">
+            <strong id="fx-label">Tasa de cambio</strong>
+            <span id="fx-side" class="ml-2 text-[var(--muted)] text-sm">(—)</span>
+          </div>
+        </div>
+
+        <div class="rate-card__value">
+          <span id="fx-rate">—</span>
+        </div>
+
+        <div class="rate-card__note">
+          Cotizaciones meramente de referencia.
+        </div>
+      </div>
+
+      <!-- JSON con tasas para el front -->
+      <script id="tasas-json" type="application/json">{{ tasas_json|default:"{}"|safe }}</script>
+
       <div class="overflow-x-auto">
         <!-- tabla con borde redondeado -->
         <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
@@ -50,7 +72,18 @@
                 <td class="px-4 py-3">{{ form.moneda_destino }}</td>
               </tr>
               <tr class="hover:bg-[var(--brand-soft)]">
-                <td class="px-4 py-3">{{ form.monto }}</td>
+                <td class="px-4 py-3">
+                  {{ form.monto }}
+                  <!-- Input visible SOLO para mostrar/editar con miles -->
+                  <input
+                    type="text"
+                    id="id_monto_visible"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="0"
+                    class="gx-input mt-2"
+                  />
+                </td>
                 <td class="px-4 py-3">
                   <input id="out-amount" class="gx-input" type="text" readonly
                          value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
@@ -121,12 +154,23 @@
     background:var(--brand-soft);
     border:1px solid color-mix(in oklab, var(--brand) 35%, white);
     padding:14px 16px; border-radius:14px;
+    text-align:center;
   }
   .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
   #res-flag{ margin:0 .35rem; } /* pequeño espacio alrededor de la banderita */
 
   .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
   @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
+
+  /* 🔒 Ocultamos SOLO visualmente el input real de monto (no rompe POST/validaciones) */
+  #id_monto{
+    position:absolute !important;
+    left:-99999px !important;
+    width:1px !important;
+    height:1px !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
 </style>
 
 <script>
@@ -143,7 +187,8 @@
   function fmt(n){
     const num = typeof n === 'number' ? n : toNumber(n);
     if (!Number.isFinite(num)) return n;
-    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
+    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
   }
 
   const out   = document.getElementById('out-amount');
@@ -225,17 +270,149 @@
   enforceRules();          // estado inicial
   updateResultFlag();      // y bandera inicial
 
-  // No se necesita la lógica del botón, ya que ahora es un botón de submit.
-
   // BORRAR
   btnClr?.addEventListener('click', () => {
-    if (monto) { monto.value = ''; monto.focus(); }
+    if (monto) { monto.value = ''; }
+    const inputVisible = document.getElementById('id_monto_visible');
+    if (inputVisible) inputVisible.value = '';
     if (out) out.value = '';
     if (res) res.textContent = '';
     if (wrap) wrap.style.display = 'none';
     enforceRules('amount');
+    inputVisible?.focus();
   });
+
+  /* ====== Formateo de miles en el campo de entrada (visual) ====== */
+  const inputHidden  = document.getElementById('id_monto');
+  const inputVisible = document.getElementById('id_monto_visible');
+
+  function cleanFormat(str){
+    return String(str || '').replace(/\./g,'').replace(/\s+/g,'').replace(/[^0-9]/g,'');
+  }
+  function applyFormat(rawStr){
+    const clean = cleanFormat(rawStr);
+    if (!clean) return '';
+    const normalized = clean.replace(/^0+(?=\d)/,'');
+    return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(Number(normalized));
+  }
+  function setFormattedValuePreservingCaret(input, nextFormatted){
+    const prev = input.value;
+    const start = input.selectionStart || 0;
+    const digitsBefore = prev.slice(0,start).replace(/\D/g,'').length;
+    input.value = nextFormatted;
+    let pos = 0, consumed = 0;
+    while (pos < nextFormatted.length && consumed < digitsBefore) {
+      if (/\d/.test(nextFormatted[pos])) consumed++;
+      pos++;
+    }
+    input.setSelectionRange(pos, pos);
+  }
+
+  if (inputHidden && inputVisible) {
+    // Inicializar visible desde el hidden (si viene un valor)
+    inputVisible.value = applyFormat(inputHidden.value || '');
+
+    inputVisible.addEventListener('focus', () => {
+      inputVisible.style.borderColor = 'var(--brand)';
+      inputVisible.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18)';
+    });
+    inputVisible.addEventListener('blur', () => {
+      inputVisible.style.borderColor = 'var(--line)';
+      inputVisible.style.boxShadow = 'none';
+    });
+
+    inputVisible.addEventListener('input', () => {
+      const formatted = applyFormat(inputVisible.value);
+      setFormattedValuePreservingCaret(inputVisible, formatted);
+      inputHidden.value = cleanFormat(formatted);           // valor limpio para el POST/lógica
+      inputHidden.dispatchEvent(new Event('input', { bubbles: true }));  // mantiene la lógica existente
+      inputHidden.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    inputHidden.addEventListener('change', () => {
+      inputVisible.value = applyFormat(inputHidden.value);
+    });
+  }
 })();
 </script>
+
+<script>
+(function(){
+  // Helpers
+  const fmt = (n)=> {
+    if(n === undefined || n === null || n === '' || isNaN(Number(n))) return '—';
+    const x = Number(n);
+    return x.toLocaleString('es-PY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  };
+
+  // Elementos
+  const card      = document.getElementById('fx-rate-card');
+  const elRate    = document.getElementById('fx-rate');
+  const elLabel   = document.getElementById('fx-label');
+  const elSide    = document.getElementById('fx-side');
+  const elEmoji   = document.getElementById('fx-emoji');
+
+  // Selects de la calculadora (por name para no depender de IDs del form)
+  const selFrom = document.querySelector('select[name="moneda_origen"]');
+  const selTo   = document.querySelector('select[name="moneda_destino"]');
+
+  // Tasas desde el backend
+  let tasas = {};
+  try {
+    const blob = document.getElementById('tasas-json');
+    if (blob) tasas = JSON.parse(blob.textContent || '{}');
+  } catch(e) { tasas = {}; }
+
+  // Emojis básicos por si no encontramos otro mapeo
+  const EMOJI = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
+
+  function refreshCard(){
+    if(!selFrom || !selTo) return;
+
+    const from = (selFrom.value || '').toUpperCase();
+    const to   = (selTo.value   || '').toUpperCase();
+
+    // Mostramos tasa solo si el par involucra PYG (base de tu negocio)
+    // - PYG -> USD/EUR/... : el cliente COMPRA divisa; usamos tasa de VENTA (Tauser vende)
+    // - USD/EUR/... -> PYG : el cliente VENDE divisa; usamos tasa de COMPRA (Tauser compra)
+    let tasa, lado, label, emoji;
+
+    if (from === 'PYG' && to in tasas){
+      tasa  = tasas[to]?.venta;
+      lado  = 'Venta';
+      label = `1 ${to} = ${fmt(tasa)} PYG`;
+      emoji = EMOJI[to] || '💱';
+    } else if (to === 'PYG' && from in tasas){
+      tasa  = tasas[from]?.compra;
+      lado  = 'Compra';
+      label = `1 ${from} = ${fmt(tasa)} PYG`;
+      emoji = EMOJI[from] || '💱';
+    } else {
+      // Par sin PYG: ocultamos
+      card.classList.add('hidden');
+      return;
+    }
+
+    // Poblamos la tarjeta
+    elLabel.textContent = label;
+    elSide.textContent  = `(${lado})`;
+    elRate.textContent  = fmt(tasa);
+    elEmoji.textContent = emoji;
+
+    card.classList.remove('hidden');
+  }
+
+  // Eventos
+  if (selFrom) selFrom.addEventListener('change', refreshCard);
+  if (selTo)   selTo.addEventListener('change',   refreshCard);
+  // Si el server ya prellenó selects (ej. POST o redirect con params), forzamos un refresh al cargar:
+  document.addEventListener('DOMContentLoaded', refreshCard);
+
+  // Primera carga
+  refreshCard();
+})();
+</script>
+
 
 {% endblock %}

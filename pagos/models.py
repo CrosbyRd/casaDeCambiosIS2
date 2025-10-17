@@ -32,6 +32,7 @@ class TipoMedioPago(models.Model):
         ('manual', 'Manual'),
         ('stripe', 'Stripe'),
         ('sipap', 'SIPAP'),
+        ('local', 'Pasarela Local'), # Renombrado de 'simulador' a 'local'
     ]
     engine = models.CharField(max_length=20, choices=ENGINE_CHOICES, default='manual')
     engine_config = models.JSONField(default=dict, blank=True)
@@ -108,7 +109,7 @@ class MedioPagoCliente(models.Model):
                              related_name="medios_cliente",
                              on_delete=models.PROTECT)
 
-    alias = models.CharField(max_length=120)
+    alias = models.CharField(max_length=120, verbose_name="Proveedor")
     datos = models.JSONField(default=dict, blank=True)
 
     activo = models.BooleanField(default=True)
