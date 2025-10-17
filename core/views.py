@@ -1,3 +1,4 @@
+# core/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -20,8 +21,9 @@ from django.utils.dateparse import parse_date
 from core.utils import validar_limite_transaccion
 from usuarios.utils import get_cliente_activo
 import json
+from payments.stripe_service import create_payment_intent
+from urllib.parse import urlencode
 from pagos.models import TipoMedioPago, MedioPagoCliente, CampoMedioPago
-from pagos.services import iniciar_cobro_a_cliente
 from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente, CampoMedioAcreditacion
 from django.urls import reverse
 
@@ -34,7 +36,6 @@ def calculadora_view(request):
         moneda_origen = form.cleaned_data['moneda_origen']
         moneda_destino = form.cleaned_data['moneda_destino']
 
-        # Si el usuario hace clic en "Proceder a Operación", redirigir a la vista de inicio de operación.
         if 'proceder' in request.POST:
             import urllib.parse
             query_params = {
@@ -42,11 +43,9 @@ def calculadora_view(request):
                 'moneda_origen': moneda_origen,
                 'moneda_destino': moneda_destino,
             }
-            # Construir la URL con parámetros GET para pre-rellenar el formulario en la siguiente vista.
             redirect_url = f"{reverse('core:iniciar_operacion')}?{urllib.parse.urlencode(query_params)}"
             return redirect(redirect_url)
 
-        # Si es solo un cálculo, procesar y mostrar el resultado en la misma página.
         resultado = calcular_simulacion(monto_origen, moneda_origen, moneda_destino, user=request.user)
 
         if resultado and resultado.get('error'):
@@ -65,15 +64,13 @@ def site_rates(request):
 
 @login_required
 def iniciar_operacion(request):
-    # Asegurarse de que haya un cliente activo
-    cliente = get_cliente_activo(request)  # Usamos get_cliente_activo para obtener el cliente activo
+    cliente = get_cliente_activo(request)
     if not cliente:
         messages.info(request, "Seleccioná con qué cliente querés operar.")
-        return redirect("usuarios:seleccionar_cliente")  # Redirige a la página de selección de cliente
+        return redirect("usuarios:seleccionar_cliente")
 
     initial_data = {}
 
-    # Obtener los parámetros de la URL si están presentes
     if request.method == 'GET':
         monto_from_url = request.GET.get('monto')
         moneda_origen_from_url = request.GET.get('moneda_origen')
@@ -87,16 +84,13 @@ def iniciar_operacion(request):
                 'tipo_operacion': 'venta' if moneda_origen_from_url == 'PYG' else 'compra'
             }
 
-    # Obtener los medios de pago del cliente
     medios_pago_cliente = MedioPagoCliente.objects.filter(cliente=cliente, activo=True)
     medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(cliente=cliente, activo=True)
 
-    # Si es una operación de venta y el cliente no tiene medios de pago, redirigir
     if initial_data.get('tipo_operacion') == 'venta' and not medios_pago_cliente.exists():
         messages.info(request, "Necesitas tener al menos un medio de pago creado para realizar una venta. Por favor, crea uno.")
         return redirect(reverse("pagos:clientes_create"))
     
-    # Si es una operación de compra y el cliente no tiene medios de acreditación (y no es efectivo), redirigir
     if initial_data.get('tipo_operacion') == 'compra' and not medios_acreditacion_cliente.exists():
         messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra, o seleccionar 'Efectivo'. Por favor, crea uno.")
         return redirect(reverse("medios_acreditacion:clientes_create"))
@@ -105,7 +99,6 @@ def iniciar_operacion(request):
     form = OperacionForm(request.POST or initial_data, cliente=cliente)
     resultado_simulacion = None
 
-    # Preparar datos de medios de pago para JavaScript
     medios_pago_para_js = {}
     for medio in medios_pago_cliente.prefetch_related('tipo__campos').all():
         campos_data = []
@@ -122,7 +115,6 @@ def iniciar_operacion(request):
         }
     medios_pago_json = json.dumps(medios_pago_para_js)
 
-    # Preparar datos de medios de acreditación para JavaScript
     medios_acreditacion_para_js = {
         'efectivo': {
             'id_medio': 'efectivo',
@@ -146,40 +138,31 @@ def iniciar_operacion(request):
         }
     medios_acreditacion_json = json.dumps(medios_acreditacion_para_js)
 
-    # Calcular el límite disponible para el cliente
-    limite_cfg = TransactionLimit.objects.filter(moneda__codigo='PYG').first()  # Límite en PYG
+    limite_cfg = TransactionLimit.objects.filter(moneda__codigo='PYG').first()
     limite_disponible = Decimal(limite_cfg.monto_diario) if limite_cfg else Decimal(0)
-
-    # Obtener las transacciones del día y calcular el total consumido por el cliente
     hoy = now().date()
-
     total_transacciones_hoy = Transaccion.objects.filter(
-        cliente=cliente,  # <--- ¡REVERTIDO a la variable cliente!
+        cliente=cliente,
         fecha_creacion__date=hoy
     ).aggregate(Sum('monto_origen'))['monto_origen__sum'] or Decimal(0)
+    limite_disponible -= total_transacciones_hoy
 
-    limite_disponible -= total_transacciones_hoy  # Límite disponible = Límite diario - Total transacciones hoy
-
-    # Procesar el formulario
     if request.method == 'POST' and form.is_valid():
         tipo_operacion = form.cleaned_data['tipo_operacion']
         monto_origen = form.cleaned_data['monto']
         moneda_origen_codigo = form.cleaned_data['moneda_origen']
         moneda_destino_codigo = form.cleaned_data['moneda_destino']
 
-        # Verificación de la simulación y la validación de los límites
         resultado_simulacion = calcular_simulacion(monto_origen, moneda_origen_codigo, moneda_destino_codigo, user=request.user)
 
         if resultado_simulacion.get('error'):
             messages.error(request, resultado_simulacion['error'])
-            return render(request, 'core/iniciar_operacion.html', {'form': form})
+            return render(request, 'core/iniciar_operacion.html', {'form': form, 'cliente': cliente})
 
-        # Validar el límite disponible
         if monto_origen > limite_disponible:
             messages.error(request, f"El monto excede el límite disponible de {limite_disponible} PYG.")
-            return render(request, 'core/iniciar_operacion.html', {'form': form})
+            return render(request, 'core/iniciar_operacion.html', {'form': form, 'cliente': cliente})
 
-        # Proceder con la operación
         operacion_data = {
             'tipo_operacion': tipo_operacion,
             'moneda_origen_codigo': moneda_origen_codigo,
@@ -188,31 +171,28 @@ def iniciar_operacion(request):
             'monto_recibido': str(resultado_simulacion['monto_recibido']),
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
-            'modalidad_tasa': form.cleaned_data['modalidad_tasa'], # Añadir modalidad de tasa
+            'modalidad_tasa': form.cleaned_data['modalidad_tasa'],
         }
-        # Añadir medio de pago si fue seleccionado (ahora es un MedioPagoCliente)
         if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
             operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
         
-        # Añadir medio de acreditación si fue seleccionado
         if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
-            operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion'] # Puede ser 'efectivo' o un ID
+            operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion']
+        
+        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG':
+            operacion_data['metodo_entrega'] = form.cleaned_data.get('metodo_entrega')
 
         request.session['operacion_pendiente'] = operacion_data
-
         return redirect('core:confirmar_operacion')
 
-    # Pasar el límite disponible al template
     return render(request, 'core/iniciar_operacion.html', {
         'form': form,
         'resultado_simulacion': resultado_simulacion,
-        'limite_disponible': limite_disponible,  # Pasamos el límite disponible al template
-        'cliente': cliente,  # Pasamos el cliente al template
-        'medios_pago_json': medios_pago_json, # Pasamos los datos de medios de pago para JS
-        'medios_acreditacion_json': medios_acreditacion_json, # Pasamos los datos de medios de acreditación para JS
+        'limite_disponible': limite_disponible,
+        'cliente': cliente,
+        'medios_pago_json': medios_pago_json,
+        'medios_acreditacion_json': medios_acreditacion_json,
     })
-
-
 
 @login_required
 def confirmar_operacion(request):
@@ -223,7 +203,6 @@ def confirmar_operacion(request):
         messages.error(request, "No hay una operación pendiente para confirmar.")
         return redirect('core:iniciar_operacion')
 
-    # Convertir montos y tasas de string a Decimal
     for key in ['monto_origen', 'monto_recibido', 'tasa_aplicada', 'comision_aplicada']:
         operacion_pendiente[key] = Decimal(operacion_pendiente[key])
 
@@ -234,31 +213,32 @@ def confirmar_operacion(request):
         except Moneda.DoesNotExist:
             messages.error(request, "Error al encontrar las monedas para la transacción.")
             return redirect('core:iniciar_operacion')
+        
+        metodo_entrega = operacion_pendiente.get('metodo_entrega')
+        estado_inicial = 'pendiente_deposito_tauser'
 
-        estado_inicial = 'pendiente_pago_cliente' if operacion_pendiente['tipo_operacion'] == 'venta' else 'pendiente_deposito_tauser'
+        if operacion_pendiente['tipo_operacion'] == 'venta':
+            estado_inicial = 'pendiente_pago_cliente'
+        elif metodo_entrega == 'stripe':
+            estado_inicial = 'pendiente_pago_stripe'
+        
         codigo_operacion_tauser = str(uuid.uuid4())[:10]
-        modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada') # Obtener la modalidad de tasa
-
-        # Lógica de Bloqueo de Tasa (GEG-105)
+        modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada')
         tasa_garantizada_hasta = None
-        # Solo se establece una fecha de expiración si la modalidad es 'bloqueada'
+
         if modalidad_tasa == 'bloqueada':
             if operacion_pendiente['tipo_operacion'] == 'compra':
-                # Cliente vende divisa extranjera, deposita en Tauser. Garantía de 2 horas.
                 tasa_garantizada_hasta = timezone.now() + timedelta(hours=2)
             elif operacion_pendiente['tipo_operacion'] == 'venta':
-                # Cliente compra divisa extranjera, paga digitalmente. Garantía de 15 minutos.
                 tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
-        # Si la modalidad es 'flotante', tasa_garantizada_hasta permanece como None
 
-        # Obtener el medio de pago del cliente de la sesión
         medio_pago_id = operacion_pendiente.get('medio_pago_id')
         medio_pago_cliente_obj = None
         if medio_pago_id:
             try:
                 medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
             except MedioPagoCliente.DoesNotExist:
-                messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
+                messages.error(request, "El medio de pago seleccionado ya no es válido.")
                 return redirect('core:iniciar_operacion')
 
         transaccion = Transaccion.objects.create(
@@ -275,24 +255,22 @@ def confirmar_operacion(request):
             codigo_operacion_tauser=codigo_operacion_tauser,
             tasa_garantizada_hasta=tasa_garantizada_hasta,
             modalidad_tasa=modalidad_tasa,
-            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None, # Guardar el TipoMedioPago asociado (nulo para compras)
-            # medio_acreditacion_utilizado se manejará a nivel de sesión y frontend, no se persiste en Transaccion
+            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
         )
         request.session.pop('operacion_pendiente', None)
-
-        # Si es una operación de compra y el medio de acreditación es efectivo, se redirige al detalle
+        
+        if metodo_entrega == 'stripe':
+             messages.info(request, "Operación registrada. Ahora puedes proceder al pago con tarjeta.")
+             return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
+        
         if transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
-            messages.info(request, "Operación creada. Por favor, espera la confirmación de Tauser para el retiro en efectivo.")
+            messages.info(request, "Operación creada. Espera la confirmación para el retiro en efectivo.")
             return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
-        # --- INTEGRACIÓN PASARELA DE PAGO (GEG-112) ---
-        # Si la operación es de venta y está pendiente de pago por el cliente,
-        # se redirige al detalle de la transacción para que el cliente inicie el pago desde allí.
         if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
-            messages.info(request, "Operación creada. Por favor, procede al pago desde el detalle de la transacción.")
+            messages.info(request, "Operación creada. Procede al pago desde el detalle de la transacción.")
             return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
         
-        # --- Flujo original para otros tipos de operación ---
         messages.success(
             request,
             f"Operación {transaccion.id} creada con éxito. Estado: {transaccion.get_estado_display()}. Código: {codigo_operacion_tauser}"
@@ -304,10 +282,6 @@ def confirmar_operacion(request):
 
 @login_required
 def detalle_transaccion(request, transaccion_id):
-    """
-    Muestra los detalles de una transacción creada, incluyendo el código de operación
-    y la fecha de expiración de la tasa garantizada, adaptándose al tipo de operación.
-    """
     cliente_activo = get_cliente_activo(request)
     transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
     return render(request, 'core/detalle_transaccion.html', {'transaccion': transaccion})
@@ -315,22 +289,17 @@ def detalle_transaccion(request, transaccion_id):
 
 @login_required
 def historial_transacciones(request):
-    """
-    Muestra el historial de transacciones del usuario, con opciones de filtrado y paginación.
-    """
     cliente_activo = get_cliente_activo(request)
-
     qs = Transaccion.objects.filter(cliente=cliente_activo)\
          .select_related('moneda_origen', 'moneda_destino')\
          .order_by('-fecha_creacion')
 
-    # --- Filtros (GET) ---
-    tipo = request.GET.get('tipo')              # 'compra' | 'venta'
-    estado = request.GET.get('estado')          # usa los choices del modelo
-    moneda = request.GET.get('moneda')          # código ej. 'USD'
-    q = request.GET.get('q')                    # id o código operación
-    desde = request.GET.get('desde')            # 'YYYY-MM-DD'
-    hasta = request.GET.get('hasta')            # 'YYYY-MM-DD'
+    tipo = request.GET.get('tipo')
+    estado = request.GET.get('estado')
+    moneda = request.GET.get('moneda')
+    q = request.GET.get('q')
+    desde = request.GET.get('desde')
+    hasta = request.GET.get('hasta')
 
     if tipo:
         qs = qs.filter(tipo_operacion=tipo)
@@ -350,7 +319,6 @@ def historial_transacciones(request):
         if h:
             qs = qs.filter(fecha_creacion__date__lte=h)
 
-    # --- Paginación (10 por página) ---
     paginator = Paginator(qs, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -360,3 +328,49 @@ def historial_transacciones(request):
         'filtros': {'tipo': tipo, 'estado': estado, 'moneda': moneda, 'q': q, 'desde': desde, 'hasta': hasta},
     }
     return render(request, 'core/historial_transacciones.html', context)
+
+
+# --- VISTA MODIFICADA ---
+@login_required
+def iniciar_pago_stripe(request, transaccion_id):
+    """
+    Esta vista actúa como un puente:
+    1. Crea el Payment Intent usando tu servicio de la app 'payments'.
+    2. Redirige a la página de pago de Stripe de la app 'payments' con los datos necesarios.
+    """
+    cliente_activo = get_cliente_activo(request)
+    transaccion = get_object_or_404(
+        Transaccion, 
+        id=transaccion_id, 
+        cliente=cliente_activo,
+        estado='pendiente_pago_stripe'
+    )
+
+    try:
+        monto_en_centavos = int(transaccion.monto_origen * 100)
+        moneda = transaccion.moneda_origen.codigo.lower()
+        
+        # --- CORREGIDO: Se ajustan los nombres de los argumentos ---
+        payment_intent_data = create_payment_intent(
+            amount_in_cents=monto_en_centavos, # Argumento correcto
+            currency=moneda,
+            customer_email=request.user.email
+        )
+        
+        # --- CORREGIDO: Se usa la clave 'clientSecret' que devuelve tu servicio ---
+        client_secret = payment_intent_data.get('clientSecret') 
+        if not client_secret:
+            raise Exception("No se pudo obtener el client_secret de Stripe.")
+
+        base_url = reverse('payments:stripe_payment_page')
+        params = urlencode({
+            'client_secret': client_secret,
+            'transaction_id': str(transaccion.id),
+        })
+        redirect_url = f'{base_url}?{params}'
+        
+        return redirect(redirect_url)
+
+    except Exception as e:
+        messages.error(request, f"Hubo un error al iniciar el proceso de pago: {e}")
+        return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)

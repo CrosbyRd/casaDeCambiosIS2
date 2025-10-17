@@ -73,11 +73,26 @@ class OperacionForm(SimulacionForm):
         required=False, # No es requerido para todas las operaciones (ej. compra de la casa de cambio)
     )
     medio_acreditacion = forms.ChoiceField(
-        label="Mi Medio de Acreditación",
+        label="Mi Medio de Acreditación (Dónde recibiré mi dinero)",
         choices=[], # Se inicializará en __init__
         widget=forms.Select(attrs={'class': ''}),
         required=False, # No es requerido para todas las operaciones (ej. venta de la casa de cambio)
     )
+    
+    # --- NUEVO CAMPO AÑADIDO ---
+    METODOS_ENTREGA_CHOICES = [
+        ('efectivo', 'Depositar Dólares en Tauser (Efectivo)'),
+        ('stripe', 'Pagar Dólares con Tarjeta (Stripe)'),
+    ]
+    metodo_entrega = forms.ChoiceField(
+        choices=METODOS_ENTREGA_CHOICES,
+        label="¿Cómo nos entregarás los dólares?",
+        widget=forms.RadioSelect, # Usamos RadioSelect para mejor UX
+        required=False,  # Muy importante, ya que solo aplica a un caso
+        initial='efectivo'
+    )
+    # ---------------------------
+
     modalidad_tasa = forms.ChoiceField(
         label="Modalidad de Tasa",
         choices=Transaccion.MODALIDAD_TASA_CHOICES,
@@ -116,9 +131,10 @@ class OperacionForm(SimulacionForm):
                     raise forms.ValidationError("Para 'Compra de Divisa', la moneda de origen no puede ser PYG.")
                 if moneda_destino != 'PYG':
                     raise forms.ValidationError("Para 'Compra de Divisa', la moneda de destino debe ser PYG.")
-                # Si es una compra (cliente recibe dinero), el medio de acreditación es obligatorio
+                # Si es una compra (cliente recibe dinero), el medio de acreditación SIEMPRE es obligatorio.
                 if not medio_acreditacion:
-                    self.add_error('medio_acreditacion', 'Debe seleccionar un medio de acreditación para esta operación.')
+                    self.add_error('medio_acreditacion', 'Debe seleccionar un medio de acreditación para recibir su dinero.')
+
             elif tipo_operacion == 'venta': # Cliente COMPRA divisa extranjera de la casa de cambio
                 if moneda_origen != 'PYG':
                     raise forms.ValidationError("Para 'Venta de Divisa', la moneda de origen debe ser PYG.")
