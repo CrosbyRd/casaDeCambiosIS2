@@ -1,6 +1,8 @@
 # pagos/services.py
 import importlib
 from django.http import HttpRequest
+from django.utils import timezone # Importar timezone
+from datetime import timedelta # Importar timedelta
 from .models import TipoMedioPago
 from transacciones.models import Transaccion
 
@@ -126,18 +128,26 @@ def handle_payment_webhook(payload: dict):
         gateway_instance = gateway_class()
         webhook_result = gateway_instance.handle_webhook(payload)
 
+        # Lógica de validación de tasa garantizada para Flujo A
+        if transaccion.modalidad_tasa == 'bloqueada' and transaccion.estado == 'pendiente_pago_cliente':
+            if transaccion.is_tasa_expirada:
+                transaccion.estado = 'cancelada_tasa_expirada'
+                transaccion.save(update_fields=['estado'])
+                print(f"WARN: [PAGOS WEBHOOK] Transacción {transaccion.id} cancelada por tasa expirada. Se requiere reembolso.")
+                return {'status': 'ERROR', 'message': 'Tasa garantizada expirada. Pago recibido fuera de tiempo.'}
+            
         # Actualizar el estado de la transacción basándose en el resultado del gateway
         if webhook_result.get('status') == 'EXITOSO':
             if transaccion.estado == 'pendiente_pago_cliente':
                 transaccion.estado = 'pendiente_retiro_tauser'
-                transaccion.save()
+                transaccion.save(update_fields=['estado'])
                 print(f"INFO: [PAGOS WEBHOOK] Transacción {transaccion.id} actualizada a 'pendiente_retiro_tauser'.")
             else:
                 print(f"WARN: [PAGOS WEBHOOK] Transacción {transaccion.id} ya no estaba pendiente de pago. Estado actual: {transaccion.estado}")
         elif webhook_result.get('status') == 'RECHAZADO':
             if transaccion.estado == 'pendiente_pago_cliente':
                 transaccion.estado = 'cancelada'
-                transaccion.save()
+                transaccion.save(update_fields=['estado'])
                 print(f"INFO: [PAGOS WEBHOOK] Transacción {transaccion.id} actualizada a 'cancelada'.")
             else:
                 print(f"WARN: [PAGOS WEBHOOK] Transacción {transaccion.id} ya no estaba pendiente de pago. Estado actual: {transaccion.estado}")
