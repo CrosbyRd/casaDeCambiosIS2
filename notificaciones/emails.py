@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.html import strip_tags
 
-def enviar_email_cambio_tasa(usuario, mensaje_notificacion, cotizacion):
+def enviar_email_cambio_tasa(usuario, mensaje_notificacion, cotizacion, venta_cambio, compra_cambio):
     """
     Envía un correo electrónico de notificación de cambio de tasa a un usuario.
     """
@@ -15,6 +15,8 @@ def enviar_email_cambio_tasa(usuario, mensaje_notificacion, cotizacion):
         'usuario': usuario,
         'mensaje_notificacion': mensaje_notificacion,
         'cotizacion': cotizacion,
+        'venta_cambio': venta_cambio,
+        'compra_cambio': compra_cambio,
         'nombre_sitio': 'Tu Casa de Cambio', # Puedes obtenerlo de settings si lo tienes configurado
     }
     
@@ -40,4 +42,3 @@ def enviar_email_cambio_tasa(usuario, mensaje_notificacion, cotizacion):
     except Exception as e:
         # Es buena idea registrar el error en un log
         print(f"Error al enviar correo de notificación a {usuario.email}: {e}")
-

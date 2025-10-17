@@ -139,7 +139,7 @@ def notificar_cambio_de_tasa_a_usuarios(cotizacion_id, mensaje, compra_cambio, v
             quiere_recibir_email = preferencias.recibir_email_tasa_cambio
 
         if quiere_recibir_email:
-            enviar_email_cambio_tasa(usuario, mensaje, cotizacion)
+            enviar_email_cambio_tasa(usuario, mensaje, cotizacion, venta_cambio, compra_cambio)
 
     return f"Notificaciones enviadas a {len(usuarios_a_notificar)} usuarios con transacciones pendientes."
 

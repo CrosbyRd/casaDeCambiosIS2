@@ -6,9 +6,11 @@
     <title>Pago con Stripe</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; text-align: center; }
+        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; }
         .container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #0056b3; text-align: center; margin-bottom: 20px; }
+        h1 { color: #333; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; margin-bottom: 30px; color: #555; }
+        .subtitle strong { color: #007bff; font-size: 1.2em; }
         #payment-element { margin-bottom: 20px; }
         #payment-form button {
             background-color: #007bff;
@@ -19,71 +21,91 @@
             cursor: pointer;
             font-size: 1em;
             width: 100%;
+            transition: background-color 0.2s;
         }
         #payment-form button:hover {
             background-color: #0056b3;
         }
+        #payment-form button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         #payment-message {
             color: red;
-            margin-top: 10px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
         }
-        .actions { margin-top: 20px; }
-        .btn-secondary { background-color: #6c757d; color: white; padding: 12px 20px; border-radius: 4px; text-decoration: none; font-size: 1em; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Completa tu Pago con Tarjeta</h1>
-        <p>Por favor, introduce los detalles de tu tarjeta para completar la transacción.</p>
+        <h1>Finalizar Pago Seguro</h1>
+        <p class="subtitle">
+            Estás a punto de pagar <strong>{{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</strong> para la operación #{{ transaccion.id }}.
+        </p>
 
         <form id="payment-form">
             <div id="payment-element">
-                <!-- Stripe Element will be inserted here -->
-            </div>
-            <button id="submit">Pagar Ahora</button>
-            <div id="payment-message" class="hidden"></div>
+                </div>
+            <button id="submit">Pagar ahora</button>
+            <div id="payment-message" role="alert"></div>
         </form>
-
-        <div class="actions">
-            <a href="{% url 'core:detalle_transaccion' transaction_id %}" class="btn btn-secondary">Volver a Detalles de Operación</a>
+        
+        <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="back-link">Volver a Detalles de Operación</a>
         </div>
-    </div>
 
     <script>
-        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-        const clientSecret = "{{ client_secret }}";
-        const transactionId = "{{ transaction_id }}";
+        document.addEventListener('DOMContentLoaded', () => {
+            const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+            const clientSecret = "{{ client_secret }}";
+            const transactionId = "{{ transaccion.id }}";
 
-        const appearance = {
-            theme: 'stripe',
-        };
-        const elements = stripe.elements({ clientSecret, appearance });
-        const paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
+            const appearance = { theme: 'stripe' };
+            const elements = stripe.elements({ clientSecret, appearance });
+            const paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
 
-        const form = document.getElementById('payment-form');
-        const messages = document.getElementById('payment-message');
+            const form = document.getElementById('payment-form');
+            const submitButton = document.getElementById('submit');
+            const messages = document.getElementById('payment-message');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            messages.textContent = ''; // Clear previous messages
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messages.textContent = '';
+                submitButton.disabled = true;
 
-            const { error } = await stripe.confirmPayment({
-                elements,
-                confirmParams: {
-                    return_url: "{% url 'payments:payment_success' %}", // URL a la que Stripe redirigirá después del pago
-                },
-            });
+                // --- URL DE RETORNO MODIFICADA ---
+                const returnUrl = new URL("{% url 'payments:payment_success' %}", window.location.origin);
+                // Añadimos el ID de la transacción para poder mostrar un mensaje de éxito más específico
+                returnUrl.searchParams.append('transaction_id', transactionId);
 
-            if (error) {
-                if (error.type === "card_error" || error.type === "validation_error") {
-                    messages.textContent = error.message;
-                } else {
-                    messages.textContent = "Ha ocurrido un error inesperado.";
+                const { error } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: returnUrl.href,
+                    },
+                });
+
+                if (error) {
+                    if (error.type === "card_error" || error.type === "validation_error") {
+                        messages.textContent = error.message;
+                    } else {
+                        messages.textContent = "Ha ocurrido un error inesperado.";
+                    }
+                    submitButton.disabled = false;
                 }
-            } else {
-                // El pago se ha iniciado, Stripe redirigirá a return_url
-            }
+            });
         });
     </script>
 </body>

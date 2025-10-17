@@ -181,6 +181,7 @@ class MedioPagoClienteForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-select w-full"}),
         help_text="Selecciona el tipo de medio de pago",
         required=True,
+        empty_label=None, # Elimina la opción "---------"
     )
 
     class Meta:

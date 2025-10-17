@@ -1,4 +1,4 @@
-# notificaciones/signals.py (NUEVO ARCHIVO)
+# notificaciones/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
@@ -12,17 +12,18 @@ def crear_notificacion_por_cambio_tasa(sender, instance, venta_cambio, compra_ca
     """
     Escucha la señal de cambio de cotización y crea notificaciones para los usuarios interesados.
     """
-    User = get_user_model() # Se obtiene el modelo de usuario.
-    # Construir el mensaje
+    User = get_user_model()  # Se obtiene el modelo de usuario.
+    
+    # Construir el mensaje usando las propiedades que incluyen comisión
     mensaje = f"¡Atención! La cotización de {instance.moneda_destino.nombre} ({instance.moneda_destino.codigo}) ha cambiado. "
     if venta_cambio:
-        mensaje += f"Nuevo precio de venta: {instance.valor_venta:,.2f} Gs. "
+        mensaje += f"Nuevo precio de venta: {instance.total_venta:,.0f} Gs. "
+        
     if compra_cambio:
-        mensaje += f"Nuevo precio de compra: {instance.valor_compra:,.2f} Gs."
+        mensaje += f"Nuevo precio de compra: {instance.total_compra:,.0f} Gs."
+      
 
-    # Llama a la tarea de Celery para que se ejecute en segundo plano.
-    # .delay() es la forma de ejecutarla asíncronamente.
-    # Pasamos IDs en lugar de objetos completos, es una buena práctica.
+    # Llama a la tarea de Celery para que se ejecute en segundo plano
     notificar_cambio_de_tasa_a_usuarios.delay(instance.id, mensaje, compra_cambio, venta_cambio)
 
 

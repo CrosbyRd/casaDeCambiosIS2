@@ -170,7 +170,7 @@ class MedioPagoCliente(models.Model):
                              related_name="medios_cliente",
                              on_delete=models.PROTECT)
 
-    alias = models.CharField(max_length=120)
+    alias = models.CharField(max_length=120, verbose_name="Proveedor")
     datos = models.JSONField(default=dict, blank=True)
 
     activo = models.BooleanField(default=True)

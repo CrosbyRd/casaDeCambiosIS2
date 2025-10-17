@@ -34,6 +34,28 @@
           }'>
       {% csrf_token %}
 
+      <!-- RATE CARD: Tasa de cambio actual -->
+      <div id="fx-rate-card" class="rate-card hidden" aria-live="polite">
+        <div class="flex items-center gap-3">
+          <span id="fx-emoji" style="font-size:1.35rem">💱</span>
+          <div class="rate-card__title">
+            <strong id="fx-label">Tasa de cambio</strong>
+            <span id="fx-side" class="ml-2 text-[var(--muted)] text-sm">(—)</span>
+          </div>
+        </div>
+
+        <div class="rate-card__value">
+          <span id="fx-rate">—</span>
+        </div>
+
+        <div class="rate-card__note">
+          Cotizaciones meramente de referencia.
+        </div>
+      </div>
+
+      <!-- JSON con tasas para el front -->
+      <script id="tasas-json" type="application/json">{{ tasas_json|default:"{}"|safe }}</script>
+
       <div class="overflow-x-auto">
         <!-- tabla con borde redondeado -->
         <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
@@ -132,6 +154,7 @@
     background:var(--brand-soft);
     border:1px solid color-mix(in oklab, var(--brand) 35%, white);
     padding:14px 16px; border-radius:14px;
+    text-align:center;
   }
   .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
   #res-flag{ margin:0 .35rem; } /* pequeño espacio alrededor de la banderita */
@@ -164,7 +187,8 @@
   function fmt(n){
     const num = typeof n === 'number' ? n : toNumber(n);
     if (!Number.isFinite(num)) return n;
-    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 6 });
+    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
   }
 
   const out   = document.getElementById('out-amount');
@@ -311,5 +335,84 @@
   }
 })();
 </script>
+
+<script>
+(function(){
+  // Helpers
+  const fmt = (n)=> {
+    if(n === undefined || n === null || n === '' || isNaN(Number(n))) return '—';
+    const x = Number(n);
+    return x.toLocaleString('es-PY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  };
+
+  // Elementos
+  const card      = document.getElementById('fx-rate-card');
+  const elRate    = document.getElementById('fx-rate');
+  const elLabel   = document.getElementById('fx-label');
+  const elSide    = document.getElementById('fx-side');
+  const elEmoji   = document.getElementById('fx-emoji');
+
+  // Selects de la calculadora (por name para no depender de IDs del form)
+  const selFrom = document.querySelector('select[name="moneda_origen"]');
+  const selTo   = document.querySelector('select[name="moneda_destino"]');
+
+  // Tasas desde el backend
+  let tasas = {};
+  try {
+    const blob = document.getElementById('tasas-json');
+    if (blob) tasas = JSON.parse(blob.textContent || '{}');
+  } catch(e) { tasas = {}; }
+
+  // Emojis básicos por si no encontramos otro mapeo
+  const EMOJI = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
+
+  function refreshCard(){
+    if(!selFrom || !selTo) return;
+
+    const from = (selFrom.value || '').toUpperCase();
+    const to   = (selTo.value   || '').toUpperCase();
+
+    // Mostramos tasa solo si el par involucra PYG (base de tu negocio)
+    // - PYG -> USD/EUR/... : el cliente COMPRA divisa; usamos tasa de VENTA (Tauser vende)
+    // - USD/EUR/... -> PYG : el cliente VENDE divisa; usamos tasa de COMPRA (Tauser compra)
+    let tasa, lado, label, emoji;
+
+    if (from === 'PYG' && to in tasas){
+      tasa  = tasas[to]?.venta;
+      lado  = 'Venta';
+      label = `1 ${to} = ${fmt(tasa)} PYG`;
+      emoji = EMOJI[to] || '💱';
+    } else if (to === 'PYG' && from in tasas){
+      tasa  = tasas[from]?.compra;
+      lado  = 'Compra';
+      label = `1 ${from} = ${fmt(tasa)} PYG`;
+      emoji = EMOJI[from] || '💱';
+    } else {
+      // Par sin PYG: ocultamos
+      card.classList.add('hidden');
+      return;
+    }
+
+    // Poblamos la tarjeta
+    elLabel.textContent = label;
+    elSide.textContent  = `(${lado})`;
+    elRate.textContent  = fmt(tasa);
+    elEmoji.textContent = emoji;
+
+    card.classList.remove('hidden');
+  }
+
+  // Eventos
+  if (selFrom) selFrom.addEventListener('change', refreshCard);
+  if (selTo)   selTo.addEventListener('change',   refreshCard);
+  // Si el server ya prellenó selects (ej. POST o redirect con params), forzamos un refresh al cargar:
+  document.addEventListener('DOMContentLoaded', refreshCard);
+
+  // Primera carga
+  refreshCard();
+})();
+</script>
+
 
 {% endblock %}

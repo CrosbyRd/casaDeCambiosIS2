@@ -6,10 +6,14 @@
 
   <header class="flex items-center justify-between mb-6">
     <h1 class="text-4xl font-extrabold text-[var(--ink)]">Mis medios de acreditación</h1>
+    <a href="{% url 'usuarios:dashboard' %}"
+        class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
     <a href="{% url 'medios_acreditacion:clientes_create' %}"
        class="px-4 py-2 rounded-xl font-semibold text-white shadow-sm"
        style="background:var(--brand)">
-      Agregar medio
+      ➕ Agregar
     </a>
   </header>
 
