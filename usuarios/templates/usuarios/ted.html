@@ -43,6 +43,56 @@
   #confirm-amount-text.hidden { display:none !important; }
 </style>
 
+<style>
+/* ===== Variantes de título "Confirmación" (elige UNA en el HTML) ===== */
+.confirm-title { text-align:center; margin:0 0 10px; }
+
+/* Opción 1: CHIP con ícono */
+.confirm-title--chip{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:8px 14px; border-radius:999px; margin:auto;
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: 0 6px 20px rgba(0,0,0,.25) inset, 0 8px 20px rgba(91,64,255,.20);
+  font-weight:800; letter-spacing:.2px;
+}
+.ct-badge{
+  width:28px; height:28px; display:grid; place-items:center; border-radius:999px;
+  background:radial-gradient(circle at 35% 30%, #a78bfa, #6d28d9 70%);
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.35), 0 0 10px rgba(109,40,217,.35);
+  font-size:14px;
+}
+
+/* Opción 2: Texto con gradiente + subrayado brillante */
+.confirm-title--gradient{
+  display:inline-block; margin:auto; font-weight:900; letter-spacing:.3px;
+  font-size:22px;
+  background:linear-gradient(90deg,#c4b5fd,#a78bfa,#c4b5fd);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  position:relative; text-transform:uppercase;
+}
+.confirm-title--gradient::after{
+  content:""; display:block; width:120px; height:3px; margin:8px auto 0;
+  background:linear-gradient(90deg, transparent, #a78bfa, transparent);
+  border-radius:99px; box-shadow:0 0 16px rgba(167,139,250,.6);
+}
+
+/* Opción 3: Cinta/Ribbon */
+.confirm-title--ribbon{
+  display:inline-block; margin:auto; padding:8px 18px; color:#fff; font-weight:800;
+  background:linear-gradient(180deg,#6d28d9,#5b21b6); border-radius:10px;
+  box-shadow:0 10px 24px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.15);
+  position:relative; letter-spacing:.2px;
+}
+.confirm-title--ribbon::before, .confirm-title--ribbon::after{
+  content:""; position:absolute; top:100%; width:0; height:0; border:8px solid transparent;
+}
+.confirm-title--ribbon::before{ left:14px; border-top-color:#4c1d95; }
+.confirm-title--ribbon::after { right:14px; border-top-color:#4c1d95; }
+</style>
+
+
 <main style="max-width:1100px;margin:0 auto;padding:24px">
   <section class="ted-machine">
     <div class="ted-layout">
@@ -73,9 +123,9 @@
                   <div class="location-picker">
                     <label for="select-ubicacion" class="location-label">Ubicación del TED</label>
                     <select id="select-ubicacion" class="ted-select" aria-required="true">
-                      <option value="">— Seleccioná una ubicación —</option>
+                      <option value="">— Seleccioná una sucursal —</option>
                     </select>
-                    <p class="location-hint">Este dato define el inventario a usar para este terminal.</p>
+                    <p class="location-hint">Para continuar al menu de operaciones.</p>
                   </div>
 
                   <button class="gx-btn" type="button" id="btn-login-ingresar" disabled>Continuar</button>
@@ -107,7 +157,7 @@
                 <div class="view-content">
                   <h3>Retiro de Dinero</h3>
                   <label for="transaction-number">Ingrese número de transacción</label>
-                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación (TAUSER)"/>
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación"/>
 
                   <div class="currency-section">
                     <div class="currency-label">Divisas disponibles</div>
@@ -126,7 +176,7 @@
                 <div class="view-content">
                   <h3>Depósito de Dinero</h3>
                   <label for="deposit-tx">Ingrese número de transacción</label>
-                  <input id="deposit-tx" type="text" class="ted-input" placeholder="Código de operación (TAUSER)"/>
+                  <input id="deposit-tx" type="text" class="ted-input" placeholder="Código de operación"/>
                   <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-depo-cancelar">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-depo-confirmar">Confirmar</button>
@@ -146,7 +196,9 @@
               <!-- VISTA: Confirmación de monto -->
               <section id="confirm-amount-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content view-content--centered">
-                  <div class="confirm-title">Confirmación</div>
+                  <div class="confirm-title">
+  <span class="confirm-title--gradient">Confirmación</span>
+</div>
 
                   <!-- NUEVO bloque visual -->
                   <div id="confirm-amount-box" class="confirm-box" aria-live="polite"></div>
@@ -165,6 +217,8 @@
               <section id="success-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content view-content--centered">
                   <div class="status-title status-title--success">¡Operación exitosa!</div>
+                  <!-- Tarjeta de resultado -->
+                  <div id="success-amount-box" class="result-box" aria-live="polite"></div>
                   <div id="success-message" class="status-message">Listo.</div>
                   <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button>
@@ -272,6 +326,8 @@
     qsa('.ted-screen-view').forEach(v=>v.classList.remove('active'));
     const screen = qs('#'+name+'-screen');
     if(screen) screen.classList.add('active');
+    // ← pintar la tarjeta cuando entremos a la pantalla de éxito
+if (name === 'success') { try { renderSuccessBox(); } catch(e) { console.error(e); } }
     // Limpia cualquier animación residual en las ranuras
     qsa('.ted-slot').forEach(s=>s.classList.remove('active','dispensing-bills','printing-receipt','inserting-bills'));
     const welcomeBadge = qs('#welcome-badge');
@@ -501,6 +557,34 @@ function insertBills(){
       textEl && textEl.classList.remove('hidden');
     }
   }
+
+  function renderSuccessBox(){
+  const box = document.querySelector('#success-amount-box');
+  const textEl = document.querySelector('#success-message');
+  if(!box) return;
+
+  if(txCtx && txCtx.moneda && txCtx.monto){
+    const emoji = (typeof flag === 'function') ? flag(txCtx.moneda) : txCtx.moneda;
+    const modoLabel = txCtx.modo === 'deposito' ? 'Depósito' : 'Retiro';
+    const amount = (typeof formatAmountRaw === 'function') ? formatAmountRaw(txCtx.monto) : String(txCtx.monto);
+    const code = txCtx.code || (txCtx.raw && txCtx.raw.codigo) || '';
+
+    box.innerHTML = `
+      <div class="rb-top">
+        <span class="rb-chip"><span class="rb-flag">${emoji}</span><span class="rb-code">${txCtx.moneda}</span></span>
+        <div class="rb-mode">${modoLabel} completado</div>
+      </div>
+      <div class="rb-value"><span class="rb-number">${amount}</span> <span class="rb-code">${txCtx.moneda}</span></div>
+      <div class="rb-sub">${modoLabel} de la transacción <code>${code}</code></div>
+    `;
+    box.style.display = 'block';
+    if(textEl) textEl.classList.add('hidden'); 
+  }else{
+    box.style.display = 'none';
+    box.innerHTML = '';
+    if(textEl) textEl.classList.remove('hidden');
+  }
+}
 
   function confirmOperationView(text){
     const el = qs('#confirm-amount-text');

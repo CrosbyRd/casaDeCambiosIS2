@@ -540,3 +540,39 @@
   .gx-btn{ width:100%; }
   .slots-container{ padding:0 5px; }
 }
+
+/* === Tarjeta de resultado (pantalla de éxito) === */
+.result-box{
+  display:block;              /* la mostramos cuando la completamos */
+  margin:18px auto 8px;
+  max-width:640px;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border: 1.5px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  padding:18px 20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.25) inset;
+}
+.result-box .rb-top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin-bottom:6px;
+}
+.result-box .rb-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 10px; border-radius:999px;
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+  font-weight:700; letter-spacing:.3px;
+}
+.result-box .rb-flag{ font-size:18px; line-height:1; }
+.result-box .rb-code{ opacity:.95; }
+.result-box .rb-mode{ font-size:14px; opacity:.85; }
+.result-box .rb-value{
+  font-weight:900; line-height:1.15; letter-spacing:.2px;
+  font-size:32px; margin:6px 0 2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
+}
+.result-box .rb-value .rb-code{
+  font-size:18px; font-weight:800; margin-left:6px; opacity:.9;
+}
+.result-box .rb-sub{ margin-top:6px; font-size:14px; opacity:.9; }
+
+/* (ya lo tenés, pero por las dudas) */
+#success-message.hidden{ display:none !important; }
