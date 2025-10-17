@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -70,7 +72,19 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para medios_acreditacion.views</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Vistas de la aplicación **medios_acreditacion**.</span>
+
+<span class="sd">.. module:: medios_acreditacion.views</span>
+<span class="sd">   :synopsis: Gestión de tipos de medios de acreditación y medios asociados a clientes.</span>
+
+<span class="sd">Este módulo implementa las vistas basadas en clases para administrar</span>
+<span class="sd">los **tipos de medios de acreditación** (sección administrativa) y los</span>
+<span class="sd">**medios de acreditación de clientes** (sección cliente).</span>
+<span class="sd">Incluye control de permisos, manejo de formsets y operaciones CRUD</span>
+<span class="sd">con notificaciones al usuario.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">,</span> <span class="n">DeleteView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">inlineformset_factory</span>
@@ -101,6 +115,24 @@
 <div class="viewcode-block" id="AccessMediosAcreditacionMixin">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.AccessMediosAcreditacionMixin">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AccessMediosAcreditacionMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mixin de control de acceso para la sección administrativa de medios de acreditación.</span>
+
+<span class="sd">        Requiere que el usuario esté autenticado y posea el permiso</span>
+<span class="sd">        ``medios_acreditacion.access_medios_acreditacion``.</span>
+
+<span class="sd">        **Atributos**</span>
+<span class="sd">        -------------</span>
+<span class="sd">        required_permission : str</span>
+<span class="sd">            El permiso necesario para permitir el acceso.</span>
+
+<span class="sd">        **Métodos**</span>
+<span class="sd">        -----------</span>
+<span class="sd">        dispatch(request, *args, **kwargs) -&gt; HttpResponse or HttpResponseRedirect</span>
+<span class="sd">            Verifica que el usuario esté autenticado (por medio de @login_required)</span>
+<span class="sd">            y posea el permiso `required_permission`. Si no lo tiene, redirige a la vista &quot;home&quot;.</span>
+<span class="sd">            En caso contrario, delega al método dispatch de la clase base.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">required_permission</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion.access_medios_acreditacion&quot;</span>
 
 <div class="viewcode-block" id="AccessMediosAcreditacionMixin.dispatch">
@@ -129,9 +161,34 @@
 <span class="c1"># =====================================================</span>
 <span class="c1"># VISTAS PARA TIPOS DE MEDIO (admin)</span>
 <span class="c1"># =====================================================</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formset inline para administrar instancias de :class:`CampoMedioAcreditacion`</span>
+<span class="sd">    relacionadas con un :class:`TipoMedioAcreditacion`.</span>
+
+<span class="sd">    Se utiliza en las vistas de creación y edición de tipos de medio.</span>
+
+<span class="sd">    **Opciones principales**</span>
+<span class="sd">    ------------------------</span>
+<span class="sd">    - ``extra = 0``: no genera filas vacías automáticamente.</span>
+<span class="sd">    - ``can_delete = True``: permite marcar instancias para borrado.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TipoMedioListView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.TipoMedioListView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioListView</span><span class="p">(</span><span class="n">AccessMediosAcreditacionMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vista para listar los tipos de medios de acreditación (administración).</span>
+
+<span class="sd">        Requiere permiso administrativo (hereda AccessMediosAcreditacionMixin).</span>
+
+<span class="sd">        **Atributos**</span>
+<span class="sd">        -------------</span>
+<span class="sd">        model : Modelo</span>
+<span class="sd">            Modelo asociado: :class:`TipoMedioAcreditacion`.</span>
+<span class="sd">        template_name : str</span>
+<span class="sd">            Ruta del template: &quot;medios_acreditacion/tipos_list.html&quot;.</span>
+<span class="sd">        context_object_name : str</span>
+<span class="sd">            Nombre del objeto en el contexto de plantilla: &quot;tipos&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">TipoMedioAcreditacion</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/tipos_list.html&quot;</span>
     <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">&quot;tipos&quot;</span></div>
@@ -141,6 +198,35 @@
 <div class="viewcode-block" id="TipoMedioCreateView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.TipoMedioCreateView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioCreateView</span><span class="p">(</span><span class="n">AccessMediosAcreditacionMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vista para crear un nuevo tipo de medio de acreditación, junto con sus campos asociados.</span>
+
+<span class="sd">        Se apoya en un formset inline (CampoFormSet) para definir múltiples campos en el mismo formulario.</span>
+
+<span class="sd">        **Atributos**</span>
+<span class="sd">        -------------</span>
+<span class="sd">        model : Modelo</span>
+<span class="sd">            Modelo asociado: :class:`TipoMedioAcreditacion`.</span>
+<span class="sd">        form_class : Formulario</span>
+<span class="sd">            Formulario principal: :class:`TipoMedioForm`.</span>
+<span class="sd">        template_name : str</span>
+<span class="sd">            Template: &quot;medios_acreditacion/tipos_form.html&quot;.</span>
+<span class="sd">        success_url : str</span>
+<span class="sd">            URL a la que redirigir tras exitoso guardado: reverse_lazy(&quot;medios_acreditacion:tipos_list&quot;).</span>
+
+<span class="sd">        **Métodos**</span>
+<span class="sd">        -----------</span>
+<span class="sd">        get_context_data(**kwargs) -&gt; dict</span>
+<span class="sd">            Agrega el formset al contexto y una clave &quot;accion&quot; con valor &quot;crear&quot;.</span>
+
+<span class="sd">        form_valid(form) -&gt; HttpResponseRedirect or HttpResponse</span>
+<span class="sd">            - Guarda el objeto padre (tipo de medio).</span>
+<span class="sd">            - Reconstruye el formset con esa instancia.</span>
+<span class="sd">            - Valida el formset.</span>
+<span class="sd">            - Si hay errores: muestra mensajes de error y re-renderiza con el formset con errores.</span>
+<span class="sd">            - Si es válido: guarda los objetos, marca `activo = True`, borra los eliminados, muestra mensaje éxito,</span>
+<span class="sd">            y redirige a `success_url`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">TipoMedioAcreditacion</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">TipoMedioForm</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/tipos_form.html&quot;</span>
@@ -194,6 +280,38 @@
 <div class="viewcode-block" id="TipoMedioUpdateView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.TipoMedioUpdateView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioUpdateView</span><span class="p">(</span><span class="n">AccessMediosAcreditacionMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vista para editar un tipo de medio de acreditación existente, junto con sus campos asociados.</span>
+
+<span class="sd">        Mantiene los campos existentes, permite borrado lógico y reactivación.</span>
+
+<span class="sd">        **Atributos**</span>
+<span class="sd">        -------------</span>
+<span class="sd">        model : Modelo</span>
+<span class="sd">            :class:`TipoMedioAcreditacion`</span>
+<span class="sd">        form_class : Formulario</span>
+<span class="sd">            :class:`TipoMedioForm`</span>
+<span class="sd">        template_name : str</span>
+<span class="sd">            Template: &quot;medios_acreditacion/tipos_form.html&quot;</span>
+<span class="sd">        success_url : str</span>
+<span class="sd">            URL de redirección tras éxito.</span>
+
+<span class="sd">        **Métodos**</span>
+<span class="sd">        -----------</span>
+<span class="sd">        get_context_data(**kwargs) -&gt; dict</span>
+<span class="sd">            Crea el formset ya sea con datos POST o con la instancia existente para edición,</span>
+<span class="sd">            agrega clave &quot;accion&quot; = &quot;editar&quot;.</span>
+
+<span class="sd">        form_valid(form) -&gt; HttpResponseRedirect or HttpResponse</span>
+<span class="sd">            - Valida el formset; si hay errores, construye mensajes con el índice de fila.</span>
+<span class="sd">            - Guarda primero el tipo de medio.</span>
+<span class="sd">            - Obtiene instancias del formset (commit=False) y las guarda, asignando tipo_medio.</span>
+<span class="sd">            - Marca los objetos “eliminados” como `activo = False` en vez de borrarlos.</span>
+<span class="sd">            - Reactiva las instancias que estaban inactivas y no fueron marcadas como DELETE.</span>
+<span class="sd">            - Muestra mensaje éxito y redirige.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">TipoMedioAcreditacion</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">TipoMedioForm</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/tipos_form.html&quot;</span>
@@ -262,6 +380,26 @@
 <div class="viewcode-block" id="TipoMedioDeleteView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.TipoMedioDeleteView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioDeleteView</span><span class="p">(</span><span class="n">AccessMediosAcreditacionMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para eliminar un tipo de medio de acreditación.</span>
+
+<span class="sd">    Presenta una confirmación y luego ejecuta el borrado.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    model : Modelo</span>
+<span class="sd">        :class:`TipoMedioAcreditacion`</span>
+<span class="sd">    template_name : str</span>
+<span class="sd">        Template de confirmación: &quot;medios_acreditacion/tipos_confirm_delete.html&quot;</span>
+<span class="sd">    success_url : str</span>
+<span class="sd">        URL de redirección tras la eliminación: lista de tipos.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    delete(request, *args, **kwargs) -&gt; HttpResponseRedirect</span>
+<span class="sd">        Al borrar, muestra mensaje de éxito, luego delega al método `delete`</span>
+<span class="sd">        de la clase base.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">TipoMedioAcreditacion</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/tipos_confirm_delete.html&quot;</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;medios_acreditacion:tipos_list&quot;</span><span class="p">)</span>
@@ -280,6 +418,25 @@
 <div class="viewcode-block" id="MedioClienteListView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClienteListView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioClienteListView</span><span class="p">(</span><span class="n">RequireClienteMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para listar los medios de acreditación asociados a un cliente logueado.</span>
+
+<span class="sd">    Requiere que el usuario corresponda a un cliente (RequireClienteMixin).</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    model : Modelo</span>
+<span class="sd">        :class:`MedioAcreditacionCliente`</span>
+<span class="sd">    template_name : str</span>
+<span class="sd">        Template: &quot;medios_acreditacion/clientes_list.html&quot;</span>
+<span class="sd">    context_object_name : str</span>
+<span class="sd">        Nombre del objeto en contexto: &quot;medios&quot;</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    get_queryset() -&gt; QuerySet</span>
+<span class="sd">        Retorna solo los medios del cliente actual, usando `select_related(&quot;tipo&quot;)`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/clientes_list.html&quot;</span>
     <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">&quot;medios&quot;</span>
@@ -296,6 +453,36 @@
 <div class="viewcode-block" id="MedioClienteCreateView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClienteCreateView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioClienteCreateView</span><span class="p">(</span><span class="n">RequireClienteMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que un cliente cree un nuevo medio de acreditación.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    model : Modelo</span>
+<span class="sd">        :class:`MedioAcreditacionCliente`</span>
+<span class="sd">    form_class : Formulario</span>
+<span class="sd">        :class:`MedioAcreditacionClienteForm`</span>
+<span class="sd">    template_name : str</span>
+<span class="sd">        Template: &quot;medios_acreditacion/clientes_form.html&quot;</span>
+<span class="sd">    success_url : str</span>
+<span class="sd">        URL de redirección tras guardado exitoso.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    get_initial() -&gt; dict</span>
+<span class="sd">        Si se pasa un parámetro GET `tipo`, lo preasigna en los valores iniciales del formulario.</span>
+
+<span class="sd">    form_valid(form) -&gt; HttpResponseRedirect</span>
+<span class="sd">        Asigna `cliente` al formulario antes de guardar.</span>
+
+<span class="sd">    get_form_kwargs() -&gt; dict</span>
+<span class="sd">        Agrega `user` al contexto del formulario para validaciones internas.</span>
+<span class="sd">        Si hay parámetro GET `tipo`, preasigna ese tipo si existe.</span>
+
+<span class="sd">    get_context_data(**kwargs) -&gt; dict</span>
+<span class="sd">        Agrega `&quot;accion&quot;: &quot;crear&quot;` al contexto.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">model</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">MedioAcreditacionClienteForm</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/clientes_form.html&quot;</span>
@@ -349,6 +536,34 @@
 <div class="viewcode-block" id="MedioClienteUpdateView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClienteUpdateView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioClienteUpdateView</span><span class="p">(</span><span class="n">RequireClienteMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que un cliente edite un medio de acreditación suyo.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    model : Modelo</span>
+<span class="sd">        :class:`MedioAcreditacionCliente`</span>
+<span class="sd">    form_class : Formulario</span>
+<span class="sd">        :class:`MedioAcreditacionClienteForm`</span>
+<span class="sd">    template_name : str</span>
+<span class="sd">        Template: &quot;medios_acreditacion/clientes_form.html&quot;</span>
+<span class="sd">    success_url : str</span>
+<span class="sd">        URL de redirección tras edición.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    get_queryset() -&gt; QuerySet</span>
+<span class="sd">        Restringe para que el cliente solo pueda editar sus propios medios.</span>
+
+<span class="sd">    get_form_kwargs() -&gt; dict</span>
+<span class="sd">        Agrega `user` al contexto del formulario.</span>
+
+<span class="sd">    get_context_data(**kwargs) -&gt; dict</span>
+<span class="sd">        Agrega `&quot;accion&quot;: &quot;editar&quot;` al contexto.</span>
+
+<span class="sd">    form_valid(form) -&gt; HttpResponseRedirect</span>
+<span class="sd">        Asegura que `cliente` esté asignado antes de guardar, y añade mensaje de éxito.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span>
     <span class="n">form_class</span> <span class="o">=</span> <span class="n">MedioAcreditacionClienteForm</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/clientes_form.html&quot;</span>
@@ -388,6 +603,26 @@
 <div class="viewcode-block" id="MedioClienteDeleteView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClienteDeleteView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioClienteDeleteView</span><span class="p">(</span><span class="n">RequireClienteMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que un cliente elimine uno de sus medios de acreditación.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    model : Modelo</span>
+<span class="sd">        :class:`MedioAcreditacionCliente`</span>
+<span class="sd">    template_name : str</span>
+<span class="sd">        Template: &quot;medios_acreditacion/clientes_confirm_delete.html&quot;</span>
+<span class="sd">    success_url : str</span>
+<span class="sd">        URL de redirección tras eliminar.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    get_queryset() -&gt; QuerySet</span>
+<span class="sd">        Restringe el queryset al cliente logueado.</span>
+
+<span class="sd">    delete(request, *args, **kwargs) -&gt; HttpResponseRedirect</span>
+<span class="sd">        Muestra mensaje de éxito y delega al método base.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;medios_acreditacion/clientes_confirm_delete.html&quot;</span>
     <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;medios_acreditacion:clientes_list&quot;</span><span class="p">)</span>
@@ -411,6 +646,23 @@
 <div class="viewcode-block" id="MedioClientePredeterminarView">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClientePredeterminarView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioClientePredeterminarView</span><span class="p">(</span><span class="n">RequireClienteMixin</span><span class="p">,</span> <span class="n">View</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que un cliente marque como predeterminado uno de sus medios de acreditación.</span>
+
+<span class="sd">    Esta vista responde solo a solicitudes POST; no permite GET.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    post(request, pk) -&gt; HttpResponse or HttpResponseBadRequest</span>
+<span class="sd">        - Busca el medio con pk y cliente correspondiente.</span>
+<span class="sd">        - Verifica que esté activo; si no, retorna Bad Request (400).</span>
+<span class="sd">        - Marca `predeterminado = True` en el objeto (el modelo debería encargarse</span>
+<span class="sd">          de desmarcar otros si es necesario) y lo guarda.</span>
+<span class="sd">        - Responde con estado 204 (sin contenido) dado que usualmente se usa vía JS/AJAX.</span>
+
+<span class="sd">    get(request, pk) -&gt; HttpResponseForbidden</span>
+<span class="sd">        No está permitido acceder por GET: devuelve 403.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="MedioClientePredeterminarView.post">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.views.MedioClientePredeterminarView.post">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>

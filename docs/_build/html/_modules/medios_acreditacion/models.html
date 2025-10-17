@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -70,7 +72,23 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para medios_acreditacion.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Modelos de la aplicación **medios_acreditacion**.</span>
+
+<span class="sd">.. module:: medios_acreditacion.models</span>
+<span class="sd">   :synopsis: Definición de modelos para tipos de medios de acreditación, sus campos y la relación con clientes.</span>
+
+<span class="sd">Este módulo implementa los modelos que representan:</span>
+
+<span class="sd">- **TipoMedioAcreditacion**: categoría o clase de medio de acreditación (ej. tarjeta, cuenta bancaria).</span>
+<span class="sd">- **CampoMedioAcreditacion**: campos dinámicos configurables por cada tipo (ej. número, alias, email).</span>
+<span class="sd">- **MedioAcreditacionCliente**: instancia concreta de un medio asociado a un cliente, con validaciones,</span>
+<span class="sd">  alias, y posibilidad de marcar uno como predeterminado.</span>
+
+<span class="sd">Incluye validaciones personalizadas, restricciones únicas condicionales y lógica para manejo de estados</span>
+<span class="sd">(activo/inactivo, predeterminado).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
@@ -82,6 +100,32 @@
 <div class="viewcode-block" id="TipoMedioAcreditacion">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.TipoMedioAcreditacion">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioAcreditacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que representa un **tipo de medio de acreditación**.</span>
+
+<span class="sd">    Ejemplos: &quot;Tarjeta de crédito&quot;, &quot;Cuenta bancaria&quot;, &quot;Billetera virtual&quot;.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_tipo : UUIDField</span>
+<span class="sd">        Identificador único del tipo (clave primaria).</span>
+<span class="sd">    nombre : CharField</span>
+<span class="sd">        Nombre del tipo (único).</span>
+<span class="sd">    descripcion : TextField</span>
+<span class="sd">        Descripción opcional.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Indica si el tipo está habilitado.</span>
+
+<span class="sd">    **Meta**</span>
+<span class="sd">    --------</span>
+<span class="sd">    - Permisos personalizados:</span>
+<span class="sd">      - ``access_medios_acreditacion`` → acceso a la sección administrativa.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna el nombre del tipo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">id_tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nombre&quot;</span><span class="p">))</span>
     <span class="n">descripcion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -102,6 +146,39 @@
 <div class="viewcode-block" id="CampoMedioAcreditacion">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioAcreditacion">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CampoMedioAcreditacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que define los **campos configurables** para un tipo de medio de acreditación.</span>
+
+<span class="sd">    Ejemplo: para &quot;Tarjeta de crédito&quot; se podrían definir los campos &quot;Número&quot; (número),</span>
+<span class="sd">    &quot;Titular&quot; (texto), &quot;Fecha vencimiento&quot; (texto).</span>
+
+<span class="sd">    **Enums internos**</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - TipoDato: tipos de datos soportados (texto, número, teléfono, email, RUC).</span>
+<span class="sd">    - RegexOpciones: expresiones regulares predefinidas para validaciones adicionales.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_campo : UUIDField</span>
+<span class="sd">        Identificador único del campo.</span>
+<span class="sd">    tipo_medio : ForeignKey</span>
+<span class="sd">        Relación con :class:`TipoMedioAcreditacion`.</span>
+<span class="sd">    nombre : CharField</span>
+<span class="sd">        Nombre del campo (ej. &quot;Número de tarjeta&quot;).</span>
+<span class="sd">    tipo_dato : CharField</span>
+<span class="sd">        Tipo de dato (controlado por TipoDato).</span>
+<span class="sd">    obligatorio : BooleanField</span>
+<span class="sd">        Si el campo es requerido.</span>
+<span class="sd">    regex : CharField</span>
+<span class="sd">        Expresión regular opcional para validación extra.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Estado activo/inactivo.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna el nombre, tipo y estado del campo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CampoMedioAcreditacion.TipoDato">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioAcreditacion.TipoDato">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">TipoDato</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
@@ -150,6 +227,47 @@
 <div class="viewcode-block" id="MedioAcreditacionCliente">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.MedioAcreditacionCliente">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MedioAcreditacionCliente</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que representa un **medio de acreditación asociado a un cliente**.</span>
+
+<span class="sd">    Contiene la información concreta de un cliente para un tipo de medio</span>
+<span class="sd">    (ej. tarjeta, cuenta, billetera), con campos dinámicos validados según</span>
+<span class="sd">    el tipo.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_medio : UUIDField</span>
+<span class="sd">        Identificador único del medio.</span>
+<span class="sd">    cliente : ForeignKey</span>
+<span class="sd">        Relación con el modelo ``clientes.Cliente``.</span>
+<span class="sd">    tipo : ForeignKey</span>
+<span class="sd">        Tipo de medio (relación con :class:`TipoMedioAcreditacion`).</span>
+<span class="sd">    alias : CharField</span>
+<span class="sd">        Alias personalizado del cliente (ej. &quot;Mi Visa personal&quot;).</span>
+<span class="sd">    datos : JSONField</span>
+<span class="sd">        Diccionario con pares campo-valor según lo definido en el tipo.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Estado activo/inactivo del medio.</span>
+<span class="sd">    creado_en : DateTimeField</span>
+<span class="sd">        Fecha de creación.</span>
+<span class="sd">    actualizado_en : DateTimeField</span>
+<span class="sd">        Fecha de última modificación.</span>
+<span class="sd">    predeterminado : BooleanField</span>
+<span class="sd">        Marca si es el medio principal del cliente.</span>
+
+<span class="sd">    **Meta**</span>
+<span class="sd">    --------</span>
+<span class="sd">    - Restricción única condicional: solo un medio predeterminado por cliente.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna una representación &quot;&lt;tipo&gt; - &lt;cliente&gt;&quot;.</span>
+<span class="sd">    clean() -&gt; None</span>
+<span class="sd">        Valida que los datos coincidan con los campos definidos por el tipo.</span>
+<span class="sd">    save(*args, **kwargs) -&gt; None</span>
+<span class="sd">        Garantiza unicidad del predeterminado y desactiva si corresponde.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">id_medio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
         <span class="s2">&quot;clientes.Cliente&quot;</span><span class="p">,</span>

@@ -1,3 +1,22 @@
+"""
+
+
+Vistas del módulo Pagos: manejo de tipos de medios de pago (administración) y
+medios de pago del cliente (front-end de usuario).
+
+.. module:: pagos.views
+   :synopsis: Vistas de Django para la aplicación de pagos.
+
+.. note::
+
+   - Las vistas usan mixins de seguridad:
+       - `LoginRequiredMixin` y `PermissionRequiredMixin` para administración.
+       - `RequireClienteMixin` para acceso de clientes.
+
+   - Las vistas de administración soportan **formsets dinámicos** para campos de medios
+     de pago (excepto cuando el engine es Stripe, donde los campos se omiten).
+
+"""
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect

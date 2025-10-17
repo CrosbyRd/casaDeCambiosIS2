@@ -1,7 +1,0 @@
-run\_tests\_H5 module
-=====================
-
-.. automodule:: run_tests_H5
-   :members:
-   :undoc-members:
-   :show-inheritance:

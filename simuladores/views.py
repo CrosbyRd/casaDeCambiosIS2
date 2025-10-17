@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 class PaginaPagoSimuladaView(TemplateView):
     """
-    Renderiza la pรกgina HTML donde el usuario "paga" (confirma o cancela).
+    Renderiza la página HTML donde el usuario "paga" (confirma o cancela).
     """
     template_name = 'simuladores/pagina_pago.html'
 
@@ -23,19 +23,19 @@ class PaginaPagoSimuladaView(TemplateView):
         
         context['pago'] = pago
         
-        # Obtener la transacciรณn real asociada al pago simulado
+        # Obtener la transacción real asociada al pago simulado
         from transacciones.models import Transaccion
         try:
             transaccion = get_object_or_404(Transaccion, id=pago.referencia_comercio)
             context['transaccion'] = transaccion
         except Transaccion.DoesNotExist:
-            context['error'] = "No se encontrรณ la transacciรณn asociada a este pago."
+            context['error'] = "No se encontró la transacción asociada a este pago."
 
         return context
 
 class ConfirmarPagoSimuladoView(View):
     """
-    Procesa la confirmaciรณn del usuario, envรญa el webhook y redirige.
+    Procesa la confirmación del usuario, envía el webhook y redirige.
     """
     def post(self, request, *args, **kwargs):
         pago_id = self.kwargs['transaccion_id']

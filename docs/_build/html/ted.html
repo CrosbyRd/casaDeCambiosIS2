@@ -20,6 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete notificaciones" href="notificaciones.html" />
     <link rel="prev" title="paquete transacciones" href="transacciones.html" /> 
 </head>
 
@@ -72,25 +73,33 @@
 <li class="toctree-l4"><a class="reference internal" href="#ted.forms.AjusteInventarioForm"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ted.models">módulo ted.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo ted.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-ted.models">Modelos de la app TED.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms"><code class="docutils literal notranslate"><span class="pre">TedPerms</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal"><code class="docutils literal notranslate"><span class="pre">TedTerminal</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ted.services">módulo ted.services</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#ted.services.get_cotizacion_vigente"><code class="docutils literal notranslate"><span class="pre">get_cotizacion_vigente()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ted.urls">módulo ted.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-1">módulo ted.urls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-ted.urls">Enrutamiento del módulo TED</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ted.views">módulo ted.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vistas-del-modulo-ted-terminal">Vistas del módulo TED (Terminal).</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.cheque_mock"><code class="docutils literal notranslate"><span class="pre">cheque_mock()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.crear_stock"><code class="docutils literal notranslate"><span class="pre">crear_stock()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.eliminar_denominacion"><code class="docutils literal notranslate"><span class="pre">eliminar_denominacion()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.inventario"><code class="docutils literal notranslate"><span class="pre">inventario()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.inventario_ajustar"><code class="docutils literal notranslate"><span class="pre">inventario_ajustar()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.inventario_movimientos"><code class="docutils literal notranslate"><span class="pre">inventario_movimientos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.views.monedas_disponibles"><code class="docutils literal notranslate"><span class="pre">monedas_disponibles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.operar"><code class="docutils literal notranslate"><span class="pre">operar()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.panel"><code class="docutils literal notranslate"><span class="pre">panel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#ted.views.ticket_popup"><code class="docutils literal notranslate"><span class="pre">ticket_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.views.ubicaciones_disponibles"><code class="docutils literal notranslate"><span class="pre">ubicaciones_disponibles()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
@@ -98,6 +107,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -179,8 +190,18 @@
 </dd></dl>
 
 </section>
+<section id="module-0">
+<span id="modulo-ted-models"></span><h2>módulo ted.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <section id="module-ted.models">
-<span id="modulo-ted-models"></span><h2>módulo ted.models<a class="headerlink" href="#module-ted.models" title="Link to this heading"></a></h2>
+<span id="modelos-de-la-app-ted"></span><h3>Modelos de la app TED.<a class="headerlink" href="#module-ted.models" title="Link to this heading"></a></h3>
+<p>Incluye:
+- <a class="reference internal" href="#ted.models.TedPerms" title="ted.models.TedPerms"><code class="xref py py-class docutils literal notranslate"><span class="pre">TedPerms</span></code></a>: contenedor mínimo de permisos.
+- <a class="reference internal" href="#ted.models.TedTerminal" title="ted.models.TedTerminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">TedTerminal</span></code></a>: terminal físico (serial y ubicación) para persistir</p>
+<blockquote>
+<div><p>la dirección mostrada en el inventario y permitir expansión futura a múltiples
+terminales.</p>
+</div></blockquote>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="ted.models.TedPerms">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ted.models.</span></span><span class="sig-name descname"><span class="pre">TedPerms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/models.html#TedPerms"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.models.TedPerms" title="Link to this definition"></a></dt>
@@ -230,6 +251,97 @@ object the first time, the query is executed.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="ted.models.TedTerminal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ted.models.</span></span><span class="sig-name descname"><span class="pre">TedTerminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/models.html#TedTerminal"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.models.TedTerminal" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una terminal física TED.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>serial</strong> – identificador único del equipo (ej. <code class="docutils literal notranslate"><span class="pre">TED-AGSL-0001</span></code>).</p></li>
+<li><p><strong>direccion</strong> – texto libre con la ubicación del equipo.</p></li>
+<li><p><strong>created_at</strong> – fecha de creación.</p></li>
+<li><p><strong>updated_at</strong> – última actualización.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Este modelo permite persistir la ubicación que se muestra en el
+inventario y preparar el sistema para múltiples terminales en el futuro.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#ted.models.TedTerminal.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#ted.models.TedTerminal.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#ted.models.TedTerminal.created_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.direccion">
+<span class="sig-name descname"><span class="pre">direccion</span></span><a class="headerlink" href="#ted.models.TedTerminal.direccion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.get_next_by_created_at">
+<span class="sig-name descname"><span class="pre">get_next_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ted.models.TedTerminal.get_next_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.get_next_by_updated_at">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ted.models.TedTerminal.get_next_by_updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.get_previous_by_created_at">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ted.models.TedTerminal.get_previous_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.get_previous_by_updated_at">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ted.models.TedTerminal.get_previous_by_updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#ted.models.TedTerminal.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ted.models.TedTerminal.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.serial">
+<span class="sig-name descname"><span class="pre">serial</span></span><a class="headerlink" href="#ted.models.TedTerminal.serial" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ted.models.TedTerminal.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><a class="headerlink" href="#ted.models.TedTerminal.updated_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-ted.services">
 <span id="modulo-ted-services"></span><h2>módulo ted.services<a class="headerlink" href="#module-ted.services" title="Link to this heading"></a></h2>
@@ -250,11 +362,32 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
+<section id="module-1">
+<span id="modulo-ted-urls"></span><h2>módulo ted.urls<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
 <section id="module-ted.urls">
-<span id="modulo-ted-urls"></span><h2>módulo ted.urls<a class="headerlink" href="#module-ted.urls" title="Link to this heading"></a></h2>
+<span id="enrutamiento-del-modulo-ted"></span><h3>Enrutamiento del módulo TED<a class="headerlink" href="#module-ted.urls" title="Link to this heading"></a></h3>
+<p>Este archivo define las rutas públicas del kiosco y las rutas de administración
+para gestionar el inventario por denominación y ubicación.</p>
+<p>El app se publica bajo el <em>namespace</em> <code class="docutils literal notranslate"><span class="pre">ted</span></code> cuando es incluido desde
+<code class="docutils literal notranslate"><span class="pre">admin_panel/urls.py</span></code> con:</p>
+<blockquote>
+<div><p>path(«ted/», include((«ted.urls», «ted»), namespace=»ted»))</p>
+</div></blockquote>
+<p>De esta forma, los nombres completos quedan como:
+- admin_panel:ted:inventario
+- admin_panel:ted:crear_stock
+- admin_panel:ted:inventario_ajustar
+- admin_panel:ted:inventario_eliminar_den
+- admin_panel:ted:inventario_movimientos
+- admin_panel:ted:ubicaciones_disponibles
+- admin_panel:ted:monedas_disponibles</p>
+</section>
 </section>
 <section id="module-ted.views">
 <span id="modulo-ted-views"></span><h2>módulo ted.views<a class="headerlink" href="#module-ted.views" title="Link to this heading"></a></h2>
+<section id="vistas-del-modulo-ted-terminal">
+<h3>Vistas del módulo TED (Terminal).<a class="headerlink" href="#vistas-del-modulo-ted-terminal" title="Link to this heading"></a></h3>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="ted.views.cheque_mock">
 <span class="sig-prename descclassname"><span class="pre">ted.views.</span></span><span class="sig-name descname"><span class="pre">cheque_mock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/views.html#cheque_mock"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.views.cheque_mock" title="Link to this definition"></a></dt>
@@ -286,6 +419,12 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="ted.views.monedas_disponibles">
+<span class="sig-prename descclassname"><span class="pre">ted.views.</span></span><span class="sig-name descname"><span class="pre">monedas_disponibles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/views.html#monedas_disponibles"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.views.monedas_disponibles" title="Link to this definition"></a></dt>
+<dd><p>Devuelve los códigos de monedas disponibles para una ubicación (o todas).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="ted.views.operar">
 <span class="sig-prename descclassname"><span class="pre">ted.views.</span></span><span class="sig-name descname"><span class="pre">operar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/views.html#operar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.views.operar" title="Link to this definition"></a></dt>
 <dd><p>COMPRA = el cliente compra extranjera  -&gt; retiramos billetes -&gt; cobramos PYG (usa tasa VENTA)
@@ -302,6 +441,12 @@ VENTA  = el cliente vende extranjera   -&gt; depositan billetes -&gt; pagamos PY
 <span class="sig-prename descclassname"><span class="pre">ted.views.</span></span><span class="sig-name descname"><span class="pre">ticket_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/views.html#ticket_popup"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.views.ticket_popup" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="ted.views.ubicaciones_disponibles">
+<span class="sig-prename descclassname"><span class="pre">ted.views.</span></span><span class="sig-name descname"><span class="pre">ubicaciones_disponibles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/views.html#ubicaciones_disponibles"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.views.ubicaciones_disponibles" title="Link to this definition"></a></dt>
+<dd><p>Devuelve todas las ubicaciones donde hay inventario.</p>
+</dd></dl>
+
 </section>
 <section id="contenido-del-modulo">
 <h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
@@ -313,6 +458,7 @@ VENTA  = el cliente vende extranjera   -&gt; depositan billetes -&gt; pagamos PY
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
         <a href="transacciones.html" class="btn btn-neutral float-left" title="paquete transacciones" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="notificaciones.html" class="btn btn-neutral float-right" title="paquete notificaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

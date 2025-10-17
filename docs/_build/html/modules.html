@@ -66,6 +66,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -193,10 +195,13 @@
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.id_cliente"><code class="docutils literal notranslate"><span class="pre">Cliente.id_cliente</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.limite_compra_usd"><code class="docutils literal notranslate"><span class="pre">Cliente.limite_compra_usd</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.medios_acreditacion"><code class="docutils literal notranslate"><span class="pre">Cliente.medios_acreditacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.medios_pago"><code class="docutils literal notranslate"><span class="pre">Cliente.medios_pago</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.nombre"><code class="docutils literal notranslate"><span class="pre">Cliente.nombre</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.objects"><code class="docutils literal notranslate"><span class="pre">Cliente.objects</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.obtener_limite_compra"><code class="docutils literal notranslate"><span class="pre">Cliente.obtener_limite_compra()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.obtener_limite_global"><code class="docutils literal notranslate"><span class="pre">Cliente.obtener_limite_global</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.puede_comprar"><code class="docutils literal notranslate"><span class="pre">Cliente.puede_comprar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.transacciones_cliente"><code class="docutils literal notranslate"><span class="pre">Cliente.transacciones_cliente</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.ultima_modificacion"><code class="docutils literal notranslate"><span class="pre">Cliente.ultima_modificacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="clientes.html#clientes.models.Cliente.usuarios"><code class="docutils literal notranslate"><span class="pre">Cliente.usuarios</span></code></a></li>
 </ul>
@@ -282,67 +287,83 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="core.html#submodulos">Submódulos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.apps">módulo core.apps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.apps.CoreConfig"><code class="docutils literal notranslate"><span class="pre">CoreConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.apps.CoreConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">CoreConfig.default_auto_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.apps.CoreConfig.name"><code class="docutils literal notranslate"><span class="pre">CoreConfig.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.apps">módulo casaDeCambiosIS2.core.apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.apps.CoreConfig"><code class="docutils literal notranslate"><span class="pre">CoreConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.apps.CoreConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">CoreConfig.default_auto_field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.apps.CoreConfig.name"><code class="docutils literal notranslate"><span class="pre">CoreConfig.name</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.forms">módulo core.forms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.forms.OperacionForm"><code class="docutils literal notranslate"><span class="pre">OperacionForm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.OperacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">OperacionForm.base_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.OperacionForm.clean"><code class="docutils literal notranslate"><span class="pre">OperacionForm.clean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.OperacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">OperacionForm.declared_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.OperacionForm.media"><code class="docutils literal notranslate"><span class="pre">OperacionForm.media</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.forms">módulo casaDeCambiosIS2.core.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm"><code class="docutils literal notranslate"><span class="pre">OperacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm.METODOS_ENTREGA_CHOICES"><code class="docutils literal notranslate"><span class="pre">OperacionForm.METODOS_ENTREGA_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">OperacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm.clean"><code class="docutils literal notranslate"><span class="pre">OperacionForm.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">OperacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.OperacionForm.media"><code class="docutils literal notranslate"><span class="pre">OperacionForm.media</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.forms.SimulacionForm"><code class="docutils literal notranslate"><span class="pre">SimulacionForm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.SimulacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.base_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.SimulacionForm.clean"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.clean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.SimulacionForm.clean_monto"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.clean_monto()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.SimulacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.declared_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.forms.SimulacionForm.media"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.media</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.logic">módulo core.logic</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.logic.calcular_simulacion"><code class="docutils literal notranslate"><span class="pre">calcular_simulacion()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.tests">módulo core.tests</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.tests.CoreViewsTest"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.CoreViewsTest.setUp"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.setUp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.CoreViewsTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.setUpTestData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.tests.SimulacionLogicConcrectTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicConcrectTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.setUpTestData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicConcrectTest.test_venta_a_cliente_vip"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.test_venta_a_cliente_vip()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.setUpTestData()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_compra_eur_vip"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_compra_eur_vip()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_error_moneda_invalida"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_moneda_invalida()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_transaccion_no_pyg()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="core.html#core.tests.SimulacionLogicTest.test_venta_usd_minorista"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_venta_usd_minorista()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm"><code class="docutils literal notranslate"><span class="pre">SimulacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm.clean"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm.clean_monto"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.clean_monto()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm.media"><code class="docutils literal notranslate"><span class="pre">SimulacionForm.media</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.views">módulo core.views</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.calculadora_view"><code class="docutils literal notranslate"><span class="pre">calculadora_view()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.confirmar_operacion"><code class="docutils literal notranslate"><span class="pre">confirmar_operacion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.detalle_transaccion"><code class="docutils literal notranslate"><span class="pre">detalle_transaccion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.historial_transacciones"><code class="docutils literal notranslate"><span class="pre">historial_transacciones()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.iniciar_operacion"><code class="docutils literal notranslate"><span class="pre">iniciar_operacion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="core.html#core.views.site_rates"><code class="docutils literal notranslate"><span class="pre">site_rates()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.logic">módulo casaDeCambiosIS2.core.logic</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.logic.calcular_simulacion"><code class="docutils literal notranslate"><span class="pre">calcular_simulacion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.tests">módulo casaDeCambiosIS2.core.tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.CoreViewsTest"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.CoreViewsTest.setUp"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.setUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.CoreViewsTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.setUpTestData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.test_confirmar_operacion_crea_transaccion_con_bloqueo_tasa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min"><code class="docutils literal notranslate"><span class="pre">CoreViewsTest.test_confirmar_operacion_crea_transaccion_venta_con_bloqueo_tasa_15min()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicConcrectTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicConcrectTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.setUpTestData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.test_compra_a_cliente_corporativo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicConcrectTest.test_venta_a_cliente_vip"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicConcrectTest.test_venta_a_cliente_vip()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.setUpTestData"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.setUpTestData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_compra_eur_vip"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_compra_eur_vip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_error_moneda_invalida"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_moneda_invalida()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_error_transaccion_no_pyg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_venta_usd_minorista"><code class="docutils literal notranslate"><span class="pre">SimulacionLogicTest.test_venta_usd_minorista()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.urls">módulo casaDeCambiosIS2.core.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.utils">módulo casaDeCambiosIS2.core.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.utils.validar_limite_transaccion"><code class="docutils literal notranslate"><span class="pre">validar_limite_transaccion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.views">módulo casaDeCambiosIS2.core.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.calculadora_view"><code class="docutils literal notranslate"><span class="pre">calculadora_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.confirmar_operacion"><code class="docutils literal notranslate"><span class="pre">confirmar_operacion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.detalle_transaccion"><code class="docutils literal notranslate"><span class="pre">detalle_transaccion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.historial_transacciones"><code class="docutils literal notranslate"><span class="pre">historial_transacciones()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.iniciar_operacion"><code class="docutils literal notranslate"><span class="pre">iniciar_operacion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.iniciar_pago_stripe"><code class="docutils literal notranslate"><span class="pre">iniciar_pago_stripe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.views.site_rates"><code class="docutils literal notranslate"><span class="pre">site_rates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-casaDeCambiosIS2.core.management.commands.export_models_dot">módulo casaDeCambiosIS2.core.management.commands.export_models_dot</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.management.commands.export_models_dot.Command"><code class="docutils literal notranslate"><span class="pre">Command</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.management.commands.export_models_dot.Command.add_arguments"><code class="docutils literal notranslate"><span class="pre">Command.add_arguments()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.management.commands.export_models_dot.Command.handle"><code class="docutils literal notranslate"><span class="pre">Command.handle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#casaDeCambiosIS2.core.management.commands.export_models_dot.Command.help"><code class="docutils literal notranslate"><span class="pre">Command.help</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#contenido-del-modulo">Contenido del módulo</a></li>
@@ -402,6 +423,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.moneda_destino"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_destino</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.moneda_destino_id"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_destino_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.objects"><code class="docutils literal notranslate"><span class="pre">Cotizacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.save"><code class="docutils literal notranslate"><span class="pre">Cotizacion.save()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.total_compra"><code class="docutils literal notranslate"><span class="pre">Cotizacion.total_compra</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.total_venta"><code class="docutils literal notranslate"><span class="pre">Cotizacion.total_venta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="cotizaciones.html#cotizaciones.models.Cotizacion.valor_compra"><code class="docutils literal notranslate"><span class="pre">Cotizacion.valor_compra</span></code></a></li>
@@ -501,6 +523,7 @@
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.minima_denominacion"><code class="docutils literal notranslate"><span class="pre">Moneda.minima_denominacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.nombre"><code class="docutils literal notranslate"><span class="pre">Moneda.nombre</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.objects"><code class="docutils literal notranslate"><span class="pre">Moneda.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.seguidores"><code class="docutils literal notranslate"><span class="pre">Moneda.seguidores</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.simbolo"><code class="docutils literal notranslate"><span class="pre">Moneda.simbolo</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.transacciones_destino"><code class="docutils literal notranslate"><span class="pre">Moneda.transacciones_destino</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.Moneda.transacciones_origen"><code class="docutils literal notranslate"><span class="pre">Moneda.transacciones_origen</span></code></a></li>
@@ -531,6 +554,7 @@
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.TedInventario.get_previous_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedInventario.get_previous_by_updated_at()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.TedInventario.id"><code class="docutils literal notranslate"><span class="pre">TedInventario.id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.TedInventario.objects"><code class="docutils literal notranslate"><span class="pre">TedInventario.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.TedInventario.ubicacion"><code class="docutils literal notranslate"><span class="pre">TedInventario.ubicacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="monedas.html#monedas.models.TedInventario.updated_at"><code class="docutils literal notranslate"><span class="pre">TedInventario.updated_at</span></code></a></li>
 </ul>
 </li>
@@ -584,41 +608,26 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="roles.html#submodulos">Submódulos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.admin">módulo roles.admin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.apps">módulo roles.apps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.html#roles.apps.RolesConfig"><code class="docutils literal notranslate"><span class="pre">RolesConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.apps.RolesConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">RolesConfig.default_auto_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.apps.RolesConfig.name"><code class="docutils literal notranslate"><span class="pre">RolesConfig.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#module-casaDeCambiosIS2.roles.admin">módulo casaDeCambiosIS2.roles.admin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#module-casaDeCambiosIS2.roles.apps">módulo casaDeCambiosIS2.roles.apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.apps.RolesConfig"><code class="docutils literal notranslate"><span class="pre">RolesConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.apps.RolesConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">RolesConfig.default_auto_field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.apps.RolesConfig.name"><code class="docutils literal notranslate"><span class="pre">RolesConfig.name</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.models">módulo roles.models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.html#roles.models.Role"><code class="docutils literal notranslate"><span class="pre">Role</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Role.DoesNotExist</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Role.MultipleObjectsReturned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.customuser_set"><code class="docutils literal notranslate"><span class="pre">Role.customuser_set</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.description"><code class="docutils literal notranslate"><span class="pre">Role.description</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.id"><code class="docutils literal notranslate"><span class="pre">Role.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.name"><code class="docutils literal notranslate"><span class="pre">Role.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.objects"><code class="docutils literal notranslate"><span class="pre">Role.objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.models.Role.permissions"><code class="docutils literal notranslate"><span class="pre">Role.permissions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#modulo-casadecambiosis2-roles-models">módulo casaDeCambiosIS2.roles.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#modulo-casadecambiosis2-roles-serializers">módulo casaDeCambiosIS2.roles.serializers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#module-casaDeCambiosIS2.roles.tests">módulo casaDeCambiosIS2.roles.tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#modulo-casadecambiosis2-roles-urls">módulo casaDeCambiosIS2.roles.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#modulo-casadecambiosis2-roles-views">módulo casaDeCambiosIS2.roles.views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html#module-casaDeCambiosIS2.roles.management.commands.seed_roles">módulo casaDeCambiosIS2.roles.management.commands.seed_roles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.management.commands.seed_roles.Command"><code class="docutils literal notranslate"><span class="pre">Command</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.management.commands.seed_roles.Command.handle"><code class="docutils literal notranslate"><span class="pre">Command.handle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="roles.html#casaDeCambiosIS2.roles.management.commands.seed_roles.Command.help"><code class="docutils literal notranslate"><span class="pre">Command.help</span></code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.serializers">módulo roles.serializers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.html#roles.serializers.RoleSerializer"><code class="docutils literal notranslate"><span class="pre">RoleSerializer</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.html#roles.serializers.RoleSerializer.Meta"><code class="docutils literal notranslate"><span class="pre">RoleSerializer.Meta</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.tests">módulo roles.tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.urls">módulo roles.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.html#module-roles.views">módulo roles.views</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.html#roles.views.role_delete"><code class="docutils literal notranslate"><span class="pre">role_delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="roles.html#roles.views.role_panel"><code class="docutils literal notranslate"><span class="pre">role_panel()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html#contenido-del-modulo">Contenido del módulo</a></li>
@@ -684,10 +693,12 @@
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.logentry_set"><code class="docutils literal notranslate"><span class="pre">CustomUser.logentry_set</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.medios_acreditacion"><code class="docutils literal notranslate"><span class="pre">CustomUser.medios_acreditacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.movimientos_ted"><code class="docutils literal notranslate"><span class="pre">CustomUser.movimientos_ted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.notificaciones"><code class="docutils literal notranslate"><span class="pre">CustomUser.notificaciones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.objects"><code class="docutils literal notranslate"><span class="pre">CustomUser.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.operaciones_realizadas"><code class="docutils literal notranslate"><span class="pre">CustomUser.operaciones_realizadas</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.password"><code class="docutils literal notranslate"><span class="pre">CustomUser.password</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.preferencias_notificacion"><code class="docutils literal notranslate"><span class="pre">CustomUser.preferencias_notificacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.roles"><code class="docutils literal notranslate"><span class="pre">CustomUser.roles</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.transacciones"><code class="docutils literal notranslate"><span class="pre">CustomUser.transacciones</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.user_permissions"><code class="docutils literal notranslate"><span class="pre">CustomUser.user_permissions</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usuarios.html#usuarios.models.CustomUser.verification_code"><code class="docutils literal notranslate"><span class="pre">CustomUser.verification_code</span></code></a></li>
 </ul>
@@ -741,7 +752,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-configuracion.forms">módulo configuracion.forms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-0">módulo configuracion.forms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.forms.TransactionLimitForm"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="configuracion.html#configuracion.forms.TransactionLimitForm.Meta"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.Meta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="configuracion.html#configuracion.forms.TransactionLimitForm.base_fields"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.base_fields</span></code></a></li>
@@ -751,7 +762,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-configuracion.models">módulo configuracion.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-1">módulo configuracion.models</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.models.TransactionLimit"><code class="docutils literal notranslate"><span class="pre">TransactionLimit</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="configuracion.html#configuracion.models.TransactionLimit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="configuracion.html#configuracion.models.TransactionLimit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.MultipleObjectsReturned</span></code></a></li>
@@ -768,8 +779,11 @@
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.models.get_moneda_base"><code class="docutils literal notranslate"><span class="pre">get_moneda_base()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-configuracion.urls">módulo configuracion.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-configuracion.views">módulo configuracion.views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-2">módulo configuracion.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html#module-3">módulo configuracion.views</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.views.configuracion_panel"><code class="docutils literal notranslate"><span class="pre">configuracion_panel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.views.crear_limite"><code class="docutils literal notranslate"><span class="pre">crear_limite()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="configuracion.html#configuracion.views.editar_limite"><code class="docutils literal notranslate"><span class="pre">editar_limite()</span></code></a></li>
@@ -792,7 +806,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-medios_acreditacion.forms">módulo medios_acreditacion.forms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-0">módulo medios_acreditacion.forms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.forms.CampoMedioForm"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.forms.CampoMedioForm.Meta"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.Meta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.forms.CampoMedioForm.base_fields"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.base_fields</span></code></a></li>
@@ -817,7 +831,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-medios_acreditacion.models">módulo medios_acreditacion.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-1">módulo medios_acreditacion.models</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
@@ -873,13 +887,17 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-medios_acreditacion.urls">módulo medios_acreditacion.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-medios_acreditacion.views">módulo medios_acreditacion.views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-2">módulo medios_acreditacion.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#secciones-principales"><strong>Secciones principales</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html#module-3">módulo medios_acreditacion.views</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.AccessMediosAcreditacionMixin.dispatch"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin.dispatch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.AccessMediosAcreditacionMixin.required_permission"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin.required_permission</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.CampoFormSet"><code class="docutils literal notranslate"><span class="pre">CampoFormSet</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.MedioClienteCreateView"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.MedioClienteCreateView.form_class"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.form_class</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="medios_acreditacion.html#medios_acreditacion.views.MedioClienteCreateView.form_valid"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.form_valid()</span></code></a></li>
@@ -1023,59 +1041,50 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pagos.html#submodulos">Submódulos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.admin">módulo pagos.admin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.apps">módulo pagos.apps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.apps.PagosConfig"><code class="docutils literal notranslate"><span class="pre">PagosConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.apps.PagosConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">PagosConfig.default_auto_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.apps.PagosConfig.name"><code class="docutils literal notranslate"><span class="pre">PagosConfig.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.admin">módulo casaDeCambiosIS2.pagos.admin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.apps">módulo casaDeCambiosIS2.pagos.apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.apps.PagosConfig"><code class="docutils literal notranslate"><span class="pre">PagosConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.apps.PagosConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">PagosConfig.default_auto_field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.apps.PagosConfig.name"><code class="docutils literal notranslate"><span class="pre">PagosConfig.name</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.forms">módulo pagos.forms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.forms.TipoMedioPagoForm"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.forms.TipoMedioPagoForm.Meta"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm.Meta</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.forms.TipoMedioPagoForm.base_fields"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm.base_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.forms.TipoMedioPagoForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm.declared_fields</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.forms.TipoMedioPagoForm.media"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm.media</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#modulo-casadecambiosis2-pagos-forms">módulo casaDeCambiosIS2.pagos.forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#modulo-casadecambiosis2-pagos-models">módulo casaDeCambiosIS2.pagos.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#modulo-casadecambiosis2-pagos-services">módulo casaDeCambiosIS2.pagos.services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#modulo-casadecambiosis2-pagos-urls">módulo casaDeCambiosIS2.pagos.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#modulo-casadecambiosis2-pagos-views">módulo casaDeCambiosIS2.pagos.views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.gateways.base">módulo casaDeCambiosIS2.pagos.gateways.base</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.base.BasePaymentGateway"><code class="docutils literal notranslate"><span class="pre">BasePaymentGateway</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.base.BasePaymentGateway.handle_webhook"><code class="docutils literal notranslate"><span class="pre">BasePaymentGateway.handle_webhook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.base.BasePaymentGateway.initiate_payment"><code class="docutils literal notranslate"><span class="pre">BasePaymentGateway.initiate_payment()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.models">módulo pagos.models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.DoesNotExist</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.MultipleObjectsReturned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.activo"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.activo</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.bonificacion_porcentaje"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.bonificacion_porcentaje</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.clean"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.clean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.comision_porcentaje"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.comision_porcentaje</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.created_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.created_at</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.get_next_by_created_at()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.get_next_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.get_next_by_updated_at()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.get_previous_by_created_at()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.get_previous_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.get_previous_by_updated_at()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.id"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.nombre"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.nombre</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.objects"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.save"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="pagos.html#pagos.models.TipoMedioPago.updated_at"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago.updated_at</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.gateways.local_gateway">módulo casaDeCambiosIS2.pagos.gateways.local_gateway</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.local_gateway.LocalGateway"><code class="docutils literal notranslate"><span class="pre">LocalGateway</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.local_gateway.LocalGateway.handle_webhook"><code class="docutils literal notranslate"><span class="pre">LocalGateway.handle_webhook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.local_gateway.LocalGateway.initiate_payment"><code class="docutils literal notranslate"><span class="pre">LocalGateway.initiate_payment()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.services">módulo pagos.services</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.services.ejecutar_acreditacion_a_cliente"><code class="docutils literal notranslate"><span class="pre">ejecutar_acreditacion_a_cliente()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.gateways.simulador_gateway">módulo casaDeCambiosIS2.pagos.gateways.simulador_gateway</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.simulador_gateway.iniciar_pago"><code class="docutils literal notranslate"><span class="pre">iniciar_pago()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.urls">módulo pagos.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-pagos.views">módulo pagos.views</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.agregar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">agregar_tipo_medio_pago()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.editar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">editar_tipo_medio_pago()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.eliminar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">eliminar_tipo_medio_pago()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.listar_tipos_medio_pago"><code class="docutils literal notranslate"><span class="pre">listar_tipos_medio_pago()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.toggle_activo_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">toggle_activo_tipo_medio_pago()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagos.html#pagos.views.ver_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">ver_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.gateways.stripe_gateway">módulo casaDeCambiosIS2.pagos.gateways.stripe_gateway</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.stripe_gateway.StripeGateway"><code class="docutils literal notranslate"><span class="pre">StripeGateway</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.stripe_gateway.StripeGateway.handle_webhook"><code class="docutils literal notranslate"><span class="pre">StripeGateway.handle_webhook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.gateways.stripe_gateway.StripeGateway.initiate_payment"><code class="docutils literal notranslate"><span class="pre">StripeGateway.initiate_payment()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html#module-casaDeCambiosIS2.pagos.integrations.router">módulo casaDeCambiosIS2.pagos.integrations.router</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pagos.html#casaDeCambiosIS2.pagos.integrations.router.iniciar_pago_stripe"><code class="docutils literal notranslate"><span class="pre">iniciar_pago_stripe()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pagos.html#contenido-del-modulo">Contenido del módulo</a></li>
@@ -1101,9 +1110,9 @@
 <li class="toctree-l2"><a class="reference internal" href="payments.html#module-payments.urls">módulo payments.urls</a></li>
 <li class="toctree-l2"><a class="reference internal" href="payments.html#module-payments.views">módulo payments.views</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="payments.html#payments.views.checkout_preview_view"><code class="docutils literal notranslate"><span class="pre">checkout_preview_view()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="payments.html#payments.views.create_payment_intent_view"><code class="docutils literal notranslate"><span class="pre">create_payment_intent_view()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="payments.html#payments.views.dynamic_payment_page_view"><code class="docutils literal notranslate"><span class="pre">dynamic_payment_page_view()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="payments.html#payments.views.payment_success_view"><code class="docutils literal notranslate"><span class="pre">payment_success_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="payments.html#payments.views.stripe_payment_page"><code class="docutils literal notranslate"><span class="pre">stripe_payment_page()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="payments.html#contenido-del-modulo">Contenido del módulo</a></li>
@@ -1111,70 +1120,19 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html#submodulos">Submódulos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.admin">módulo transacciones.admin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.apps">módulo transacciones.apps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="transacciones.html#transacciones.apps.TransaccionesConfig"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.apps.TransaccionesConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig.default_auto_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.apps.TransaccionesConfig.name"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-casaDeCambiosIS2.transacciones.admin">módulo casaDeCambiosIS2.transacciones.admin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-casaDeCambiosIS2.transacciones.apps">módulo casaDeCambiosIS2.transacciones.apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transacciones.html#casaDeCambiosIS2.transacciones.apps.TransaccionesConfig"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transacciones.html#casaDeCambiosIS2.transacciones.apps.TransaccionesConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig.default_auto_field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transacciones.html#casaDeCambiosIS2.transacciones.apps.TransaccionesConfig.name"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig.name</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.models">módulo transacciones.models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="transacciones.html#transacciones.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.MedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.DoesNotExist</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.MedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.MedioAcreditacion.id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.MedioAcreditacion.objects"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.objects</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion"><code class="docutils literal notranslate"><span class="pre">Transaccion</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Transaccion.DoesNotExist</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.ESTADO_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.ESTADO_CHOICES</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.MODALIDAD_TASA_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.MODALIDAD_TASA_CHOICES</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Transaccion.MultipleObjectsReturned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.TIPO_OPERACION_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.TIPO_OPERACION_CHOICES</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.clean"><code class="docutils literal notranslate"><span class="pre">Transaccion.clean()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.cliente"><code class="docutils literal notranslate"><span class="pre">Transaccion.cliente</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.cliente_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.cliente_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.codigo_operacion_tauser"><code class="docutils literal notranslate"><span class="pre">Transaccion.codigo_operacion_tauser</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.comision_aplicada"><code class="docutils literal notranslate"><span class="pre">Transaccion.comision_aplicada</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.estado"><code class="docutils literal notranslate"><span class="pre">Transaccion.estado</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.estado_dinamico"><code class="docutils literal notranslate"><span class="pre">Transaccion.estado_dinamico</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.fecha_actualizacion</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.fecha_creacion</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_estado_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_estado_display()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_estado_display_dinamico"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_estado_display_dinamico()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_modalidad_tasa_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_modalidad_tasa_display()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_next_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_next_by_fecha_actualizacion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_next_by_fecha_creacion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_previous_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_previous_by_fecha_actualizacion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_previous_by_fecha_creacion()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.get_tipo_operacion_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_tipo_operacion_display()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.id"><code class="docutils literal notranslate"><span class="pre">Transaccion.id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.is_tasa_expirada"><code class="docutils literal notranslate"><span class="pre">Transaccion.is_tasa_expirada</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.medio_acreditacion_cliente"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_acreditacion_cliente</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.medio_acreditacion_cliente_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_acreditacion_cliente_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.modalidad_tasa"><code class="docutils literal notranslate"><span class="pre">Transaccion.modalidad_tasa</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.moneda_destino"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_destino</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.moneda_destino_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_destino_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.moneda_origen"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_origen</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.moneda_origen_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_origen_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.monto_destino"><code class="docutils literal notranslate"><span class="pre">Transaccion.monto_destino</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.monto_origen"><code class="docutils literal notranslate"><span class="pre">Transaccion.monto_origen</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.objects"><code class="docutils literal notranslate"><span class="pre">Transaccion.objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.tasa_cambio_aplicada"><code class="docutils literal notranslate"><span class="pre">Transaccion.tasa_cambio_aplicada</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.tasa_garantizada_hasta"><code class="docutils literal notranslate"><span class="pre">Transaccion.tasa_garantizada_hasta</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.tauser_utilizado"><code class="docutils literal notranslate"><span class="pre">Transaccion.tauser_utilizado</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.tauser_utilizado_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.tauser_utilizado_id</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transacciones.html#transacciones.models.Transaccion.tipo_operacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.tipo_operacion</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.tests">módulo transacciones.tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.urls">módulo transacciones.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-transacciones.views">módulo transacciones.views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#modulo-casadecambiosis2-transacciones-models">módulo casaDeCambiosIS2.transacciones.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#module-casaDeCambiosIS2.transacciones.tests">módulo casaDeCambiosIS2.transacciones.tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#modulo-casadecambiosis2-transacciones-urls">módulo casaDeCambiosIS2.transacciones.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html#modulo-casadecambiosis2-transacciones-views">módulo casaDeCambiosIS2.transacciones.views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
@@ -1198,7 +1156,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ted.html#module-ted.models">módulo ted.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ted.html#module-0">módulo ted.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#module-ted.models">Modelos de la app TED.</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.models.TedPerms"><code class="docutils literal notranslate"><span class="pre">TedPerms</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedPerms.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedPerms.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedPerms.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedPerms.MultipleObjectsReturned</span></code></a></li>
@@ -1209,23 +1168,44 @@
 <li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedPerms.objects"><code class="docutils literal notranslate"><span class="pre">TedPerms.objects</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#ted.models.TedTerminal"><code class="docutils literal notranslate"><span class="pre">TedTerminal</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedTerminal.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedTerminal.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.direccion"><code class="docutils literal notranslate"><span class="pre">TedTerminal.direccion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_next_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.get_next_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_next_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_previous_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.get_previous_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_previous_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.id"><code class="docutils literal notranslate"><span class="pre">TedTerminal.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.objects"><code class="docutils literal notranslate"><span class="pre">TedTerminal.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.serial"><code class="docutils literal notranslate"><span class="pre">TedTerminal.serial</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ted.html#ted.models.TedTerminal.updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.updated_at</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html#module-ted.services">módulo ted.services</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.services.get_cotizacion_vigente"><code class="docutils literal notranslate"><span class="pre">get_cotizacion_vigente()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ted.html#module-ted.urls">módulo ted.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html#module-1">módulo ted.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#module-ted.urls">Enrutamiento del módulo TED</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html#module-ted.views">módulo ted.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#vistas-del-modulo-ted-terminal">Vistas del módulo TED (Terminal).</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.cheque_mock"><code class="docutils literal notranslate"><span class="pre">cheque_mock()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.crear_stock"><code class="docutils literal notranslate"><span class="pre">crear_stock()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.eliminar_denominacion"><code class="docutils literal notranslate"><span class="pre">eliminar_denominacion()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.inventario"><code class="docutils literal notranslate"><span class="pre">inventario()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.inventario_ajustar"><code class="docutils literal notranslate"><span class="pre">inventario_ajustar()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.inventario_movimientos"><code class="docutils literal notranslate"><span class="pre">inventario_movimientos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.monedas_disponibles"><code class="docutils literal notranslate"><span class="pre">monedas_disponibles()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.operar"><code class="docutils literal notranslate"><span class="pre">operar()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.panel"><code class="docutils literal notranslate"><span class="pre">panel()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.ticket_popup"><code class="docutils literal notranslate"><span class="pre">ticket_popup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ted.html#ted.views.ubicaciones_disponibles"><code class="docutils literal notranslate"><span class="pre">ubicaciones_disponibles()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html#contenido-del-modulo">Contenido del módulo</a></li>
