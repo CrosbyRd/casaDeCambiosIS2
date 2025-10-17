@@ -151,6 +151,16 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">email</span>
 
+<div class="viewcode-block" id="CustomUser.get_full_name">
+<a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.get_full_name">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the first_name plus the last_name, with a space in between.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">full_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
     <span class="c1"># Genera un código de 6 dígitos y marca la hora de creación</span>
 <div class="viewcode-block" id="CustomUser.generate_verification_code">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.forms.CustomUser.generate_verification_code">[documentos]</a>

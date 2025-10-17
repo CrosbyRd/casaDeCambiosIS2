@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete configuracion &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete medios_acreditacion" href="medios_acreditacion.html" />
+    <link rel="prev" title="paquete usuarios" href="usuarios.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete configuracion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.admin">módulo configuracion.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.apps">módulo configuracion.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.apps.ConfiguracionConfig"><code class="docutils literal notranslate"><span class="pre">ConfiguracionConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.forms">módulo configuracion.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.models">módulo configuracion.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit"><code class="docutils literal notranslate"><span class="pre">TransactionLimit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.get_moneda_base"><code class="docutils literal notranslate"><span class="pre">get_moneda_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.urls">módulo configuracion.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.views">módulo configuracion.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.views.configuracion_panel"><code class="docutils literal notranslate"><span class="pre">configuracion_panel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.views.crear_limite"><code class="docutils literal notranslate"><span class="pre">crear_limite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.views.editar_limite"><code class="docutils literal notranslate"><span class="pre">editar_limite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.views.eliminar_limite"><code class="docutils literal notranslate"><span class="pre">eliminar_limite()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.views.lista_limites"><code class="docutils literal notranslate"><span class="pre">lista_limites()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete configuracion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuracion.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-configuracion">
+<h1>paquete configuracion<a class="headerlink" href="#paquete-configuracion" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p>configuracion.tests</p>
+</div></blockquote>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-configuracion.admin">
+<span id="modulo-configuracion-admin"></span><h2>módulo configuracion.admin<a class="headerlink" href="#module-configuracion.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-configuracion.apps">
+<span id="modulo-configuracion-apps"></span><h2>módulo configuracion.apps<a class="headerlink" href="#module-configuracion.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.apps.</span></span><span class="sig-name descname"><span class="pre">ConfiguracionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/apps.html#ConfiguracionConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'configuracion'</span></em><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-configuracion.forms">
+<span id="modulo-configuracion-forms"></span><h2>módulo configuracion.forms<a class="headerlink" href="#module-configuracion.forms" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.forms.</span></span><span class="sig-name descname"><span class="pre">TransactionLimitForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/forms.html#TransactionLimitForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.forms.TransactionLimitForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/configuracion/forms.html#TransactionLimitForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['aplica_diario',</span> <span class="pre">'monto_diario',</span> <span class="pre">'aplica_mensual',</span> <span class="pre">'monto_mensual']</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#configuracion.models.TransactionLimit" title="configuracion.models.TransactionLimit"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionLimit</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'monto_diario':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_mensual':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aplica_diario':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'aplica_mensual':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_diario':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_mensual':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-configuracion.models">
+<span id="modulo-configuracion-models"></span><h2>módulo configuracion.models<a class="headerlink" href="#module-configuracion.models" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.models.</span></span><span class="sig-name descname"><span class="pre">TransactionLimit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aplica_diario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monto_diario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aplica_mensual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monto_mensual</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/models.html#TransactionLimit"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.models.TransactionLimit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.aplica_diario">
+<span class="sig-name descname"><span class="pre">aplica_diario</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.aplica_diario" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.aplica_mensual">
+<span class="sig-name descname"><span class="pre">aplica_mensual</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.aplica_mensual" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.moneda">
+<span class="sig-name descname"><span class="pre">moneda</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.moneda" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.moneda_id">
+<span class="sig-name descname"><span class="pre">moneda_id</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.moneda_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.monto_diario">
+<span class="sig-name descname"><span class="pre">monto_diario</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.monto_diario" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.monto_mensual">
+<span class="sig-name descname"><span class="pre">monto_mensual</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.monto_mensual" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="configuracion.models.TransactionLimit.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#configuracion.models.TransactionLimit.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.models.get_moneda_base">
+<span class="sig-prename descclassname"><span class="pre">configuracion.models.</span></span><span class="sig-name descname"><span class="pre">get_moneda_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/models.html#get_moneda_base"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.models.get_moneda_base" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-configuracion.urls">
+<span id="modulo-configuracion-urls"></span><h2>módulo configuracion.urls<a class="headerlink" href="#module-configuracion.urls" title="Link to this heading"></a></h2>
+</section>
+<section id="module-configuracion.views">
+<span id="modulo-configuracion-views"></span><h2>módulo configuracion.views<a class="headerlink" href="#module-configuracion.views" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.views.configuracion_panel">
+<span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">configuracion_panel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#configuracion_panel"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.configuracion_panel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.views.crear_limite">
+<span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">crear_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#crear_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.crear_limite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.views.editar_limite">
+<span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">editar_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#editar_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.editar_limite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.views.eliminar_limite">
+<span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">eliminar_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#eliminar_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.eliminar_limite" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="configuracion.views.lista_limites">
+<span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">lista_limites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#lista_limites"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.lista_limites" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-configuracion"></span></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="usuarios.html" class="btn btn-neutral float-left" title="paquete usuarios" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="medios_acreditacion.html" class="btn btn-neutral float-right" title="paquete medios_acreditacion" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

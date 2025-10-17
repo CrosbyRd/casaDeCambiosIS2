@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>roles package &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+  <title>paquete roles &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="roles.migrations package" href="roles.migrations.html" />
-    <link rel="prev" title="monedas.migrations package" href="monedas.migrations.html" /> 
+    <link rel="next" title="paquete usuarios" href="usuarios.html" />
+    <link rel="prev" title="paquete monedas" href="monedas.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,48 +43,51 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">CasaDeCambioIS2 package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">admin_panel package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="clientes.html">clientes package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html">core package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="correo.html">correo package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">cotizaciones package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lib.html">lib package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manage.html">manage module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="monedas.html">monedas package</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">roles package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html">roles.migrations package</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.admin">roles.admin module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.apps">roles.apps module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete roles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.admin">módulo roles.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.apps">módulo roles.apps</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#roles.apps.RolesConfig"><code class="docutils literal notranslate"><span class="pre">RolesConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.models">roles.models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.models">módulo roles.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#roles.models.Role"><code class="docutils literal notranslate"><span class="pre">Role</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.serializers">roles.serializers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.serializers">módulo roles.serializers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#roles.serializers.RoleSerializer"><code class="docutils literal notranslate"><span class="pre">RoleSerializer</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.tests">roles.tests module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.urls">roles.urls module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles.views">roles.views module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.tests">módulo roles.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.urls">módulo roles.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.views">módulo roles.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#roles.views.role_delete"><code class="docutils literal notranslate"><span class="pre">role_delete()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#roles.views.role_panel"><code class="docutils literal notranslate"><span class="pre">role_panel()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-roles">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="usuarios.html">usuarios package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +107,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
-      <li class="breadcrumb-item active">roles package</li>
+      <li class="breadcrumb-item active">paquete roles</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/roles.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
       </li>
@@ -114,45 +117,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="roles-package">
-<h1>roles package<a class="headerlink" href="#roles-package" title="Link to this heading"></a></h1>
-<section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="roles.migrations.html">roles.migrations package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="roles.migrations.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="roles.migrations.html#module-roles.migrations.0001_initial">roles.migrations.0001_initial module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.migrations.html#roles.migrations.0001_initial.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html#roles.migrations.0001_initial.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html#roles.migrations.0001_initial.Migration.initial"><code class="docutils literal notranslate"><span class="pre">Migration.initial</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html#roles.migrations.0001_initial.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="roles.migrations.html#module-roles.migrations.0002_alter_role_options">roles.migrations.0002_alter_role_options module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="roles.migrations.html#roles.migrations.0002_alter_role_options.Migration"><code class="docutils literal notranslate"><span class="pre">Migration</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html#roles.migrations.0002_alter_role_options.Migration.dependencies"><code class="docutils literal notranslate"><span class="pre">Migration.dependencies</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="roles.migrations.html#roles.migrations.0002_alter_role_options.Migration.operations"><code class="docutils literal notranslate"><span class="pre">Migration.operations</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="roles.migrations.html#module-roles.migrations">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+  <section id="paquete-roles">
+<h1>paquete roles<a class="headerlink" href="#paquete-roles" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
 </section>
 <section id="module-roles.admin">
-<span id="roles-admin-module"></span><h2>roles.admin module<a class="headerlink" href="#module-roles.admin" title="Link to this heading"></a></h2>
+<span id="modulo-roles-admin"></span><h2>módulo roles.admin<a class="headerlink" href="#module-roles.admin" title="Link to this heading"></a></h2>
 </section>
 <section id="module-roles.apps">
-<span id="roles-apps-module"></span><h2>roles.apps module<a class="headerlink" href="#module-roles.apps" title="Link to this heading"></a></h2>
+<span id="modulo-roles-apps"></span><h2>módulo roles.apps<a class="headerlink" href="#module-roles.apps" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="roles.apps.RolesConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.apps.</span></span><span class="sig-name descname"><span class="pre">RolesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/apps.html#RolesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.apps.RolesConfig" title="Link to this definition"></a></dt>
@@ -171,7 +145,7 @@
 
 </section>
 <section id="module-roles.models">
-<span id="roles-models-module"></span><h2>roles.models module<a class="headerlink" href="#module-roles.models" title="Link to this heading"></a></h2>
+<span id="modulo-roles-models"></span><h2>módulo roles.models<a class="headerlink" href="#module-roles.models" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="roles.models.Role">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.models.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/models.html#Role"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.models.Role" title="Link to this definition"></a></dt>
@@ -250,7 +224,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 </section>
 <section id="module-roles.serializers">
-<span id="roles-serializers-module"></span><h2>roles.serializers module<a class="headerlink" href="#module-roles.serializers" title="Link to this heading"></a></h2>
+<span id="modulo-roles-serializers"></span><h2>módulo roles.serializers<a class="headerlink" href="#module-roles.serializers" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="roles.serializers.RoleSerializer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.serializers.</span></span><span class="sig-name descname"><span class="pre">RoleSerializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/serializers.html#RoleSerializer"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.serializers.RoleSerializer" title="Link to this definition"></a></dt>
@@ -276,13 +250,13 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 </section>
 <section id="module-roles.tests">
-<span id="roles-tests-module"></span><h2>roles.tests module<a class="headerlink" href="#module-roles.tests" title="Link to this heading"></a></h2>
+<span id="modulo-roles-tests"></span><h2>módulo roles.tests<a class="headerlink" href="#module-roles.tests" title="Link to this heading"></a></h2>
 </section>
 <section id="module-roles.urls">
-<span id="roles-urls-module"></span><h2>roles.urls module<a class="headerlink" href="#module-roles.urls" title="Link to this heading"></a></h2>
+<span id="modulo-roles-urls"></span><h2>módulo roles.urls<a class="headerlink" href="#module-roles.urls" title="Link to this heading"></a></h2>
 </section>
 <section id="module-roles.views">
-<span id="roles-views-module"></span><h2>roles.views module<a class="headerlink" href="#module-roles.views" title="Link to this heading"></a></h2>
+<span id="modulo-roles-views"></span><h2>módulo roles.views<a class="headerlink" href="#module-roles.views" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="roles.views.role_delete">
 <span class="sig-prename descclassname"><span class="pre">roles.views.</span></span><span class="sig-name descname"><span class="pre">role_delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/views.html#role_delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.views.role_delete" title="Link to this definition"></a></dt>
@@ -296,17 +270,17 @@ Solo accesible con permiso específico.</p>
 </dd></dl>
 
 </section>
-<section id="module-roles">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roles" title="Link to this heading"></a></h2>
-</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-roles"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="monedas.migrations.html" class="btn btn-neutral float-left" title="monedas.migrations package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="roles.migrations.html" class="btn btn-neutral float-right" title="roles.migrations package" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="monedas.html" class="btn btn-neutral float-left" title="paquete monedas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="usuarios.html" class="btn btn-neutral float-right" title="paquete usuarios" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

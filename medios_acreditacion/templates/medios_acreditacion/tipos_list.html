@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Tipos de Medios de Acreditación - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-6">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-2 text-[var(--ink)]">
+          Tipos de Medios de Acreditación
+        </h1>
+        <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+          Administra los tipos de medios que los clientes pueden usar para acreditar y recibir fondos.
+        </p>
+      </div>
+
+      <!-- Botones (solo estética) -->
+      <div class="flex items-center gap-2">
+        <a href="{% url 'admin_panel:dashboard' %}" class="btn-back">
+          <span class="ico-back">←</span>
+          <span>Volver al Panel</span>
+        </a>
+
+        <a href="{% url 'medios_acreditacion:tipos_create' %}" class="btn-create">
+          <span class="ico-plus">＋</span>
+          <span>Agregar Tipo</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabla -->
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-[var(--brand)] text-white">
+        <tr>
+          <th class="p-3 text-lg">Nombre</th>
+          <th class="p-3 text-lg">Descripción</th>
+          <th class="p-3 text-lg">Estado</th>
+          <th class="p-3 text-lg text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tipo in tipos %}
+          {% with refs=tipo.medios_cliente.all %}
+          {% with refs_count=refs|length %}
+          <tr class="hover:bg-[var(--brand-soft)] transition">
+            <td class="p-3 font-semibold text-[var(--ink)]">
+              <div class="flex items-center gap-2">
+                <span>{{ tipo.nombre }}</span>
+                {% if refs_count %}
+                  <span class="badge badge-warn" title="Este tipo está siendo utilizado por clientes">En uso</span>
+                {% endif %}
+              </div>
+            </td>
+
+            <td class="p-3 text-[var(--muted)]">{{ tipo.descripcion|default:"—" }}</td>
+
+            <td class="p-3">
+              {% if tipo.activo %}
+                <span class="badge badge-ok">Activo</span>
+              {% else %}
+                <span class="badge badge-bad">Inactivo</span>
+              {% endif %}
+            </td>
+
+            <td class="p-3">
+              <div class="flex justify-center gap-2">
+                <a href="{% url 'medios_acreditacion:tipos_update' tipo.id_tipo %}" class="gx-btn-soft">
+                  Editar
+                </a>
+
+                {% if refs_count %}
+                  <button type="button"
+                          class="gx-btn-danger gx-btn-disabled"
+                          data-locked="1"
+                          data-tipo="{{ tipo.nombre }}">
+                    Eliminar
+                  </button>
+                {% else %}
+                  <a href="{% url 'medios_acreditacion:tipos_delete' tipo.id_tipo %}" class="gx-btn-danger">
+                    Eliminar
+                  </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endwith %}
+          {% endwith %}
+        {% empty %}
+        <tr>
+          <td colspan="4" class="p-6 text-center text-[var(--muted)]">
+            No hay tipos de medios de acreditación creados todavía.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<!-- Modal: no se puede eliminar por referencias (sin cambios de lógica) -->
+<div id="gx-lock-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 p-4">
+  <div class="w-full max-w-lg rounded-2xl overflow-hidden border shadow-xl bg-white" style="border-color:var(--line)">
+    <div class="px-4 py-3 font-extrabold text-white" style="background:var(--brand);">
+      No se puede eliminar este tipo
+    </div>
+    <div class="p-5 space-y-3">
+      <p class="text-[var(--ink)] font-semibold">
+        El tipo <span id="gx-lock-nombre" class="font-extrabold"></span> está siendo utilizado por uno o más clientes.
+      </p>
+      <p class="text-[var(--muted)]">
+        Para eliminarlo, primero quitá o cambiá los medios de acreditación de esos clientes que dependen de este tipo.
+        También podés mantenerlo y desactivar sus campos desde la edición.
+      </p>
+      <div class="flex items-center gap-2 pt-1 justify-end">
+        <button type="button" class="gx-btn-ghost" data-close>Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === Botones de cabecera como en Inventario/Límites === */
+  .btn-back{
+    display:inline-flex; align-items:center; gap:.5rem;
+    background:#efeaff;               /* lavanda suave */
+    color:var(--ink);
+    padding:10px 14px;
+    border-radius:12px;
+    font-weight:800;
+    border:1.5px solid color-mix(in oklab, var(--brand) 25%, #ffffff);
+    box-shadow:0 2px 10px color-mix(in oklab, var(--brand) 16%, transparent);
+  }
+  .btn-back:hover{ filter:brightness(.98); transform:translateY(-1px); }
+  .btn-back .ico-back{
+    display:grid; place-items:center;
+    width:26px; height:26px; border-radius:8px;
+    background:#3b82f6; color:#fff; font-weight:900;
+    box-shadow:0 2px 6px rgba(59,130,246,.28);
+  }
+
+  .btn-create{
+    display:inline-flex; align-items:center; gap:.5rem;
+    background:var(--brand); color:#fff;
+    padding:10px 14px; border-radius:12px; font-weight:800; border:0;
+    box-shadow:0 2px 12px color-mix(in oklab, var(--brand) 35%, transparent);
+  }
+  .btn-create:hover{ filter:brightness(.98); transform:translateY(-1px); }
+  .btn-create .ico-plus{ font-weight:900; font-size:1.05rem; }
+
+  /* === Acciones de fila (sin cambios de funcionalidad) === */
+  .gx-btn-ghost, .gx-btn-soft, .gx-btn-danger{
+    display:inline-block; border-radius:10px; padding:8px 12px; font-weight:800; line-height:1;
+    border:1.5px solid transparent; transition:.15s ease;
+  }
+  .gx-btn-ghost{ background:#fff; color:var(--ink); border-color:var(--line); }
+  .gx-btn-ghost:hover{ background:var(--brand-soft); }
+
+  .gx-btn-soft{ background:var(--brand-soft); color:var(--brand-dark); }
+  .gx-btn-soft:hover{ filter:brightness(.97); }
+
+  .gx-btn-danger{ background:#dc2626; color:#fff; }
+  .gx-btn-danger:hover{ background:#b91c1c; }
+  .gx-btn-disabled{ opacity:.6; cursor:not-allowed; }
+
+  /* Badges */
+  .badge{ display:inline-block; padding:4px 8px; border-radius:8px; font-weight:700; font-size:.875rem; }
+  .badge-ok{ background:#dcfce7; color:#166534; }
+  .badge-bad{ background:#fee2e2; color:#991b1b; }
+  .badge-warn{ background:#fef3c7; color:#92400e; }
+
+  tbody tr:hover td{ transition:background .15s; }
+</style>
+
+<script>
+  // Abrir modal de bloqueo (sin cambios de lógica)
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-locked="1"]');
+    if (!btn) return;
+    e.preventDefault();
+    var modal = document.getElementById('gx-lock-modal');
+    var nameOut = document.getElementById('gx-lock-nombre');
+    if (nameOut) nameOut.textContent = btn.getAttribute('data-tipo') || '';
+    if (modal) modal.classList.remove('hidden');
+  });
+
+  // Cerrar modal
+  (function () {
+    var modal = document.getElementById('gx-lock-modal');
+    if (!modal) return;
+    modal.addEventListener('click', function (e) {
+      if (e.target.hasAttribute('data-close') || e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  })();
+</script>
+{% endblock %}

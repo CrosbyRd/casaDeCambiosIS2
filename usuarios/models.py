@@ -6,6 +6,7 @@ from clientes.models import Cliente # MERGE: Importamos el modelo Cliente de la 
 import random
 from datetime import timedelta
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -30,6 +31,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
+    clientes = models.ManyToManyField(
+        Cliente,
+        related_name="usuarios", # Esto es un buen related_name
+        verbose_name="Clientes asociados"
+    )
+
     # campos para  verificacion con OTP
     verification_code = models.CharField(max_length=6, blank=True, null=True)
     code_created_at = models.DateTimeField(blank=True, null=True)
@@ -53,13 +60,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def has_perm(self, perm, obj=None):
         return perm in self.get_all_permissions(obj)
 
-    # MERGE: Relación ManyToMany con Cliente de la rama entrante
-    clientes = models.ManyToManyField(
-        Cliente,
-        blank=True,
-        related_name='usuarios'
-    )
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -67,6 +67,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def get_full_name(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        full_name = "%s %s" % (self.first_name, self.last_name)
+        return full_name.strip()
 
     # Genera un código de 6 dígitos y marca la hora de creación
     def generate_verification_code(self):

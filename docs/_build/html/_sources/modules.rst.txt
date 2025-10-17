@@ -15,3 +15,10 @@ casaDeCambiosIS2
    monedas
    roles
    usuarios
+   configuracion
+   medios_acreditacion
+   operaciones
+   pagos
+   payments
+   transacciones
+   ted

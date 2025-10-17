@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Movimientos TED{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10">
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-3xl font-extrabold text-[var(--ink)]">📜 Movimientos de inventario</h1>
+      <p class="text-[var(--muted)]">Equipo {{ serial }} · {{ direccion }}</p>
+    </div>
+    <a href="{% url 'admin_panel:ted:inventario' %}" class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95">⬅ Volver al inventario</a>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead class="text-white" style="background:var(--brand)">
+          <tr>
+            <th class="px-6 py-3">Fecha</th>
+            <th class="px-6 py-3">Moneda</th>
+            <th class="px-6 py-3">Denominación</th>
+            <th class="px-6 py-3">Δ Cantidad</th>
+            <th class="px-6 py-3">Motivo</th>
+            <th class="px-6 py-3">Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in movs %}
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+            <td class="px-6 py-3">{{ m.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="px-6 py-3">{{ m.denominacion.moneda.codigo }}</td>
+            <td class="px-6 py-3">{{ m.denominacion.moneda.codigo }} {{ m.denominacion.valor }}</td>
+            <td class="px-6 py-3">
+              {% if m.delta > 0 %}
+                <span class="font-semibold text-green-700">+{{ m.delta }}</span>
+              {% else %}
+                <span class="font-semibold text-red-700">{{ m.delta }}</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-3">{{ m.get_motivo_display }}</td>
+            <td class="px-6 py-3">{{ m.creado_por }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="px-6 py-6 text-center text-[var(--muted)]">Sin movimientos.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+{% endblock %}

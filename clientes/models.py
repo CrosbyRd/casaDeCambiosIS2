@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 from operaciones.models import CanalFinanciero
-
+from configuracion.models import TransactionLimit
 
 class Cliente(models.Model):
     class Categoria(models.TextChoices):
@@ -78,6 +78,17 @@ class Cliente(models.Model):
         }
         return limites.get(moneda.upper(), Decimal('0.00'))
 
+
+    @property
+    def obtener_limite_global(self):
+        """
+        Obtiene el límite global de transacciones para el cliente.
+        """
+        limite = TransactionLimit.objects.first()  # Obtiene el primer límite global
+        if limite:
+            return limite.monto_diario, limite.monto_mensual
+        return Decimal('0.00'), Decimal('0.00')  # Si no existe límite global, retorna 0
+    
     # -----------------------------
     # Meta y representación
     # -----------------------------

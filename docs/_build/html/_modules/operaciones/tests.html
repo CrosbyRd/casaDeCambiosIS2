@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>operaciones.tests &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">operaciones.tests</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para operaciones.tests</h1><div class="highlight"><pre>
+<span></span><span class="c1"># operaciones/tests.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">usuarios.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cotizaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cotizacion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">operaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tauser</span>
+
+<div class="viewcode-block" id="TauserAPITests">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TauserAPITests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pruebas para los endpoints de la API del Tauser relacionados con GEG-105.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TauserAPITests.setUp">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.setUp">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configura los datos iniciales para todas las pruebas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="s1">&#39;test@example.com&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span> <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">usd</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">codigo</span><span class="o">=</span><span class="s1">&#39;USD&#39;</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="s1">&#39;Dólar Americano&#39;</span><span class="p">,</span> <span class="n">simbolo</span><span class="o">=</span><span class="s1">&#39;$&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pyg</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">codigo</span><span class="o">=</span><span class="s1">&#39;PYG&#39;</span><span class="p">,</span> <span class="n">nombre</span><span class="o">=</span><span class="s1">&#39;Guaraní&#39;</span><span class="p">,</span> <span class="n">simbolo</span><span class="o">=</span><span class="s1">&#39;₲&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tauser</span> <span class="o">=</span> <span class="n">Tauser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">codigo_identificador</span><span class="o">=</span><span class="s1">&#39;TAUSER-001&#39;</span><span class="p">,</span> <span class="n">ubicacion</span><span class="o">=</span><span class="s1">&#39;Central&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cotizacion_inicial</span> <span class="o">=</span> <span class="n">Cotizacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">moneda_base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">usd</span><span class="p">,</span>
+            <span class="n">moneda_destino</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyg</span><span class="p">,</span>
+            <span class="n">valor_compra</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7500.00&#39;</span><span class="p">),</span>
+            <span class="n">valor_venta</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7600.00&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Transacción cuya tasa NO ha expirado</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_valida</span> <span class="o">=</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">tipo_operacion</span><span class="o">=</span><span class="s1">&#39;compra&#39;</span><span class="p">,</span>
+            <span class="n">estado</span><span class="o">=</span><span class="s1">&#39;pendiente_deposito_tauser&#39;</span><span class="p">,</span>
+            <span class="n">moneda_origen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">usd</span><span class="p">,</span>
+            <span class="n">monto_origen</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;100.00&#39;</span><span class="p">),</span>
+            <span class="n">moneda_destino</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyg</span><span class="p">,</span>
+            <span class="n">monto_destino</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;750000.00&#39;</span><span class="p">),</span>
+            <span class="n">tasa_cambio_aplicada</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7500.00&#39;</span><span class="p">),</span>
+            <span class="n">comision_aplicada</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">),</span>
+            <span class="n">codigo_operacion_tauser</span><span class="o">=</span><span class="s1">&#39;VALIDA123&#39;</span><span class="p">,</span>
+            <span class="n">tasa_garantizada_hasta</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Transacción cuya tasa SÍ ha expirado</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span> <span class="o">=</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">tipo_operacion</span><span class="o">=</span><span class="s1">&#39;compra&#39;</span><span class="p">,</span>
+            <span class="n">estado</span><span class="o">=</span><span class="s1">&#39;pendiente_deposito_tauser&#39;</span><span class="p">,</span>
+            <span class="n">moneda_origen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">usd</span><span class="p">,</span>
+            <span class="n">monto_origen</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;100.00&#39;</span><span class="p">),</span>
+            <span class="n">moneda_destino</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyg</span><span class="p">,</span>
+            <span class="n">monto_destino</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;750000.00&#39;</span><span class="p">),</span>
+            <span class="n">tasa_cambio_aplicada</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7500.00&#39;</span><span class="p">),</span>
+            <span class="n">comision_aplicada</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">),</span>
+            <span class="n">codigo_operacion_tauser</span><span class="o">=</span><span class="s1">&#39;EXPIRA123&#39;</span><span class="p">,</span>
+            <span class="n">tasa_garantizada_hasta</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">confirmar_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;operaciones:api_confirmar_deposito_tauser&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolver_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;operaciones:api_resolver_variacion_tasa&#39;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># --- Pruebas para api_confirmar_deposito_tauser ---</span>
+
+<div class="viewcode-block" id="TauserAPITests.test_confirmar_deposito_tasa_valida">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_valida">[documentos]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;operaciones.views.ejecutar_acreditacion_a_cliente&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_confirmar_deposito_tasa_valida</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_ejecutar_acreditacion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica el &quot;camino feliz&quot;: la tasa está garantizada y vigente.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">confirmar_url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;codigo_operacion&#39;</span><span class="p">:</span> <span class="s1">&#39;VALIDA123&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;ok&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_valida</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_valida</span><span class="o">.</span><span class="n">estado</span><span class="p">,</span> <span class="s1">&#39;procesando_acreditacion&#39;</span><span class="p">)</span>
+        <span class="n">mock_ejecutar_acreditacion</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_valida</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio">[documentos]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;operaciones.views.ejecutar_acreditacion_a_cliente&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_confirmar_deposito_tasa_expirada_sin_cambio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_ejecutar_acreditacion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica el caso donde la tasa expiró, pero el valor actual es el mismo.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">confirmar_url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;codigo_operacion&#39;</span><span class="p">:</span> <span class="s1">&#39;EXPIRA123&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;ok&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">estado</span><span class="p">,</span> <span class="s1">&#39;procesando_acreditacion&#39;</span><span class="p">)</span>
+        <span class="n">mock_ejecutar_acreditacion</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio">[documentos]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;operaciones.views.ejecutar_acreditacion_a_cliente&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_confirmar_deposito_tasa_expirada_con_cambio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_ejecutar_acreditacion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica el caso GEG-105: la tasa expiró y es diferente.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Actualizamos la cotización para simular un cambio de tasa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cotizacion_inicial</span><span class="o">.</span><span class="n">valor_compra</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7450.00&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cotizacion_inicial</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">confirmar_url</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;codigo_operacion&#39;</span><span class="p">:</span> <span class="s1">&#39;EXPIRA123&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;requiere_confirmacion&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tasa_original&#39;</span><span class="p">]),</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7500.00&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;tasa_nueva&#39;</span><span class="p">]),</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;7450.00&#39;</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">estado</span><span class="p">,</span> <span class="s1">&#39;pendiente_deposito_tauser&#39;</span><span class="p">)</span> <span class="c1"># El estado no debe cambiar</span>
+        <span class="n">mock_ejecutar_acreditacion</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+
+
+    <span class="c1"># --- Pruebas para api_resolver_variacion_tasa ---</span>
+
+<div class="viewcode-block" id="TauserAPITests.test_resolver_variacion_aceptar">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.test_resolver_variacion_aceptar">[documentos]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;operaciones.views.ejecutar_acreditacion_a_cliente&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_resolver_variacion_aceptar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_ejecutar_acreditacion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que el cliente acepta la nueva tasa.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tasa_nueva</span> <span class="o">=</span> <span class="s1">&#39;7450.00&#39;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;codigo_operacion&#39;</span><span class="p">:</span> <span class="s1">&#39;EXPIRA123&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;decision&#39;</span><span class="p">:</span> <span class="s1">&#39;aceptar&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tasa_nueva&#39;</span><span class="p">:</span> <span class="n">tasa_nueva</span>
+        <span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolver_url</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;ok&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">estado</span><span class="p">,</span> <span class="s1">&#39;procesando_acreditacion&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">tasa_cambio_aplicada</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">tasa_nueva</span><span class="p">))</span>
+        <span class="c1"># Verificamos que el monto destino se haya recalculado</span>
+        <span class="n">monto_esperado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">monto_origen</span> <span class="o">*</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">tasa_nueva</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">monto_destino</span><span class="p">,</span> <span class="n">monto_esperado</span><span class="p">)</span>
+        <span class="n">mock_ejecutar_acreditacion</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TauserAPITests.test_resolver_variacion_cancelar">
+<a class="viewcode-back" href="../../operaciones.html#operaciones.tests.TauserAPITests.test_resolver_variacion_cancelar">[documentos]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;operaciones.views.ejecutar_acreditacion_a_cliente&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_resolver_variacion_cancelar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_ejecutar_acreditacion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verifica que el cliente cancela la transacción.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;codigo_operacion&#39;</span><span class="p">:</span> <span class="s1">&#39;EXPIRA123&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;decision&#39;</span><span class="p">:</span> <span class="s1">&#39;cancelar&#39;</span>
+        <span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolver_url</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">],</span> <span class="s1">&#39;cancelada&#39;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trans_expirada</span><span class="o">.</span><span class="n">estado</span><span class="p">,</span> <span class="s1">&#39;cancelada_usuario_tasa&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Verificar que el servicio de pago NO fue llamado</span>
+        <span class="n">mock_ejecutar_acreditacion</span><span class="o">.</span><span class="n">assert_not_called</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

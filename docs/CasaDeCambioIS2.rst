@@ -1,10 +1,10 @@
-CasaDeCambioIS2 package
+paquete CasaDeCambioIS2
 =======================
 
-Submodules
+Submódulos
 ----------
 
-CasaDeCambioIS2.asgi module
+módulo CasaDeCambioIS2.asgi
 ---------------------------
 
 .. automodule:: CasaDeCambioIS2.asgi
@@ -12,7 +12,7 @@ CasaDeCambioIS2.asgi module
    :undoc-members:
    :show-inheritance:
 
-CasaDeCambioIS2.settings module
+módulo CasaDeCambioIS2.settings
 -------------------------------
 
 .. automodule:: CasaDeCambioIS2.settings
@@ -20,7 +20,7 @@ CasaDeCambioIS2.settings module
    :undoc-members:
    :show-inheritance:
 
-CasaDeCambioIS2.urls module
+módulo CasaDeCambioIS2.urls
 ---------------------------
 
 .. automodule:: CasaDeCambioIS2.urls
@@ -28,7 +28,7 @@ CasaDeCambioIS2.urls module
    :undoc-members:
    :show-inheritance:
 
-CasaDeCambioIS2.views module
+módulo CasaDeCambioIS2.views
 ----------------------------
 
 .. automodule:: CasaDeCambioIS2.views
@@ -36,7 +36,7 @@ CasaDeCambioIS2.views module
    :undoc-members:
    :show-inheritance:
 
-CasaDeCambioIS2.wsgi module
+módulo CasaDeCambioIS2.wsgi
 ---------------------------
 
 .. automodule:: CasaDeCambioIS2.wsgi
@@ -44,7 +44,7 @@ CasaDeCambioIS2.wsgi module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: CasaDeCambioIS2

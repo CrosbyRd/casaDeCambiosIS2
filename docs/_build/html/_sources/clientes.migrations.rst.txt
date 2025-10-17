@@ -12,6 +12,14 @@ clientes.migrations.0001\_initial module
    :undoc-members:
    :show-inheritance:
 
+clientes.migrations.0002\_cliente\_user module
+----------------------------------------------
+
+.. automodule:: clientes.migrations.0002_cliente_user
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 clientes.migrations.0002\_remove\_cliente\_correo\_electronico module
 ---------------------------------------------------------------------
 
@@ -24,6 +32,46 @@ clientes.migrations.0003\_alter\_cliente\_options module
 --------------------------------------------------------
 
 .. automodule:: clientes.migrations.0003_alter_cliente_options
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+clientes.migrations.0003\_remove\_cliente\_user module
+------------------------------------------------------
+
+.. automodule:: clientes.migrations.0003_remove_cliente_user
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+clientes.migrations.0004\_merge\_20250914\_0029 module
+------------------------------------------------------
+
+.. automodule:: clientes.migrations.0004_merge_20250914_0029
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+clientes.migrations.0004\_merge\_20250914\_0108 module
+------------------------------------------------------
+
+.. automodule:: clientes.migrations.0004_merge_20250914_0108
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+clientes.migrations.0005\_merge\_20250914\_2011 module
+------------------------------------------------------
+
+.. automodule:: clientes.migrations.0005_merge_20250914_2011
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+clientes.migrations.0006\_medioacreditacion module
+--------------------------------------------------
+
+.. automodule:: clientes.migrations.0006_medioacreditacion
    :members:
    :undoc-members:
    :show-inheritance:

@@ -77,11 +77,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.hashers</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_password</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">authenticate</span><span class="p">,</span> <span class="n">login</span><span class="p">,</span> <span class="n">logout</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SESSION_KEY</span><span class="p">,</span> <span class="n">get_cliente_activo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistroForm</span><span class="p">,</span> <span class="n">VerificacionForm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">roles.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span> <span class="c1"># Importar el modelo Role</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
 
 <span class="c1"># ----------------------------</span>
 <span class="c1"># Registro + verificación de cuenta</span>
@@ -90,16 +92,18 @@
 <div class="viewcode-block" id="register">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.views.register">[documentos]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>      <span class="c1">#si llega un &#39;POST&#39; procesa el registro</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
         <span class="n">form</span> <span class="o">=</span> <span class="n">RegistroForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
             <span class="n">user</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">user</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">make_password</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">])</span>    <span class="c1">#guarda la contrasea encriptada</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">first_name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;first_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">last_name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;last_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">make_password</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">])</span>
             <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
-            <span class="n">user</span><span class="o">.</span><span class="n">generate_verification_code</span><span class="p">()</span>     <span class="c1">#genera codigo de verificacion</span>
-            <span class="c1">#envia el codigo de verificacion al correo del usuario</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">generate_verification_code</span><span class="p">()</span>
             <span class="n">send_mail</span><span class="p">(</span>
                 <span class="s2">&quot;Código de verificación&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;Tu código de verificación es: </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">verification_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -193,8 +197,9 @@
         <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Tu cuenta no está verificada. Verifica tu correo para activarla.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Bypass OTP for superusers</span>
-    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+    <span class="c1"># Bypass OTP para el usuario administrador en desarrollo y para usuarios con rol &#39;Cliente_Dev_OTP_Bypass&#39;</span>
+    <span class="n">admin_email</span> <span class="o">=</span> <span class="s2">&quot;globalexchangea2@gmail.com&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">admin_email</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cliente_Dev_OTP_Bypass&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()):</span>
         <span class="n">login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
         <span class="n">next_url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pending_login_next&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">next_url</span> <span class="ow">or</span> <span class="s2">&quot;usuarios:login_redirect&quot;</span><span class="p">)</span>
@@ -240,7 +245,6 @@
 
             <span class="n">next_url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pending_login_next&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;pending_login_user_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="c1"># Mensaje de bienvenida lo dejamos en login_redirect para no duplicar</span>
             <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">next_url</span> <span class="ow">or</span> <span class="s2">&quot;usuarios:login_redirect&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Código incorrecto o expirado.&quot;</span><span class="p">)</span>
@@ -277,12 +281,10 @@
 <div class="viewcode-block" id="logout_view">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.views.logout_view">[documentos]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logout_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cierra sesión aceptando GET o POST y redirige al inicio.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;POST&quot;</span><span class="p">):</span>
         <span class="n">logout</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Sesión cerrada correctamente.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    <span class="c1"># Cualquier otro método no permitido:</span>
     <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span></div>
 
 
@@ -295,23 +297,27 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;login&quot;</span><span class="p">)</span>
     
-    <span class="c1">#redirige al panel de administrador si es un administrador</span>
     <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__iexact</span><span class="o">=</span><span class="s2">&quot;Administrador&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;admin_panel:dashboard&quot;</span><span class="p">)</span>
 
-    <span class="c1">#normalmente redirige al dashboard de clientes</span>
     <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;¡Bienvenido!&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;usuarios:dashboard&quot;</span><span class="p">)</span></div>
 
 
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+
 <div class="viewcode-block" id="dashboard">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.views.dashboard">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dashboard</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;usuarios/dashboard.html&quot;</span><span class="p">)</span></div>
-
-
+    <span class="n">transacciones</span> <span class="o">=</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cliente</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-fecha_creacion&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">get_cliente_activo</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>              <span class="c1"># ← NUEVO</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="s2">&quot;usuarios/dashboard.html&quot;</span><span class="p">,</span>
+        <span class="p">{</span><span class="s1">&#39;transacciones&#39;</span><span class="p">:</span> <span class="n">transacciones</span><span class="p">,</span> <span class="s1">&#39;cliente&#39;</span><span class="p">:</span> <span class="n">cliente</span><span class="p">}</span>  <span class="c1"># ← NUEVO</span>
+    <span class="p">)</span></div>
 
 <div class="viewcode-block" id="admin_panel">
 <a class="viewcode-back" href="../../usuarios.html#usuarios.views.admin_panel">[documentos]</a>
@@ -366,6 +372,33 @@
     <span class="n">user</span><span class="o">.</span><span class="n">clientes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cliente</span><span class="p">)</span>
     <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cliente &#39;</span><span class="si">{</span><span class="n">cliente</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&#39; quitado de </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;usuarios:listar_usuarios&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="seleccionar_cliente">
+<a class="viewcode-back" href="../../usuarios.html#usuarios.views.seleccionar_cliente">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seleccionar_cliente</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
+    <span class="n">clientes</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">clientes</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">clientes</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Aún no tenés clientes asociados a tu usuario.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;usuarios/seleccionar_cliente.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;clientes&quot;</span><span class="p">:</span> <span class="n">clientes</span><span class="p">})</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cliente_id&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cliente</span> <span class="o">=</span> <span class="n">clientes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">cid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Cliente inválido.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="n">SESSION_KEY</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cliente</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cliente activo: </span><span class="si">{</span><span class="n">cliente</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">next_url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;usuarios:dashboard&quot;</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">next_url</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;usuarios/seleccionar_cliente.html&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;clientes&quot;</span><span class="p">:</span> <span class="n">clientes</span><span class="p">})</span></div>
 
 </pre></div>
 

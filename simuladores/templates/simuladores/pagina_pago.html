@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasarela de Pago Simulada</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #0056b3; text-align: center; }
+        .payment-details { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .payment-details p { font-size: 1.1em; margin: 10px 0; }
+        .payment-details strong { color: #555; }
+        .actions { text-align: center; }
+        .btn { padding: 15px 30px; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .btn-success { background-color: #28a745; color: white; margin-right: 15px; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .error { color: #dc3545; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Confirmación de Pago</h1>
+        
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% elif pago and transaccion %}
+            <div class="payment-details">
+                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
+                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
+                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
+                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
+                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
+                <p><strong>Referencia de Pago:</strong> {{ pago.referencia_comercio }}</p>
+            </div>
+            
+            <form action="{% url 'simuladores:confirmar_pago' pago.id %}" method="post" class="actions">
+                {% csrf_token %}
+                <button type="submit" name="accion" value="pagar" class="btn btn-success">Pagar Ahora</button>
+                <button type="submit" name="accion" value="cancelar" class="btn btn-danger">Cancelar Pago</button>
+            </form>
+            <div class="actions" style="margin-top: 20px;">
+                <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn" style="background-color: #6c757d; color: white;">Volver a Detalles de Operación</a>
+            </div>
+        {% else %}
+             <p class="error">No se encontraron detalles de la transacción o del pago.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

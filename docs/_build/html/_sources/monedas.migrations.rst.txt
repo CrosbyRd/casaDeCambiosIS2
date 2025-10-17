@@ -52,6 +52,22 @@ monedas.migrations.0006\_alter\_moneda\_options module
    :undoc-members:
    :show-inheritance:
 
+monedas.migrations.0007\_alter\_moneda\_admite\_en\_linea\_and\_more module
+---------------------------------------------------------------------------
+
+.. automodule:: monedas.migrations.0007_alter_moneda_admite_en_linea_and_more
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+monedas.migrations.0008\_teddenominacion\_tedinventario\_tedmovimiento module
+-----------------------------------------------------------------------------
+
+.. automodule:: monedas.migrations.0008_teddenominacion_tedinventario_tedmovimiento
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

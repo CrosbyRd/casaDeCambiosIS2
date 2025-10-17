@@ -1,0 +1,1068 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete medios_acreditacion &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete operaciones" href="operaciones.html" />
+    <link rel="prev" title="paquete configuracion" href="configuracion.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete medios_acreditacion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.admin">módulo medios_acreditacion.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.apps">módulo medios_acreditacion.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.apps.MediosAcreditacionConfig"><code class="docutils literal notranslate"><span class="pre">MediosAcreditacionConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.forms">módulo medios_acreditacion.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.models">módulo medios_acreditacion.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.urls">módulo medios_acreditacion.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.views">módulo medios_acreditacion.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClientePredeterminarView"><code class="docutils literal notranslate"><span class="pre">MedioClientePredeterminarView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioListView"><code class="docutils literal notranslate"><span class="pre">TipoMedioListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete medios_acreditacion</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/medios_acreditacion.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-medios-acreditacion">
+<h1>paquete medios_acreditacion<a class="headerlink" href="#paquete-medios-acreditacion" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p>medios_acreditacion.tests</p>
+</div></blockquote>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-medios_acreditacion.admin">
+<span id="modulo-medios-acreditacion-admin"></span><h2>módulo medios_acreditacion.admin<a class="headerlink" href="#module-medios_acreditacion.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-medios_acreditacion.apps">
+<span id="modulo-medios-acreditacion-apps"></span><h2>módulo medios_acreditacion.apps<a class="headerlink" href="#module-medios_acreditacion.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.apps.</span></span><span class="sig-name descname"><span class="pre">MediosAcreditacionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/apps.html#MediosAcreditacionConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.verbose_name">
+<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Medios</span> <span class="pre">de</span> <span class="pre">Acreditación'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.verbose_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-medios_acreditacion.forms">
+<span id="modulo-medios-acreditacion-forms"></span><h2>módulo medios_acreditacion.forms<a class="headerlink" href="#module-medios_acreditacion.forms" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.forms.</span></span><span class="sig-name descname"><span class="pre">CampoMedioForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#CampoMedioForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#CampoMedioForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['nombre',</span> <span class="pre">'tipo_dato',</span> <span class="pre">'obligatorio',</span> <span class="pre">'regex']</span></em><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion" title="medios_acreditacion.models.CampoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">CampoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'nombre':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'obligatorio':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'regex':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo_dato':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.CampoMedioForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#medios_acreditacion.forms.CampoMedioForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.forms.</span></span><span class="sig-name descname"><span class="pre">MedioAcreditacionClienteForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#MedioAcreditacionClienteForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#MedioAcreditacionClienteForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('tipo',</span> <span class="pre">'alias',</span> <span class="pre">'activo',</span> <span class="pre">'predeterminado')</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="medios_acreditacion.models.MedioAcreditacionCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'alias':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'predeterminado':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#MedioAcreditacionClienteForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.clean" title="Link to this definition"></a></dt>
+<dd><p>Hook for doing any extra form-wide cleaning after Field.clean() has been
+called on every field. Any ValidationError raised by this method will
+not be associated with a particular field; it will have a special-case
+association with the field named “__all__”.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.forms.</span></span><span class="sig-name descname"><span class="pre">TipoMedioForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#TipoMedioForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#TipoMedioForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['nombre',</span> <span class="pre">'descripcion',</span> <span class="pre">'activo']</span></em><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="medios_acreditacion.models.TipoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion':</span> <span class="pre">&lt;django.forms.widgets.Textarea</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.TipoMedioForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#medios_acreditacion.forms.TipoMedioForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-medios_acreditacion.models">
+<span id="modulo-medios-acreditacion-models"></span><h2>módulo medios_acreditacion.models<a class="headerlink" href="#module-medios_acreditacion.models" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.models.</span></span><span class="sig-name descname"><span class="pre">CampoMedioAcreditacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_campo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo_medio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo_dato</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obligatorio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#CampoMedioAcreditacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RegexOpciones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#CampoMedioAcreditacion.RegexOpciones"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextChoices</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.EMAIL">
+<span class="sig-name descname"><span class="pre">EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[^&#64;]+&#64;[^&#64;]+\\.[^&#64;]+$'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.EMAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.NINGUNO">
+<span class="sig-name descname"><span class="pre">NINGUNO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.NINGUNO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.RUC">
+<span class="sig-name descname"><span class="pre">RUC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^\\d{6,8}-\\d{1}$'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.RUC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.SOLO_LETRAS">
+<span class="sig-name descname"><span class="pre">SOLO_LETRAS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[A-Za-zÁÉÍÓÚáéíóúÑñ</span> <span class="pre">]+$'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.SOLO_LETRAS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.SOLO_NUMEROS">
+<span class="sig-name descname"><span class="pre">SOLO_NUMEROS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[0-9]+$'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.SOLO_NUMEROS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.TELEFONO">
+<span class="sig-name descname"><span class="pre">TELEFONO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^\\d{9,15}$'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.TELEFONO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TipoDato</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#CampoMedioAcreditacion.TipoDato"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextChoices</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.EMAIL">
+<span class="sig-name descname"><span class="pre">EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'email'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.EMAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.NUMERO">
+<span class="sig-name descname"><span class="pre">NUMERO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'numero'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.NUMERO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.RUC">
+<span class="sig-name descname"><span class="pre">RUC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ruc'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.RUC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.TELEFONO">
+<span class="sig-name descname"><span class="pre">TELEFONO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'telefono'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.TELEFONO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.TEXTO">
+<span class="sig-name descname"><span class="pre">TEXTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'texto'</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.TEXTO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.get_regex_display">
+<span class="sig-name descname"><span class="pre">get_regex_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">regex&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.get_regex_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.get_tipo_dato_display">
+<span class="sig-name descname"><span class="pre">get_tipo_dato_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo_dato&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.get_tipo_dato_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.id_campo">
+<span class="sig-name descname"><span class="pre">id_campo</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.id_campo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.obligatorio">
+<span class="sig-name descname"><span class="pre">obligatorio</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.obligatorio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.regex">
+<span class="sig-name descname"><span class="pre">regex</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.regex" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.tipo_dato">
+<span class="sig-name descname"><span class="pre">tipo_dato</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_dato" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio">
+<span class="sig-name descname"><span class="pre">tipo_medio</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio_id">
+<span class="sig-name descname"><span class="pre">tipo_medio_id</span></span><a class="headerlink" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.models.</span></span><span class="sig-name descname"><span class="pre">MedioAcreditacionCliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_medio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cliente</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creado_en</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actualizado_en</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predeterminado</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#MedioAcreditacionCliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.actualizado_en">
+<span class="sig-name descname"><span class="pre">actualizado_en</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.actualizado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.alias" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#MedioAcreditacionCliente.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.clean" title="Link to this definition"></a></dt>
+<dd><p>Valida que los datos cargados coincidan con lo definido por el admin.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.cliente">
+<span class="sig-name descname"><span class="pre">cliente</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.cliente_id">
+<span class="sig-name descname"><span class="pre">cliente_id</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.cliente_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.creado_en">
+<span class="sig-name descname"><span class="pre">creado_en</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.creado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.datos">
+<span class="sig-name descname"><span class="pre">datos</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.datos" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.id_medio">
+<span class="sig-name descname"><span class="pre">id_medio</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.id_medio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.predeterminado">
+<span class="sig-name descname"><span class="pre">predeterminado</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.predeterminado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#MedioAcreditacionCliente.save"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.save" title="Link to this definition"></a></dt>
+<dd><p>Save the current instance. Override this in a subclass if you want to
+control the saving process.</p>
+<p>The “force_insert” and “force_update” parameters can be used to insist
+that the «save» must be an SQL insert or update (or equivalent for
+non-SQL backends), respectively. Normally, they should not be set.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.tipo" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.MedioAcreditacionCliente.tipo_id">
+<span class="sig-name descname"><span class="pre">tipo_id</span></span><a class="headerlink" href="#medios_acreditacion.models.MedioAcreditacionCliente.tipo_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.models.</span></span><span class="sig-name descname"><span class="pre">TipoMedioAcreditacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_tipo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descripcion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/models.html#TipoMedioAcreditacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.campos">
+<span class="sig-name descname"><span class="pre">campos</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.campos" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.descripcion">
+<span class="sig-name descname"><span class="pre">descripcion</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.descripcion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.id_tipo">
+<span class="sig-name descname"><span class="pre">id_tipo</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.id_tipo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.medios_cliente">
+<span class="sig-name descname"><span class="pre">medios_cliente</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.medios_cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.models.TipoMedioAcreditacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#medios_acreditacion.models.TipoMedioAcreditacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-medios_acreditacion.urls">
+<span id="modulo-medios-acreditacion-urls"></span><h2>módulo medios_acreditacion.urls<a class="headerlink" href="#module-medios_acreditacion.urls" title="Link to this heading"></a></h2>
+</section>
+<section id="module-medios_acreditacion.views">
+<span id="modulo-medios-acreditacion-views"></span><h2>módulo medios_acreditacion.views<a class="headerlink" href="#module-medios_acreditacion.views" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.AccessMediosAcreditacionMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">AccessMediosAcreditacionMixin</span></span><a class="reference internal" href="_modules/medios_acreditacion/views.html#AccessMediosAcreditacionMixin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.AccessMediosAcreditacionMixin.dispatch">
+<span class="sig-name descname"><span class="pre">dispatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#AccessMediosAcreditacionMixin.dispatch"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin.dispatch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.AccessMediosAcreditacionMixin.required_permission">
+<span class="sig-name descname"><span class="pre">required_permission</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion.access_medios_acreditacion'</span></em><a class="headerlink" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin.required_permission" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">MedioClienteCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm" title="medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteCreateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.get_form_kwargs">
+<span class="sig-name descname"><span class="pre">get_form_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteCreateView.get_form_kwargs"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.get_form_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Return the keyword arguments for instantiating the form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.get_initial">
+<span class="sig-name descname"><span class="pre">get_initial</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteCreateView.get_initial"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.get_initial" title="Link to this definition"></a></dt>
+<dd><p>Return the initial data to use for forms on this view.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="medios_acreditacion.models.MedioAcreditacionCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/clientes/'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteCreateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/clientes_form.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteCreateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">MedioClienteDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView.delete" title="Link to this definition"></a></dt>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteDeleteView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>QuerySet</cite> that will be used to look up the object.</p>
+<p>This method is called by the default implementation of get_object() and
+may not be called if get_object() is overridden.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="medios_acreditacion.models.MedioAcreditacionCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/clientes/'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/clientes_confirm_delete.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">MedioClienteListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteListView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="medios_acreditacion.models.MedioAcreditacionCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/clientes_list.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClientePredeterminarView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">MedioClientePredeterminarView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClientePredeterminarView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClientePredeterminarView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClientePredeterminarView.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClientePredeterminarView.get"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClientePredeterminarView.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClientePredeterminarView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClientePredeterminarView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClientePredeterminarView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">MedioClienteUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm" title="medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteUpdateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.get_form_kwargs">
+<span class="sig-name descname"><span class="pre">get_form_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteUpdateView.get_form_kwargs"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.get_form_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Return the keyword arguments for instantiating the form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#MedioClienteUpdateView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>QuerySet</cite> that will be used to look up the object.</p>
+<p>This method is called by the default implementation of get_object() and
+may not be called if get_object() is overridden.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente" title="medios_acreditacion.models.MedioAcreditacionCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/clientes/'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.MedioClienteUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/clientes_form.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.MedioClienteUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">TipoMedioCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin" title="medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm" title="medios_acreditacion.forms.TipoMedioForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioCreateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="medios_acreditacion.models.TipoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/tipos/'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioCreateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/tipos_form.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioCreateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">TipoMedioDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin" title="medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioDeleteView.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioDeleteView.delete" title="Link to this definition"></a></dt>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="medios_acreditacion.models.TipoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/tipos/'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/tipos_confirm_delete.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">TipoMedioListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin" title="medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tipos'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="medios_acreditacion.models.TipoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/tipos_list.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.views.</span></span><span class="sig-name descname"><span class="pre">TipoMedioUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin" title="medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm" title="medios_acreditacion.forms.TipoMedioForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/views.html#TipoMedioUpdateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion" title="medios_acreditacion.models.TipoMedioAcreditacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/medios-acreditacion/tipos/'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.views.TipoMedioUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion/tipos_form.html'</span></em><a class="headerlink" href="#medios_acreditacion.views.TipoMedioUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-medios_acreditacion"></span></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="configuracion.html" class="btn btn-neutral float-left" title="paquete configuracion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="operaciones.html" class="btn btn-neutral float-right" title="paquete operaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Inventario TED{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 py-10">
+
+  <!-- Encabezado -->
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🧳 Inventario TED</h1>
+      <p class="text-lg leading-relaxed text-[var(--muted)]">
+        Nº de serie: <strong>{{ serial }}</strong> ·
+        {% if filtro_aplicado %}
+          Ubicación actual: <strong>{{ direccion }}</strong>
+        {% else %}
+          Viendo: <strong>Todas las ubicaciones</strong>
+        {% endif %}
+      </p>
+    </div>
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'admin_panel:ted:crear_stock' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white"
+         style="background:var(--brand)">
+        ➕ Crear inventario
+      </a>
+    </div>
+  </header>
+
+  <!-- Filtro de ubicación -->
+  <form method="get" class="mb-6">
+    <div class="flex items-center gap-3 bg-white border rounded-xl p-4" style="border-color:var(--line)">
+      <label for="id_ubicacion" class="font-semibold text-[var(--ink)]">Filtrar por ubicación</label>
+      <select id="id_ubicacion" name="ubicacion" class="min-w-[320px] bg-white border rounded-lg px-3 py-2"
+              style="border-color: var(--line); color: var(--ink);" onchange="this.form.submit()">
+        <option value="" {% if not filtro_ubicacion %}selected{% endif %}>Todas las ubicaciones</option>
+        {% for u in ubicaciones %}
+          <option value="{{ u }}" {% if filtro_ubicacion == u %}selected{% endif %}>{{ u }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if messages %}
+    <div class="max-w-5xl mx-auto px-0 mt-4 space-y-3">
+      {% for message in messages %}
+        <div class="rounded-lg px-4 py-3 border
+             {% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800
+             {% elif 'error' in message.tags or 'danger' in message.tags %} bg-red-50 border-red-200 text-red-800
+             {% elif 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800
+             {% else %} bg-indigo-50 border-indigo-200 text-indigo-800 {% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if not grupos %}
+    <section class="bg-white border rounded-xl shadow-sm p-8 text-center" style="border-color:var(--line)">
+      <div class="text-5xl mb-2">🗃️</div>
+      <h2 class="text-2xl font-bold mb-2 text-[var(--ink)]">Sin monedas en inventario</h2>
+      <p class="text-[var(--muted)] mb-6">Crea inventario inicial para comenzar.</p>
+      <a href="{% url 'admin_panel:ted:crear_stock' %}"
+         class="px-5 py-2 rounded-lg font-bold text-white shadow-sm"
+         style="background:var(--brand)">➕ Crear inventario</a>
+    </section>
+  {% else %}
+
+    {% for g in grupos %}
+      <section class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6" style="border-color:var(--line)">
+        <div class="flex items-start md:items-center justify-between gap-4 px-6 py-4"
+             style="background:var(--brand-soft)">
+          <div>
+            <h2 class="text-xl font-extrabold text-[var(--ink)]">
+              <span class="currency-emoji" data-code="{{ g.moneda.codigo }}"></span>{{ g.moneda.nombre }}
+              <span class="font-semibold text-[var(--muted)]">({{ g.moneda.codigo }})</span>
+            </h2>
+            {% if g.secciones %}
+              <p class="text-sm text-[var(--muted)] mt-1">Mostrando todas las ubicaciones para esta divisa.</p>
+            {% else %}
+              <p class="text-sm text-[var(--muted)] mt-1">Ubicación del inventario: <strong>{{ direccion }}</strong></p>
+            {% endif %}
+          </div>
+
+          {% if not g.secciones %}
+            <a href="{% url 'admin_panel:ted:crear_stock' %}?moneda={{ g.moneda.id }}&ubicacion={{ direccion|urlencode }}"
+               class="px-4 py-2 rounded-lg font-bold text-[var(--brand-dark)] bg-white border hover:bg-[var(--surface)]"
+               style="border-color:var(--line)">➕ Nueva denominación</a>
+          {% endif %}
+        </div>
+
+        {% if g.secciones %}
+          {% for sec in g.secciones %}
+            <div class="flex items-center justify-between px-6 py-3 text-sm border-b" style="border-color:var(--line)">
+              <div class="text-[var(--muted)]">Ubicación: <strong>{{ sec.ubicacion }}</strong></div>
+              <a href="{% url 'admin_panel:ted:crear_stock' %}?moneda={{ g.moneda.id }}&ubicacion={{ sec.ubicacion|urlencode }}"
+                 class="px-3 py-1.5 rounded-md font-semibold text-[var(--brand-dark)] bg-white border hover:bg-[var(--surface)]"
+                 style="border-color:var(--line)">➕ Añadir en esta ubicación</a>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="bg-[var(--brand)] text-white">
+                    <th class="px-6 py-3 text-left">Denominación</th>
+                    <th class="px-6 py-3 text-right">Inventario</th>
+                    <th class="px-6 py-3 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in sec.items %}
+                    <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+                      <td class="px-6 py-4 font-medium text-[var(--ink)]">{{ g.moneda.codigo }} {{ row.den.valor }}</td>
+                      <td class="px-6 py-4 text-right">{{ row.stock }}</td>
+                      <td class="px-6 py-4">
+                        <div class="flex justify-end gap-2">
+                          <a href="{% url 'admin_panel:ted:inventario_ajustar' row.den.id %}?ubicacion={{ sec.ubicacion|urlencode }}"
+                             class="px-3 py-1.5 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Ajustar</a>
+
+                          <!-- AHORA abre la página de confirmación -->
+                          <a href="{% url 'admin_panel:ted:inventario_eliminar_den' row.den.id %}?ubicacion={{ sec.ubicacion|urlencode }}"
+                             class="px-3 py-1.5 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">Eliminar</a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr><td colspan="3" class="px-6 py-6 text-center text-[var(--muted)]">Sin denominaciones.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endfor %}
+
+        {% else %}
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr class="bg-[var(--brand)] text-white">
+                  <th class="px-6 py-3 text-left">Denominación</th>
+                  <th class="px-6 py-3 text-right">Inventario</th>
+                  <th class="px-6 py-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in g.items %}
+                  <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+                    <td class="px-6 py-4 font-medium text-[var(--ink)]">{{ g.moneda.codigo }} {{ row.den.valor }}</td>
+                    <td class="px-6 py-4 text-right">{{ row.stock }}</td>
+                    <td class="px-6 py-4">
+                      <div class="flex justify-end gap-2">
+                        <a href="{% url 'admin_panel:ted:inventario_ajustar' row.den.id %}?ubicacion={{ direccion|urlencode }}"
+                           class="px-3 py-1.5 rounded-md font-semibold text-[var(--brand-dark)] bg-[var(--brand-soft)] hover:brightness-95">Ajustar</a>
+
+                        <!-- AHORA abre la página de confirmación -->
+                        <a href="{% url 'admin_panel:ted:inventario_eliminar_den' row.den.id %}?ubicacion={{ direccion|urlencode }}"
+                           class="px-3 py-1.5 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700">Eliminar</a>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="3" class="px-6 py-6 text-center text-[var(--muted)]">Sin denominaciones.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </section>
+    {% endfor %}
+  {% endif %}
+</main>
+
+<script>
+  (function(){
+    const MAP = {
+      USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴", PYG:"🇵🇾",
+      UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵", CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭",
+      MXN:"🇲🇽", PEN:"🇵🇪", BOB:"🇧🇴"
+    };
+    document.querySelectorAll('.currency-emoji').forEach(el => {
+      const code = String(el.dataset.code || '').toUpperCase();
+      el.textContent = (MAP[code] || "💱") + " ";
+    });
+  })();
+</script>
+{% endblock %}
