@@ -196,8 +196,11 @@ def iniciar_operacion(request):
         if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
             operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion']
         
-        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG':
-            operacion_data['metodo_entrega'] = form.cleaned_data.get('metodo_entrega')
+        # Asegurarse de que el metodo_entrega se guarde si está presente en el formulario
+        # independientemente de la condición específica de moneda, ya que la visibilidad
+        # en el frontend ya lo controla.
+        if form.cleaned_data.get('metodo_entrega'):
+            operacion_data['metodo_entrega'] = form.cleaned_data['metodo_entrega']
 
         request.session['operacion_pendiente'] = operacion_data
         return redirect('core:confirmar_operacion')
@@ -225,24 +228,62 @@ def confirmar_operacion(request):
 
     if request.method == 'POST':
         modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada')
+        metodo_entrega = operacion_pendiente.get('metodo_entrega') # Obtener el método de entrega
 
-        if modalidad_tasa == 'bloqueada':
-            # Flujo A: Redirigir a la vista de verificación OTP para reserva de tasa
-            return redirect('core:verificar_otp_reserva')
-        else: # modalidad_tasa == 'flotante'
-            # Flujo B: Crear la transacción con estado pendiente_confirmacion_pago
+        tipo_operacion = operacion_pendiente['tipo_operacion']
+        moneda_origen_codigo = operacion_pendiente['moneda_origen_codigo']
+        moneda_destino_codigo = operacion_pendiente['moneda_destino_codigo']
+        modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada')
+        metodo_entrega = operacion_pendiente.get('metodo_entrega')
+
+        # Lógica para Stripe (prioritaria si se selecciona y es USD -> PYG)
+        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG' and metodo_entrega == 'stripe':
             try:
-                moneda_origen_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_origen_codigo'])
-                moneda_destino_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_destino_codigo'])
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
             except Moneda.DoesNotExist:
                 messages.error(request, "Error al encontrar las monedas para la transacción.")
                 return redirect('core:iniciar_operacion')
 
-            # Estado inicial para tasa flotante
+            estado_inicial = 'pendiente_pago_stripe'
+            codigo_operacion_tauser = str(uuid.uuid4())[:10]
+            tasa_garantizada_hasta = timezone.now() + timedelta(hours=2) # Tasa bloqueada por 2 horas para Stripe
+
+            transaccion = Transaccion.objects.create(
+                cliente=cliente_activo,
+                usuario_operador=request.user,
+                tipo_operacion=tipo_operacion,
+                estado=estado_inicial,
+                moneda_origen=moneda_origen_obj,
+                monto_origen=operacion_pendiente['monto_origen'],
+                moneda_destino=moneda_destino_obj,
+                monto_destino=operacion_pendiente['monto_recibido'],
+                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
+                comision_aplicada=operacion_pendiente['comision_aplicada'],
+                codigo_operacion_tauser=codigo_operacion_tauser,
+                tasa_garantizada_hasta=tasa_garantizada_hasta,
+                modalidad_tasa=modalidad_tasa, # Se mantiene la modalidad seleccionada
+            )
+            request.session.pop('operacion_pendiente', None)
+            messages.info(request, "Operación registrada. Ahora puedes proceder al pago con tarjeta.")
+            return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
+
+        # Lógica para Flujo A (Tasa Bloqueada sin Stripe)
+        elif modalidad_tasa == 'bloqueada':
+            return redirect('core:verificar_otp_reserva')
+
+        # Lógica para Flujo B (Tasa Flotante sin Stripe)
+        else: # modalidad_tasa == 'flotante'
+            try:
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+            except Moneda.DoesNotExist:
+                messages.error(request, "Error al encontrar las monedas para la transacción.")
+                return redirect('core:iniciar_operacion')
+
             estado_inicial_flotante = 'pendiente_confirmacion_pago'
             codigo_operacion_tauser = str(uuid.uuid4())[:10]
 
-            # Obtener el medio de pago del cliente de la sesión
             medio_pago_id = operacion_pendiente.get('medio_pago_id')
             medio_pago_cliente_obj = None
             if medio_pago_id:
@@ -255,20 +296,20 @@ def confirmar_operacion(request):
             transaccion = Transaccion.objects.create(
                 cliente=cliente_activo,
                 usuario_operador=request.user,
-                tipo_operacion=operacion_pendiente['tipo_operacion'],
-                estado=estado_inicial_flotante, # Nuevo estado
+                tipo_operacion=tipo_operacion,
+                estado=estado_inicial_flotante,
                 moneda_origen=moneda_origen_obj,
                 monto_origen=operacion_pendiente['monto_origen'],
                 moneda_destino=moneda_destino_obj,
                 monto_destino=operacion_pendiente['monto_recibido'],
-                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'], # Tasa indicativa inicial
+                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
                 comision_aplicada=operacion_pendiente['comision_aplicada'],
                 codigo_operacion_tauser=codigo_operacion_tauser,
-                tasa_garantizada_hasta=None, # No hay tasa garantizada
+                tasa_garantizada_hasta=None,
                 modalidad_tasa=modalidad_tasa,
                 medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
             )
-            request.session.pop('operacion_pendiente', None) # Limpiar sesión
+            request.session.pop('operacion_pendiente', None)
 
             messages.info(request, "Operación iniciada con tasa flotante. Por favor, confirma el pago.")
             return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
@@ -485,14 +526,19 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
     """
     template_name = 'core/confirmacion_final_pago.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        transaccion_id = kwargs.get('transaccion_id')
+    def get(self, request, transaccion_id, *args, **kwargs):
         transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=get_cliente_activo(self.request))
 
         if transaccion.estado != 'pendiente_confirmacion_pago' or transaccion.modalidad_tasa != 'flotante':
             messages.error(self.request, "La transacción no está en un estado válido para confirmación final.")
             return redirect('core:iniciar_operacion') # O a una página de error
+        
+        context = self.get_context_data(transaccion=transaccion, **kwargs)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transaccion = kwargs.get('transaccion') # La transacción ya se obtuvo en el método get()
 
         # Obtener la tasa de cambio en tiempo real
         try:
@@ -503,8 +549,11 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             tasa_actual = cotizacion_actual.total_venta # Asumiendo que es una venta de divisa (cliente compra)
             monto_destino_actual = transaccion.monto_origen / tasa_actual
         except Cotizacion.DoesNotExist:
-            messages.error(self.request, "No se pudo obtener la tasa de cambio actual.")
-            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            # Este caso ya debería ser manejado en el método get()
+            # Si llega aquí, es un error inesperado o un estado inconsistente
+            messages.error(self.request, "Error interno: No se pudo obtener la tasa de cambio actual para el contexto.")
+            tasa_actual = Decimal('0.00') # Valor por defecto para evitar errores
+            monto_destino_actual = Decimal('0.00') # Valor por defecto para evitar errores
         
         context['transaccion'] = transaccion
         context['tasa_actual'] = tasa_actual
