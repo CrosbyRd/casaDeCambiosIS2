@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
-from django.urls import reverse
 from django.utils.timezone import now
 from .forms import SimulacionForm, OperacionForm
 from .logic import calcular_simulacion
@@ -54,7 +53,20 @@ def calculadora_view(request):
             resultado = None
 
     iniciar_operacion_url = request.build_absolute_uri(reverse('core:iniciar_operacion'))
-    return render(request, 'site/calculator.html', {'form': form, 'resultado': resultado, 'iniciar_operacion_url': iniciar_operacion_url})
+    # --- Tasas por moneda (base PYG) para el "rate card" de la calculadora ---
+    cotzs = Cotizacion.objects.filter(moneda_base__codigo='PYG').select_related('moneda_destino')
+    tasas = {
+        c.moneda_destino.codigo: {
+            'compra': str(c.total_compra),  # Tauser te compra esa divisa (vos venís con USD->PYG)
+            'venta':  str(c.total_venta),   # Tauser te vende esa divisa (vos vas PYG->USD)
+        } for c in cotzs
+    }
+    return render(request,
+                   'site/calculator.html', 
+                   {'form': form,
+                    'resultado': resultado,
+                    'iniciar_operacion_url': iniciar_operacion_url,
+                    'tasas_json': json.dumps(tasas)})
 
 
 def site_rates(request):
