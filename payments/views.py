@@ -1,11 +1,12 @@
 # payments/views.py
-
 import json
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from .stripe_service import create_payment_intent
+# --- NUEVO: Importar el modelo Transaccion ---
+from transacciones.models import Transaccion
 
 def checkout_preview_view(request):
     """
@@ -14,7 +15,6 @@ def checkout_preview_view(request):
     product_name = "Suscripción Anual Gold"
     amount_in_dollars = 1.10
     
-    # Pasamos el monto en centavos para evitar problemas de formato decimal
     amount_in_cents = int(amount_in_dollars * 100)
 
     context = {
@@ -48,18 +48,17 @@ def stripe_payment_page(request):
     transaction_id = request.GET.get('transaction_id')
 
     if not client_secret or not transaction_id:
-        # Manejar error si faltan parámetros
-        return render(request, 'payment_error.html', {'message': 'Faltan parámetros para el pago de Stripe.'})
+        return HttpResponseBadRequest("Faltan parámetros para el pago.")
+
+    # --- MODIFICADO: Buscamos la transacción para mostrar sus detalles ---
+    try:
+        transaccion = get_object_or_404(Transaccion, id=transaction_id)
+    except Transaccion.DoesNotExist:
+        return HttpResponseBadRequest("La transacción especificada no existe.")
 
     context = {
         'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
         'client_secret': client_secret,
-        'transaction_id': transaction_id,
+        'transaccion': transaccion, # Pasamos el objeto completo al template
     }
     return render(request, 'payments/stripe_payment_page.html', context)
-
-# La vista create_payment_intent_view ya no es necesaria,
-# ya que la creación del PaymentIntent se maneja en StripeGateway.initiate_payment.
-# @csrf_exempt
-# def create_payment_intent_view(request):
-#     ...
