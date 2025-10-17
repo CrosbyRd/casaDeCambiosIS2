@@ -5,9 +5,12 @@
 import os
 import sys
 import django
-sys.path.insert(0, os.path.abspath('../../')) # Directorio raíz del proyecto
-sys.path.insert(0, os.path.abspath('../'))    # Directorio casaDeCambiosIS2
-os.environ['DJANGO_SETTINGS_MODULE'] = 'casaDeCambiosIS2.CasaDeCambioIS2.settings'
+
+# Añadir el directorio raíz del proyecto (donde se encuentra manage.py) al sys.path
+# Esto asume que conf.py está en casaDeCambioIS2/docs/
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'casaDeCambiosIS2'))) # Añadir el directorio que contiene manage.py
+os.environ['DJANGO_SETTINGS_MODULE'] = 'CasaDeCambioIS2.settings'
 django.setup()
 
 # -- Project information -----------------------------------------------------
@@ -32,6 +35,13 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 language = 'es'
+
+# Opciones para autodoc
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

@@ -4,50 +4,50 @@ paquete simuladores
 Submódulos
 ----------
 
-módulo casaDeCambiosIS2.simuladores.admin
------------------------------------------
+módulo simuladores.admin
+------------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.admin
+.. automodule:: simuladores.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.simuladores.apps
-----------------------------------------
+módulo simuladores.apps
+-----------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.apps
+.. automodule:: simuladores.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.simuladores.models
-------------------------------------------
+módulo simuladores.models
+-------------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.models
+.. automodule:: simuladores.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.simuladores.tests
------------------------------------------
+módulo simuladores.tests
+------------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.tests
+.. automodule:: simuladores.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.simuladores.urls
-----------------------------------------
+módulo simuladores.urls
+-----------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.urls
+.. automodule:: simuladores.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.simuladores.views
------------------------------------------
+módulo simuladores.views
+------------------------
 
-.. automodule:: casaDeCambiosIS2.simuladores.views
+.. automodule:: simuladores.views
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ módulo casaDeCambiosIS2.simuladores.views
 Contenido del módulo
 ---------------
 
-.. automodule:: casaDeCambiosIS2.simuladores
+.. automodule:: simuladores
    :members:
    :undoc-members:
    :show-inheritance:

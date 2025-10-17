@@ -511,27 +511,6 @@
 </li>
       </ul></li>
       <li>
-    casaDeCambiosIS2.simuladores
-
-      <ul>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores">module</a>
-</li>
-      </ul></li>
-      <li>
-    casaDeCambiosIS2.simuladores.admin
-
-      <ul>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores.admin">module</a>
-</li>
-      </ul></li>
-      <li>
-    casaDeCambiosIS2.simuladores.apps
-
-      <ul>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores.apps">module</a>
-</li>
-      </ul></li>
-      <li>
     casaDeCambiosIS2.transacciones
 
       <ul>
@@ -626,8 +605,6 @@
         <li><a href="clientes.html#module-clientes">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usuarios.html#usuarios.models.CustomUser.clientes">clientes (atributo de usuarios.models.CustomUser)</a>
 </li>
       <li>
@@ -637,6 +614,8 @@
         <li><a href="clientes.html#module-clientes.admin">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     clientes.apps
 
@@ -794,6 +773,8 @@
       <li><a href="configuracion.tests.html#configuracion.tests.test_views.ConfiguracionViewsTests">ConfiguracionViewsTests (clase en configuracion.tests.test_views)</a>
 </li>
       <li><a href="core.html#casaDeCambiosIS2.core.views.confirmar_operacion">confirmar_operacion() (en el módulo casaDeCambiosIS2.core.views)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.views.ConfirmarPagoSimuladoView">ConfirmarPagoSimuladoView (clase en simuladores.views)</a>
 </li>
       <li><a href="clientes.html#clientes.views.ClienteDetailView.context_object_name">context_object_name (atributo de clientes.views.ClienteDetailView)</a>
 
@@ -1033,8 +1014,6 @@
 </li>
         <li><a href="roles.html#casaDeCambiosIS2.roles.apps.RolesConfig.default_auto_field">(atributo de casaDeCambiosIS2.roles.apps.RolesConfig)</a>
 </li>
-        <li><a href="simuladores.html#casaDeCambiosIS2.simuladores.apps.SimuladoresConfig.default_auto_field">(atributo de casaDeCambiosIS2.simuladores.apps.SimuladoresConfig)</a>
-</li>
         <li><a href="transacciones.html#casaDeCambiosIS2.transacciones.apps.TransaccionesConfig.default_auto_field">(atributo de casaDeCambiosIS2.transacciones.apps.TransaccionesConfig)</a>
 </li>
         <li><a href="clientes.html#clientes.apps.ClientesConfig.default_auto_field">(atributo de clientes.apps.ClientesConfig)</a>
@@ -1054,6 +1033,8 @@
         <li><a href="operaciones.html#operaciones.apps.OperacionesConfig.default_auto_field">(atributo de operaciones.apps.OperacionesConfig)</a>
 </li>
         <li><a href="payments.html#payments.apps.PaymentsConfig.default_auto_field">(atributo de payments.apps.PaymentsConfig)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.apps.SimuladoresConfig.default_auto_field">(atributo de simuladores.apps.SimuladoresConfig)</a>
 </li>
         <li><a href="ted.html#ted.apps.TedConfig.default_auto_field">(atributo de ted.apps.TedConfig)</a>
 </li>
@@ -1087,7 +1068,11 @@
       <li><a href="monedas.html#monedas.models.Moneda.denominaciones_ted">denominaciones_ted (atributo de monedas.models.Moneda)</a>
 </li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.models.TipoMedioAcreditacion.descripcion">descripcion (atributo de medios_acreditacion.models.TipoMedioAcreditacion)</a>
+
+      <ul>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.descripcion">(atributo de simuladores.models.PagoSimulado)</a>
 </li>
+      </ul></li>
       <li><a href="core.html#casaDeCambiosIS2.core.views.detalle_transaccion">detalle_transaccion() (en el módulo casaDeCambiosIS2.core.views)</a>
 </li>
       <li><a href="ted.html#ted.models.TedTerminal.direccion">direccion (atributo de ted.models.TedTerminal)</a>
@@ -1112,14 +1097,14 @@
 </li>
       <li><a href="monedas.html#monedas.views.eliminar_moneda">eliminar_moneda() (en el módulo monedas.views)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones.EMAIL">EMAIL (atributo de medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones)</a>
 
       <ul>
         <li><a href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato.EMAIL">(atributo de medios_acreditacion.models.CampoMedioAcreditacion.TipoDato)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="usuarios.html#usuarios.models.CustomUser.email">email (atributo de usuarios.models.CustomUser)</a>
 </li>
       <li><a href="notificaciones.html#casaDeCambiosIS2.notificaciones.emails.enviar_email_cambio_tasa">enviar_email_cambio_tasa() (en el módulo casaDeCambiosIS2.notificaciones.emails)</a>
@@ -1127,6 +1112,10 @@
       <li><a href="clientes.html#clientes.views.es_admin">es_admin() (en el módulo clientes.views)</a>
 </li>
       <li><a href="clientes.html#clientes.models.Cliente.esta_activo">esta_activo() (método de clientes.models.Cliente)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.estado">estado (atributo de simuladores.models.PagoSimulado)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.ESTADO_CHOICES">ESTADO_CHOICES (atributo de simuladores.models.PagoSimulado)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1142,6 +1131,8 @@
         <li><a href="monedas.html#monedas.models.Moneda.fecha_creacion">(atributo de monedas.models.Moneda)</a>
 </li>
         <li><a href="operaciones.html#operaciones.models.Tauser.fecha_creacion">(atributo de operaciones.models.Tauser)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.fecha_creacion">(atributo de simuladores.models.PagoSimulado)</a>
 </li>
       </ul></li>
       <li><a href="clientes.html#clientes.models.Cliente.fecha_registro">fecha_registro (atributo de clientes.models.Cliente)</a>
@@ -1219,8 +1210,12 @@
 </li>
         <li><a href="medios_acreditacion.html#medios_acreditacion.views.TipoMedioUpdateView.get_context_data">(método de medios_acreditacion.views.TipoMedioUpdateView)</a>
 </li>
+        <li><a href="simuladores.html#simuladores.views.PaginaPagoSimuladaView.get_context_data">(método de simuladores.views.PaginaPagoSimuladaView)</a>
+</li>
       </ul></li>
       <li><a href="ted.html#ted.services.get_cotizacion_vigente">get_cotizacion_vigente() (en el módulo ted.services)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.get_estado_display">get_estado_display() (método de simuladores.models.PagoSimulado)</a>
 </li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.views.MedioClienteCreateView.get_form_kwargs">get_form_kwargs() (método de medios_acreditacion.views.MedioClienteCreateView)</a>
 
@@ -1259,13 +1254,15 @@
 </li>
         <li><a href="operaciones.html#operaciones.models.Tauser.get_next_by_fecha_creacion">(método de operaciones.models.Tauser)</a>
 </li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.get_next_by_fecha_creacion">(método de simuladores.models.PagoSimulado)</a>
+</li>
       </ul></li>
       <li><a href="clientes.html#clientes.models.Cliente.get_next_by_fecha_registro">get_next_by_fecha_registro() (método de clientes.models.Cliente)</a>
 </li>
-      <li><a href="clientes.html#clientes.models.Cliente.get_next_by_ultima_modificacion">get_next_by_ultima_modificacion() (método de clientes.models.Cliente)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="clientes.html#clientes.models.Cliente.get_next_by_ultima_modificacion">get_next_by_ultima_modificacion() (método de clientes.models.Cliente)</a>
+</li>
       <li><a href="monedas.html#monedas.models.TedInventario.get_next_by_updated_at">get_next_by_updated_at() (método de monedas.models.TedInventario)</a>
 
       <ul>
@@ -1302,6 +1299,8 @@
         <li><a href="monedas.html#monedas.models.Moneda.get_previous_by_fecha_creacion">(método de monedas.models.Moneda)</a>
 </li>
         <li><a href="operaciones.html#operaciones.models.Tauser.get_previous_by_fecha_creacion">(método de operaciones.models.Tauser)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.get_previous_by_fecha_creacion">(método de simuladores.models.PagoSimulado)</a>
 </li>
       </ul></li>
       <li><a href="clientes.html#clientes.models.Cliente.get_previous_by_fecha_registro">get_previous_by_fecha_registro() (método de clientes.models.Cliente)</a>
@@ -1416,6 +1415,8 @@
         <li><a href="operaciones.html#operaciones.models.CanalFinanciero.id">(atributo de operaciones.models.CanalFinanciero)</a>
 </li>
         <li><a href="operaciones.html#operaciones.models.Tauser.id">(atributo de operaciones.models.Tauser)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.id">(atributo de simuladores.models.PagoSimulado)</a>
 </li>
         <li><a href="ted.html#ted.models.TedPerms.id">(atributo de ted.models.TedPerms)</a>
 </li>
@@ -1868,12 +1869,6 @@
 </li>
         <li><a href="roles.html#module-casaDeCambiosIS2.roles.tests">casaDeCambiosIS2.roles.tests</a>
 </li>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores">casaDeCambiosIS2.simuladores</a>
-</li>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores.admin">casaDeCambiosIS2.simuladores.admin</a>
-</li>
-        <li><a href="simuladores.html#module-casaDeCambiosIS2.simuladores.apps">casaDeCambiosIS2.simuladores.apps</a>
-</li>
         <li><a href="transacciones.html#module-casaDeCambiosIS2.transacciones">casaDeCambiosIS2.transacciones</a>
 </li>
         <li><a href="transacciones.html#module-casaDeCambiosIS2.transacciones.admin">casaDeCambiosIS2.transacciones.admin</a>
@@ -2048,6 +2043,18 @@
 </li>
         <li><a href="payments.html#module-payments.views">payments.views</a>
 </li>
+        <li><a href="simuladores.html#module-simuladores">simuladores</a>
+</li>
+        <li><a href="simuladores.html#module-simuladores.admin">simuladores.admin</a>
+</li>
+        <li><a href="simuladores.html#module-simuladores.apps">simuladores.apps</a>
+</li>
+        <li><a href="simuladores.html#module-simuladores.models">simuladores.models</a>
+</li>
+        <li><a href="simuladores.html#module-simuladores.urls">simuladores.urls</a>
+</li>
+        <li><a href="simuladores.html#module-simuladores.views">simuladores.views</a>
+</li>
         <li><a href="ted.html#module-ted">ted</a>
 </li>
         <li><a href="ted.html#module-ted.apps">ted.apps</a>
@@ -2089,6 +2096,8 @@
 
       <ul>
         <li><a href="monedas.html#monedas.models.TedDenominacion.moneda">(atributo de monedas.models.TedDenominacion)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.moneda">(atributo de simuladores.models.PagoSimulado)</a>
 </li>
       </ul></li>
       <li><a href="monedas.html#monedas.models.Moneda">Moneda (clase en monedas.models)</a>
@@ -2177,6 +2186,8 @@
 </li>
       <li><a href="monedas.html#monedas.apps.MonedasConfig">MonedasConfig (clase en monedas.apps)</a>
 </li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.monto">monto (atributo de simuladores.models.PagoSimulado)</a>
+</li>
       <li><a href="configuracion.html#configuracion.models.TransactionLimit.monto_diario">monto_diario (atributo de configuracion.models.TransactionLimit)</a>
 </li>
       <li><a href="configuracion.html#configuracion.models.TransactionLimit.monto_mensual">monto_mensual (atributo de configuracion.models.TransactionLimit)</a>
@@ -2216,8 +2227,6 @@
 </li>
         <li><a href="roles.html#casaDeCambiosIS2.roles.apps.RolesConfig.name">(atributo de casaDeCambiosIS2.roles.apps.RolesConfig)</a>
 </li>
-        <li><a href="simuladores.html#casaDeCambiosIS2.simuladores.apps.SimuladoresConfig.name">(atributo de casaDeCambiosIS2.simuladores.apps.SimuladoresConfig)</a>
-</li>
         <li><a href="transacciones.html#casaDeCambiosIS2.transacciones.apps.TransaccionesConfig.name">(atributo de casaDeCambiosIS2.transacciones.apps.TransaccionesConfig)</a>
 </li>
         <li><a href="clientes.html#clientes.apps.ClientesConfig.name">(atributo de clientes.apps.ClientesConfig)</a>
@@ -2237,6 +2246,8 @@
         <li><a href="operaciones.html#operaciones.apps.OperacionesConfig.name">(atributo de operaciones.apps.OperacionesConfig)</a>
 </li>
         <li><a href="payments.html#payments.apps.PaymentsConfig.name">(atributo de payments.apps.PaymentsConfig)</a>
+</li>
+        <li><a href="simuladores.html#simuladores.apps.SimuladoresConfig.name">(atributo de simuladores.apps.SimuladoresConfig)</a>
 </li>
         <li><a href="ted.html#ted.apps.TedConfig.name">(atributo de ted.apps.TedConfig)</a>
 </li>
@@ -2300,6 +2311,8 @@
 </li>
         <li><a href="operaciones.html#operaciones.models.Tauser.objects">(atributo de operaciones.models.Tauser)</a>
 </li>
+        <li><a href="simuladores.html#simuladores.models.PagoSimulado.objects">(atributo de simuladores.models.PagoSimulado)</a>
+</li>
         <li><a href="ted.html#ted.models.TedPerms.objects">(atributo de ted.models.TedPerms)</a>
 </li>
         <li><a href="ted.html#ted.models.TedTerminal.objects">(atributo de ted.models.TedTerminal)</a>
@@ -2313,10 +2326,10 @@
 </li>
       <li><a href="cotizaciones.html#cotizaciones.views.obtener_cotizacion_api">obtener_cotizacion_api() (en el módulo cotizaciones.views)</a>
 </li>
-      <li><a href="clientes.html#clientes.models.Cliente.obtener_limite_compra">obtener_limite_compra() (método de clientes.models.Cliente)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="clientes.html#clientes.models.Cliente.obtener_limite_compra">obtener_limite_compra() (método de clientes.models.Cliente)</a>
+</li>
       <li><a href="clientes.html#clientes.models.Cliente.obtener_limite_global">obtener_limite_global (clientes.models.Cliente propiedad)</a>
 </li>
       <li><a href="operaciones.html#operaciones.views.obtener_tasa_de_cambio_actual">obtener_tasa_de_cambio_actual() (en el módulo operaciones.views)</a>
@@ -2386,6 +2399,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="simuladores.html#simuladores.views.PaginaPagoSimuladaView">PaginaPagoSimuladaView (clase en simuladores.views)</a>
+</li>
       <li><a href="clientes.html#clientes.views.ClienteListView.paginate_by">paginate_by (atributo de clientes.views.ClienteListView)</a>
 </li>
       <li>
@@ -2425,6 +2440,12 @@
       </ul></li>
       <li><a href="pagos.html#casaDeCambiosIS2.pagos.apps.PagosConfig">PagosConfig (clase en casaDeCambiosIS2.pagos.apps)</a>
 </li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado">PagoSimulado (clase en simuladores.models)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.DoesNotExist">PagoSimulado.DoesNotExist</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.MultipleObjectsReturned">PagoSimulado.MultipleObjectsReturned</a>
+</li>
       <li><a href="pagos.tests.html#pagos.tests.test_views.PagosViewsTests">PagosViewsTests (clase en pagos.tests.test_views)</a>
 </li>
       <li><a href="ted.html#ted.views.panel">panel() (en el módulo ted.views)</a>
@@ -2447,6 +2468,8 @@
         <li><a href="payments.html#module-payments.admin">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     payments.apps
 
@@ -2454,8 +2477,6 @@
         <li><a href="payments.html#module-payments.apps">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     payments.models
 
@@ -2506,7 +2527,11 @@
 </li>
       </ul></li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.views.MedioClientePredeterminarView.post">post() (método de medios_acreditacion.views.MedioClientePredeterminarView)</a>
+
+      <ul>
+        <li><a href="simuladores.html#simuladores.views.ConfirmarPagoSimuladoView.post">(método de simuladores.views.ConfirmarPagoSimuladoView)</a>
 </li>
+      </ul></li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.models.MedioAcreditacionCliente.predeterminado">predeterminado (atributo de medios_acreditacion.models.MedioAcreditacionCliente)</a>
 </li>
       <li><a href="usuarios.html#usuarios.models.CustomUser.preferencias_notificacion">preferencias_notificacion (atributo de usuarios.models.CustomUser)</a>
@@ -2531,16 +2556,18 @@
 </li>
       <li><a href="usuarios.html#usuarios.views.reenviar_codigo">reenviar_codigo() (en el módulo usuarios.views)</a>
 </li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.referencia_comercio">referencia_comercio (atributo de simuladores.models.PagoSimulado)</a>
+</li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.models.CampoMedioAcreditacion.regex">regex (atributo de medios_acreditacion.models.CampoMedioAcreditacion)</a>
 </li>
       <li><a href="usuarios.html#usuarios.views.register">register() (en el módulo usuarios.views)</a>
 </li>
       <li><a href="usuarios.html#usuarios.forms.RegistroForm">RegistroForm (clase en usuarios.forms)</a>
 </li>
-      <li><a href="usuarios.html#usuarios.forms.RegistroForm.Meta">RegistroForm.Meta (clase en usuarios.forms)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="usuarios.html#usuarios.forms.RegistroForm.Meta">RegistroForm.Meta (clase en usuarios.forms)</a>
+</li>
       <li><a href="usuarios.html#usuarios.models.CustomUser.REQUIRED_FIELDS">REQUIRED_FIELDS (atributo de usuarios.models.CustomUser)</a>
 </li>
       <li><a href="medios_acreditacion.html#medios_acreditacion.views.AccessMediosAcreditacionMixin.required_permission">required_permission (atributo de medios_acreditacion.views.AccessMediosAcreditacionMixin)</a>
@@ -2605,8 +2632,6 @@
         <li><a href="configuracion.tests.html#configuracion.tests.test_forms.TransactionLimitFormTests.setUpTestData">(método de clase de configuracion.tests.test_forms.TransactionLimitFormTests)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="monedas.html#monedas.models.Moneda.simbolo">simbolo (atributo de monedas.models.Moneda)</a>
 </li>
       <li><a href="core.html#casaDeCambiosIS2.core.forms.SimulacionForm">SimulacionForm (clase en casaDeCambiosIS2.core.forms)</a>
@@ -2615,7 +2640,51 @@
 </li>
       <li><a href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest">SimulacionLogicTest (clase en casaDeCambiosIS2.core.tests)</a>
 </li>
-      <li><a href="simuladores.html#casaDeCambiosIS2.simuladores.apps.SimuladoresConfig">SimuladoresConfig (clase en casaDeCambiosIS2.simuladores.apps)</a>
+      <li>
+    simuladores
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    simuladores.admin
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores.admin">module</a>
+</li>
+      </ul></li>
+      <li>
+    simuladores.apps
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores.apps">module</a>
+</li>
+      </ul></li>
+      <li>
+    simuladores.models
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores.models">module</a>
+</li>
+      </ul></li>
+      <li>
+    simuladores.urls
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores.urls">module</a>
+</li>
+      </ul></li>
+      <li>
+    simuladores.views
+
+      <ul>
+        <li><a href="simuladores.html#module-simuladores.views">module</a>
+</li>
+      </ul></li>
+      <li><a href="simuladores.html#simuladores.apps.SimuladoresConfig">SimuladoresConfig (clase en simuladores.apps)</a>
 </li>
       <li><a href="core.html#casaDeCambiosIS2.core.views.site_rates">site_rates() (en el módulo casaDeCambiosIS2.core.views)</a>
 </li>
@@ -2773,6 +2842,8 @@
 </li>
         <li><a href="medios_acreditacion.html#medios_acreditacion.views.TipoMedioUpdateView.template_name">(atributo de medios_acreditacion.views.TipoMedioUpdateView)</a>
 </li>
+        <li><a href="simuladores.html#simuladores.views.PaginaPagoSimuladaView.template_name">(atributo de simuladores.views.PaginaPagoSimuladaView)</a>
+</li>
       </ul></li>
       <li><a href="pagos.tests.html#pagos.tests.test_views.PagosViewsTests.test_agregar_tipo_medio_pago">test_agregar_tipo_medio_pago() (método de pagos.tests.test_views.PagosViewsTests)</a>
 </li>
@@ -2822,10 +2893,10 @@
 </li>
       <li><a href="pagos.tests.html#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_eliminar_url_resuelve">test_eliminar_url_resuelve() (método de pagos.tests.test_urls.TipoMedioPagoURLsTests)</a>
 </li>
-      <li><a href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_error_moneda_invalida">test_error_moneda_invalida() (método de casaDeCambiosIS2.core.tests.SimulacionLogicTest)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_error_moneda_invalida">test_error_moneda_invalida() (método de casaDeCambiosIS2.core.tests.SimulacionLogicTest)</a>
+</li>
       <li><a href="core.html#casaDeCambiosIS2.core.tests.SimulacionLogicTest.test_error_transaccion_no_pyg">test_error_transaccion_no_pyg() (método de casaDeCambiosIS2.core.tests.SimulacionLogicTest)</a>
 </li>
       <li><a href="configuracion.tests.html#configuracion.tests.test_forms.TransactionLimitFormTests.test_form_invalido">test_form_invalido() (método de configuracion.tests.test_forms.TransactionLimitFormTests)</a>
@@ -3006,6 +3077,10 @@
         <li><a href="ted.html#ted.models.TedTerminal.updated_at">(atributo de ted.models.TedTerminal)</a>
 </li>
       </ul></li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.url_confirmacion">url_confirmacion (atributo de simuladores.models.PagoSimulado)</a>
+</li>
+      <li><a href="simuladores.html#simuladores.models.PagoSimulado.url_retorno">url_retorno (atributo de simuladores.models.PagoSimulado)</a>
+</li>
       <li><a href="configuracion.html#configuracion.urls.urlpatterns">urlpatterns (en el módulo configuracion.urls)</a>
 
       <ul>
