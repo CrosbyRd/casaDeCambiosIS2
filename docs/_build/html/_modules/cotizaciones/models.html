@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -103,7 +105,39 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_venta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># La casa de cambios vende la divisa al cliente, la comisión se suma al valor base.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_venta</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_venta</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_venta</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_venta</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Guardar los valores originales para comparar en save()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_valor_venta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_venta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_comision_venta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_venta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_valor_compra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">valor_compra</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__original_comision_compra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comision_compra</span>
+
+<div class="viewcode-block" id="Cotizacion.save">
+<a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.forms.Cotizacion.save">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Lógica para detectar cambio y enviar señal</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="c1"># Guardar primero</span>
+        
+        <span class="c1"># Un cambio en la venta ocurre si el valor base O la comisión cambian.</span>
+        <span class="n">venta_cambio</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valor_venta</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__original_valor_venta</span> <span class="ow">or</span> 
+                        <span class="bp">self</span><span class="o">.</span><span class="n">comision_venta</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__original_comision_venta</span><span class="p">)</span>
+        
+        <span class="c1"># Un cambio en la compra ocurre si el valor base O la comisión cambian.</span>
+        <span class="n">compra_cambio</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valor_compra</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__original_valor_compra</span> <span class="ow">or</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">comision_compra</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__original_comision_compra</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">venta_cambio</span> <span class="ow">or</span> <span class="n">compra_cambio</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">cotizacion_actualizada</span>
+            <span class="n">cotizacion_actualizada</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span>
+                <span class="n">instance</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">venta_cambio</span><span class="o">=</span><span class="n">venta_cambio</span><span class="p">,</span>
+                <span class="n">compra_cambio</span><span class="o">=</span><span class="n">compra_cambio</span>
+            <span class="p">)</span></div>
+</div>
 
 </pre></div>
 

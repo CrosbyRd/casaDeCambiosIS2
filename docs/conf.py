@@ -5,8 +5,9 @@
 import os
 import sys
 import django
-sys.path.insert(0, os.path.abspath('..'))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'CasaDeCambioIS2.settings'
+sys.path.insert(0, os.path.abspath('../../')) # Directorio raíz del proyecto
+sys.path.insert(0, os.path.abspath('../'))    # Directorio casaDeCambiosIS2
+os.environ['DJANGO_SETTINGS_MODULE'] = 'casaDeCambiosIS2.CasaDeCambioIS2.settings'
 django.setup()
 
 # -- Project information -----------------------------------------------------

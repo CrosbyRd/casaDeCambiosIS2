@@ -1,0 +1,200 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>casaDeCambiosIS2.roles.management.commands.seed_roles &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simuladores.html">paquete simuladores</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">casaDeCambiosIS2.roles.management.commands.seed_roles</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para casaDeCambiosIS2.roles.management.commands.seed_roles</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.contenttypes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContentType</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">roles.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">configuracion.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionLimit</span>  <span class="c1"># para CRUD de límites</span>
+
+<div class="viewcode-block" id="Command">
+<a class="viewcode-back" href="../../../../../roles.html#casaDeCambiosIS2.roles.management.commands.seed_roles.Command">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crea/actualiza roles y permisos.&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">codenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">codenames</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">codename__in</span><span class="o">=</span><span class="n">codenames</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
+            <span class="n">ct</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_for_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">qs</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="n">ct</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">only</span><span class="p">:</span>
+                <span class="n">qs</span> <span class="o">=</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">codename__in</span><span class="o">=</span><span class="n">only</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">qs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Command.handle">
+<a class="viewcode-back" href="../../../../../roles.html#casaDeCambiosIS2.roles.management.commands.seed_roles.Command.handle">[documentos]</a>
+    <span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="s2">&quot;Configurando roles…&quot;</span><span class="p">))</span>
+
+        <span class="c1"># === ADMINISTRADOR ===</span>
+        <span class="n">admin</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Administrador&quot;</span><span class="p">,</span>
+                                              <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Acceso total.&quot;</span><span class="p">})</span>
+
+        <span class="n">admin_custom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_perms</span><span class="p">(</span><span class="n">codenames</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;access_admin_dashboard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_cotizaciones&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_monedas_section&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_roles_panel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;delete_roles&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_user_client_management&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_clientes_panel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_medios_acreditacion&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_pagos_section&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;puede_operar_terminal&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;puede_gestionar_inventario&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_config_panel&quot;</span><span class="p">,</span>  <span class="c1"># permiso custom en configuracion</span>
+        <span class="p">])</span>
+        <span class="n">admin_clientes_crud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_perms</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;add_cliente&quot;</span><span class="p">,</span><span class="s2">&quot;change_cliente&quot;</span><span class="p">,</span><span class="s2">&quot;delete_cliente&quot;</span><span class="p">,</span><span class="s2">&quot;view_cliente&quot;</span>
+        <span class="p">])</span>
+        <span class="n">admin_limits_crud</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_perms</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">TransactionLimit</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;add_transactionlimit&quot;</span><span class="p">,</span><span class="s2">&quot;change_transactionlimit&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;delete_transactionlimit&quot;</span><span class="p">,</span><span class="s2">&quot;view_transactionlimit&quot;</span>
+        <span class="p">])</span>
+
+        <span class="n">admin</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">admin_custom</span> <span class="o">+</span> <span class="n">admin_clientes_crud</span> <span class="o">+</span> <span class="n">admin_limits_crud</span><span class="p">)</span>
+
+        <span class="c1"># === CLIENTE ===</span>
+        <span class="n">cliente</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cliente&quot;</span><span class="p">,</span>
+                                                <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Usuario final cliente.&quot;</span><span class="p">})</span>
+
+        <span class="c1"># PRINCIPIO DE MÍNIMO PRIVILEGIO:</span>
+        <span class="c1"># Solo ver su entidad Cliente si tu UI lo necesita (view_cliente),</span>
+        <span class="c1"># NO add/change/delete, NO access_clientes_panel, NO access_config_panel.</span>
+        <span class="n">cliente_perms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_perms</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;view_cliente&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Si tu flujo de transacciones exige un permiso para habilitar la validación/confirmación,</span>
+        <span class="c1"># agrégalo explícitamente acá (por ejemplo, &quot;access_pagos_section&quot; o uno propio de tu app de pagos).</span>
+        <span class="c1"># EJEMPLO (descomentar/ajustar si corresponde):</span>
+        <span class="c1"># cliente_perms += self._get_perms(codenames=[&quot;access_pagos_section&quot;])  # ← AJUSTAR si tu flujo lo exige</span>
+
+        <span class="n">cliente</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cliente_perms</span><span class="p">)</span>
+
+        <span class="c1"># === ANALISTA ===</span>
+        <span class="n">analista</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Analista&quot;</span><span class="p">,</span>
+                                                <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Analista cambiario.&quot;</span><span class="p">})</span>
+        <span class="n">analista_perms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_perms</span><span class="p">(</span><span class="n">codenames</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;access_analista_dashboard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_exchange_rates&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;view_profits_module&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;access_cotizaciones&quot;</span><span class="p">,</span>
+        <span class="p">])</span>
+        <span class="c1"># Analista NO debe tocar clientes ni configuración</span>
+        <span class="n">analista</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">analista_perms</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="s2">&quot;Roles configurados.&quot;</span><span class="p">))</span>
+        
+        <span class="n">cliente_dev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cliente_Dev_OTP_Bypass&quot;</span><span class="p">,</span>
+                    <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Rol especial para clientes en desarrollo que salta la verificación OTP.&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">cliente_dev</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># No necesita permisos extra</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

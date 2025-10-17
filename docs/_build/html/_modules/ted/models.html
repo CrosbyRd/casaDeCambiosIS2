@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -70,7 +72,21 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para ted.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Modelos de la app TED.</span>
+<span class="sd">======================</span>
+
+<span class="sd">.. module:: ted.models</span>
+<span class="sd">   :synopsis: Modelos propios del módulo TED.</span>
+
+<span class="sd">Incluye:</span>
+<span class="sd">- :class:`TedPerms`: contenedor mínimo de permisos.</span>
+<span class="sd">- :class:`TedTerminal`: terminal físico (serial y ubicación) para persistir</span>
+<span class="sd">  la dirección mostrada en el inventario y permitir expansión futura a múltiples</span>
+<span class="sd">  terminales.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+
 
 <div class="viewcode-block" id="TedPerms">
 <a class="viewcode-back" href="../../ted.html#ted.models.TedPerms">[documentos]</a>
@@ -86,6 +102,34 @@
             <span class="p">(</span><span class="s2">&quot;puede_operar_terminal&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede operar el terminal TED&quot;</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;puede_gestionar_inventario&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede gestionar inventario TED&quot;</span><span class="p">),</span>
         <span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="TedTerminal">
+<a class="viewcode-back" href="../../ted.html#ted.models.TedTerminal">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TedTerminal</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa una terminal física TED.</span>
+
+<span class="sd">    :param serial: identificador único del equipo (ej. ``TED-AGSL-0001``).</span>
+<span class="sd">    :param direccion: texto libre con la ubicación del equipo.</span>
+<span class="sd">    :param created_at: fecha de creación.</span>
+<span class="sd">    :param updated_at: última actualización.</span>
+
+<span class="sd">    Este modelo permite persistir la ubicación que se muestra en el</span>
+<span class="sd">    inventario y preparar el sistema para múltiples terminales en el futuro.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">serial</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s2">&quot;Serial&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">direccion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="s2">&quot;Ubicación&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Terminal TED&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Terminales TED&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">serial</span></div>
 
 </pre></div>
 

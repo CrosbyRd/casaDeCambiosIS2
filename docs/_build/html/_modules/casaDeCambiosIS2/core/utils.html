@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>casaDeCambiosIS2.core.utils &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simuladores.html">paquete simuladores</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">casaDeCambiosIS2.core.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para casaDeCambiosIS2.core.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">now</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">configuracion.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionLimit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcular_simulacion</span>
+
+<div class="viewcode-block" id="validar_limite_transaccion">
+<a class="viewcode-back" href="../../../core.html#casaDeCambiosIS2.core.utils.validar_limite_transaccion">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validar_limite_transaccion</span><span class="p">(</span><span class="n">cliente</span><span class="p">,</span> <span class="n">monto</span><span class="p">,</span> <span class="n">moneda_origen</span><span class="p">,</span> <span class="n">moneda_destino</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Valida que el cliente no exceda su límite diario en moneda base (PYG).</span>
+<span class="sd">    Convierte todas las transacciones previas y la actual a PYG.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Obtener la moneda base (PYG)</span>
+    <span class="n">moneda_base</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">codigo</span><span class="o">=</span><span class="s1">&#39;PYG&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Obtener el límite global para la moneda base</span>
+    <span class="n">limite_cfg</span> <span class="o">=</span> <span class="n">TransactionLimit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">moneda</span><span class="o">=</span><span class="n">moneda_base</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">limite_cfg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;No está configurado un límite para la moneda base </span><span class="si">{</span><span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">.&quot;</span>
+    
+    <span class="n">limite_diario</span> <span class="o">=</span> <span class="n">limite_cfg</span><span class="o">.</span><span class="n">monto_diario</span>
+
+    <span class="c1"># Convertir el monto actual a moneda base (PYG)</span>
+    <span class="k">if</span> <span class="n">moneda_origen</span> <span class="o">!=</span> <span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="p">:</span>
+        <span class="n">resultado</span> <span class="o">=</span> <span class="n">calcular_simulacion</span><span class="p">(</span><span class="n">monto</span><span class="p">,</span> <span class="n">moneda_origen</span><span class="p">,</span> <span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span>
+        <span class="n">monto_en_base</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;monto_recibido&#39;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">monto_en_base</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">monto</span><span class="p">)</span>
+
+    <span class="n">hoy</span> <span class="o">=</span> <span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+
+    <span class="c1"># Obtener todas las transacciones del cliente realizadas hoy</span>
+    <span class="n">transacciones_hoy</span> <span class="o">=</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+        <span class="n">cliente</span><span class="o">=</span><span class="n">cliente</span><span class="p">,</span> <span class="c1"># &lt;--- Debe usar la variable cliente</span>
+        <span class="n">fecha_creacion__date</span><span class="o">=</span><span class="n">hoy</span>
+    <span class="p">)</span>
+    <span class="n">total_hoy</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># Sumar las transacciones previas del cliente para el día de hoy</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">transacciones_hoy</span><span class="p">:</span>
+        <span class="c1"># Convertir cada transacción a moneda base (PYG)</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span> <span class="o">!=</span> <span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="p">:</span>
+            <span class="n">sim</span> <span class="o">=</span> <span class="n">calcular_simulacion</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">monto_origen</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span><span class="p">,</span> <span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">sim</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span>
+            <span class="n">total_hoy</span> <span class="o">+=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">sim</span><span class="p">[</span><span class="s1">&#39;monto_recibido&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">total_hoy</span> <span class="o">+=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">monto_origen</span><span class="p">)</span>
+
+    <span class="c1"># Sumar el monto actual al total de transacciones del día</span>
+    <span class="k">if</span> <span class="n">total_hoy</span> <span class="o">+</span> <span class="n">monto_en_base</span> <span class="o">&gt;</span> <span class="n">limite_diario</span><span class="p">:</span>
+        <span class="n">disponible</span> <span class="o">=</span> <span class="n">limite_diario</span> <span class="o">-</span> <span class="n">total_hoy</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Límite diario excedido. Disponible: </span><span class="si">{</span><span class="n">disponible</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">moneda_base</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Si el límite no se excede, se permite la transacción.</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

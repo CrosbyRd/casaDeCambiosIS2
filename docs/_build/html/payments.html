@@ -77,9 +77,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-payments.urls">módulo payments.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-payments.views">módulo payments.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.checkout_preview_view"><code class="docutils literal notranslate"><span class="pre">checkout_preview_view()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#payments.views.create_payment_intent_view"><code class="docutils literal notranslate"><span class="pre">create_payment_intent_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.dynamic_payment_page_view"><code class="docutils literal notranslate"><span class="pre">dynamic_payment_page_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.payment_success_view"><code class="docutils literal notranslate"><span class="pre">payment_success_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payments.views.stripe_payment_page"><code class="docutils literal notranslate"><span class="pre">stripe_payment_page()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
@@ -89,6 +89,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -173,12 +175,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="payments.views.create_payment_intent_view">
-<span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">create_payment_intent_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#create_payment_intent_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.create_payment_intent_view" title="Link to this definition"></a></dt>
-<dd><p>Crea un PaymentIntent y devuelve el client_secret.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="payments.views.dynamic_payment_page_view">
 <span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">dynamic_payment_page_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#dynamic_payment_page_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.dynamic_payment_page_view" title="Link to this definition"></a></dt>
 <dd><p>Renderiza la página de pago con monto dinámico.</p>
@@ -188,6 +184,13 @@
 <dt class="sig sig-object py" id="payments.views.payment_success_view">
 <span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">payment_success_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#payment_success_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.payment_success_view" title="Link to this definition"></a></dt>
 <dd><p>Renderiza la página de éxito tras un pago.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payments.views.stripe_payment_page">
+<span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">stripe_payment_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#stripe_payment_page"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.stripe_payment_page" title="Link to this definition"></a></dt>
+<dd><p>Renderiza una página para que el cliente complete el pago con Stripe
+usando el client_secret.</p>
 </dd></dl>
 
 </section>

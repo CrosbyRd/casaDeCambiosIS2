@@ -1,63 +1,101 @@
 paquete pagos
 =============
 
-   pagos.tests
-
 Submódulos
 ----------
 
-módulo pagos.admin
-------------------
+módulo casaDeCambiosIS2.pagos.admin
+-----------------------------------
 
-.. automodule:: pagos.admin
+.. automodule:: casaDeCambiosIS2.pagos.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.apps
------------------
+módulo casaDeCambiosIS2.pagos.apps
+----------------------------------
 
-.. automodule:: pagos.apps
+.. automodule:: casaDeCambiosIS2.pagos.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.forms
-------------------
+módulo casaDeCambiosIS2.pagos.forms
+-----------------------------------
 
-.. automodule:: pagos.forms
+.. automodule:: casaDeCambiosIS2.pagos.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.models
--------------------
+módulo casaDeCambiosIS2.pagos.models
+------------------------------------
 
-.. automodule:: pagos.models
+.. automodule:: casaDeCambiosIS2.pagos.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.services
----------------------
+módulo casaDeCambiosIS2.pagos.services
+--------------------------------------
 
-.. automodule:: pagos.services
+.. automodule:: casaDeCambiosIS2.pagos.services
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.urls
------------------
+módulo casaDeCambiosIS2.pagos.urls
+----------------------------------
 
-.. automodule:: pagos.urls
+.. automodule:: casaDeCambiosIS2.pagos.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo pagos.views
-------------------
+módulo casaDeCambiosIS2.pagos.views
+-----------------------------------
 
-.. automodule:: pagos.views
+.. automodule:: casaDeCambiosIS2.pagos.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.pagos.gateways.base
+-------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.pagos.gateways.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.pagos.gateways.local_gateway
+----------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.pagos.gateways.local_gateway
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.pagos.gateways.simulador_gateway
+--------------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.pagos.gateways.simulador_gateway
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.pagos.gateways.stripe_gateway
+-----------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.pagos.gateways.stripe_gateway
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.pagos.integrations.router
+-------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.pagos.integrations.router
    :members:
    :undoc-members:
    :show-inheritance:
@@ -65,7 +103,7 @@ módulo pagos.views
 Contenido del módulo
 ---------------
 
-.. automodule:: pagos
+.. automodule:: casaDeCambiosIS2.pagos
    :members:
    :undoc-members:
    :show-inheritance:

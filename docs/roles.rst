@@ -5,58 +5,66 @@ paquete roles
 Submódulos
 ----------
 
-módulo roles.admin
-------------------
+módulo casaDeCambiosIS2.roles.admin
+-----------------------------------
 
-.. automodule:: roles.admin
+.. automodule:: casaDeCambiosIS2.roles.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.apps
------------------
+módulo casaDeCambiosIS2.roles.apps
+----------------------------------
 
-.. automodule:: roles.apps
+.. automodule:: casaDeCambiosIS2.roles.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.models
--------------------
+módulo casaDeCambiosIS2.roles.models
+------------------------------------
 
-.. automodule:: roles.models
+.. automodule:: casaDeCambiosIS2.roles.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.serializers
-------------------------
+módulo casaDeCambiosIS2.roles.serializers
+-----------------------------------------
 
-.. automodule:: roles.serializers
+.. automodule:: casaDeCambiosIS2.roles.serializers
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.tests
-------------------
+módulo casaDeCambiosIS2.roles.tests
+-----------------------------------
 
-.. automodule:: roles.tests
+.. automodule:: casaDeCambiosIS2.roles.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.urls
------------------
+módulo casaDeCambiosIS2.roles.urls
+----------------------------------
 
-.. automodule:: roles.urls
+.. automodule:: casaDeCambiosIS2.roles.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo roles.views
-------------------
+módulo casaDeCambiosIS2.roles.views
+-----------------------------------
 
-.. automodule:: roles.views
+.. automodule:: casaDeCambiosIS2.roles.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.roles.management.commands.seed_roles
+------------------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.roles.management.commands.seed_roles
    :members:
    :undoc-members:
    :show-inheritance:
@@ -64,7 +72,7 @@ módulo roles.views
 Contenido del módulo
 ---------------
 
-.. automodule:: roles
+.. automodule:: casaDeCambiosIS2.roles
    :members:
    :undoc-members:
    :show-inheritance:
