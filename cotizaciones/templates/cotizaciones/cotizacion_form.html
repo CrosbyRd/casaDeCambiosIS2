@@ -82,7 +82,7 @@
               </td>
               <td class="px-4 py-3 align-middle">
                 <div class="h-[48px] flex items-center">
-                  <span id="total_compra" class="font-bold">0.0000</span>
+                  <span id="total_compra" class="font-bold">0</span>
                   <span class="ml-1">PYG</span>
                 </div>
               </td>
@@ -116,7 +116,7 @@
               </td>
               <td class="px-4 py-3 align-middle">
                 <div class="h-[48px] flex items-center">
-                  <span id="total_venta" class="font-bold">0.0000</span>
+                  <span id="total_venta" class="font-bold">0</span>
                   <span class="ml-1">PYG</span>
                 </div>
               </td>
@@ -161,41 +161,93 @@
 </style>
 
 <script>
+  // === Mostrar y calcular SIEMPRE como enteros (visual) ===
+
+  function stripDecimalPart(s) {
+    if (s == null) return '';
+    s = String(s).trim();
+
+    // Normaliza coma decimal a punto, si la hubiera
+    s = s.replace(',', '.');
+
+        // Si el formato es número con o sin decimales, devuelve la parte entera
+    const m = s.match(/^(\d+)(?:\.\d+)?$/);
+    if (m) return m[1];
+
+    // Caso general: corta en el primer '.' o ',' y luego deja solo dígitos
+    const cut = s.split(/[.,]/)[0] || '';
+    return cut.replace(/\D/g, '');
+  }
+
+
+  function toInt(val){
+    const part = stripDecimalPart(val);
+    return part === '' ? 0 : parseInt(part, 10);
+  }
+
+
+
   function calcularTotales(){
-    const vC = parseFloat(document.getElementById('id_valor_compra')?.value) || 0;
-    const cC = parseFloat(document.getElementById('id_comision_compra')?.value) || 0;
-    const vV = parseFloat(document.getElementById('id_valor_venta')?.value) || 0;
-    const cV = parseFloat(document.getElementById('id_comision_venta')?.value) || 0;
+    const vC = toInt(document.getElementById('id_valor_compra')?.value);
+    const cC = toInt(document.getElementById('id_comision_compra')?.value);
+    const vV = toInt(document.getElementById('id_valor_venta')?.value);
+    const cV = toInt(document.getElementById('id_comision_venta')?.value);
 
     const tc = document.getElementById('total_compra');
     const tv = document.getElementById('total_venta');
 
-    if (tc) tc.textContent = (vC - cC).toFixed(4); // Corregido: la comisión de compra se resta
-    if (tv) tv.textContent = (vV + cV).toFixed(4);
+    if (tc) tc.textContent = (vC - cC) || 0;   // sin decimales
+    if (tv) tv.textContent = (vV + cV) || 0;   // sin decimales
+  }
+
+
+function enforceIntegerInput(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    // Fuerza entrada numérica sin decimales (visual)
+    el.setAttribute('inputmode','numeric');
+    el.setAttribute('pattern','\\d*');
+    el.setAttribute('step','1');
+
+    // 1) Limpieza inicial: corta decimales correctamente (no concatena ceros)
+    el.value = stripDecimalPart(el.value);
+
+    // 2) Evita que el usuario pueda tipear '.' o ',' (no queremos parte decimal)
+    el.addEventListener('beforeinput', (e) => {
+      if (e.data && /[.,]/.test(e.data)) e.preventDefault();
+    });
+
+    // 3) En cada cambio, mantené solo la parte entera
+    el.addEventListener('input', function(){
+      const v = stripDecimalPart(el.value);
+      if (el.value !== v) {
+        el.value = v;
+      }
+      calcularTotales(); // ya muestra totales como enteros
+    });
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    ['id_valor_compra','id_comision_compra','id_valor_venta','id_comision_venta']
-      .forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener('input',calcularTotales);
-      });
+    // Aplicar placeholders de ejemplo como enteros
+    const setPH=(id,ph)=>{ const el=document.getElementById(id); if(el) el.placeholder=ph; };
+    setPH('id_valor_compra','Ej: 8900');
+    setPH('id_comision_compra','Ej: 500');
+    setPH('id_valor_venta','Ej: 8000');
+    setPH('id_comision_venta','Ej: 860');
 
-    const setPH=(id,ph)=>{
-      const el=document.getElementById(id);
-      if(el && !el.placeholder) el.placeholder=ph;
-    };
-    setPH('id_valor_compra','Ej: 8900,0000');
-    setPH('id_comision_compra','Ej: 500,0000');
-    setPH('id_valor_venta','Ej: 8000,0000');
-    setPH('id_comision_venta','Ej: 860,0000');
-
+    // En edición: bloquear cambio de moneda destino
     const editing = "{{ form.instance.pk|yesno:'true,false' }}" === "true";
     if (editing) {
       const sel = document.getElementById('id_moneda_destino');
       if (sel) sel.setAttribute('disabled','disabled');
     }
 
+    // Forzar campos como enteros (visual)
+    ['id_valor_compra','id_comision_compra','id_valor_venta','id_comision_venta']
+      .forEach(enforceIntegerInput);
+
+    // Recalcular al iniciar
     calcularTotales();
   });
 </script>
