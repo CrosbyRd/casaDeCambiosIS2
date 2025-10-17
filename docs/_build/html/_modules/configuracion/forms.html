@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -70,12 +72,43 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para configuracion.forms</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Formularios de la aplicación **configuracion**.</span>
+
+<span class="sd">.. module:: configuracion.forms</span>
+<span class="sd">   :synopsis: Formularios para administrar los límites transaccionales.</span>
+
+<span class="sd">Incluye el formulario para crear y editar instancias de :class:`TransactionLimit`,</span>
+<span class="sd">con widgets personalizados y validaciones por defecto de Django.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionLimit</span>
 
 <div class="viewcode-block" id="TransactionLimitForm">
 <a class="viewcode-back" href="../../configuracion.html#configuracion.forms.TransactionLimitForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TransactionLimitForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario para crear o editar un límite de transacción.</span>
+
+<span class="sd">    </span>
+<span class="sd">    Formulario para crear o editar un límite de transacción.</span>
+
+<span class="sd">    **Campos incluidos**</span>
+<span class="sd">    -------------------</span>
+<span class="sd">    aplica_diario : BooleanField</span>
+<span class="sd">        Indica si aplica límite diario.</span>
+<span class="sd">    monto_diario : IntegerField  &lt;-- ACTUALIZAR ESTO (era DecimalField)</span>
+<span class="sd">        Monto máximo permitido diario, con placeholder &quot;Monto Diario PYG&quot;.</span>
+<span class="sd">    aplica_mensual : BooleanField</span>
+<span class="sd">        Indica si aplica límite mensual.</span>
+<span class="sd">    monto_mensual : IntegerField  &lt;-- ACTUALIZAR ESTO (era DecimalField)</span>
+<span class="sd">        Monto máximo permitido mensual, con placeholder &quot;Monto Mensual PYG&quot;.</span>
+
+<span class="sd">    **Widgets**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    - monto_diario: NumberInput con placeholder.</span>
+<span class="sd">    - monto_mensual: NumberInput con placeholder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TransactionLimitForm.Meta">
 <a class="viewcode-back" href="../../configuracion.html#configuracion.forms.TransactionLimitForm.Meta">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
@@ -86,6 +119,7 @@
             <span class="s1">&#39;monto_mensual&#39;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">NumberInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;placeholder&#39;</span><span class="p">:</span> <span class="s1">&#39;Monto Mensual PYG&#39;</span><span class="p">}),</span>
         <span class="p">}</span></div>
 </div>
+
 
 </pre></div>
 

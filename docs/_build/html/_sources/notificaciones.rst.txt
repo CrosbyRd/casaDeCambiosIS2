@@ -13,7 +13,7 @@ módulo casaDeCambiosIS2.notificaciones.apps
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.emails
---------------------------------------------
+---------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.emails
    :members:
@@ -29,7 +29,7 @@ módulo casaDeCambiosIS2.notificaciones.forms
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.models
----------------------------------------------
+----------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.models
    :members:
@@ -37,7 +37,7 @@ módulo casaDeCambiosIS2.notificaciones.models
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.signals
-----------------------------------------------
+-----------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.signals
    :members:
@@ -45,7 +45,7 @@ módulo casaDeCambiosIS2.notificaciones.signals
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.tasks
---------------------------------------------
+---------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.tasks
    :members:
@@ -53,7 +53,7 @@ módulo casaDeCambiosIS2.notificaciones.tasks
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.urls
--------------------------------------------
+--------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.urls
    :members:
@@ -61,7 +61,7 @@ módulo casaDeCambiosIS2.notificaciones.urls
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.utils
---------------------------------------------
+---------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.utils
    :members:
@@ -69,7 +69,7 @@ módulo casaDeCambiosIS2.notificaciones.utils
    :show-inheritance:
 
 módulo casaDeCambiosIS2.notificaciones.views
---------------------------------------------
+---------------------------------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones.views
    :members:
@@ -77,7 +77,7 @@ módulo casaDeCambiosIS2.notificaciones.views
    :show-inheritance:
 
 Contenido del módulo
----------------
+--------------------
 
 .. automodule:: casaDeCambiosIS2.notificaciones
    :members:
