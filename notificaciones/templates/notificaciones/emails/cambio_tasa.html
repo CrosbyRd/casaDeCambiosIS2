@@ -18,7 +18,7 @@
             Hola, {{ usuario.first_name|default:usuario.email }}
         </div>
         <div class="content">
-            <p>Te informamos que ha habido una actualización en una de las tasas de cambio que te podría interesar.</p>
+            
             <p><strong>{{ mensaje_notificacion }}</strong></p>
            
             <hr>
@@ -27,10 +27,10 @@
                 <li><strong>Moneda:</strong> {{ cotizacion.moneda_destino.nombre }} ({{ cotizacion.moneda_destino.codigo }})</li>
                 
                 {% if venta_cambio %}
-                <li><strong>Nuevo Precio de Venta (Final):</strong> {{ cotizacion.total_venta|floatformat:2 }} Gs.</li>
+                <li><strong>Nuevo Precio de Venta (Final):</strong> {{ cotizacion.total_venta|floatformat:0 }} Gs.</li>
                 {% endif %}
                 {% if compra_cambio %}
-                <li><strong>Nuevo Precio de Compra (Final):</strong> {{ cotizacion.total_compra|floatformat:2 }} Gs.</li>
+                <li><strong>Nuevo Precio de Compra (Final):</strong> {{ cotizacion.total_compra|floatformat:0 }} Gs.</li>
                 {% endif %}
             </ul>
         
