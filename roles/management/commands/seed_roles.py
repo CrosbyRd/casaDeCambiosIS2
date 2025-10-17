@@ -82,3 +82,9 @@ class Command(BaseCommand):
         analista.permissions.set(analista_perms)
 
         self.stdout.write(self.style.SUCCESS("Roles configurados."))
+        
+        cliente_dev, _ = Role.objects.get_or_create(
+                    name="Cliente_Dev_OTP_Bypass",
+                    defaults={"description": "Rol especial para clientes en desarrollo que salta la verificación OTP."}
+        )
+        cliente_dev.permissions.clear()  # No necesita permisos extra

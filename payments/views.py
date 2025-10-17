@@ -39,22 +39,27 @@ def payment_success_view(request):
     """
     return render(request, 'payment_success.html')
 
-@csrf_exempt
-def create_payment_intent_view(request):
+def stripe_payment_page(request):
     """
-    Crea un PaymentIntent y devuelve el client_secret.
+    Renderiza una página para que el cliente complete el pago con Stripe
+    usando el client_secret.
     """
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            amount_in_cents = data.get('amount')
-            email = data.get('email')
+    client_secret = request.GET.get('client_secret')
+    transaction_id = request.GET.get('transaction_id')
 
-            if amount_in_cents is None:
-                return JsonResponse({'error': 'No se proporcionó un monto.'}, status=400)
+    if not client_secret or not transaction_id:
+        # Manejar error si faltan parámetros
+        return render(request, 'payment_error.html', {'message': 'Faltan parámetros para el pago de Stripe.'})
 
-            payment_intent_data = create_payment_intent(amount_in_cents, customer_email=email)
-            return JsonResponse(payment_intent_data)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'JSON inválido.'}, status=400)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    context = {
+        'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
+        'client_secret': client_secret,
+        'transaction_id': transaction_id,
+    }
+    return render(request, 'payments/stripe_payment_page.html', context)
+
+# La vista create_payment_intent_view ya no es necesaria,
+# ya que la creación del PaymentIntent se maneja en StripeGateway.initiate_payment.
+# @csrf_exempt
+# def create_payment_intent_view(request):
+#     ...

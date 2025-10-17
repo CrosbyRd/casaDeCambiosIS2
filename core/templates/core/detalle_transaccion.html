@@ -7,7 +7,19 @@
 
 {% block content %}
 <main class="max-w-5xl mx-auto px-6 py-10">
-  {% include "partials/page_header.html" with title="Operación Iniciada" subtitle="Tu tasa ha sido reservada" %}
+  {% if transaccion.is_tasa_expirada %}
+    {% include "partials/page_header.html" with title="Operación Cancelada" subtitle="El tiempo para garantizar la tasa ha expirado." %}
+  {% elif transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' %}
+    {% if transaccion.modalidad_tasa == 'bloqueada' %}
+      {% include "partials/page_header.html" with title="Operación con Tasa Reservada" subtitle="Tu tasa de cambio está garantizada por un tiempo limitado." %}
+    {% elif transaccion.modalidad_tasa == 'flotante' %}
+      {% include "partials/page_header.html" with title="Operación con Tasa de Mercado" subtitle="La tasa final se definirá al momento del pago." %}
+    {% else %}
+      {% include "partials/page_header.html" with title="Detalle de Operación" %}
+    {% endif %}
+  {% else %}
+    {% include "partials/page_header.html" with title="Detalle de Operación" subtitle=transaccion.get_estado_display_dinamico %}
+  {% endif %}
   {% include "partials/messages.html" %}
 
   <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
@@ -58,82 +70,89 @@
         </div>
       </div>
 
-      <div class="bg-[var(--brand-soft)] border border-[var(--brand)] p-4 rounded-lg mb-6">
-        {% if transaccion.is_tasa_expirada %}
-          <h3 class="text-xl font-bold text-red-600 mb-2">Operación Cancelada</h3>
-          <p class="text-[var(--ink)]">
-            El tiempo para garantizar tu tasa de cambio ha expirado. Esta operación ha sido cancelada automáticamente.
-          </p>
-          <p class="text-[var(--ink)] mt-2">
-            Si aún deseas realizar la operación, por favor, inicia una nueva desde la calculadora para obtener una tasa actualizada.
-          </p>
-        {% elif transaccion.modalidad_tasa == 'bloqueada' %}
-          <h3 class="text-xl font-bold text-[var(--brand)] mb-2">¡Importante! Tu Tasa está Garantizada</h3>
-          <p class="text-[var(--ink)]">
-            Tu tasa de cambio de <strong>{{ transaccion.tasa_cambio_aplicada|unlocalize }}</strong> está garantizada hasta el:
-            <strong class="text-red-600">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i:s" }} ({{ transaccion.tasa_garantizada_hasta|timeuntil }} restantes)</strong>.
-          </p>
-          {% if transaccion.tipo_operacion == 'compra' %}
-            <p class="text-[var(--ink)] mt-2">
-              Por favor, dirígete a un Tauser y utiliza el siguiente código para completar tu operación:
-            </p>
-            <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-              {{ transaccion.codigo_operacion_tauser }}
-            </p>
-            <p class="text-sm text-gray-600 text-center">
-              Asegúrate de depositar {{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }} antes de la hora límite.
-            </p>
-          {% elif transaccion.tipo_operacion == 'venta' %}
-            <p class="text-[var(--ink)] mt-2">
-              Tu operación ha sido iniciada. Por favor, realiza el pago de
-              <strong class="text-[var(--brand)]">{{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}</strong>
-              a través de tu billetera electrónica o transferencia bancaria.
+      {% if transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' %}
+        <div class="bg-[var(--brand-soft)] border border-[var(--brand)] p-4 rounded-lg mb-6">
+          {% if transaccion.is_tasa_expirada %}
+            <h3 class="text-xl font-bold text-red-600 mb-2">Operación Cancelada</h3>
+            <p class="text-[var(--ink)]">
+              El tiempo para garantizar tu tasa de cambio ha expirado. Esta operación ha sido cancelada automáticamente.
             </p>
             <p class="text-[var(--ink)] mt-2">
-              Utiliza el siguiente código como referencia para tu pago:
+              Si aún deseas realizar la operación, por favor, inicia una nueva desde la calculadora para obtener una tasa actualizada.
             </p>
-            <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-              {{ transaccion.codigo_operacion_tauser }}
+          {% elif transaccion.modalidad_tasa == 'bloqueada' %}
+            <h3 class="text-xl font-bold text-[var(--brand)] mb-2">¡Importante! Tu Tasa está Garantizada</h3>
+            <p class="text-[var(--ink)]">
+              Tu tasa de cambio de <strong>{{ transaccion.tasa_cambio_aplicada|unlocalize }}</strong> está garantizada hasta el:
+              <strong class="text-red-600">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i:s" }} ({{ transaccion.tasa_garantizada_hasta|timeuntil }} restantes)</strong>.
             </p>
-            <p class="text-sm text-gray-600 text-center">
-              Asegúrate de completar el pago antes de la hora límite para garantizar tu tasa.
+            {% if transaccion.tipo_operacion == 'compra' %}
+              <p class="text-[var(--ink)] mt-2">
+                Por favor, dirígete a un Tauser y utiliza el siguiente código para completar tu operación:
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+              <p class="text-sm text-gray-600 text-center">
+                Asegúrate de depositar {{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }} antes de la hora límite.
+              </p>
+            {% elif transaccion.tipo_operacion == 'venta' %}
+              <p class="text-[var(--ink)] mt-2">
+                Tu operación ha sido iniciada. Por favor, realiza el pago de
+                <strong class="text-[var(--brand)]">{{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}</strong>.
+              </p>
+              <p class="text-[var(--ink)] mt-2">
+                Utiliza el siguiente código como referencia para tu pago:
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+              <p class="text-sm text-gray-600 text-center">
+                Asegúrate de completar el pago antes de la hora límite para garantizar tu tasa.
+              </p>
+            {% endif %}
+          {% elif transaccion.modalidad_tasa == 'flotante' %}
+            <h3 class="text-xl font-bold text-[var(--brand)] mb-2">Tasa de Cambio de Mercado (Flotante)</h3>
+            <p class="text-[var(--ink)]">
+              Esta operación se inició con una tasa de mercado. El valor que se muestra es <strong>indicativo</strong>.
             </p>
+            <p class="text-[var(--ink)] mt-2">
+              La tasa de cambio final se determinará en el momento exacto en que se confirme el pago.
+            </p>
+            {% if transaccion.tipo_operacion == 'compra' %}
+              <p class="text-[var(--ink)] mt-2">
+                Para continuar, dirígete a un Tauser con el siguiente código. Se te mostrará la tasa final para tu aprobación antes de completar el depósito.
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+            {% elif transaccion.tipo_operacion == 'venta' %}
+              <p class="text-[var(--ink)] mt-2">
+                Para continuar, realiza el pago de
+                <strong class="text-[var(--brand)]">{{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}</strong>.
+              </p>
+              <p class="text-[var(--ink)] mt-2">
+                Utiliza el siguiente código como referencia para tu pago:
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+              <p class="text-sm text-gray-600 text-center">
+                El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
+              </p>
+            {% endif %}
           {% endif %}
-        {% elif transaccion.modalidad_tasa == 'flotante' %}
-          <h3 class="text-xl font-bold text-[var(--brand)] mb-2">Tasa Indicativa (Flotante)</h3>
-          <p class="text-[var(--ink)]">
-            La tasa de cambio de <strong>{{ transaccion.tasa_cambio_aplicada|unlocalize }}</strong> fue indicativa al iniciar la operación.
-            La tasa final se aplicará al momento de la confirmación del pago/depósito.
-          </p>
-          {% if transaccion.tipo_operacion == 'compra' %}
-            <p class="text-[var(--ink)] mt-2">
-              Por favor, dirígete a un Tauser y utiliza el siguiente código para iniciar la confirmación de tu operación.
-              La tasa actual se te presentará en el Tauser para tu aprobación final.
-            </p>
-            <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-              {{ transaccion.codigo_operacion_tauser }}
-            </p>
-            <p class="text-sm text-gray-600 text-center">
-              El monto final a recibir se calculará con la tasa vigente al momento de tu confirmación en el Tauser.
-            </p>
-          {% elif transaccion.tipo_operacion == 'venta' %}
-            <p class="text-[var(--ink)] mt-2">
-              Tu operación ha sido iniciada. Por favor, realiza el pago de
-              <strong class="text-[var(--brand)]">{{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}</strong>
-              a través de tu billetera electrónica o transferencia bancaria.
-            </p>
-            <p class="text-[var(--ink)] mt-2">
-              Utiliza el siguiente código como referencia para tu pago:
-            </p>
-            <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-              {{ transaccion.codigo_operacion_tauser }}
-            </p>
-            <p class="text-sm text-gray-600 text-center">
-              La tasa final se aplicará al momento de procesar tu pago.
-            </p>
+          
+          {% if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
+            <div class="text-center mt-6">
+              <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="gx-btn">Confirmar Pago</button>
+              </form>
+            </div>
           {% endif %}
-        {% endif %}
-      </div>
+        </div>
+      {% endif %}
 
       <div class="text-center mt-6">
         <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Ir a mi Dashboard</a>
