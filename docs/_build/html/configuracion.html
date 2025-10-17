@@ -64,17 +64,20 @@
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.apps.ConfiguracionConfig"><code class="docutils literal notranslate"><span class="pre">ConfiguracionConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.forms">módulo configuracion.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo configuracion.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.models">módulo configuracion.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-1">módulo configuracion.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit"><code class="docutils literal notranslate"><span class="pre">TransactionLimit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.models.get_moneda_base"><code class="docutils literal notranslate"><span class="pre">get_moneda_base()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.urls">módulo configuracion.urls</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.views">módulo configuracion.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-2">módulo configuracion.urls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-3">módulo configuracion.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.views.configuracion_panel"><code class="docutils literal notranslate"><span class="pre">configuracion_panel()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.views.crear_limite"><code class="docutils literal notranslate"><span class="pre">crear_limite()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.views.editar_limite"><code class="docutils literal notranslate"><span class="pre">editar_limite()</span></code></a></li>
@@ -93,6 +96,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -150,12 +155,36 @@
 </dd></dl>
 
 </section>
-<section id="module-configuracion.forms">
-<span id="modulo-configuracion-forms"></span><h2>módulo configuracion.forms<a class="headerlink" href="#module-configuracion.forms" title="Link to this heading"></a></h2>
+<section id="module-0">
+<span id="modulo-configuracion-forms"></span><h2>módulo configuracion.forms<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Formularios de la aplicación <strong>configuracion</strong>.</p>
+<p id="module-configuracion.forms">Incluye el formulario para crear y editar instancias de <code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionLimit</span></code>,
+con widgets personalizados y validaciones por defecto de Django.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.forms.</span></span><span class="sig-name descname"><span class="pre">TransactionLimitForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/forms.html#TransactionLimitForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.forms.TransactionLimitForm" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario para crear o editar un límite de transacción.</p>
+<p>Formulario para crear o editar un límite de transacción.</p>
+<section id="campos-incluidos">
+<h3><strong>Campos incluidos</strong><a class="headerlink" href="#campos-incluidos" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>aplica_diario<span class="classifier">BooleanField</span></dt><dd><p>Indica si aplica límite diario.</p>
+</dd>
+<dt>monto_diario<span class="classifier">IntegerField  &lt;– ACTUALIZAR ESTO (era DecimalField)</span></dt><dd><p>Monto máximo permitido diario, con placeholder «Monto Diario PYG».</p>
+</dd>
+<dt>aplica_mensual<span class="classifier">BooleanField</span></dt><dd><p>Indica si aplica límite mensual.</p>
+</dd>
+<dt>monto_mensual<span class="classifier">IntegerField  &lt;– ACTUALIZAR ESTO (era DecimalField)</span></dt><dd><p>Monto máximo permitido mensual, con placeholder «Monto Mensual PYG».</p>
+</dd>
+</dl>
+</section>
+<section id="widgets">
+<h3><strong>Widgets</strong><a class="headerlink" href="#widgets" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>monto_diario: NumberInput con placeholder.</p></li>
+<li><p>monto_mensual: NumberInput con placeholder.</p></li>
+</ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.Meta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/configuracion/forms.html#TransactionLimitForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.Meta" title="Link to this definition"></a></dt>
@@ -180,7 +209,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="configuracion.forms.TransactionLimitForm.base_fields">
-<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aplica_diario':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'aplica_mensual':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_diario':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_mensual':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.base_fields" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aplica_diario':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'aplica_mensual':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_diario':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'monto_mensual':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#configuracion.forms.TransactionLimitForm.base_fields" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -194,15 +223,37 @@
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
-<section id="module-configuracion.models">
-<span id="modulo-configuracion-models"></span><h2>módulo configuracion.models<a class="headerlink" href="#module-configuracion.models" title="Link to this heading"></a></h2>
+<section id="module-1">
+<span id="modulo-configuracion-models"></span><h2>módulo configuracion.models<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
+<p>Modelos de la aplicación <strong>configuracion</strong>.</p>
+<p id="module-configuracion.models">Incluye modelos relacionados con la configuración de límites diarios y mensuales
+por moneda, vinculados a la moneda base del sistema.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="configuracion.models.TransactionLimit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.models.</span></span><span class="sig-name descname"><span class="pre">TransactionLimit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aplica_diario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monto_diario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aplica_mensual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monto_mensual</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/models.html#TransactionLimit"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.models.TransactionLimit" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.models.</span></span><span class="sig-name descname"><span class="pre">TransactionLimit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/models.html#TransactionLimit"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.models.TransactionLimit" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Modelo que representa un límite de transacción por moneda.</p>
+<p>Permite definir límites diarios y mensuales para transacciones,
+con opciones de habilitación/deshabilitación para cada tipo.</p>
+<section id="campos">
+<h3><strong>Campos</strong><a class="headerlink" href="#campos" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>moneda<span class="classifier">ForeignKey</span></dt><dd><p>Moneda asociada al límite. Por defecto es la moneda base “PYG”.
+No editable desde el admin.</p>
+</dd>
+<dt>aplica_diario<span class="classifier">BooleanField</span></dt><dd><p>Indica si aplica límite diario.</p>
+</dd>
+<dt>monto_diario<span class="classifier">DecimalField</span></dt><dd><p>Monto máximo permitido diario.</p>
+</dd>
+<dt>aplica_mensual<span class="classifier">BooleanField</span></dt><dd><p>Indica si aplica límite mensual.</p>
+</dd>
+<dt>monto_mensual<span class="classifier">DecimalField</span></dt><dd><p>Monto máximo permitido mensual.</p>
+</dd>
+</dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="configuracion.models.TransactionLimit.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#configuracion.models.TransactionLimit.DoesNotExist" title="Link to this definition"></a></dt>
@@ -273,43 +324,271 @@ object the first time, the query is executed.</p>
 <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#configuracion.models.TransactionLimit.objects" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.models.get_moneda_base">
 <span class="sig-prename descclassname"><span class="pre">configuracion.models.</span></span><span class="sig-name descname"><span class="pre">get_moneda_base</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/models.html#get_moneda_base"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.models.get_moneda_base" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Devuelve la moneda base del sistema (PYG).</p>
+<p>Se usa como valor por defecto en TransactionLimit.</p>
+</dd></dl>
 
 </section>
-<section id="module-configuracion.urls">
-<span id="modulo-configuracion-urls"></span><h2>módulo configuracion.urls<a class="headerlink" href="#module-configuracion.urls" title="Link to this heading"></a></h2>
+<section id="module-2">
+<span id="modulo-configuracion-urls"></span><h2>módulo configuracion.urls<a class="headerlink" href="#module-2" title="Link to this heading"></a></h2>
+<p>URLs de la aplicación <strong>configuracion</strong>.</p>
+<p id="module-configuracion.urls">Define los endpoints principales de la aplicación, vinculando vistas CRUD
+y panel principal.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="configuracion.urls.urlpatterns">
+<span class="sig-prename descclassname"><span class="pre">configuracion.urls.</span></span><span class="sig-name descname"><span class="pre">urlpatterns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;URLPattern</span> <span class="pre">''&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'limites/'</span> <span class="pre">[name='lista_limites']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'limites/nuevo/'</span> <span class="pre">[name='crear_limite']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'limites/&lt;int:pk&gt;/editar/'</span> <span class="pre">[name='editar_limite']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'limites/&lt;int:pk&gt;/eliminar/'</span> <span class="pre">[name='eliminar_limite']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">''</span> <span class="pre">[name='configuracion-panel']&gt;]</span></em><a class="headerlink" href="#configuracion.urls.urlpatterns" title="Link to this definition"></a></dt>
+<dd><section id="rutas-definidas">
+<h3>Rutas definidas<a class="headerlink" href="#rutas-definidas" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (root)
+- Redirige a <code class="docutils literal notranslate"><span class="pre">configuracion:lista_limites</span></code>.
+- Usa RedirectView para no romper URLs antiguas.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limites/</span></code>
+- Muestra la lista de límites transaccionales.
+- Vista asociada: <a class="reference internal" href="#configuracion.views.lista_limites" title="configuracion.views.lista_limites"><code class="xref py py-func docutils literal notranslate"><span class="pre">configuracion.views.lista_limites()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limites/nuevo/</span></code>
+- Formulario para crear un nuevo límite.
+- Vista asociada: <a class="reference internal" href="#configuracion.views.crear_limite" title="configuracion.views.crear_limite"><code class="xref py py-func docutils literal notranslate"><span class="pre">configuracion.views.crear_limite()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limites/&lt;int:pk&gt;/editar/</span></code>
+- Edita un límite existente identificado por <cite>pk</cite>.
+- Vista asociada: <a class="reference internal" href="#configuracion.views.editar_limite" title="configuracion.views.editar_limite"><code class="xref py py-func docutils literal notranslate"><span class="pre">configuracion.views.editar_limite()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limites/&lt;int:pk&gt;/eliminar/</span></code>
+- Elimina un límite identificado por <cite>pk</cite>.
+- Vista asociada: <a class="reference internal" href="#configuracion.views.eliminar_limite" title="configuracion.views.eliminar_limite"><code class="xref py py-func docutils literal notranslate"><span class="pre">configuracion.views.eliminar_limite()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (panel de configuración)
+- Muestra el panel principal de configuración.
+- Vista asociada: <a class="reference internal" href="#configuracion.views.configuracion_panel" title="configuracion.views.configuracion_panel"><code class="xref py py-func docutils literal notranslate"><span class="pre">configuracion.views.configuracion_panel()</span></code></a>.</p></li>
+</ol>
 </section>
-<section id="module-configuracion.views">
-<span id="modulo-configuracion-views"></span><h2>módulo configuracion.views<a class="headerlink" href="#module-configuracion.views" title="Link to this heading"></a></h2>
+</dd></dl>
+
+</section>
+<section id="module-3">
+<span id="modulo-configuracion-views"></span><h2>módulo configuracion.views<a class="headerlink" href="#module-3" title="Link to this heading"></a></h2>
+<p>Vistas de la aplicación <strong>configuracion</strong>.</p>
+<p id="module-configuracion.views">Este módulo implementa vistas basadas en funciones para administrar los
+<strong>límites de transacciones</strong>. Incluye las operaciones CRUD (crear, listar,
+editar, eliminar), manejo de permisos y mensajes al usuario.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.views.configuracion_panel">
 <span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">configuracion_panel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#configuracion_panel"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.configuracion_panel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Renderiza el panel principal de configuración.</p>
+<section id="template">
+<h3><strong>Template</strong><a class="headerlink" href="#template" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configuracion/configuracion_panel.html</span></code></p></li>
+</ul>
+</section>
+<section id="parametros">
+<h3><strong>Parámetros</strong><a class="headerlink" href="#parametros" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>request<span class="classifier">HttpRequest</span></dt><dd><p>La petición HTTP recibida.</p>
+</dd>
+</dl>
+</section>
+<section id="retorna">
+<h3><strong>Retorna</strong><a class="headerlink" href="#retorna" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>HttpResponse</dt><dd><p>Página HTML con el panel de configuración.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.views.crear_limite">
 <span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">crear_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#crear_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.crear_limite" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Crea un nuevo límite de transacciones.</p>
+<section id="comportamiento">
+<h3><strong>Comportamiento</strong><a class="headerlink" href="#comportamiento" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">POST</span></code>:</dt><dd><ul>
+<li><p>Valida el formulario <a class="reference internal" href="#configuracion.forms.TransactionLimitForm" title="configuracion.forms.TransactionLimitForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuracion.forms.TransactionLimitForm</span></code></a>.</p></li>
+<li><p>Asigna automáticamente la moneda base (PYG).</p></li>
+<li><p>Guarda el objeto en la base de datos.</p></li>
+<li><p>Redirige a la lista de límites con mensaje de éxito.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">GET</span></code>:</dt><dd><ul>
+<li><p>Muestra el formulario vacío.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id1">
+<h3><strong>Template</strong><a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configuracion/editar_limite.html</span></code></p></li>
+</ul>
+</section>
+<section id="contexto">
+<h3><strong>Contexto</strong><a class="headerlink" href="#contexto" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">form</span></code> : instancia de TransactionLimitForm.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3><strong>Retorna</strong><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>HttpResponse</dt><dd><p>Página con el formulario de creación.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.views.editar_limite">
 <span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">editar_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#editar_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.editar_limite" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Edita un límite de transacciones existente.</p>
+<section id="id3">
+<h3><strong>Parámetros</strong><a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>request<span class="classifier">HttpRequest</span></dt><dd><p>La petición HTTP recibida.</p>
+</dd>
+<dt>pk<span class="classifier">UUID | int</span></dt><dd><p>Identificador primario del límite a editar.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3><strong>Comportamiento</strong><a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Carga el objeto <a class="reference internal" href="#configuracion.models.TransactionLimit" title="configuracion.models.TransactionLimit"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuracion.models.TransactionLimit</span></code></a>.</p></li>
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">POST</span></code>:</dt><dd><ul>
+<li><p>Valida y guarda los cambios.</p></li>
+<li><p>Asigna la moneda base (PYG).</p></li>
+<li><p>Redirige con mensaje de éxito.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">GET</span></code>:</dt><dd><ul>
+<li><p>Muestra el formulario con datos iniciales.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h3><strong>Template</strong><a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configuracion/editar_limite.html</span></code></p></li>
+</ul>
+</section>
+<section id="id6">
+<h3><strong>Contexto</strong><a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">form</span></code> : instancia de TransactionLimitForm.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3><strong>Retorna</strong><a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>HttpResponse</dt><dd><p>Página con el formulario de edición.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.views.eliminar_limite">
 <span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">eliminar_limite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#eliminar_limite"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.eliminar_limite" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Elimina un límite de transacciones.</p>
+<section id="id8">
+<h3><strong>Parámetros</strong><a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>request<span class="classifier">HttpRequest</span></dt><dd><p>La petición HTTP recibida.</p>
+</dd>
+<dt>pk<span class="classifier">UUID | int</span></dt><dd><p>Identificador primario del límite a eliminar.</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h3><strong>Comportamiento</strong><a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">POST</span></code>:</dt><dd><ul>
+<li><p>Elimina el objeto.</p></li>
+<li><p>Redirige a la lista de límites con mensaje de éxito.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Si el método es <code class="docutils literal notranslate"><span class="pre">GET</span></code>:</dt><dd><ul>
+<li><p>Muestra la confirmación antes de eliminar.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id10">
+<h3><strong>Template</strong><a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configuracion/eliminar_limite.html</span></code></p></li>
+</ul>
+</section>
+<section id="id11">
+<h3><strong>Contexto</strong><a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">limite</span></code> : instancia de <a class="reference internal" href="#configuracion.models.TransactionLimit" title="configuracion.models.TransactionLimit"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuracion.models.TransactionLimit</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3><strong>Retorna</strong><a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>HttpResponse</dt><dd><p>Página de confirmación o redirección tras eliminar.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="configuracion.views.lista_limites">
 <span class="sig-prename descclassname"><span class="pre">configuracion.views.</span></span><span class="sig-name descname"><span class="pre">lista_limites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/views.html#lista_limites"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.views.lista_limites" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Lista todos los límites de transacciones configurados.</p>
+<section id="restricciones">
+<h3><strong>Restricciones</strong><a class="headerlink" href="#restricciones" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>(Opcional) Requiere el permiso <code class="docutils literal notranslate"><span class="pre">configuracion.access_configuracion</span></code>.</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3><strong>Template</strong><a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">configuracion/lista_limites.html</span></code></p></li>
+</ul>
+</section>
+<section id="id14">
+<h3><strong>Contexto</strong><a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">limites</span></code> : QuerySet con todos los objetos
+<a class="reference internal" href="#configuracion.models.TransactionLimit" title="configuracion.models.TransactionLimit"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuracion.models.TransactionLimit</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3><strong>Retorna</strong><a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>HttpResponse</dt><dd><p>Página HTML con el listado de límites.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 </section>
 <section id="contenido-del-modulo">

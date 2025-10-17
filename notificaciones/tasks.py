@@ -11,9 +11,41 @@ from .models import Notificacion
 @shared_task
 def notificar_cambio_de_tasa_a_usuarios(cotizacion_id, mensaje, compra_cambio, venta_cambio):
     """
-    Tarea de Celery para enviar notificaciones de cambio de tasa en segundo plano.
+    Tarea de Celery para enviar notificaciones de cambio de tasa a usuarios con transacciones pendientes.
 
-    MODIFICADO: Ahora solo notifica a clientes con transacciones pendientes.
+    Esta tarea se ejecuta en segundo plano cada vez que cambia una cotización de moneda.
+    Su función es determinar qué usuarios tienen transacciones activas que podrían verse
+    afectadas por el cambio en la tasa de compra o de venta, y notificarles según sus preferencias.
+
+    :param uuid cotizacion_id: Identificador único de la cotización cuyo valor cambió.
+    :param str mensaje: Mensaje descriptivo que se enviará a los usuarios.
+    :param bool compra_cambio: Indica si hubo cambio en la tasa de **compra**.
+    :param bool venta_cambio: Indica si hubo cambio en la tasa de **venta**.
+
+    :return: Texto indicando el resultado del proceso (por ejemplo, cuántos usuarios fueron notificados).
+    :rtype: str
+
+    **Detalles del proceso:**
+
+    1. Se obtiene la cotización correspondiente al ID recibido.
+    2. Se filtran las transacciones **pendientes** asociadas a la moneda afectada
+       (según los estados `pendiente_pago_cliente`, `pendiente_retiro_tauser` o
+       `pendiente_deposito_tauser`).
+    3. Se excluyen las transacciones cuya tasa garantizada ya expiró.
+    4. Se determinan los usuarios involucrados en las transacciones filtradas.
+    5. Para cada usuario:
+        - Se valida si tiene preferencias de notificación configuradas.
+        - Se verifica si sigue la moneda afectada.
+        - Se crea una notificación en el sistema.
+        - Si tiene habilitado recibir correos, se envía un email.
+
+    **Ejemplo:**
+        >>> notificar_cambio_de_tasa_a_usuarios.delay(cotizacion_id, "Cambio en tasa USD/ARS", True, False)
+        "Notificaciones enviadas a 5 usuarios con transacciones pendientes."
+
+    **Notas:**
+        - Si no se encuentra la cotización, no se envía ninguna notificación.
+        - Evita duplicar notificaciones para el mismo usuario utilizando un conjunto (`set`).
     """
     try:
         cotizacion = Cotizacion.objects.get(pk=cotizacion_id)

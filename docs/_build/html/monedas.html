@@ -104,6 +104,8 @@
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -482,6 +484,22 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.seguidores">
+<span class="sig-name descname"><span class="pre">seguidores</span></span><a class="headerlink" href="#monedas.models.Moneda.seguidores" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.models.Moneda.simbolo">
 <span class="sig-name descname"><span class="pre">simbolo</span></span><a class="headerlink" href="#monedas.models.Moneda.simbolo" title="Link to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -616,14 +634,16 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.models.TedDenominacion.stock">
 <span class="sig-name descname"><span class="pre">stock</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.stock" title="Link to this definition"></a></dt>
-<dd><p>Accessor to the related object on the reverse side of a one-to-one
-relation.</p>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
 <p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -639,8 +659,21 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="monedas.models.TedInventario">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">TedInventario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#TedInventario"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.TedInventario" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
-<p>Stock disponible por denominación para la terminal TED.</p>
-<p>Se usa <code class="docutils literal notranslate"><span class="pre">OneToOneField</span></code> para asegurar un único registro por denominación.</p>
+<p>Stock disponible por denominación <strong>y ubicación</strong> para la terminal TED.</p>
+<div class="admonition important">
+<p class="admonition-title">Importante</p>
+<p>Desde esta versión, el inventario se particiona por <code class="docutils literal notranslate"><span class="pre">ubicacion</span></code>. Esto
+permite tener múltiples terminales (o sucursales) con stock independiente.</p>
+</div>
+<section id="restriccion-de-unicidad">
+<h3><strong>Restricción de unicidad</strong><a class="headerlink" href="#restriccion-de-unicidad" title="Link to this heading"></a></h3>
+<p>Se garantiza un único registro por combinación <code class="docutils literal notranslate"><span class="pre">(denominacion,</span> <span class="pre">ubicacion)</span></code>.</p>
+</section>
+<section id="compatibilidad">
+<h3><strong>Compatibilidad</strong><a class="headerlink" href="#compatibilidad" title="Link to this heading"></a></h3>
+<p>El <code class="docutils literal notranslate"><span class="pre">related_name</span></code> de la relación inversa se mantiene en <code class="docutils literal notranslate"><span class="pre">stock</span></code> para
+conservar compatibilidad con código existente, pero ahora referirá a un
+<em>manager</em> (conjunto de stocks) en lugar de una única instancia.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="monedas.models.TedInventario.DoesNotExist">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.TedInventario.DoesNotExist" title="Link to this definition"></a></dt>
@@ -663,13 +696,14 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.models.TedInventario.denominacion">
 <span class="sig-name descname"><span class="pre">denominacion</span></span><a class="headerlink" href="#monedas.models.TedInventario.denominacion" title="Link to this definition"></a></dt>
-<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -700,12 +734,20 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.ubicacion">
+<span class="sig-name descname"><span class="pre">ubicacion</span></span><a class="headerlink" href="#monedas.models.TedInventario.ubicacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.models.TedInventario.updated_at">
 <span class="sig-name descname"><span class="pre">updated_at</span></span><a class="headerlink" href="#monedas.models.TedInventario.updated_at" title="Link to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">

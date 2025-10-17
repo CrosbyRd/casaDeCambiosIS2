@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -76,7 +78,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">operaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CanalFinanciero</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">configuracion.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionLimit</span>
 
 <div class="viewcode-block" id="Cliente">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente">[documentos]</a>
@@ -158,6 +160,17 @@
         <span class="k">return</span> <span class="n">limites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">moneda</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">))</span></div>
 
 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">obtener_limite_global</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtiene el límite global de transacciones para el cliente.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">limite</span> <span class="o">=</span> <span class="n">TransactionLimit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>  <span class="c1"># Obtiene el primer límite global</span>
+        <span class="k">if</span> <span class="n">limite</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">limite</span><span class="o">.</span><span class="n">monto_diario</span><span class="p">,</span> <span class="n">limite</span><span class="o">.</span><span class="n">monto_mensual</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">)</span>  <span class="c1"># Si no existe límite global, retorna 0</span>
+    
     <span class="c1"># -----------------------------</span>
     <span class="c1"># Meta y representación</span>
     <span class="c1"># -----------------------------</span>

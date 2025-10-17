@@ -1,4 +1,11 @@
 # roles/urls.py
+"""
+Rutas URL para la aplicación **Roles**.
+
+Define los endpoints para:
+    - Panel de administración de roles.
+    - Gestión de roles por usuario.
+"""
 from django.urls import path
 from . import views # Importamos el módulo de vistas completo
 

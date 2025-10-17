@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -71,13 +73,14 @@
              
   <h1>Código fuente para payments.views</h1><div class="highlight"><pre>
 <span></span><span class="c1"># payments/views.py</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">HttpResponseBadRequest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.views.decorators.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">csrf_exempt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.stripe_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_payment_intent</span>
+<span class="c1"># --- NUEVO: Importar el modelo Transaccion ---</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
 
 <div class="viewcode-block" id="checkout_preview_view">
 <a class="viewcode-back" href="../../payments.html#payments.views.checkout_preview_view">[documentos]</a>
@@ -88,7 +91,6 @@
     <span class="n">product_name</span> <span class="o">=</span> <span class="s2">&quot;Suscripción Anual Gold&quot;</span>
     <span class="n">amount_in_dollars</span> <span class="o">=</span> <span class="mf">1.10</span>
     
-    <span class="c1"># Pasamos el monto en centavos para evitar problemas de formato decimal</span>
     <span class="n">amount_in_cents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">amount_in_dollars</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
 
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
@@ -120,27 +122,31 @@
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;payment_success.html&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="create_payment_intent_view">
-<a class="viewcode-back" href="../../payments.html#payments.views.create_payment_intent_view">[documentos]</a>
-<span class="nd">@csrf_exempt</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_payment_intent_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="stripe_payment_page">
+<a class="viewcode-back" href="../../payments.html#payments.views.stripe_payment_page">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stripe_payment_page</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Crea un PaymentIntent y devuelve el client_secret.</span>
+<span class="sd">    Renderiza una página para que el cliente complete el pago con Stripe</span>
+<span class="sd">    usando el client_secret.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-            <span class="n">amount_in_cents</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;amount&#39;</span><span class="p">)</span>
-            <span class="n">email</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">)</span>
+    <span class="n">client_secret</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;client_secret&#39;</span><span class="p">)</span>
+    <span class="n">transaction_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transaction_id&#39;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">amount_in_cents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;No se proporcionó un monto.&#39;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">client_secret</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">transaction_id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s2">&quot;Faltan parámetros para el pago.&quot;</span><span class="p">)</span>
 
-            <span class="n">payment_intent_data</span> <span class="o">=</span> <span class="n">create_payment_intent</span><span class="p">(</span><span class="n">amount_in_cents</span><span class="p">,</span> <span class="n">customer_email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">payment_intent_data</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;JSON inválido.&#39;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Método no permitido&#39;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">405</span><span class="p">)</span></div>
+    <span class="c1"># --- MODIFICADO: Buscamos la transacción para mostrar sus detalles ---</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">transaction_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s2">&quot;La transacción especificada no existe.&quot;</span><span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;STRIPE_PUBLIC_KEY&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">STRIPE_PUBLIC_KEY</span><span class="p">,</span>
+        <span class="s1">&#39;client_secret&#39;</span><span class="p">:</span> <span class="n">client_secret</span><span class="p">,</span>
+        <span class="s1">&#39;transaccion&#39;</span><span class="p">:</span> <span class="n">transaccion</span><span class="p">,</span> <span class="c1"># Pasamos el objeto completo al template</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;payments/stripe_payment_page.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -5,50 +5,50 @@ paquete transacciones
 Submódulos
 ----------
 
-módulo transacciones.admin
---------------------------
+módulo casaDeCambiosIS2.transacciones.admin
+-------------------------------------------
 
-.. automodule:: transacciones.admin
+.. automodule:: casaDeCambiosIS2.transacciones.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo transacciones.apps
--------------------------
+módulo casaDeCambiosIS2.transacciones.apps
+------------------------------------------
 
-.. automodule:: transacciones.apps
+.. automodule:: casaDeCambiosIS2.transacciones.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo transacciones.models
----------------------------
+módulo casaDeCambiosIS2.transacciones.models
+--------------------------------------------
 
-.. automodule:: transacciones.models
+.. automodule:: casaDeCambiosIS2.transacciones.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo transacciones.tests
---------------------------
+módulo casaDeCambiosIS2.transacciones.tests
+-------------------------------------------
 
-.. automodule:: transacciones.tests
+.. automodule:: casaDeCambiosIS2.transacciones.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo transacciones.urls
--------------------------
+módulo casaDeCambiosIS2.transacciones.urls
+------------------------------------------
 
-.. automodule:: transacciones.urls
+.. automodule:: casaDeCambiosIS2.transacciones.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo transacciones.views
---------------------------
+módulo casaDeCambiosIS2.transacciones.views
+-------------------------------------------
 
-.. automodule:: transacciones.views
+.. automodule:: casaDeCambiosIS2.transacciones.views
    :members:
    :undoc-members:
    :show-inheritance:
@@ -56,7 +56,7 @@ módulo transacciones.views
 Contenido del módulo
 ---------------
 
-.. automodule:: transacciones
+.. automodule:: casaDeCambiosIS2.transacciones
    :members:
    :undoc-members:
    :show-inheritance:

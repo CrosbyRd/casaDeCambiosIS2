@@ -1,3 +1,18 @@
+"""
+Módulo de formularios del app pagos .
+
+Este módulo define los formularios administrativos y de cliente para la gestión
+de medios de pago. Permite crear y validar tipos de medios, sus campos asociados
+y las instancias configuradas por cada cliente.
+
+Contiene:
+---------
+
+- ``TipoMedioPagoForm``: formulario para el modelo :class:`TipoMedioPago`.
+- ``CampoMedioPagoForm``: formulario para los campos dinámicos asociados al tipo.
+- ``CampoMedioPagoFormSet``: formset inline para editar los campos de un tipo.
+- ``MedioPagoClienteForm``: formulario dinámico para crear/editar medios de pago de clientes.
+"""
 from django import forms
 from django.forms import widgets
 from django.forms import inlineformset_factory, BaseInlineFormSet  # 👈 AÑADIDO
@@ -20,6 +35,24 @@ REGEX_PREDEF_CHOICES = [
 # Admin: Tipo + Campos (inline)
 # ------------------------------
 class TipoMedioPagoForm(forms.ModelForm):
+    """
+    Representa un **tipo de medio de pago** disponible en el sistema
+    (por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).
+
+    Incluye la configuración de la comisión que aplica cada medio, el motor
+    de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.
+
+    :param uuid id_tipo: Identificador único del tipo de medio de pago.
+    :param str nombre: Nombre único que identifica el medio de pago.
+    :param Decimal comision_porcentaje: Porcentaje de comisión aplicado (0–100).
+    :param str descripcion: Descripción adicional o instrucciones.
+    :param bool activo: Indica si el medio está disponible para uso.
+    :param datetime creado_en: Fecha de creación del registro.
+    :param datetime actualizado_en: Fecha de última actualización.
+    :param str engine: Motor o integración usada para procesar pagos.
+    :param dict engine_config: Configuración JSON específica del motor.
+    """
+
     class Meta:
         model = TipoMedioPago
         fields = ["nombre", "comision_porcentaje", "descripcion", "activo", "engine", "engine_config"]
@@ -36,9 +69,21 @@ class TipoMedioPagoForm(forms.ModelForm):
 
 class CampoMedioPagoForm(forms.ModelForm):
     """
-    ModelForm del campo: NO incluye ni el PK (id_campo) ni la FK (tipo).
-    Eso lo maneja el formset con instance=self.object.
+    Define un **campo dinámico** asociado a un tipo de medio de pago.
+
+    Cada tipo puede tener múltiples campos requeridos (por ejemplo,
+    número de cuenta, RUC, alias, email) con validaciones opcionales
+    mediante expresiones regulares predefinidas.
+
+    :param uuid id_campo: Identificador único del campo.
+    :param TipoMedioPago tipo: Relación con el tipo de medio de pago.
+    :param str nombre_campo: Nombre del campo visible o técnico.
+    :param str tipo_dato: Tipo de dato (texto, número, teléfono, email, RUC).
+    :param bool obligatorio: Indica si el campo es obligatorio.
+    :param str regex_opcional: Patrón regex opcional de validación.
+    :param bool activo: Define si el campo está activo.
     """
+    
     class Meta:
         model = CampoMedioPago
         fields = [
@@ -64,9 +109,13 @@ class CampoMedioPagoForm(forms.ModelForm):
 
 class _BaseCampoMedioPagoFormSet(BaseInlineFormSet):
     """
-    - extra=0: no crea líneas vacías “fantasma”.
-    - can_delete=True: habilita {{ f.DELETE }}.
-    - clean(): valida duplicados por 'nombre_campo' entre formularios no eliminados.
+    Formset base para el modelo :class:`CampoMedioPago`.
+
+    Características:
+    ----------------
+    - ``extra=0``: evita formularios vacíos automáticos.
+    - ``can_delete=True``: permite marcar para eliminación.
+    - ``clean()``: valida que no existan duplicados en el campo ``nombre_campo``.
     """
     def clean(self):
         super().clean()
@@ -110,6 +159,22 @@ CampoMedioPagoFormSet = inlineformset_factory(
 # Cliente: Form dinámico por "tipo"
 # ---------------------------------
 class MedioPagoClienteForm(forms.ModelForm):
+    """
+    Formulario dinámico para la creación o edición de :class:`MedioPagoCliente`.
+
+    Este formulario genera automáticamente los campos dinámicos definidos en el
+    modelo :class:`CampoMedioPago` según el tipo de medio seleccionado.
+
+    Parámetros
+    ----------
+    user : :class:`django.contrib.auth.models.User`, opcional
+        Usuario autenticado, utilizado para personalizar la experiencia (no requerido).
+
+    Atributos
+    ---------
+    campos_config : list
+        Lista de los campos dinámicos generados en el formulario actual.
+    """
     # Sobrescribimos 'tipo' para tener control total del widget y la UX
     tipo = forms.ModelChoiceField(
         queryset=TipoMedioPago.objects.filter(activo=True).exclude(engine='stripe').order_by("nombre"),
@@ -184,6 +249,13 @@ class MedioPagoClienteForm(forms.ModelForm):
         return getattr(self, "_campos_config", [])
 
     def clean(self):
+        """
+        Realiza validaciones personalizadas sobre los campos dinámicos.
+
+        - Verifica tipos de datos según el modelo.
+        - Aplica regex predefinidas.
+        - Construye el diccionario final ``datos`` del medio de pago.
+        """
         cleaned = super().clean()
         datos = {}
         errores = {}

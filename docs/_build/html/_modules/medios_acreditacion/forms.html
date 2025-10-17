@@ -40,9 +40,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -70,7 +72,20 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para medios_acreditacion.forms</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Formularios de la aplicación **medios_acreditacion**.</span>
+
+<span class="sd">.. module:: medios_acreditacion.forms</span>
+<span class="sd">   :synopsis: Definición de formularios para la gestión de Tipos de Medio, Campos de Medio y Medios de clientes.</span>
+
+<span class="sd">Este módulo implementa los formularios para:</span>
+
+<span class="sd">- **TipoMedioForm**: formulario administrativo para crear y editar tipos de medio de acreditación.</span>
+<span class="sd">- **CampoMedioForm**: formulario administrativo para configurar los campos de un tipo de medio.</span>
+<span class="sd">- **MedioAcreditacionClienteForm**: formulario dinámico que construye campos en función del tipo de medio</span>
+<span class="sd">  seleccionado por el cliente, con validaciones automáticas.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioAcreditacion</span><span class="p">,</span> <span class="n">CampoMedioAcreditacion</span><span class="p">,</span> <span class="n">MedioAcreditacionCliente</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
@@ -81,6 +96,25 @@
 <div class="viewcode-block" id="TipoMedioForm">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.TipoMedioForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario para la gestión de **Tipos de Medios de Acreditación** (administrador).</span>
+
+<span class="sd">    **Modelo asociado**</span>
+<span class="sd">    -------------------</span>
+<span class="sd">    :class:`medios_acreditacion.models.TipoMedioAcreditacion`</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - ``nombre`` : nombre del tipo de medio.</span>
+<span class="sd">    - ``descripcion`` : descripción opcional.</span>
+<span class="sd">    - ``activo`` : checkbox para habilitar/deshabilitar.</span>
+
+<span class="sd">    **Widgets personalizados**</span>
+<span class="sd">    --------------------------</span>
+<span class="sd">    - nombre → TextInput con clase *form-control*.</span>
+<span class="sd">    - descripcion → Textarea con clase *form-control*.</span>
+<span class="sd">    - activo → CheckboxInput con clase *form-check-input*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TipoMedioForm.Meta">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.TipoMedioForm.Meta">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
@@ -100,6 +134,33 @@
 <div class="viewcode-block" id="CampoMedioForm">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CampoMedioForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario dinámico para la gestión de **Medios de Acreditación de Clientes**.</span>
+
+<span class="sd">    Este formulario genera dinámicamente los campos en función del tipo de medio de</span>
+<span class="sd">    acreditación seleccionado, aplicando validaciones específicas según el tipo de dato</span>
+<span class="sd">    y expresiones regulares configuradas.</span>
+
+<span class="sd">    **Modelo asociado**</span>
+<span class="sd">    -------------------</span>
+<span class="sd">    :class:`medios_acreditacion.models.MedioAcreditacionCliente`</span>
+
+<span class="sd">    **Campos básicos**</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - ``tipo`` : tipo de medio de acreditación.</span>
+<span class="sd">    - ``alias`` : alias personalizado del cliente.</span>
+<span class="sd">    - ``activo`` : estado del medio.</span>
+<span class="sd">    - ``predeterminado`` : indicador de si es el medio principal.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __init__(*args, **kwargs)</span>
+<span class="sd">        Construye los campos dinámicos en base al tipo de medio seleccionado.</span>
+<span class="sd">    clean() -&gt; dict</span>
+<span class="sd">        Valida y normaliza los datos dinámicos, aplicando validaciones específicas</span>
+<span class="sd">        por tipo de dato y regex. Asigna el resultado al campo ``datos`` del modelo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="CampoMedioForm.Meta">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioForm.Meta">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
@@ -169,6 +230,21 @@
 <div class="viewcode-block" id="MedioAcreditacionClienteForm.clean">
 <a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.MedioAcreditacionClienteForm.clean">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Valida los campos dinámicos en función de las reglas definidas</span>
+<span class="sd">        en :class:`CampoMedioAcreditacion`.</span>
+
+<span class="sd">        **Validaciones aplicadas**</span>
+<span class="sd">        --------------------------</span>
+<span class="sd">        - NUMERO → solo dígitos.</span>
+<span class="sd">        - TELEFONO → dígitos, mínimo 9.</span>
+<span class="sd">        - EMAIL → debe contener &#39;@&#39;.</span>
+<span class="sd">        - RUC → formato ########-#.</span>
+<span class="sd">        - Regex extra → validación personalizada.</span>
+
+<span class="sd">        Retorna:</span>
+<span class="sd">            dict: datos limpios y validados.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="n">tipo</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;tipo&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">tipo</span><span class="p">:</span>

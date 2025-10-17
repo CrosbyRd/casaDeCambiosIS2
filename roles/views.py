@@ -1,5 +1,12 @@
 # roles/views.py
+"""
+Módulo de vistas para la aplicación **Roles**.
 
+Contiene las vistas para la gestión de roles de usuarios,
+incluyendo:
+    - Panel de administración de roles.
+    - Asignación de roles a usuarios específicos.
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,8 +18,14 @@ from usuarios.models import CustomUser
 @login_required
 def role_panel(request):
     """
-    Renderiza la página para administrar Roles de usuarios.
-    Solo accesible con permiso específico.
+    Renderiza el panel de administración de roles.
+
+    Solo accesible si el usuario tiene el permiso `roles.access_roles_panel`.
+
+    Returns
+    -------
+    HttpResponse
+        Página con listado de usuarios y sus roles.
     """
     if not request.user.has_perm("roles.access_roles_panel"):
         return redirect("home")
@@ -27,7 +40,21 @@ def role_panel(request):
 @login_required
 def manage_user_roles(request, user_id):
     """
-    Asigna o desasigna roles a un usuario específico.
+    Gestiona la asignación de roles a un usuario específico.
+
+    Permiso requerido: `usuarios.access_user_client_management`.
+
+    Parameters
+    ----------
+    request : HttpRequest
+        Objeto de solicitud HTTP.
+    user_id : int
+        ID del usuario al que se le asignarán roles.
+
+    Returns
+    -------
+    HttpResponse
+        Redirecciona al panel de roles o renderiza formulario de gestión.
     """
     if not request.user.has_perm("usuarios.access_user_client_management"):
         return redirect("home")
