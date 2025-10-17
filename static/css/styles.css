@@ -382,3 +382,36 @@ img, svg, video{ max-width:100%; height:auto; }
   .ted-layout-main{flex:1;min-width:0}
   .ted-layout-aside{width:300px;flex-shrink:0;position:sticky;top:0}
 }
+/* === Rate Card (Calculadora) ============================================ */
+.rate-card{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  background:var(--brand-soft);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 16px;
+  margin:12px 16px;
+  flex-wrap: wrap;
+}
+.rate-card__title{
+  font-weight:700;
+  color:var(--ink);
+}
+.rate-card__value{
+  margin-left:auto;
+  font-weight:800;
+  font-size:1.35rem;
+  background:#fff;
+  border:1px dashed var(--brand);
+  padding:6px 10px;
+  border-radius:10px;
+  line-height:1;
+}
+.rate-card__note{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-left:8px;
+  white-space:nowrap;
+}
+.rate-card.hidden{ display:none; }

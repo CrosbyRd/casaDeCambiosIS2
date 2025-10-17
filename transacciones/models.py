@@ -163,6 +163,7 @@ class Transaccion(models.Model):
         estado = self.estado_dinamico
         # Reconstruimos los choices en un diccionario para buscar el display name
         choices_dict = dict(self.ESTADO_CHOICES)
+        print(choices_dict.get(estado, estado.replace('_', ' ').title()))
         return choices_dict.get(estado, estado.replace('_', ' ').title())
 
     class Meta:
