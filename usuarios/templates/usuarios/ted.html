@@ -5,44 +5,6 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/ted.css' %}"/>
 
-<!-- Estilos mínimos SOLO para el bloque de confirmación -->
-<style>
-  .confirm-box{
-    display:none;
-    margin:18px auto 8px auto;
-    max-width:640px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-    border:1.5px solid rgba(255,255,255,0.16);
-    border-radius:18px;
-    padding:18px 20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.25) inset, 0 10px 30px rgba(0,0,0,0.10);
-  }
-  .confirm-box .cb-top{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;
-  }
-  .confirm-box .cb-chip{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 10px; border-radius:999px;
-    background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18);
-    font-weight:700; letter-spacing:.3px;
-  }
-  .confirm-box .cb-flag{ font-size:18px; line-height:1; }
-  .confirm-box .cb-code{ opacity:.95 }
-  .confirm-box .cb-mode{ font-size:14px; opacity:.85 }
-  .confirm-box .cb-value{
-    font-weight:900; line-height:1.15; letter-spacing:.2px;
-    font-size:36px; margin:6px 0 2px 0;
-    text-shadow:0 1px 0 rgba(0,0,0,0.35);
-  }
-  .confirm-box .cb-value .cb-code{
-    font-size:18px; font-weight:800; margin-left:6px; opacity:.9;
-  }
-  .confirm-box .cb-sub{
-    margin-top:6px; font-size:14px; opacity:.9;
-  }
-  #confirm-amount-text.hidden { display:none !important; }
-</style>
-
 <main style="max-width:1100px;margin:0 auto;padding:24px">
   <section class="ted-machine">
     <div class="ted-layout">
@@ -107,7 +69,7 @@
                 <div class="view-content">
                   <h3>Retiro de Dinero</h3>
                   <label for="transaction-number">Ingrese número de transacción</label>
-                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación (TAUSER)"/>
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Número de transacción"/>
 
                   <div class="currency-section">
                     <div class="currency-label">Divisas disponibles</div>
@@ -126,7 +88,7 @@
                 <div class="view-content">
                   <h3>Depósito de Dinero</h3>
                   <label for="deposit-tx">Ingrese número de transacción</label>
-                  <input id="deposit-tx" type="text" class="ted-input" placeholder="Código de operación (TAUSER)"/>
+                  <input id="deposit-tx" type="text" class="ted-input" placeholder="Número de transacción"/>
                   <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-depo-cancelar">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-depo-confirmar">Confirmar</button>
@@ -147,13 +109,7 @@
               <section id="confirm-amount-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content view-content--centered">
                   <div class="confirm-title">Confirmación</div>
-
-                  <!-- NUEVO bloque visual -->
-                  <div id="confirm-amount-box" class="confirm-box" aria-live="polite"></div>
-
-                  <!-- Fallback de texto plano (se ocultará si hay box) -->
-                  <div id="confirm-amount-text" class="confirm-text">¿Desea confirmar la operación?</div>
-
+                  <div id="confirm-amount-text" class="confirm-text">¿Desea confirmar el depósito?</div>
                   <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-amount-confirm">Confirmar</button>
@@ -173,7 +129,7 @@
                 </div>
               </section>
 
-              <!-- VISTA: Cancelado / Error -->
+              <!-- VISTA: Cancelado -->
               <section id="cancel-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content view-content--centered">
                   <div class="status-title status-title--cancel">Operación cancelada</div>
@@ -206,7 +162,7 @@
       </aside>
     </div>
 
-    <!-- Ranuras -->
+    <!-- Ranuras mejoradas -->
     <div class="slots-container">
       <div id="bill-slot" class="ted-slot">
         <div class="slot-opening"></div>
@@ -241,30 +197,12 @@
   const qsa=(s,c=document)=>Array.from(c.querySelectorAll(s));
   const after=(ms,fn)=>setTimeout(fn,ms);
 
-  /* CSRF */
-  function getCookie(name){
-    const value=`; ${document.cookie}`;
-    const parts=value.split(`; ${name}=`);
-    if(parts.length===2) return parts.pop().split(';').shift();
-  }
-  const csrfToken=getCookie('csrftoken');
-
   /* Reloj */
   function startClock(){
-    try{
-      const el=qs('#ted-clock'); if(!el) return;
-      const fmt=new Intl.DateTimeFormat('es-PY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      const tick=()=>{ el.textContent=fmt.format(new Date()); };
-      tick(); setInterval(tick,1000);
-    }catch(e){
-      const el=qs('#ted-clock'); if(!el) return;
-      const pad=n=>String(n).padStart(2,'0');
-      const tick=()=>{
-        const d=new Date();
-        el.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-      };
-      tick(); setInterval(tick,1000);
-    }
+    const el=qs('#ted-clock'); if(!el) return;
+    const fmt=new Intl.DateTimeFormat('es-PY',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const tick=()=>{ el.textContent=fmt.format(new Date()); };
+    tick(); setInterval(tick,1000);
   }
 
   /* Pantallas */
@@ -272,17 +210,18 @@
     qsa('.ted-screen-view').forEach(v=>v.classList.remove('active'));
     const screen = qs('#'+name+'-screen');
     if(screen) screen.classList.add('active');
-    // Limpia cualquier animación residual en las ranuras
     qsa('.ted-slot').forEach(s=>s.classList.remove('active','dispensing-bills','printing-receipt','inserting-bills'));
+    
+    // Mostrar/ocultar badge de bienvenida y ajustar header
     const welcomeBadge = qs('#welcome-badge');
     const header = qs('.ted-header');
     if(welcomeBadge){
       if(name === 'login'){
         welcomeBadge.classList.remove('hidden');
-        header && header.classList.remove('compact');
+        if(header) header.classList.remove('compact');
       } else {
         welcomeBadge.classList.add('hidden');
-        header && header.classList.add('compact');
+        if(header) header.classList.add('compact');
       }
     }
   }
@@ -292,51 +231,19 @@
     showScreen('processing'); 
   }
 
-  /* === Helpers de animación de ranura === */
-  function restartBillAnimation(mode){ // mode: 'out' | 'in'
-    const slot = qs('#bill-slot'); if(!slot) return;
-    // Limpia clases previas
-    slot.classList.remove('dispensing-bills','inserting-bills');
-    // Reinicia anim de cada billete para permitir re-disparo
-    qsa('#bill-slot .bill-item').forEach(el=>{
-      el.style.animation='none';
-      // fuerza reflow
-      void el.offsetWidth;
-      el.style.animation='';
-    });
-    // fuerza reflow del contenedor
-    void slot.offsetWidth;
-    slot.classList.add('active', mode==='out' ? 'dispensing-bills' : 'inserting-bills');
+  /* Slots */
+  function dispenseBills(){ 
+    const slot=qs('#bill-slot'); 
+    if(!slot) return; 
+    slot.classList.add('active','dispensing-bills'); 
+    after(2500,()=>slot.classList.remove('dispensing-bills')); 
   }
-function dispenseBills(){
-  const slot = document.querySelector('#bill-slot');
-  if(!slot) return;
-
-  // Programar para el siguiente frame (después de mostrar "Procesando")
-  requestAnimationFrame(()=> {
-    requestAnimationFrame(()=> {
-      restartBillAnimation('out');            // ← añade .dispensing-bills
-      setTimeout(()=>{ 
-        slot.classList.remove('dispensing-bills'); 
-      }, 2600);
-    });
-  });
-}
-
-function insertBills(){
-  const slot = document.querySelector('#bill-slot');
-  if(!slot) return;
-
-  // Programar para el siguiente frame (después de mostrar "Procesando")
-  requestAnimationFrame(()=> {
-    requestAnimationFrame(()=> {
-      restartBillAnimation('in');             // ← añade .inserting-bills
-      setTimeout(()=>{ 
-        slot.classList.remove('inserting-bills'); 
-      }, 3200);
-    });
-  });
-}
+  function insertBills(){ 
+    const slot=qs('#bill-slot'); 
+    if(!slot) return; 
+    slot.classList.add('active','inserting-bills'); 
+    after(3000,()=>slot.classList.remove('inserting-bills')); 
+  }
 
   /* Ticket */
   let lastReceipt={lines:[]};
@@ -359,50 +266,56 @@ function insertBills(){
   /* Ubicación seleccionada */
   const SELECT = qs('#select-ubicacion');
   let ubicacionSeleccionada = "";
-  try { ubicacionSeleccionada = sessionStorage.getItem('ted_ubicacion') || ""; } catch(e) {}
-
-  function activarUbicacion(ubic){
-    ubicacionSeleccionada = ubic || "";
-    try { sessionStorage.setItem('ted_ubicacion', ubicacionSeleccionada); } catch(e) {}
-    const infoUb=qs('#info-ubicacion'); if(infoUb) infoUb.textContent = ubicacionSeleccionada || '—';
-    const infoSe=qs('#info-serie');     if(infoSe) infoSe.textContent     = ubicacionSeleccionada ? 'TED-AGSL-0001' : '—';
-    const btnLogin=qs('#btn-login-ingresar'); if(btnLogin) btnLogin.disabled = !ubicacionSeleccionada;
-  }
-
-  // Normaliza respuestas
-  function pickUbicaciones(data){
-    if(Array.isArray(data)) return data;
-    if(data && Array.isArray(data.ubicaciones)) return data.ubicaciones;
-    if(data && Array.isArray(data.data)) return data.data;
-    if(data && Array.isArray(data.results)) return data.results;
-    return [];
+  
+  // Intentar recuperar de memoria en vez de localStorage
+  try {
+    const stored = sessionStorage.getItem('ted_ubicacion');
+    if(stored) ubicacionSeleccionada = stored;
+  } catch(e) {
+    // Si sessionStorage falla, usar variable en memoria
   }
 
   async function cargarUbicaciones(){
-    const url = "{% url 'admin_panel:ted:ubicaciones_disponibles' %}";
     try{
-      const res = await fetch(url, {credentials:'same-origin'});
+      const res = await fetch("{% url 'admin_panel:ted:ubicaciones_disponibles' %}", {credentials:'same-origin'});
       if(!res.ok) throw new Error('HTTP '+res.status);
       const data = await res.json();
-      const lista = pickUbicaciones(data);
 
       if(SELECT){
         SELECT.innerHTML = '<option value="">— Seleccioná una ubicación —</option>';
-        lista.forEach(u=>{
+        (data.ubicaciones || []).forEach(u=>{
           const opt=document.createElement('option');
           opt.value=u; opt.textContent=u;
           if (u===ubicacionSeleccionada) opt.selected=true;
           SELECT.appendChild(opt);
         });
       }
-      activarUbicacion(SELECT?.value || ubicacionSeleccionada || "");
-    }catch(e){
-      console.error('No se pudieron cargar ubicaciones:', e);
-      activarUbicacion(ubicacionSeleccionada || "");
-    }
+
+      const btnLogin = qs('#btn-login-ingresar');
+      if(btnLogin) btnLogin.disabled = !ubicacionSeleccionada;
+    }catch(_e){}
   }
 
-  /* Monedas por ubicación (para Retiro - UI informativa) */
+  function activarUbicacion(ubic){
+    ubicacionSeleccionada = ubic;
+    try {
+      sessionStorage.setItem('ted_ubicacion', ubicacionSeleccionada);
+    } catch(e) {
+      // Si falla, solo usar variable en memoria
+    }
+    const infoUbic = qs('#info-ubicacion');
+    const infoSerie = qs('#info-serie');
+    if(infoUbic) infoUbic.textContent = ubicacionSeleccionada || '—';
+    if(infoSerie) infoSerie.textContent = ubicacionSeleccionada ? 'TED-AGSL-0001' : '—';
+  }
+
+  SELECT?.addEventListener('change', e=>{
+    const val = e.target.value || "";
+    const btnLogin = qs('#btn-login-ingresar');
+    if(btnLogin) btnLogin.disabled = !val;
+  });
+
+  /* Monedas por ubicación (para Retiro) */
   const FLAGS={USD:'🇺🇸',EUR:'🇪🇺',ARS:'🇦🇷',BRL:'🇧🇷',PYG:'🇵🇾',CNY:'🇨🇳',JPY:'🇯🇵',GBP:'🇬🇧',UYU:'🇺🇾',CLP:'🇨🇱',COP:'🇨🇴',BOB:'🇧🇴',PEN:'🇵🇪',MXN:'🇲🇽',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',VES:'🇻🇪',VEF:'🇻🇪',RUB:'🇷🇺',ILS:'🇮🇱',CRC:'🇨🇷',DOP:'🇩🇴',NOK:'🇳🇴',SEK:'🇸🇪',DKK:'🇩🇰',ZAR:'🇿🇦',HNL:'🇭🇳',GTQ:'🇬🇹',PAB:'🇵🇦',NIO:'🇳🇮',TRY:'🇹🇷',INR:'🇮🇳',KRW:'🇰🇷',SGD:'🇸🇬',HKD:'🇭🇰'};
   const flag = c => FLAGS[c] || c;
 
@@ -415,11 +328,7 @@ function insertBills(){
       const res = await fetch("{% url 'admin_panel:ted:monedas_disponibles' %}"+q, {credentials:'same-origin'});
       if(!res.ok) throw new Error('HTTP '+res.status);
       const data = await res.json();
-      const monedas = Array.isArray(data.monedas) ? data.monedas
-                    : Array.isArray(data.data) ? data.data
-                    : Array.isArray(data.results) ? data.results
-                    : Array.isArray(data) ? data
-                    : [];
+      const monedas = Array.isArray(data.monedas) ? data.monedas : [];
       cont.innerHTML = '';
       if(!monedas.length){ 
         cont.textContent='Sin divisas disponibles.'; 
@@ -430,99 +339,26 @@ function insertBills(){
         chip.className='currency-chip';
         chip.title=code;
         chip.textContent=flag(code);
-        chip.dataset.code=code;
         cont.appendChild(chip);
       });
     }catch(e){
-      console.error('No se pudieron cargar monedas:', e);
       cont.textContent='No se pudo cargar.';
     }
   }
 
-  /* Estado transaccional local (TED) */
-  const txCtx = {
-    modo: null,         // 'retiro' | 'deposito'
-    code: null,         // código ingresado
-    moneda: null,       // código ISO p.ej. USD
-    monto: null,        // string (será formateado)
-    raw: null           // payload completo del backend
-  };
-
-  function formatAmountRaw(a){
-    try{
-      const n = Number(a);
-      if (Number.isFinite(n)){
-        return new Intl.NumberFormat('es-PY',{maximumFractionDigits:2}).format(n);
-      }
-    }catch(e){}
-    return String(a);
-  }
-  function formatAmount(a, code){
-    return `${formatAmountRaw(a)} ${code}`;
-  }
-
-  async function validarCodigo(code, modo){
-    const res = await fetch("{% url 'usuarios:ted_api_validar' %}", {
-      method:'POST',
-      credentials:'same-origin',
-      headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},
-      body: JSON.stringify({codigo: code, modo})
-    });
-    const data = await res.json();
-    if(!res.ok || !data.ok) throw new Error(data.error || 'Error de validación');
-    return data.data;
-  }
-
-  // === Bloque visual de confirmación (con bandera y monto grande) ===
-  function renderConfirmBox(){
-    const box = qs('#confirm-amount-box');
-    const textEl = qs('#confirm-amount-text');
-    if(!box) return;
-
-    if(txCtx && txCtx.moneda && txCtx.monto){
-      const emoji = flag(txCtx.moneda);
-      const modoLabel = txCtx.modo === 'deposito' ? 'Depósito' : 'Retiro';
-      const amount = formatAmountRaw(txCtx.monto);
-      const code = txCtx.code || (txCtx.raw && txCtx.raw.codigo) || '';
-
-      box.innerHTML = `
-        <div class="cb-top">
-          <span class="cb-chip"><span class="cb-flag">${emoji}</span><span class="cb-code">${txCtx.moneda}</span></span>
-          <div class="cb-mode">${modoLabel}</div>
-        </div>
-        <div class="cb-value"><span class="cb-number">${amount}</span> <span class="cb-code">${txCtx.moneda}</span></div>
-        <div class="cb-sub">Transacción <code>${code}</code></div>
-      `;
-      box.style.display = 'block';
-      textEl && textEl.classList.add('hidden'); // ocultar fallback
-    }else{
-      box.style.display = 'none';
-      box.innerHTML = '';
-      textEl && textEl.classList.remove('hidden');
-    }
-  }
-
-  function confirmOperationView(text){
-    const el = qs('#confirm-amount-text');
-    if(el && text){ el.textContent = text; }
-    showScreen('confirm-amount');
-    renderConfirmBox();
-  }
-
-  /* Navegación / bindings */
+  /* Navegación */
   document.addEventListener('DOMContentLoaded',()=>{
     startClock();
-    qs('#info-serie') && (qs('#info-serie').textContent = '—');
-    qs('#info-ubicacion') && (qs('#info-ubicacion').textContent = '—');
+    // Placeholders forzados al inicio
+    const infoSerie = qs('#info-serie');
+    const infoUbic = qs('#info-ubicacion');
+    if(infoSerie) infoSerie.textContent = '—';
+    if(infoUbic) infoUbic.textContent = '—';
     cargarUbicaciones();
     showScreen('login');
   });
 
-  SELECT && SELECT.addEventListener('change', e=>{
-    activarUbicacion(e.target.value || "");
-  });
-
-  qs('#btn-login-ingresar') && qs('#btn-login-ingresar').addEventListener('click',()=>{
+  qs('#btn-login-ingresar')?.addEventListener('click',()=>{
     const val = SELECT?.value || ubicacionSeleccionada || "";
     if(!val) return;
     activarUbicacion(val);
@@ -530,131 +366,93 @@ function insertBills(){
     after(800,()=>showScreen('menu'));
   });
 
-  // Menú
-  qs('#btn-menu-retirar') && qs('#btn-menu-retirar').addEventListener('click',()=>{ 
+  qs('#btn-menu-retirar')?.addEventListener('click',()=>{ 
     showScreen('transaction'); 
     loadRetiroCurrencies(); 
-    txCtx.modo = 'retiro';
   });
+  qs('#btn-menu-deposito')?.addEventListener('click',()=>{ showScreen('deposit'); });
+  qs('#btn-menu-salir')?.addEventListener('click',()=>{ showScreen('login'); });
 
-  qs('#btn-menu-deposito') && qs('#btn-menu-deposito').addEventListener('click',()=>{ 
-    showScreen('deposit'); 
-    txCtx.modo = 'deposito';
-  });
-
-  qs('#btn-menu-salir') && qs('#btn-menu-salir').addEventListener('click',()=>{ showScreen('login'); });
-
-  qs('#btn-retirar-cancelar') && qs('#btn-retirar-cancelar').addEventListener('click',()=> showScreen('menu'));
-  qs('#btn-depo-cancelar') && qs('#btn-depo-cancelar').addEventListener('click',()=> showScreen('menu'));
-
-  // Confirmar RETIRO  (mostrar processing -> disparar animación)
-  qs('#btn-retirar-confirmar') && qs('#btn-retirar-confirmar').addEventListener('click', async ()=>{
-    const code = (qs('#transaction-number')?.value || '').trim();
-    if(!code) return;
-    showProcessing('Validando código de operación');
-    try{
-      const info = await validarCodigo(code, 'retiro');
-      txCtx.modo = 'retiro';
-      txCtx.code = code;
-      txCtx.moneda = info.moneda;
-      txCtx.monto = info.monto;
-      txCtx.raw = info;
-
-      qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
-        if (ch.dataset.code === info.moneda){ ch.classList.add('match'); }
-        else{ ch.classList.add('dimmed'); }
-      });
-
-      confirmOperationView(
-        `Retirar ${formatAmount(info.monto, info.moneda)} de la transacción ${info.codigo}.`
-      );
-    }catch(err){
-      qs('#cancel-sub') && (qs('#cancel-sub').textContent = String(err.message || err) || 'No se pudo validar.');
-      showScreen('cancel');
+  /* Retiro */
+  qs('#btn-retirar-cancelar')?.addEventListener('click',()=>{ showScreen('menu'); });
+  qs('#btn-retirar-confirmar')?.addEventListener('click',()=>{
+    const txInput = qs('#transaction-number');
+    const tx = (txInput?.value||'').trim();
+    if(!tx){ 
+      showProcessing('Falta el número de transacción'); 
+      return after(800,()=>showScreen('transaction')); 
     }
-  });
-
-  // Confirmar DEPÓSITO  (mostrar processing -> disparar animación)
-  qs('#btn-depo-confirmar') && qs('#btn-depo-confirmar').addEventListener('click', async ()=>{
-    const code = (qs('#deposit-tx')?.value || '').trim();
-    if(!code) return;
-    showProcessing('Validando código de operación');
-    try{
-      const info = await validarCodigo(code, 'deposito');
-      txCtx.modo = 'deposito';
-      txCtx.code = code;
-      txCtx.moneda = info.moneda;
-      txCtx.monto = info.monto;
-      txCtx.raw = info;
-
-      confirmOperationView(
-        `Depositar ${formatAmount(info.monto, info.moneda)} para la transacción ${info.codigo}.`
-      );
-    }catch(err){
-      qs('#cancel-sub') && (qs('#cancel-sub').textContent = String(err.message || err) || 'No se pudo validar.');
-      showScreen('cancel');
-    }
-  });
-
-  // Confirmación final
-  qs('#btn-amount-confirm') && qs('#btn-amount-confirm').addEventListener('click', ()=>{
-    if(!txCtx.modo) return;
-
-    const lines = [
-      `Operación: ${txCtx.modo.toUpperCase()}`,
-      `Código: ${txCtx.code}`,
-      `Moneda: ${txCtx.moneda}`,
-      `Monto: ${txCtx.monto}`,
-      `Fecha: ${(new Date()).toLocaleString('es-PY')}`,
-    ];
-    prepareReceipt(null, lines);
-
-    if(txCtx.modo === 'retiro'){
-      // 1) mostramos processing, 2) luego disparamos animación de salida
-      showProcessing('Entregando billetes');
-      after(30, dispenseBills);
-      after(2600, ()=>{
-        showScreen('success');
-        qs('#success-message') && (qs('#success-message').textContent = `Retiro de ${formatAmount(txCtx.monto, txCtx.moneda)} completado.`);
-      });
-    }else{
-      // 1) mostramos processing, 2) luego disparamos animación de inserción
-      showProcessing('Recibiendo billetes');
-      after(30, insertBills);
-      after(3200, ()=>{
-        showScreen('success');
-        qs('#success-message') && (qs('#success-message').textContent = `Depósito de ${formatAmount(txCtx.monto, txCtx.moneda)} registrado.`);
-      });
-    }
-  });
-
-  // Otros botones
-  qs('#btn-amount-cancel') && qs('#btn-amount-cancel').addEventListener('click', ()=> showScreen('menu'));
-  qs('#btn-success-exit') && qs('#btn-success-exit').addEventListener('click', ()=> showScreen('menu'));
-  qs('#btn-cancel-exit') && qs('#btn-cancel-exit').addEventListener('click', ()=> showScreen('menu'));
-  qs('#btn-success-print') && qs('#btn-success-print').addEventListener('click', ()=> printReceipt());
-
-  /* Teclado lateral */
-  let activeInput = null;
-  ['#transaction-number', '#deposit-tx'].forEach(sel=>{
-    qs(sel) && qs(sel).addEventListener('focus', e=> activeInput = e.target);
-    qs(sel) && qs(sel).addEventListener('blur',  e=> activeInput = null);
-  });
-  qsa('.ted-key').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const k = btn.dataset.key;
-      if(!activeInput) return;
-      if(k==='a'){ activeInput.value += 'A'; return; }
-      if(k==='b'){ activeInput.value += 'B'; return; }
-      if(k==='c'){ activeInput.value += 'C'; return; }
-      if(k==='d'){ activeInput.value = activeInput.value.slice(0,-1); return; }  // backspace
-      if(k==='e'){ return; } // reservado
-      if(k==='f'){ return; } // reservado
-      activeInput.value += k;
-      activeInput.dispatchEvent(new Event('input',{bubbles:true}));
+    showProcessing('Dispensando billetes');
+    dispenseBills();
+    after(2800,()=>{
+      prepareReceipt('Retiro de Dinero',[
+        `Operación: Retiro de Dinero`,
+        `Transacción: ${tx}`,
+        `Ubicación: ${ubicacionSeleccionada||'—'}`,
+        `Monto: $400.00`,
+        `Fecha: ${new Date().toLocaleString('es-PY')}`,
+        `Estado: COMPLETADO`
+      ]);
+      showScreen('success');
+      const successMsg = qs('#success-message');
+      if(successMsg) successMsg.textContent='Retirá tus billetes';
     });
   });
 
+  /* Depósito */
+  qs('#btn-depo-cancelar')?.addEventListener('click',()=>{ showScreen('menu'); });
+  qs('#btn-depo-confirmar')?.addEventListener('click',()=>{
+    const txInput = qs('#deposit-tx');
+    const tx = (txInput?.value||'').trim();
+    if(!tx){ 
+      showProcessing('Falta el número de transacción'); 
+      return after(800,()=>showScreen('deposit')); 
+    }
+    showProcessing('Esperando inserción de billetes');
+    insertBills();
+    after(3300,()=>{
+      const v=(Math.floor(Math.random()*18)+3)*100;
+      const confirmText = qs('#confirm-amount-text');
+      if(confirmText) confirmText.textContent=`¿Desea confirmar el depósito por $ ${v.toLocaleString('es-PY')}?`;
+      showScreen('confirm-amount');
+    });
+  });
+  qs('#btn-amount-confirm')?.addEventListener('click',()=>{ 
+    showProcessing('Confirmando'); 
+    after(1400,()=>{ 
+      showScreen('success'); 
+      const successMsg = qs('#success-message');
+      if(successMsg) successMsg.textContent='Depósito registrado correctamente'; 
+    }); 
+  });
+  qs('#btn-amount-cancel')?.addEventListener('click',()=>{ 
+    showProcessing('Cancelando'); 
+    after(1000,()=>{ showScreen('cancel'); }); 
+  });
+
+  /* Salir de cancel */
+  qs('#btn-cancel-exit')?.addEventListener('click',()=>{ showScreen('login'); });
+
+  /* Éxito / impresión */
+  qs('#btn-success-exit')?.addEventListener('click',()=>{ showScreen('login'); });
+  qs('#btn-success-print')?.addEventListener('click', printReceipt);
+
+  /* Teclado on-screen */
+  function activeInput(){
+    const a=document.activeElement;
+    if(a && a.tagName==='INPUT') return a;
+    return qs('.ted-screen-view.active input');
+  }
+  function insertChar(ch){
+    const f=activeInput(); 
+    if(!f) return;
+    const s=f.selectionStart??f.value.length, e=f.selectionEnd??f.value.length;
+    f.value=f.value.slice(0,s)+ch+f.value.slice(e);
+    const p=s+String(ch).length; 
+    f.setSelectionRange(p,p); 
+    f.focus();
+  }
+  qsa('.ted-key').forEach(b=>b.addEventListener('click',()=>insertChar(b.dataset.key||'')));
 })();
 </script>
 {% endblock %}

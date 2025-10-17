@@ -7,15 +7,13 @@ URLs de la app Usuarios.
 
 Incluye rutas de autenticación, dashboard y utilidades internas.
 Se añade la ruta ``/usuarios/ted/`` que renderiza la plantilla
-``usuarios/ted.html`` mediante TemplateView y **endpoints de API** para el TED.
+``usuarios/ted.html`` mediante TemplateView.
 """
 
 from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.decorators import login_required  # ← agregado
 from . import views
-from . import ted_api  # ← API del TED
 
 # Espacio de nombres de la app
 app_name = "usuarios"
@@ -39,18 +37,13 @@ urlpatterns = [
         name="ted",
     ),
 
-    # --- API TED ---
-    path("ted/api/validar/", ted_api.validar_transaccion, name="ted_api_validar"),
-
     # --- Herramientas de administración internas ---
-    # Importante: incluir admin_panel **con namespace** para que los {% url 'admin_panel:...' %} funcionen
-    path("admin_panel/", include(("admin_panel.urls", "admin_panel"), namespace="admin_panel")),
-
     path("listar/", views.listar_usuarios, name="listar_usuarios"),
     path("agregar-cliente/<int:user_id>/<uuid:cliente_id>/", views.agregar_cliente, name="agregar_cliente"),
     path("quitar-cliente/<int:user_id>/<uuid:cliente_id>/", views.quitar_cliente, name="quitar_cliente"),
 
-    # Otros módulos
-    path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
+    # Rutas del módulo admin_panel
+    path("admin_panel/", include("admin_panel.urls")),
     path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
+    path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
 ]
