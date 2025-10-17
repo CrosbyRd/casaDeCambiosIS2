@@ -1,64 +1,214 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="px-6 py-6">
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="text-4xl font-extrabold">{{ object|default:'Nuevo medio de pago' }}</h1>
-    <a href="{% url 'pagos:clientes_list' %}" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Volver</a>
-  </div>
+    <!-- Header -->
+    <div class="flex flex-col items-center gap-3 mb-5">
 
+      <!-- 1) Título principal centrado -->
+      <div class="text-center">
+        <h1 class="text-4xl font-extrabold text-[var(--ink)]">
+          {% if object %}Editar método de pago{% else %}Agregar método de pago{% endif %}
+        </h1>
+        <p class="text-lg leading-relaxed text-[var(--muted)] max-w-xl mx-auto">
+          Completa los datos y guarda. Podés volver sin cambios con “Cancelar”.
+        </p>
+      </div>
+    </div>
+
+  <!-- Messages -->
   {% include "partials/messages.html" %}
 
-  <div class="bg-white rounded-xl border border-[var(--line)] shadow p-6">
-    <form method="post" novalidate>
+  <!-- Card (más angosta para que no ocupe toda la pantalla) -->
+  <div class="bg-white rounded-xl border border-[var(--line)] shadow p-6 max-w-3xl mx-auto">
+    <form method="post" novalidate class="gx-form" data-editing="{% if object %}1{% else %}0{% endif %}">
       {% csrf_token %}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="md:col-span-2">{{ form.tipo.label_tag }} {{ form.tipo }}</div>
-        <div class="md:col-span-2">{{ form.alias.label_tag }} {{ form.alias }}</div>
-        <div>{{ form.activo.label_tag }} {{ form.activo }}</div>
-        <div>{{ form.predeterminado.label_tag }} {{ form.predeterminado }}</div>
+
+      <!-- Sección: Tipo -->
+      <div class="mb-6">
+        <h2 class="gx-section-title text-2xl font-bold mb-3">Tipo</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            {{ form.tipo }}
+            {% if form.tipo.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.tipo.errors|striptags }}</p>
+            {% endif %}
+            <p class="text-xs text-[var(--muted)] mt-2">
+              Tipos activos: {{ form.fields.tipo.queryset|length }} ·
+              Campos detectados: {{ form.campos_config|length }}
+            </p>
+          </div>
+        </div>
       </div>
 
-
-      <hr class="my-6" />
-      <p class="text-xs text-neutral-500">Tipos activos: {{ form.fields.tipo.queryset|length }} · Campos detectados: {{ form.campos_config|length }}</p>
-
-        <h2 class="text-2xl font-bold mb-2">Datos del medio</h2>
+      <!-- Sección: Alias -->
+      <div class="mb-6">
+        <h2 class="gx-section-title text-2xl font-bold mb-3">Proveedor</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% for bf in form %}
+          <div class="md:col-span-2">
+            {{ form.alias }}
+            {% if form.alias.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.alias.errors|striptags }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Datos del medio -->
+      <div class="mb-6">
+        <h2 class="gx-section-title text-2xl font-bold mb-3">Datos del medio</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {% for bf in form %}
             {% if bf.name != 'tipo' and bf.name != 'alias' and bf.name != 'activo' and bf.name != 'predeterminado' %}
-            <div>
-                <label class="font-semibold">{{ bf.label }}</label>
+              <div>
+                <label class="font-semibold text-[var(--ink)]">{{ bf.label }}</label>
                 {{ bf }}
                 {% if bf.errors %}
-                <p class="text-red-600 text-sm">{{ bf.errors|striptags }}</p>
+                  <p class="text-red-600 text-sm mt-1">{{ bf.errors|striptags }}</p>
                 {% endif %}
-            </div>
+              </div>
             {% endif %}
-        {% endfor %}
-        {% if form.campos_config|length == 0 %}
-            <p class="text-sm text-neutral-500 md:col-span-2">
-            No hay campos configurados para este tipo o aún no seleccionaste un tipo.
+          {% endfor %}
+          {% if form.campos_config|length == 0 %}
+            <p class="text-sm text-[var(--muted)] md:col-span-2">
+              No hay campos configurados para este tipo o aún no seleccionaste un tipo.
             </p>
-        {% endif %}
+          {% endif %}
         </div>
+      </div>
 
-      <div class="mt-6 flex justify-end">
-        <button class="btn bg-[var(--brand)] text-white">Guardar</button>
+      <!-- Sección: Estado -->
+      <div class="mb-8">
+        <h2 class="gx-section-title text-2xl font-bold mb-3">Estado</h2>
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- ACTIVO pill -->
+          <label for="id_activo" class="inline-flex items-center gap-2 cursor-pointer">
+            {{ form.activo }}
+            <span class="gx-pill gx-pill-green">✓ ACTIVO</span>
+          </label>
+          {% if form.activo.errors %}
+            <p class="text-red-600 text-sm w-full">{{ form.activo.errors|striptags }}</p>
+          {% endif %}
+
+          <!-- PREDETERMINADO pill -->
+          <label for="id_predeterminado" class="inline-flex items-center gap-2 cursor-pointer">
+            {{ form.predeterminado }}
+            <span class="gx-pill gx-pill-brand">Predeterminado</span>
+          </label>
+          {% if form.predeterminado.errors %}
+            <p class="text-red-600 text-sm w-full">{{ form.predeterminado.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex justify-end items-center gap-3">
+        <a href="{% url 'pagos:clientes_list' %}"
+           class="inline-flex items-center justify-center px-4 py-2 rounded-2xl font-extrabold text-white bg-red-600 hover:bg-red-700 transition shadow-sm min-w-[120px]">
+          Cancelar
+        </a>
+        <button type="submit" name="_save"
+                class="inline-flex items-center justify-center px-4 py-2 rounded-2xl font-extrabold text-white bg-[var(--brand)] hover:opacity-95 transition shadow-md min-w-[120px]">
+          {% if object %}Guardar{% else %}Crear{% endif %}
+        </button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- Estilos locales (solo estéticos, no cambian lógica) -->
+<style>
+  /* Inputs y selects dentro del form */
+  .gx-form input[type="text"],
+  .gx-form input[type="email"],
+  .gx-form input[type="tel"],
+  .gx-form input[type="number"],
+  .gx-form select,
+  .gx-form textarea {
+    width: 100%;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: .65rem .85rem;
+    outline: none;
+    color: var(--ink);
+    background-color: #fff;
+  }
+  .gx-form input:focus,
+  .gx-form select:focus,
+  .gx-form textarea:focus {
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, .12);
+    border-color: var(--brand);
+  }
+
+  /* Títulos de sección: líneas lila y texto blanco */
+  .gx-section-title{
+    background: var(--brand);
+    color: #fff;
+    padding: .5rem .9rem;
+    border-radius: 10px;
+    border-top: 3px solid var(--brand-dark);
+    border-bottom: 3px solid var(--brand-dark);
+  }
+
+  /* Pills de estado (usando el input real para el check) */
+  .gx-form #id_activo,
+  .gx-form #id_predeterminado {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .gx-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: .45rem .9rem;
+    font-weight: 800;
+    border-radius: 9999px;
+    border: 1.5px solid var(--line);
+    transition: all .15s ease;
+    user-select: none;
+  }
+  .gx-pill-green { background: #f0fdf4; color: #065f46; }
+  .gx-pill-brand { background: var(--brand-soft); color: var(--brand-dark); }
+
+  /* Estados checked */
+  #id_activo:checked + .gx-pill-green {
+    background: #16a34a; color: #fff; border-color: #16a34a;
+  }
+  #id_predeterminado:checked + .gx-pill-brand {
+    background: var(--brand); color: #fff; border-color: var(--brand);
+  }
+
+  /* "Bloqueo" visual del select en edición (JS evita cambios) */
+  .gx-select-locked {
+    pointer-events: none;
+    opacity: .7;
+  }
+</style>
+
+<!-- Scripts (no alteran la lógica del backend) -->
 <script>
 (function(){
+  const form = document.querySelector('form.gx-form');
+  const editing = form?.dataset?.editing === '1';
   const sel = document.getElementById('id_tipo');
-  if(!sel) return;
-  sel.addEventListener('change', function(){
-    const url = new URL(window.location);
-    if (this.value) url.searchParams.set('tipo', this.value);
-    else url.searchParams.delete('tipo');
-    window.location = url.toString();
-  });
+  if (!sel) return;
+
+  if (editing) {
+    // Evitar modificar el tipo en edición sin quitarlo del form-data
+    sel.classList.add('gx-select-locked');
+    const keep = sel.value;
+    sel.addEventListener('mousedown', e => e.preventDefault());
+    sel.addEventListener('focus',    e => sel.blur());
+    sel.addEventListener('change',   e => { sel.value = keep; });
+  } else {
+    // En creación: recarga con ?tipo=...
+    sel.addEventListener('change', function(){
+      const url = new URL(window.location);
+      if (this.value) url.searchParams.set('tipo', this.value);
+      else url.searchParams.delete('tipo');
+      window.location = url.toString();
+    });
+  }
 })();
 </script>
 {% endblock %}
