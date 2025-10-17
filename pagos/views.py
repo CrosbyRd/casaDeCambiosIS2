@@ -207,7 +207,7 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
         next_url = self.request.GET.get('next') or self.request.POST.get('next')
         if next_url:
             return next_url
-        return super().get_success_url()
+        return reverse("pagos:clientes_list")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -220,6 +220,7 @@ class MedioPagoCreateView(RequireClienteMixin, CreateView):
         obj = form.save(commit=False)
         obj.cliente = self.cliente
         obj.save()
+        self.object = obj
         messages.success(self.request, "Medio de pago creado correctamente.")
         return redirect(self.get_success_url())
 
@@ -242,9 +243,10 @@ class MedioPagoUpdateView(RequireClienteMixin, UpdateView):
         next_url = self.request.GET.get('next') or self.request.POST.get('next')
         if next_url:
             return next_url
-        return super().get_success_url()
+        return reverse("pagos:clientes_list")
 
     def form_valid(self, form):
+        self.object = form.save();
         messages.success(self.request, "Medio de pago actualizado correctamente.")
         return redirect(self.get_success_url())
 
