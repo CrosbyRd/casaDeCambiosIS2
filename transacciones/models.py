@@ -69,6 +69,7 @@ class Transaccion(models.Model):
         # Estados para COMPRA de divisa (Cliente Vende USD)
         ('pendiente_deposito_tauser', 'Pendiente de Depósito de Divisa (Tauser)'),
         ('procesando_acreditacion', 'Procesando Acreditación a Cliente (PYG)'),
+        ('pendiente_pago_stripe', 'Pendiente de Pago con Stripe'), # Nuevo estado para Stripe
 
         # Estados comunes
         ('completada', 'Completada'),   # Éxito

@@ -3,8 +3,11 @@ import importlib
 from django.http import HttpRequest
 from django.utils import timezone # Importar timezone
 from datetime import timedelta # Importar timedelta
+from django.urls import reverse # Importar reverse para construir URLs
+from urllib.parse import urlencode # Importar urlencode para construir parámetros de URL
 from .models import TipoMedioPago
 from transacciones.models import Transaccion
+from payments.stripe_service import create_payment_intent # Importar el servicio de Stripe
 
 def iniciar_cobro_a_cliente(transaccion: Transaccion, request: HttpRequest, medio_pago_id: str):
     """
@@ -36,6 +39,44 @@ def iniciar_cobro_a_cliente(transaccion: Transaccion, request: HttpRequest, medi
         return None
 
     engine_name = medio_pago.engine
+
+    # Lógica específica para Stripe
+    if engine_name == 'stripe':
+        try:
+            # Convertir el monto a centavos, asumiendo que la moneda de origen es USD para Stripe
+            # (o la moneda configurada para Stripe en la transacción)
+            # Aquí asumimos que transaccion.monto_origen es la cantidad en USD que el cliente va a pagar
+            # y que transaccion.moneda_origen.codigo es 'USD'.
+            # Si el cliente está comprando USD, paga con PYG. Si vende USD, recibe PYG.
+            # La integración de Stripe es para cuando el cliente PAGA con USD (es decir, la casa de cambio COMPRA USD).
+            # Por lo tanto, el monto_origen de la transacción es el USD que el cliente está pagando.
+            amount_in_cents = int(transaccion.monto_origen * 100)
+            currency = transaccion.moneda_origen.codigo.lower() # 'usd'
+
+            payment_intent_data = create_payment_intent(
+                amount_in_cents=amount_in_cents,
+                currency=currency,
+                customer_email=request.user.email
+            )
+
+            client_secret = payment_intent_data.get('clientSecret')
+            if not client_secret:
+                raise Exception(f"No se pudo obtener el client_secret de Stripe: {payment_intent_data.get('error', 'Error desconocido')}")
+
+            base_url = reverse('payments:stripe_payment_page')
+            params = urlencode({
+                'client_secret': client_secret,
+                'transaction_id': str(transaccion.id),
+            })
+            redirect_url = f'{base_url}?{params}'
+            print(f"INFO: [PAGOS] Redirigiendo a Stripe para transacción {transaccion.id}: {redirect_url}")
+            return redirect_url
+
+        except Exception as e:
+            print(f"ERROR: [PAGOS] Error al iniciar pago con Stripe para transacción {transaccion.id}: {e}")
+            return None
+    
+    # Lógica para otros gateways (existente)
     gateway_module_name = f"pagos.gateways.{engine_name}_gateway"
 
     # 2. Cargar dinámicamente el módulo del gateway
@@ -118,6 +159,20 @@ def handle_payment_webhook(payload: dict):
         return {'status': 'ERROR', 'message': 'Medio de pago no válido.'}
 
     engine_name = medio_pago.engine
+
+    # Lógica específica para Stripe Webhook
+    if engine_name == 'stripe':
+        from payments.stripe_service import handle_webhook as handle_stripe_webhook
+        try:
+            webhook_result = handle_stripe_webhook(payload)
+            # El webhook de Stripe ya debería actualizar el estado de la transacción
+            # Aquí solo devolvemos el resultado
+            return webhook_result
+        except Exception as e:
+            print(f"ERROR: [PAGOS WEBHOOK] Error al manejar webhook de Stripe para transacción {transaccion_id}: {e}")
+            return {'status': 'ERROR', 'message': f'Error interno al procesar webhook de Stripe: {e}'}
+
+    # Lógica para otros gateways (existente)
     gateway_module_name = f"pagos.gateways.{engine_name}_gateway"
 
     try:
