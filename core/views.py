@@ -249,6 +249,13 @@ def confirmar_operacion(request):
             codigo_operacion_tauser = str(uuid.uuid4())[:10]
             tasa_garantizada_hasta = timezone.now() + timedelta(hours=2) # Tasa bloqueada por 2 horas para Stripe
 
+            # Obtener el TipoMedioPago para Stripe
+            try:
+                tipo_medio_pago_stripe = TipoMedioPago.objects.get(engine='stripe')
+            except TipoMedioPago.DoesNotExist:
+                messages.error(request, "Error de configuración: No se encontró el medio de pago 'Stripe'.")
+                return redirect('core:iniciar_operacion')
+
             transaccion = Transaccion.objects.create(
                 cliente=cliente_activo,
                 usuario_operador=request.user,
@@ -263,6 +270,7 @@ def confirmar_operacion(request):
                 codigo_operacion_tauser=codigo_operacion_tauser,
                 tasa_garantizada_hasta=tasa_garantizada_hasta,
                 modalidad_tasa=modalidad_tasa, # Se mantiene la modalidad seleccionada
+                medio_pago_utilizado=tipo_medio_pago_stripe, # Asignar el medio de pago Stripe
             )
             request.session.pop('operacion_pendiente', None)
             messages.info(request, "Operación registrada. Ahora puedes proceder al pago con tarjeta.")
@@ -391,7 +399,8 @@ def iniciar_pago_stripe(request, transaccion_id):
         payment_intent_data = create_payment_intent(
             amount_in_cents=monto_en_centavos, # Argumento correcto
             currency=moneda,
-            customer_email=request.user.email
+            customer_email=request.user.email,
+            transaction_id=str(transaccion.id) # ¡Añadido el transaction_id al metadata!
         )
         
         # --- CORREGIDO: Se usa la clave 'clientSecret' que devuelve tu servicio ---

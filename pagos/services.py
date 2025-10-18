@@ -56,7 +56,8 @@ def iniciar_cobro_a_cliente(transaccion: Transaccion, request: HttpRequest, medi
             payment_intent_data = create_payment_intent(
                 amount_in_cents=amount_in_cents,
                 currency=currency,
-                customer_email=request.user.email
+                customer_email=request.user.email,
+                transaction_id=str(transaccion.id) # ¡ESTA ES LA LÍNEA CRUCIAL QUE TE FALTABA!
             )
 
             client_secret = payment_intent_data.get('clientSecret')
@@ -134,15 +135,30 @@ def handle_payment_webhook(payload: dict):
     Returns:
         dict: Un diccionario con el resultado del procesamiento del webhook.
     """
-    # Determinar el gateway a utilizar basándose en la referencia_comercio
-    # o algún otro identificador en el payload.
-    # Para la pasarela local, el payload ya contiene 'referencia_comercio'
-    # que es el ID de la Transaccion.
+    # --- ESTA ES LA LÓGICA CORREGIDA PARA WEBHOOKS ---
+    event_type = payload.get('type')
+    data_object = payload.get('data', {}).get('object', {})
     
-    transaccion_id = payload.get('referencia_comercio')
+    # 1. Obten el objeto del evento (ej: un PaymentIntent)
+    # Asumimos que el payload ya es el resultado de event.to_dict()
+    payment_intent = data_object 
+
+    # 2. Busca tu ID de transacción. Primero intenta con el formato Stripe (metadata),
+    # luego con el formato de pasarelas locales (referencia_comercio directa).
+    transaccion_id = None
+    if data_object and data_object.get('metadata'):
+        transaccion_id = data_object['metadata'].get('transaccion_id')
+        if not transaccion_id:
+            transaccion_id = data_object['metadata'].get('transaction_id') # Por si acaso se usó la clave antigua
+
+    # Si no se encontró en metadata, intentar buscar en el payload principal (para pasarelas locales)
     if not transaccion_id:
-        print("ERROR: [PAGOS WEBHOOK] Payload no contiene 'referencia_comercio'.")
-        return {'status': 'ERROR', 'message': 'Payload inválido.'}
+        transaccion_id = payload.get('referencia_comercio')
+    
+    # 3. Valida
+    if not transaccion_id:
+        print("ERROR: [PAGOS WEBHOOK] Error: El webhook no contenía un ID de transacción válido (ni en metadata ni como referencia_comercio).")
+        return {'status': 'ERROR', 'message': 'Webhook no contenía un ID de transacción válido.'}
 
     try:
         transaccion = Transaccion.objects.get(id=transaccion_id)
@@ -162,15 +178,25 @@ def handle_payment_webhook(payload: dict):
 
     # Lógica específica para Stripe Webhook
     if engine_name == 'stripe':
-        from payments.stripe_service import handle_webhook as handle_stripe_webhook
-        try:
-            webhook_result = handle_stripe_webhook(payload)
-            # El webhook de Stripe ya debería actualizar el estado de la transacción
-            # Aquí solo devolvemos el resultado
-            return webhook_result
-        except Exception as e:
-            print(f"ERROR: [PAGOS WEBHOOK] Error al manejar webhook de Stripe para transacción {transaccion_id}: {e}")
-            return {'status': 'ERROR', 'message': f'Error interno al procesar webhook de Stripe: {e}'}
+        # Aquí ya no delegamos a payments.stripe_service.handle_webhook
+        # porque la lógica de procesamiento se mueve aquí.
+        if event_type == 'payment_intent.succeeded':
+            try:
+                transaccion.estado = 'pendiente_retiro_tauser' # O 'completada'
+                transaccion.save(update_fields=['estado'])
+                print(f"INFO: [STRIPE WEBHOOK] Éxito: Transacción {transaccion_id} completada.")
+                return {'status': 'EXITOSO', 'message': 'Pago exitoso y transacción actualizada.'}
+            except Exception as e:
+                print(f"ERROR: [STRIPE WEBHOOK] Error al actualizar transacción {transaccion_id}: {e}")
+                return {'status': 'ERROR', 'message': f'Error al actualizar transacción: {e}'}
+        elif event_type == 'payment_intent.payment_failed':
+            transaccion.estado = 'cancelada'
+            transaccion.save(update_fields=['estado'])
+            print(f"INFO: [STRIPE WEBHOOK] Transacción {transaccion_id} actualizada a 'cancelada' por fallo de pago.")
+            return {'status': 'RECHAZADO', 'message': 'Pago fallido y transacción cancelada.'}
+        else:
+            print(f"INFO: [STRIPE WEBHOOK] Evento de Stripe {event_type} no manejado explícitamente para Transacción {transaccion_id}.")
+            return {'status': 'IGNORADO', 'message': f'Evento {event_type} no manejado.'}
 
     # Lógica para otros gateways (existente)
     gateway_module_name = f"pagos.gateways.{engine_name}_gateway"

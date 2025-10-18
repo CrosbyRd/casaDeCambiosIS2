@@ -6,8 +6,9 @@ from django.conf import settings
 # Configurar la clave secreta de Stripe al iniciar
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-from django.urls import reverse # Importar reverse para construir URLs
-from urllib.parse import urlencode # Importar urlencode para construir parámetros de URL
+# No necesitamos reverse ni urlencode aquí si return_url se maneja en el frontend
+# from django.urls import reverse
+# from urllib.parse import urlencode
 
 def create_payment_intent(amount_in_cents, currency="usd", customer_email=None, transaction_id=None):
     """
@@ -24,7 +25,8 @@ def create_payment_intent(amount_in_cents, currency="usd", customer_email=None, 
             'automatic_payment_methods': {
                 'enabled': True,
             },
-            'return_url': settings.SITE_URL + reverse('payments:payment_success') + '?' + urlencode({'transaction_id': str(transaction_id)}),
+            # Eliminamos 'return_url' de aquí
+            # 'return_url': settings.SITE_URL + reverse('payments:payment_success') + '?' + urlencode({'transaction_id': str(transaction_id)}),
         }
         if customer_email:
             customers = stripe.Customer.list(email=customer_email, limit=1)
@@ -36,15 +38,15 @@ def create_payment_intent(amount_in_cents, currency="usd", customer_email=None, 
             params['customer'] = customer_id
         
         if transaction_id:
-            params['metadata'] = {'transaction_id': str(transaction_id)}
-
+            params['metadata'] = {'transaccion_id': str(transaction_id)} # Usar 'transaccion_id' para consistencia con el feedback
+        
         intent = stripe.PaymentIntent.create(**params)
         
         return {
             'clientSecret': intent.client_secret
         }
     except Exception as e:
-        print(f"Error creating PaymentIntent: {e}")
+        print(f"Error creating PaymentIntent: {e}") # Mantener el print de error
         return {'error': str(e)}
 
 def handle_webhook(payload: dict):

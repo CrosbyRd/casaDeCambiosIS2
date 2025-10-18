@@ -16,8 +16,29 @@ DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
 
 # --- Stripe ---
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+# Claves de API (pk_test_... y sk_test_...)
+# Estas claves se leen desde las variables de entorno (.env en local, Config Vars en Heroku)
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000") # Carga SITE_URL desde .env con un valor por defecto
+
+# --- SECRETO DE WEBHOOK DE STRIPE ---
+# Esta es la clave MÁS CRÍTICA para la configuración de producción.
+#
+# !! IMPORTANTE !!
+# En DESARROLLO LOCAL, este valor se obtiene de la terminal al correr:
+# $ stripe listen --forward-to localhost:8000/payments/webhook/
+# (La clave 'whsec_...' que imprime ese comando debe ir en el .env)
+#
+# En PRODUCCIÓN (Heroku), esta clave DEBE ser diferente. Se obtiene desde:
+# 1. Ir al Dashboard de Stripe (Modo de Prueba).
+# 2. Ir a Developers > Webhooks.
+# 3. Crear un "Endpoint" que apunte a la URL pública de Heroku:
+#    https://[tu-app].herokuapp.com/payments/webhook/
+# 4. Stripe generará un "Signing secret" (whsec_...) para ESE endpoint.
+# 5. Esa es la clave que DEBE ir en las "Config Vars" de Heroku.
+#
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET") # Añadir esta línea
 
 # --- Apps ---
 INSTALLED_APPS = [
@@ -150,4 +171,3 @@ TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES
 # En desarrollo, permite operar con cotizaciones vencidas si se activa.
 # TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
-

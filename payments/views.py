@@ -65,31 +65,42 @@ def stripe_payment_page(request):
     return render(request, 'payments/stripe_payment_page.html', context)
 
 
-@csrf_exempt
+@csrf_exempt # ¡CRÍTICO! Los webhooks vienen sin token CSRF.
 def stripe_webhook_view(request):
     """
-    Vista para recibir y procesar webhooks de Stripe.
+    Vista que escucha las notificaciones asíncronas de Stripe (webhooks).
+    
+    Esta vista es llamada directamente por el SERVIDOR de Stripe, no por el
+    navegador del cliente.
+    
+    La seguridad de esta vista depende 100% de la variable de entorno
+    'STRIPE_WEBHOOK_SECRET'. Asegúrate de que esté configurada correctamente
+    tanto en local (con Stripe CLI) como en producción (con Heroku).
+    
+    Ver las instrucciones en settings.py para más detalles.
     """
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
+    # La variable 'webhook_secret' se carga desde el entorno correcto
+    # (settings.py lee .env en local o Config Vars en Heroku)
+    webhook_secret = settings.STRIPE_WEBHOOK_SECRET 
+    
     try:
-        # Aquí deberías usar tu clave de endpoint de webhook de Stripe
-        # settings.STRIPE_WEBHOOK_SECRET
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload, sig_header, webhook_secret
         )
     except ValueError as e:
-        # Invalid payload
-        print(f"ERROR: [STRIPE WEBHOOK] Invalid payload: {e}")
+        # Payload inválido
+        print(f"ERROR: [STRIPE WEBHOOK] Invalid payload: {e}") # Mantener el print de error
         return HttpResponseBadRequest('Invalid payload', status=400)
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        print(f"ERROR: [STRIPE WEBHOOK] Invalid signature: {e}")
+        # Firma inválida (¡Clave whsec_... incorrecta!)
+        print(f"ERROR: [STRIPE WEBHOOK] ERROR DE FIRMA. Revisa tu STRIPE_WEBHOOK_SECRET. {e}") # Mantener el print de error
         return HttpResponseBadRequest('Invalid signature', status=400)
     except Exception as e:
-        print(f"ERROR: [STRIPE WEBHOOK] Error al construir evento de Stripe: {e}")
+        print(f"ERROR: [STRIPE WEBHOOK] Error al construir evento de Stripe: {e}") # Mantener el print de error
         return HttpResponseBadRequest('Error processing webhook', status=400)
 
     # Delegar el procesamiento del evento al servicio de pagos
@@ -97,7 +108,7 @@ def stripe_webhook_view(request):
     result = handle_payment_webhook(event.to_dict()) # Convertir el objeto Event a dict
     
     if result.get('status') == 'ERROR':
-        print(f"ERROR: [STRIPE WEBHOOK] Error al procesar webhook en pagos.services: {result.get('message')}")
+        print(f"ERROR: [STRIPE WEBHOOK] Error al procesar webhook en pagos.services: {result.get('message')}") # Mantener el print de error
         return JsonResponse({'error': result.get('message')}, status=500)
 
     return JsonResponse({'status': 'success'})
