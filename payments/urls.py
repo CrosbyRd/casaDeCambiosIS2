@@ -18,4 +18,6 @@ urlpatterns = [
 
     # URL para la página de pago de Stripe (esta es la que usamos)
     path('stripe-payment/', views.stripe_payment_page, name='stripe_payment_page'),
+    # Nuevo endpoint para webhooks de Stripe
+    path('webhook/', views.stripe_webhook_view, name='stripe_webhook'),
 ]

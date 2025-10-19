@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% load configuracion_extras %}
+
+{% block title %}Confirmar Pago - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-md mx-auto px-6 py-6">
+    <header class="mb-6 text-center">
+        <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">✅ Confirmar Operación</h1>
+        <p class="text-base leading-relaxed text-[var(--muted)]">
+            Estás a punto de confirmar una operación de **Tasa Flotante**. La tasa de cambio puede variar hasta el momento exacto del pago.
+        </p>
+    </header>
+
+    {% if messages %}
+        <div id="flash-messages" class="mb-4 space-y-2">
+            {% for message in messages %}
+                <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="bg-white border rounded-xl shadow-sm p-6 mb-6" style="border-color:var(--line)">
+        <h2 class="text-xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h2>
+        <div class="space-y-2 text-[var(--ink)]">
+            <p><strong>Tipo de Operación:</strong> {{ transaccion.get_tipo_operacion_display }}</p>
+            <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}</p>
+            <p><strong>Monto a Recibir (Estimado):</strong> {{ transaccion.monto_destino|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</p>
+            <p><strong>Tasa Indicativa Inicial:</strong> {{ transaccion.tasa_cambio_aplicada|floatformat:4 }}</p>
+            <hr class="my-3" style="border-color:var(--line);">
+            <p class="text-lg font-bold">
+                Tasa de Mercado Actual: <span class="text-[var(--brand-dark)]">{{ tasa_actual|floatformat:4 }}</span>
+            </p>
+            <p class="text-lg font-bold">
+                Monto Final a Recibir: <span class="text-[var(--brand-dark)]">{{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</span>
+            </p>
+            <p class="text-sm text-[var(--muted)] mt-2">
+                Esta es la tasa actual del mercado. Al confirmar, esta tasa será la aplicada a tu operación.
+            </p>
+        </div>
+    </section>
+
+    <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit"
+                    class="w-full inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
+                    style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
+                Confirmar y Pagar Ahora
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="text-sm text-[var(--brand-dark)] hover:underline">
+                Volver al detalle de la transacción
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -11,11 +11,14 @@ from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
+from decimal import Decimal # Necesario para manejar Decimal
 
 from .models import Transaccion
 from pagos.services import iniciar_cobro_a_cliente
-from usuarios.utils import get_cliente_activo
+from usuarios.utils import get_cliente_activo, send_otp_email, validate_otp_code # Importar funciones OTP
+from usuarios.forms import VerificacionForm # Importar formulario de verificación
 from pagos.models import TipoMedioPago
+from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
 
 
 class IniciarCompraDivisaView(LoginRequiredMixin, TemplateView):
@@ -31,29 +34,73 @@ class IniciarCompraDivisaView(LoginRequiredMixin, TemplateView):
 
 class IniciarPagoTransaccionView(LoginRequiredMixin, View):
     """
-    Vista para que el cliente inicie el proceso de pago para una transacción
-    de venta de divisa (compra de la casa de cambio) que está pendiente de pago.
+    Vista para que el cliente inicie el proceso de pago para una transacción.
+    Incluye la verificación MFA para el Flujo B (Tasa Flotante).
     """
+    template_name = 'transacciones/verificar_otp_pago.html' # Nueva plantilla para OTP
+
+    def get(self, request, transaccion_id, *args, **kwargs):
+        cliente_activo = get_cliente_activo(request)
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+
+        # Solo si es tasa flotante y pendiente de confirmación, se pide OTP
+        if transaccion.modalidad_tasa == 'flotante' and transaccion.estado == 'pendiente_confirmacion_pago':
+            send_otp_email(
+                request.user,
+                "Confirmación de Pago Final",
+                "Tu código de verificación para confirmar el pago es: {code}. Válido por {minutes} minutos."
+            )
+            messages.info(request, f"Hemos enviado un código de verificación a tu email ({request.user.email}).")
+            form = VerificacionForm()
+            return render(request, self.template_name, {'form': form, 'email': request.user.email, 'transaccion': transaccion})
+        
+        # Si no requiere OTP o ya está en estado de pago, redirigir directamente a iniciar el cobro
+        # Esto cubre el Flujo A (tasa bloqueada) y reintentos de pago
+        return self._iniciar_cobro(request, transaccion)
+
     def post(self, request, transaccion_id, *args, **kwargs):
         cliente_activo = get_cliente_activo(request)
         transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
 
+        # Lógica de verificación OTP para Flujo B
+        if transaccion.modalidad_tasa == 'flotante' and transaccion.estado == 'pendiente_confirmacion_pago':
+            form = VerificacionForm(request.POST)
+            if form.is_valid():
+                codigo = form.cleaned_data['codigo']
+                if validate_otp_code(request.user, codigo):
+                    # OTP válido, proceder con la actualización de tasa y el cobro
+                    request.user.verification_code = None # Limpiar código OTP del usuario
+                    request.user.code_created_at = None
+                    request.user.save(update_fields=['verification_code', 'code_created_at']) # Guardar cambios en el usuario
+                    
+                    transaccion.estado = 'pendiente_pago_cliente' # Cambiar estado de la transacción a pendiente de pago
+                    transaccion.save(update_fields=['estado']) # Guardar solo el estado en la transacción
+                    messages.success(request, "Código OTP verificado. Procediendo con el pago.")
+                    return self._iniciar_cobro(request, transaccion)
+                else:
+                    messages.error(request, "Código OTP incorrecto o expirado.")
+            else:
+                messages.error(request, "Por favor, ingresa un código válido.")
+            return render(request, self.template_name, {'form': form, 'email': request.user.email, 'transaccion': transaccion})
+        
+        # Si no es tasa flotante o ya pasó la verificación OTP, proceder directamente
+        return self._iniciar_cobro(request, transaccion)
+
+    def _iniciar_cobro(self, request, transaccion):
+        """
+        Lógica para actualizar la tasa (si es flotante) e iniciar el cobro.
+        """
         if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
-            # Si la modalidad de tasa es flotante, actualizar la tasa de cambio aplicada
+            # Si la modalidad de tasa es flotante, actualizar la tasa de cambio aplicada con la tasa final
             if transaccion.modalidad_tasa == 'flotante':
-                from cotizaciones.models import Cotizacion
                 try:
-                    # Obtener la cotización actual para la moneda de origen (PYG) y destino (USD)
-                    # Asumimos que la moneda de origen es PYG y la de destino es la divisa extranjera
                     cotizacion = Cotizacion.objects.get(
                         moneda_base=transaccion.moneda_origen,
                         moneda_destino=transaccion.moneda_destino
                     )
-                    # Actualizar la tasa de cambio aplicada con el valor de venta total (incluyendo comisiones)
                     transaccion.tasa_cambio_aplicada = cotizacion.total_venta
-                    # Recalcular el monto destino con la nueva tasa final
                     transaccion.monto_destino = transaccion.monto_origen / cotizacion.total_venta
-                    transaccion.save()
+                    transaccion.save(update_fields=['tasa_cambio_aplicada', 'monto_destino'])
                     messages.info(request, f"Tasa de cambio actualizada a {cotizacion.total_venta} (final con comisiones) para la operación flotante.")
                 except Cotizacion.DoesNotExist:
                     messages.error(request, "No se encontró una cotización válida para actualizar la tasa.")
@@ -62,7 +109,6 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
                     messages.error(request, f"Error al actualizar la tasa de cambio: {e}")
                     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
-            # Obtener el medio de pago utilizado en la transacción
             medio_pago_id = transaccion.medio_pago_utilizado.id_tipo if transaccion.medio_pago_utilizado else None
             
             if not medio_pago_id:
@@ -74,7 +120,7 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
                 return redirect(url_pago)
             else:
                 transaccion.estado = 'error'
-                transaccion.save()
+                transaccion.save(update_fields=['estado'])
                 messages.error(request, "No se pudo iniciar el proceso de pago. Por favor, intente nuevamente más tarde.")
                 return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
         else:
