@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Emisor: {{ emisor.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle del Emisor: {{ emisor.nombre }}</h2>
+    <hr>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Información General
+        </div>
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ emisor.nombre }}</p>
+            <p><strong>RUC:</strong> {{ emisor.ruc }}-{{ emisor.dv_ruc }}</p>
+            <p><strong>Email Emisor:</strong> {{ emisor.email_emisor }}</p>
+            <p><strong>Dirección:</strong> {{ emisor.direccion }}{% if emisor.numero_casa %}, Nro. {{ emisor.numero_casa }}{% endif %}</p>
+            <p><strong>Ciudad:</strong> {{ emisor.descripcion_ciudad }} ({{ emisor.codigo_ciudad }})</p>
+            <p><strong>Departamento:</strong> {{ emisor.descripcion_departamento }} ({{ emisor.codigo_departamento }})</p>
+            <p><strong>Teléfono:</strong> {{ emisor.telefono }}</p>
+            <p><strong>Actividades Económicas:</strong>
+                {% if emisor.actividades_economicas %}
+                    <pre>{{ emisor.actividades_economicas|json_script:"actividades_economicas_json" }}</pre>
+                    <div id="actividades-economicas-display"></div>
+                    <script>
+                        const actividadesJson = JSON.parse(document.getElementById('actividades_economicas_json').textContent);
+                        const container = document.getElementById('actividades-economicas-display');
+                        actividadesJson.forEach(act => {
+                            const p = document.createElement('p');
+                            p.textContent = `- ${act.cActEco}: ${act.dDesActEco}`;
+                            container.appendChild(p);
+                        });
+                    </script>
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Configuración de Numeración
+        </div>
+        <div class="card-body">
+            <p><strong>Establecimiento:</strong> {{ emisor.establecimiento }}</p>
+            <p><strong>Punto de Expedición:</strong> {{ emisor.punto_expedicion }}</p>
+            <p><strong>Email del Equipo:</strong> {{ emisor.email_equipo }}</p>
+            <p><strong>Rango de Numeración:</strong> {{ emisor.rango_numeracion_inicio }} - {{ emisor.rango_numeracion_fin }}</p>
+            <p><strong>Siguiente Número de Factura:</strong> {{ emisor.siguiente_numero_factura }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            API Factura Segura
+        </div>
+        <div class="card-body">
+            <p><strong>Authentication Token:</strong> 
+                {% if emisor.auth_token %}
+                    <span class="badge bg-success">Presente</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#tokenModal">Ver Token</button>
+                    <!-- Modal para ver el token -->
+                    <div class="modal fade" id="tokenModal" tabindex="-1" aria-labelledby="tokenModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="tokenModalLabel">Authentication Token</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre class="bg-light p-3 rounded">{{ emisor.auth_token }}</pre>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <span class="badge bg-danger">Ausente</span>
+                {% endif %}
+            </p>
+            <p><strong>Fecha de Generación del Token:</strong> {{ emisor.token_generado_at|default:"N/A" }}</p>
+            <form action="{% url 'facturacion_electronica:generar_token' emisor.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">Generar/Actualizar Token</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'facturacion_electronica:emisor_list' %}" class="btn btn-secondary">Volver a la Lista</a>
+        <a href="{% url 'facturacion_electronica:emisor_update' pk=emisor.pk %}" class="btn btn-warning">Editar Emisor</a>
+        <a href="{% url 'facturacion_electronica:emisor_delete' pk=emisor.pk %}" class="btn btn-danger">Eliminar Emisor</a>
+    </div>
+</div>
+{% endblock %}

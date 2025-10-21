@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "ted",
     "django_extensions",
     "analista_panel",
+    "facturacion_electronica", # Nueva app para facturación electrónica
 
 ]
 
@@ -171,3 +172,6 @@ TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES
 # En desarrollo, permite operar con cotizaciones vencidas si se activa.
 # TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
+
+# Configuración de Facturación Electrónica
+FACTURASEGURA_SIMULATION_MODE = os.getenv("FACTURASEGURA_SIMULATION_MODE", "True").strip().lower() in ("1", "true", "yes", "on")

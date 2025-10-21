@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Documento Electrónico{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle del Documento Electrónico</h2>
+    <hr>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Información General del Documento
+        </div>
+        <div class="card-body">
+            <p><strong>ID:</strong> {{ documento.id }}</p>
+            <p><strong>Emisor:</strong> <a href="{% url 'facturacion_electronica:emisor_detail' pk=documento.emisor.pk %}">{{ documento.emisor.nombre }}</a></p>
+            <p><strong>Tipo de Documento:</strong> {{ documento.get_tipo_de_display }}</p>
+            <p><strong>Número de Documento:</strong> {{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}</p>
+            <p><strong>Número de Timbrado:</strong> {{ documento.numero_timbrado|default:"N/A" }}</p>
+            <p><strong>CDC:</strong> {{ documento.cdc|default:"N/A" }}</p>
+            <p><strong>Estado SIFEN:</strong> 
+                {% if documento.estado_sifen == 'aprobado' %}
+                    <span class="badge bg-success">{{ documento.get_estado_sifen_display }}</span>
+                {% elif documento.estado_sifen == 'rechazado' or documento.estado_sifen == 'error_api' or documento.estado_sifen == 'error_sifen' %}
+                    <span class="badge bg-danger">{{ documento.get_estado_sifen_display }}</span>
+                {% elif documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}
+                    <span class="badge bg-warning">{{ documento.get_estado_sifen_display }}</span>
+                {% elif documento.estado_sifen == 'simulado' %}
+                    <span class="badge bg-info">{{ documento.get_estado_sifen_display }}</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ documento.get_estado_sifen_display }}</span>
+                {% endif %}
+                {% if documento.descripcion_estado %}<small class="text-muted ms-2">({{ documento.descripcion_estado }})</small>{% endif %}
+            </p>
+            <p><strong>Fecha de Emisión:</strong> {{ documento.fecha_emision|date:"d/m/Y H:i:s" }}</p>
+            <p><strong>Transacción Asociada:</strong> 
+                {% if documento.transaccion_asociada %}
+                    <a href="{% url 'transacciones:detalle_transaccion' pk=documento.transaccion_asociada.pk %}">{{ documento.transaccion_asociada.id }}</a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Ítems del Documento
+        </div>
+        <div class="card-body">
+            {% if documento.items.all %}
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>P. Unitario</th>
+                            <th>Descuento</th>
+                            <th>IVA Afectación</th>
+                            <th>Tasa IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in documento.items.all %}
+                        <tr>
+                            <td>{{ item.codigo_interno|default:"N/A" }}</td>
+                            <td>{{ item.descripcion_producto_servicio }}</td>
+                            <td>{{ item.cantidad }}</td>
+                            <td>{{ item.precio_unitario }}</td>
+                            <td>{{ item.descuento_item }}</td>
+                            <td>{{ item.afectacion_iva }}</td>
+                            <td>{{ item.tasa_iva }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No hay ítems asociados a este documento.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Acciones
+        </div>
+        <div class="card-body">
+            <form action="{% url 'facturacion_electronica:consultar_estado' documento.id %}" method="post" class="d-inline me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">Consultar Estado SIFEN</button>
+            </form>
+            <form action="{% url 'facturacion_electronica:solicitar_cancelacion' documento.id %}" method="post" class="d-inline me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning btn-sm" {% if documento.estado_sifen not in ['aprobado', 'aprobado_obs'] %}disabled{% endif %}>Solicitar Cancelación</button>
+            </form>
+            <form action="{% url 'facturacion_electronica:solicitar_inutilizacion' documento.id %}" method="post" class="d-inline me-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm" {% if documento.estado_sifen in ['aprobado', 'cancelado', 'inutilizado'] %}disabled{% endif %}>Solicitar Inutilización</button>
+            </form>
+            <a href="{% url 'facturacion_electronica:descargar_kude' documento.id %}" class="btn btn-secondary btn-sm me-2" {% if not documento.cdc %}disabled{% endif %}>Descargar KuDE</a>
+            <a href="{% url 'facturacion_electronica:descargar_xml' documento.id %}" class="btn btn-secondary btn-sm" {% if not documento.cdc %}disabled{% endif %}>Descargar XML</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            JSON Enviado a API
+        </div>
+        <div class="card-body">
+            {% if json_enviado_pretty %}
+                <pre class="bg-light p-3 rounded">{{ json_enviado_pretty }}</pre>
+            {% else %}
+                <p>No hay JSON enviado registrado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            JSON Respuesta de API
+        </div>
+        <div class="card-body">
+            {% if json_respuesta_pretty %}
+                <pre class="bg-light p-3 rounded">{{ json_respuesta_pretty }}</pre>
+            {% else %}
+                <p>No hay JSON de respuesta registrado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'facturacion_electronica:documento_list' %}" class="btn btn-secondary">Volver a la Lista de Documentos</a>
+    </div>
+</div>
+{% endblock %}

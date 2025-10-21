@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Documentos Electrónicos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Documentos Electrónicos</h2>
+    <hr>
+
+    {% if documentos %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Emisor</th>
+                    <th>Tipo</th>
+                    <th>Número Documento</th>
+                    <th>CDC</th>
+                    <th>Estado SIFEN</th>
+                    <th>Fecha Emisión</th>
+                    <th>Transacción Asociada</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td>{{ doc.id|truncatechars:8 }}</td>
+                    <td>{{ doc.emisor.nombre }}</td>
+                    <td>{{ doc.get_tipo_de_display }}</td>
+                    <td>{{ doc.emisor.establecimiento }}-{{ doc.emisor.punto_expedicion }}-{{ doc.numero_documento }}</td>
+                    <td>{{ doc.cdc|default:"N/A" }}</td>
+                    <td>
+                        {% if doc.estado_sifen == 'aprobado' %}
+                            <span class="badge bg-success">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'rechazado' or doc.estado_sifen == 'error_api' or doc.estado_sifen == 'error_sifen' %}
+                            <span class="badge bg-danger">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'cancelado' or doc.estado_sifen == 'inutilizado' %}
+                            <span class="badge bg-warning">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'simulado' %}
+                            <span class="badge bg-info">{{ doc.get_estado_sifen_display }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ doc.get_estado_sifen_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ doc.fecha_emision|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if doc.transaccion_asociada %}
+                            <a href="{% url 'transacciones:detalle_transaccion' pk=doc.transaccion_asociada.pk %}">{{ doc.transaccion_asociada.id|truncatechars:8 }}</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'facturacion_electronica:documento_detail' pk=doc.pk %}" class="btn btn-info btn-sm">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }} de {{ page_obj.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <p>No hay documentos electrónicos registrados.</p>
+    {% endif %}
+</div>
+{% endblock %}
