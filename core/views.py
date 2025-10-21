@@ -18,13 +18,18 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from django.utils.dateparse import parse_date
 from core.utils import validar_limite_transaccion
-from usuarios.utils import get_cliente_activo
+from usuarios.utils import get_cliente_activo, send_otp_email, validate_otp_code # Importar funciones OTP
 import json
 from payments.stripe_service import create_payment_intent
 from urllib.parse import urlencode
 from pagos.models import TipoMedioPago, MedioPagoCliente, CampoMedioPago
 from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente, CampoMedioAcreditacion
 from django.urls import reverse
+from django.views.generic import View, TemplateView # Para las nuevas vistas basadas en clases
+from django.contrib.auth.mixins import LoginRequiredMixin # Para las nuevas vistas
+from usuarios.forms import VerificacionForm # Para el formulario de OTP
+from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
+from decimal import Decimal # Para manejar decimales
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -191,8 +196,11 @@ def iniciar_operacion(request):
         if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
             operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion']
         
-        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG':
-            operacion_data['metodo_entrega'] = form.cleaned_data.get('metodo_entrega')
+        # Asegurarse de que el metodo_entrega se guarde si está presente en el formulario
+        # independientemente de la condición específica de moneda, ya que la visibilidad
+        # en el frontend ya lo controla.
+        if form.cleaned_data.get('metodo_entrega'):
+            operacion_data['metodo_entrega'] = form.cleaned_data['metodo_entrega']
 
         request.session['operacion_pendiente'] = operacion_data
         return redirect('core:confirmar_operacion')
@@ -219,75 +227,100 @@ def confirmar_operacion(request):
         operacion_pendiente[key] = Decimal(operacion_pendiente[key])
 
     if request.method == 'POST':
-        try:
-            moneda_origen_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_origen_codigo'])
-            moneda_destino_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_destino_codigo'])
-        except Moneda.DoesNotExist:
-            messages.error(request, "Error al encontrar las monedas para la transacción.")
-            return redirect('core:iniciar_operacion')
-        
-        metodo_entrega = operacion_pendiente.get('metodo_entrega')
-        estado_inicial = 'pendiente_deposito_tauser'
-
-        if operacion_pendiente['tipo_operacion'] == 'venta':
-            estado_inicial = 'pendiente_pago_cliente'
-        elif metodo_entrega == 'stripe':
-            estado_inicial = 'pendiente_pago_stripe'
-        
-        codigo_operacion_tauser = str(uuid.uuid4())[:10]
         modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada')
-        tasa_garantizada_hasta = None
+        metodo_entrega = operacion_pendiente.get('metodo_entrega') # Obtener el método de entrega
 
-        if modalidad_tasa == 'bloqueada':
-            if operacion_pendiente['tipo_operacion'] == 'compra':
-                tasa_garantizada_hasta = timezone.now() + timedelta(hours=2)
-            elif operacion_pendiente['tipo_operacion'] == 'venta':
-                tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
+        tipo_operacion = operacion_pendiente['tipo_operacion']
+        moneda_origen_codigo = operacion_pendiente['moneda_origen_codigo']
+        moneda_destino_codigo = operacion_pendiente['moneda_destino_codigo']
+        modalidad_tasa = operacion_pendiente.get('modalidad_tasa', 'bloqueada')
+        metodo_entrega = operacion_pendiente.get('metodo_entrega')
 
-        medio_pago_id = operacion_pendiente.get('medio_pago_id')
-        medio_pago_cliente_obj = None
-        if medio_pago_id:
+        # Lógica para Stripe (prioritaria si se selecciona y es USD -> PYG)
+        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG' and metodo_entrega == 'stripe':
             try:
-                medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
-            except MedioPagoCliente.DoesNotExist:
-                messages.error(request, "El medio de pago seleccionado ya no es válido.")
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+            except Moneda.DoesNotExist:
+                messages.error(request, "Error al encontrar las monedas para la transacción.")
                 return redirect('core:iniciar_operacion')
 
-        transaccion = Transaccion.objects.create(
-            cliente=cliente_activo,
-            usuario_operador=request.user,
-            tipo_operacion=operacion_pendiente['tipo_operacion'],
-            estado=estado_inicial,
-            moneda_origen=moneda_origen_obj,
-            monto_origen=operacion_pendiente['monto_origen'],
-            moneda_destino=moneda_destino_obj,
-            monto_destino=operacion_pendiente['monto_recibido'],
-            tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
-            comision_aplicada=operacion_pendiente['comision_aplicada'],
-            codigo_operacion_tauser=codigo_operacion_tauser,
-            tasa_garantizada_hasta=tasa_garantizada_hasta,
-            modalidad_tasa=modalidad_tasa,
-            medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
-        )
-        request.session.pop('operacion_pendiente', None)
-        
-        if metodo_entrega == 'stripe':
-             messages.info(request, "Operación registrada. Ahora puedes proceder al pago con tarjeta.")
-             return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
-        
-        if transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
-            messages.info(request, "Operación creada. Espera la confirmación para el retiro en efectivo.")
-            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            estado_inicial = 'pendiente_pago_stripe'
+            codigo_operacion_tauser = str(uuid.uuid4())[:10]
+            tasa_garantizada_hasta = timezone.now() + timedelta(hours=2) # Tasa bloqueada por 2 horas para Stripe
 
-        if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
-            messages.info(request, "Operación creada. Procede al pago desde el detalle de la transacción.")
-            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
-        
-        messages.success(
-            request,
-            f"Operación {transaccion.id} creada con éxito. Estado: {transaccion.get_estado_display()}. Código: {codigo_operacion_tauser}"
-        )
-        return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            # Obtener el TipoMedioPago para Stripe
+            try:
+                tipo_medio_pago_stripe = TipoMedioPago.objects.get(engine='stripe')
+            except TipoMedioPago.DoesNotExist:
+                messages.error(request, "Error de configuración: No se encontró el medio de pago 'Stripe'.")
+                return redirect('core:iniciar_operacion')
+
+            transaccion = Transaccion.objects.create(
+                cliente=cliente_activo,
+                usuario_operador=request.user,
+                tipo_operacion=tipo_operacion,
+                estado=estado_inicial,
+                moneda_origen=moneda_origen_obj,
+                monto_origen=operacion_pendiente['monto_origen'],
+                moneda_destino=moneda_destino_obj,
+                monto_destino=operacion_pendiente['monto_recibido'],
+                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
+                comision_aplicada=operacion_pendiente['comision_aplicada'],
+                codigo_operacion_tauser=codigo_operacion_tauser,
+                tasa_garantizada_hasta=tasa_garantizada_hasta,
+                modalidad_tasa=modalidad_tasa, # Se mantiene la modalidad seleccionada
+                medio_pago_utilizado=tipo_medio_pago_stripe, # Asignar el medio de pago Stripe
+            )
+            request.session.pop('operacion_pendiente', None)
+            messages.info(request, "Operación registrada. Ahora puedes proceder al pago con tarjeta.")
+            return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
+
+        # Lógica para Flujo A (Tasa Bloqueada sin Stripe)
+        elif modalidad_tasa == 'bloqueada':
+            return redirect('core:verificar_otp_reserva')
+
+        # Lógica para Flujo B (Tasa Flotante sin Stripe)
+        else: # modalidad_tasa == 'flotante'
+            try:
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+            except Moneda.DoesNotExist:
+                messages.error(request, "Error al encontrar las monedas para la transacción.")
+                return redirect('core:iniciar_operacion')
+
+            estado_inicial_flotante = 'pendiente_confirmacion_pago'
+            codigo_operacion_tauser = str(uuid.uuid4())[:10]
+
+            medio_pago_id = operacion_pendiente.get('medio_pago_id')
+            medio_pago_cliente_obj = None
+            if medio_pago_id:
+                try:
+                    medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
+                except MedioPagoCliente.DoesNotExist:
+                    messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
+                    return redirect('core:iniciar_operacion')
+
+            transaccion = Transaccion.objects.create(
+                cliente=cliente_activo,
+                usuario_operador=request.user,
+                tipo_operacion=tipo_operacion,
+                estado=estado_inicial_flotante,
+                moneda_origen=moneda_origen_obj,
+                monto_origen=operacion_pendiente['monto_origen'],
+                moneda_destino=moneda_destino_obj,
+                monto_destino=operacion_pendiente['monto_recibido'],
+                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
+                comision_aplicada=operacion_pendiente['comision_aplicada'],
+                codigo_operacion_tauser=codigo_operacion_tauser,
+                tasa_garantizada_hasta=None,
+                modalidad_tasa=modalidad_tasa,
+                medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+            )
+            request.session.pop('operacion_pendiente', None)
+
+            messages.info(request, "Operación iniciada con tasa flotante. Por favor, confirma el pago.")
+            return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
 
     return render(request, 'core/confirmar_operacion.html', {'operacion': operacion_pendiente})
 
@@ -366,7 +399,8 @@ def iniciar_pago_stripe(request, transaccion_id):
         payment_intent_data = create_payment_intent(
             amount_in_cents=monto_en_centavos, # Argumento correcto
             currency=moneda,
-            customer_email=request.user.email
+            customer_email=request.user.email,
+            transaction_id=str(transaccion.id) # ¡Añadido el transaction_id al metadata!
         )
         
         # --- CORREGIDO: Se usa la clave 'clientSecret' que devuelve tu servicio ---
@@ -386,3 +420,157 @@ def iniciar_pago_stripe(request, transaccion_id):
     except Exception as e:
         messages.error(request, f"Hubo un error al iniciar el proceso de pago: {e}")
         return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+
+
+# ----------------------------
+# Nuevas Vistas para Flujos de Operación
+# ----------------------------
+
+class VerificarOtpReservaView(LoginRequiredMixin, View):
+    """
+    Vista para el Flujo A (Tasa Garantizada):
+    Solicita OTP antes de crear la transacción y reservar la tasa.
+    """
+    template_name = 'core/verificar_otp.html' # Plantilla para ingresar OTP
+
+    def get(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente')
+        if not operacion_pendiente:
+            messages.error(request, "No hay una operación pendiente para verificar.")
+            return redirect('core:iniciar_operacion')
+        
+        cliente_activo = get_cliente_activo(request)
+        if not cliente_activo:
+            messages.info(request, "Seleccioná con qué cliente querés operar.")
+            return redirect("usuarios:seleccionar_cliente")
+
+        # Enviar OTP al email del usuario
+        send_otp_email(
+            request.user,
+            "Confirmación de Reserva de Tasa",
+            "Tu código de verificación para reservar la tasa es: {code}. Válido por {minutes} minutos."
+        )
+        messages.info(request, f"Hemos enviado un código de verificación a tu email ({request.user.email}).")
+        form = VerificacionForm()
+        return render(request, self.template_name, {'form': form, 'email': request.user.email})
+
+    def post(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente')
+        if not operacion_pendiente:
+            messages.error(request, "Sesión de operación inválida.")
+            return redirect('core:iniciar_operacion')
+
+        form = VerificacionForm(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo']
+            if validate_otp_code(request.user, codigo):
+                # OTP válido, proceder a crear la transacción con tasa garantizada
+                cliente_activo = get_cliente_activo(request)
+                try:
+                    moneda_origen_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_origen_codigo'])
+                    moneda_destino_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_destino_codigo'])
+                except Moneda.DoesNotExist:
+                    messages.error(request, "Error al encontrar las monedas para la transacción.")
+                    return redirect('core:iniciar_operacion')
+
+                estado_inicial = 'pendiente_pago_cliente'
+                codigo_operacion_tauser = str(uuid.uuid4())[:10]
+                modalidad_tasa = 'bloqueada'
+
+                tasa_garantizada_hasta = None
+                if operacion_pendiente['tipo_operacion'] == 'compra':
+                    tasa_garantizada_hasta = timezone.now() + timedelta(hours=2)
+                elif operacion_pendiente['tipo_operacion'] == 'venta':
+                    tasa_garantizada_hasta = timezone.now() + timedelta(minutes=15)
+                
+                # Obtener el medio de pago del cliente de la sesión
+                medio_pago_id = operacion_pendiente.get('medio_pago_id')
+                medio_pago_cliente_obj = None
+                if medio_pago_id:
+                    try:
+                        medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
+                    except MedioPagoCliente.DoesNotExist:
+                        messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
+                        return redirect('core:iniciar_operacion')
+
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente_activo,
+                    usuario_operador=request.user,
+                    tipo_operacion=operacion_pendiente['tipo_operacion'],
+                    estado=estado_inicial,
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']),
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_pendiente['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    codigo_operacion_tauser=codigo_operacion_tauser,
+                    tasa_garantizada_hasta=tasa_garantizada_hasta,
+                    modalidad_tasa=modalidad_tasa,
+                    medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+                )
+                request.session.pop('operacion_pendiente', None) # Limpiar sesión
+
+                messages.success(request, f"Tasa reservada y operación {transaccion.id} creada. Procede al pago.")
+                # Redirigir al inicio del pago (que ahora puede ser la pasarela o el detalle)
+                if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
+                    return redirect('transacciones:iniciar_pago', transaccion_id=transaccion.id)
+                elif transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
+                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+                else:
+                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+
+            else:
+                messages.error(request, "Código OTP incorrecto o expirado.")
+        else:
+            messages.error(request, "Por favor, ingresa un código válido.")
+        
+        return render(request, self.template_name, {'form': form, 'email': request.user.email})
+
+
+class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
+    """
+    Vista para el Flujo B (Tasa Flotante):
+    Muestra la tasa en tiempo real y el botón de confirmación final.
+    """
+    template_name = 'core/confirmacion_final_pago.html'
+
+    def get(self, request, transaccion_id, *args, **kwargs):
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=get_cliente_activo(self.request))
+
+        if transaccion.estado != 'pendiente_confirmacion_pago' or transaccion.modalidad_tasa != 'flotante':
+            messages.error(self.request, "La transacción no está en un estado válido para confirmación final.")
+            return redirect('core:iniciar_operacion') # O a una página de error
+        
+        context = self.get_context_data(transaccion=transaccion, **kwargs)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transaccion = kwargs.get('transaccion') # La transacción ya se obtuvo en el método get()
+
+        # Obtener la tasa de cambio en tiempo real
+        try:
+            cotizacion_actual = Cotizacion.objects.get(
+                moneda_base=transaccion.moneda_origen,
+                moneda_destino=transaccion.moneda_destino
+            )
+            tasa_actual = cotizacion_actual.total_venta # Asumiendo que es una venta de divisa (cliente compra)
+            monto_destino_actual = transaccion.monto_origen / tasa_actual
+        except Cotizacion.DoesNotExist:
+            # Este caso ya debería ser manejado en el método get()
+            # Si llega aquí, es un error inesperado o un estado inconsistente
+            messages.error(self.request, "Error interno: No se pudo obtener la tasa de cambio actual para el contexto.")
+            tasa_actual = Decimal('0.00') # Valor por defecto para evitar errores
+            monto_destino_actual = Decimal('0.00') # Valor por defecto para evitar errores
+        
+        context['transaccion'] = transaccion
+        context['tasa_actual'] = tasa_actual
+        context['monto_destino_actual'] = monto_destino_actual
+        context['email_usuario'] = self.request.user.email # Para mostrar en la plantilla
+        return context
+
+    def post(self, request, transaccion_id, *args, **kwargs):
+        # Este POST solo redirige a la vista de inicio de pago en transacciones
+        # La lógica de MFA y actualización de tasa se manejará en IniciarPagoTransaccionView
+        return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)

@@ -31,7 +31,7 @@ urlpatterns = [
     path("admin_panel/", include("admin_panel.urls")),
     path("operaciones/", include("operaciones.urls")),
     path("core/", include("core.urls")), # Incluir las URLs de la app core
-    path("", include("payments.urls")),
+    path("payments/", include("payments.urls")), # Corregir la inclusión de las URLs de payments
     path("simulador/", include("simuladores.urls")),
     path("transacciones/", include("transacciones.urls", namespace="transacciones")),
     

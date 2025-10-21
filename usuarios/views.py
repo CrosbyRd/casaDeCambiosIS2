@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail # Mantener por si se usa en otros lugares, aunque OTP se moverá
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .utils import SESSION_KEY, get_cliente_activo
+from .utils import SESSION_KEY, get_cliente_activo, send_otp_email, validate_otp_code
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
@@ -39,13 +39,11 @@ def register(request):
                 # Por ahora, simplemente lo ignoramos, pero podrías loggear un error.
                 pass
 
-            user.generate_verification_code()
-            send_mail(
+            # Usar la nueva función para enviar OTP
+            send_otp_email(
+                user,
                 "Código de verificación",
-                f"Tu código de verificación es: {user.verification_code}",
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
+                "Tu código de verificación es: {code}. Válido por {minutes} minutos."
             )
             request.session["email_verificacion"] = user.email
             return redirect("usuarios:verify")
@@ -69,12 +67,13 @@ def verify(request):
     form = VerificacionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         codigo = form.cleaned_data["codigo"]
-        if user.is_code_valid(codigo, minutes_valid=5):
+        # Usar la nueva función para validar OTP
+        if validate_otp_code(user, codigo, minutes_valid=5):
             user.is_active = True
             user.is_verified = True
             user.verification_code = None
             user.code_created_at = None
-            user.save()
+            user.save(update_fields=['is_active', 'is_verified', 'verification_code', 'code_created_at'])
             request.session.pop("email_verificacion", None)
             messages.success(request, "¡Cuenta verificada correctamente! Ya puedes iniciar sesión.")
             return redirect("login")
@@ -91,13 +90,11 @@ def reenviar_codigo(request):
         return redirect("usuarios:register")
 
     user = get_object_or_404(CustomUser, email=email)
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para reenviar OTP
+    send_otp_email(
+        user,
         "Nuevo código de verificación",
-        f"Tu nuevo código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu nuevo código de verificación es: {code}. Válido por {minutes} minutos."
     )
     messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
     return redirect("usuarios:verify")
@@ -131,13 +128,11 @@ def login_view(request):
         next_url = request.session.pop("pending_login_next", None)
         return redirect(next_url or "usuarios:login_redirect")
 
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para enviar OTP
+    send_otp_email(
+        user,
         "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu código de verificación es: {code}. Válido por {minutes} minutos."
     )
 
     request.session["pending_login_user_id"] = user.id
@@ -161,7 +156,8 @@ def login_otp(request):
 
     if request.method == "POST":
         code = (request.POST.get("codigo") or "").strip()
-        if user.is_code_valid(code, minutes_valid=5):
+        # Usar la nueva función para validar OTP
+        if validate_otp_code(user, code, minutes_valid=5):
             user.verification_code = None
             user.code_created_at = None
             user.save(update_fields=["verification_code", "code_created_at"])
@@ -182,13 +178,11 @@ def login_otp_resend(request):
         return redirect("login")
 
     user = get_object_or_404(CustomUser, id=uid)
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para reenviar OTP
+    send_otp_email(
+        user,
         "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu nuevo código de verificación es: {code}. Válido por {minutes} minutos."
     )
     messages.success(request, f"Enviamos un nuevo código a {user.email}.")
     return redirect("login_otp")

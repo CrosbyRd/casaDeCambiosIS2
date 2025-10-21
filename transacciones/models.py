@@ -62,12 +62,14 @@ class Transaccion(models.Model):
 
     ESTADO_CHOICES = [
         # Estados para VENTA de divisa (Cliente Compra USD)
+        ('pendiente_confirmacion_pago', 'Pendiente de Confirmación de Pago'), # Nuevo estado para Flujo B
         ('pendiente_pago_cliente', 'Pendiente de Pago del Cliente (PYG)'),
         ('pendiente_retiro_tauser', 'Pendiente de Retiro de Divisa (Tauser)'),
         
         # Estados para COMPRA de divisa (Cliente Vende USD)
         ('pendiente_deposito_tauser', 'Pendiente de Depósito de Divisa (Tauser)'),
         ('procesando_acreditacion', 'Procesando Acreditación a Cliente (PYG)'),
+        ('pendiente_pago_stripe', 'Pendiente de Pago con Stripe'), # Nuevo estado para Stripe
 
         # Estados comunes
         ('completada', 'Completada'),   # Éxito
@@ -163,14 +165,13 @@ class Transaccion(models.Model):
         estado = self.estado_dinamico
         # Reconstruimos los choices en un diccionario para buscar el display name
         choices_dict = dict(self.ESTADO_CHOICES)
-        print(choices_dict.get(estado, estado.replace('_', ' ').title()))
         return choices_dict.get(estado, estado.replace('_', ' ').title())
 
     class Meta:
         verbose_name = "Transacción"
         verbose_name_plural = "Transacciones"
         ordering = ['-fecha_creacion']
-    ...
+    
     # ----------------------------
     # Validación de límites
     # ----------------------------
