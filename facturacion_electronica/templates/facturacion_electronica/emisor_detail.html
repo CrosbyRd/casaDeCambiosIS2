@@ -3,15 +3,15 @@
 {% block title %}Detalle del Emisor: {{ emisor.nombre }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Detalle del Emisor: {{ emisor.nombre }}</h2>
-    <hr>
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">Detalle del Emisor: {{ emisor.nombre }}</h2>
+    <hr class="mb-6 border-gray-300">
 
-    <div class="card mb-4">
-        <div class="card-header">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div class="text-lg font-semibold border-b pb-2 mb-4 text-gray-700">
             Información General
         </div>
-        <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
             <p><strong>Nombre:</strong> {{ emisor.nombre }}</p>
             <p><strong>RUC:</strong> {{ emisor.ruc }}-{{ emisor.dv_ruc }}</p>
             <p><strong>Email Emisor:</strong> {{ emisor.email_emisor }}</p>
@@ -19,31 +19,33 @@
             <p><strong>Ciudad:</strong> {{ emisor.descripcion_ciudad }} ({{ emisor.codigo_ciudad }})</p>
             <p><strong>Departamento:</strong> {{ emisor.descripcion_departamento }} ({{ emisor.codigo_departamento }})</p>
             <p><strong>Teléfono:</strong> {{ emisor.telefono }}</p>
-            <p><strong>Actividades Económicas:</strong>
-                {% if emisor.actividades_economicas %}
-                    <pre>{{ emisor.actividades_economicas|json_script:"actividades_economicas_json" }}</pre>
-                    <div id="actividades-economicas-display"></div>
-                    <script>
-                        const actividadesJson = JSON.parse(document.getElementById('actividades_economicas_json').textContent);
-                        const container = document.getElementById('actividades-economicas-display');
-                        actividadesJson.forEach(act => {
-                            const p = document.createElement('p');
-                            p.textContent = `- ${act.cActEco}: ${act.dDesActEco}`;
-                            container.appendChild(p);
-                        });
-                    </script>
-                {% else %}
-                    N/A
-                {% endif %}
-            </p>
+            <div class="md:col-span-2">
+                <p><strong>Actividades Económicas:</strong>
+                    {% if emisor.actividades_economicas %}
+                        <pre class="bg-gray-100 p-3 rounded-md text-sm overflow-auto max-h-40">{{ emisor.actividades_economicas|json_script:"actividades_economicas_json" }}</pre>
+                        <div id="actividades-economicas-display" class="mt-2 text-sm"></div>
+                        <script>
+                            const actividadesJson = JSON.parse(document.getElementById('actividades_economicas_json').textContent);
+                            const container = document.getElementById('actividades-economicas-display');
+                            actividadesJson.forEach(act => {
+                                const p = document.createElement('p');
+                                p.textContent = `- ${act.cActEco}: ${act.dDesActEco}`;
+                                container.appendChild(p);
+                            });
+                        </script>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div class="text-lg font-semibold border-b pb-2 mb-4 text-gray-700">
             Configuración de Numeración
         </div>
-        <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
             <p><strong>Establecimiento:</strong> {{ emisor.establecimiento }}</p>
             <p><strong>Punto de Expedición:</strong> {{ emisor.punto_expedicion }}</p>
             <p><strong>Email del Equipo:</strong> {{ emisor.email_equipo }}</p>
@@ -52,48 +54,49 @@
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div class="text-lg font-semibold border-b pb-2 mb-4 text-gray-700">
             API Factura Segura
         </div>
-        <div class="card-body">
-            <p><strong>Authentication Token:</strong> 
+        <div class="text-gray-700">
+            <p class="mb-2"><strong>Authentication Token:</strong> 
                 {% if emisor.auth_token %}
-                    <span class="badge bg-success">Presente</span>
-                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#tokenModal">Ver Token</button>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Presente</span>
+                    <button type="button" class="ml-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" data-open="tokenModal">Ver Token</button>
                     <!-- Modal para ver el token -->
-                    <div class="modal fade" id="tokenModal" tabindex="-1" aria-labelledby="tokenModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="tokenModalLabel">Authentication Token</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <pre class="bg-light p-3 rounded">{{ emisor.auth_token }}</pre>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
+                    <div id="tokenModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+                        <div class="relative top-20 mx-auto p-5 border w-11/12 md:max-w-2xl shadow-lg rounded-md bg-white" data-modal-overlay>
+                            <div class="flex justify-between items-center border-b pb-3 mb-3">
+                                <h5 class="text-xl font-semibold text-gray-900">Authentication Token</h5>
+                                <button type="button" class="text-gray-400 hover:text-gray-500" data-modal-close="tokenModal" aria-label="Close">
+                                    <span class="sr-only">Cerrar</span>
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            <div class="mb-4">
+                                <pre class="bg-gray-100 p-3 rounded-md text-sm overflow-auto max-h-60">{{ emisor.auth_token }}</pre>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" data-modal-close="tokenModal">Cerrar</button>
                             </div>
                         </div>
                     </div>
                 {% else %}
-                    <span class="badge bg-danger">Ausente</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Ausente</span>
                 {% endif %}
             </p>
-            <p><strong>Fecha de Generación del Token:</strong> {{ emisor.token_generado_at|default:"N/A" }}</p>
-            <form action="{% url 'facturacion_electronica:generar_token' emisor.id %}" method="post" class="d-inline">
+            <p class="mb-4"><strong>Fecha de Generación del Token:</strong> {{ emisor.token_generado_at|default:"N/A" }}</p>
+            <form action="{% url 'facturacion_electronica:generar_token' emisor.id %}" method="post" class="inline-block">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-primary btn-sm">Generar/Actualizar Token</button>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Generar/Actualizar Token</button>
             </form>
         </div>
     </div>
 
-    <div class="mt-4">
-        <a href="{% url 'facturacion_electronica:emisor_list' %}" class="btn btn-secondary">Volver a la Lista</a>
-        <a href="{% url 'facturacion_electronica:emisor_update' pk=emisor.pk %}" class="btn btn-warning">Editar Emisor</a>
-        <a href="{% url 'facturacion_electronica:emisor_delete' pk=emisor.pk %}" class="btn btn-danger">Eliminar Emisor</a>
+    <div class="mt-6 flex space-x-3">
+        <a href="{% url 'facturacion_electronica:emisor_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Volver a la Lista</a>
+        <a href="{% url 'facturacion_electronica:emisor_update' pk=emisor.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">Editar Emisor</a>
+        <a href="{% url 'facturacion_electronica:emisor_delete' pk=emisor.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Eliminar Emisor</a>
     </div>
 </div>
 {% endblock %}
