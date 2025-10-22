@@ -71,6 +71,9 @@ class DocumentoElectronicoDetailView(LoginRequiredMixin, AdminRequiredMixin, Det
         context['json_respuesta_pretty'] = json.dumps(self.object.json_respuesta_api, indent=2) if self.object.json_respuesta_api else None
         return context
 
+
+
+
 # Acciones para DocumentoElectronico (disparadas por POST)
 @login_required
 @admin_required # Usar el decorador de función
@@ -162,3 +165,13 @@ def descargar_xml_view(request, documento_id):
     except Exception as e:
         messages.error(request, f"Error al descargar XML: {e}")
         return redirect('facturacion_electronica:documento_detail', pk=documento_id)
+
+@login_required
+@admin_required
+def toggle_emisor_activo_view(request, pk):
+    emisor = get_object_or_404(EmisorFacturaElectronica, pk=pk)
+    if request.method == 'POST':
+        emisor.activo = not emisor.activo
+        emisor.save()
+        messages.success(request, f"El estado 'activo' del emisor {emisor.nombre} ha sido cambiado a {emisor.activo}.")
+    return redirect('facturacion_electronica:emisor_detail', pk=pk)

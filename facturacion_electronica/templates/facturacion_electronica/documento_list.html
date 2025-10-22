@@ -47,7 +47,7 @@
                     <td>{{ doc.fecha_emision|date:"d/m/Y H:i" }}</td>
                     <td>
                         {% if doc.transaccion_asociada %}
-                            <a href="{% url 'transacciones:detalle_transaccion' pk=doc.transaccion_asociada.pk %}">{{ doc.transaccion_asociada.id|truncatechars:8 }}</a>
+                            <a href="{% url 'transacciones:resultado_pago' transaccion_id=doc.transaccion_asociada.pk %}">{{ doc.transaccion_asociada.id|truncatechars:8 }}</a>
                         {% else %}
                             N/A
                         {% endif %}

@@ -1,27 +1,26 @@
 import requests
 import os
 import json
+import uuid
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 from .models import EmisorFacturaElectronica, DocumentoElectronico, ItemDocumentoElectronico
-from transacciones.models import Transaccion # Asumiendo que Transaccion está en la app transacciones
+from transacciones.models import Transaccion  # Asumiendo que Transaccion está en la app transacciones
 
 class FacturaSeguraAPIClient:
     def __init__(self, emisor_id):
         self.emisor = EmisorFacturaElectronica.objects.get(id=emisor_id)
         self.base_url_esi = os.getenv("FACTURASEGURA_API_URL_TEST") if settings.DEBUG else os.getenv("FACTURASEGURA_API_URL_PROD")
         self.login_url = os.getenv("FACTURASEGURA_LOGIN_URL_TEST") if settings.DEBUG else os.getenv("FACTURASEGURA_LOGIN_URL_PROD")
-        self.simulation_mode = settings.FACTURASEGURA_SIMULATION_MODE # Controla si se llama a la API real
+        # Debes tener FACTURASEGURA_SIMULATION_MODE en settings.py
+        self.simulation_mode = getattr(settings, "FACTURASEGURA_SIMULATION_MODE", True)
 
     def _get_auth_token(self):
         """
-        Obtiene el token de autenticación. Si no existe o ha expirado (aunque la API dice que no expira,
-        es buena práctica tener un mecanismo de re-generación si falla), lo genera.
+        Obtiene el token de autenticación. Si no existe lo genera.
         """
-        # La API indica que el token es válido hasta que el usuario cambie la contraseña.
-        # Por simplicidad, aquí solo verificamos si existe. Si la API retorna un error de auth,
-        # se podría implementar una lógica para regenerarlo.
         if not self.emisor.auth_token:
             return self._generate_auth_token()
         return self.emisor.auth_token
@@ -31,12 +30,8 @@ class FacturaSeguraAPIClient:
         Genera un nuevo token de autenticación para el ESI.
         """
         if self.simulation_mode:
-            # En modo simulación, generamos un token ficticio
-            print("Modo simulación activo: Generando token de autenticación ficticio.")
             fake_token = "SIMULATED_AUTH_TOKEN_" + os.urandom(16).hex()
             self.emisor.auth_token = fake_token
-            # Asegúrate de que timezone.now() esté disponible, si no, impórtalo
-            from django.utils import timezone
             self.emisor.token_generado_at = timezone.now()
             self.emisor.save()
             return fake_token
@@ -50,26 +45,21 @@ class FacturaSeguraAPIClient:
         headers = {"Content-Type": "application/json"}
         payload = {"email": email, "password": password}
 
-        try:
-            response = requests.post(self.login_url, headers=headers, json=payload)
-            response.raise_for_status() # Lanza una excepción para códigos de estado HTTP de error
-            data = response.json()
-            token = data["response"]["user"]["authentication_token"]
-            
-            from django.utils import timezone
-            self.emisor.auth_token = token
-            self.emisor.token_generado_at = timezone.now()
-            self.emisor.save()
-            return token
-        except requests.exceptions.RequestException as e:
-            print(f"Error al generar el token de autenticación: {e}")
-            raise
+        response = requests.post(self.login_url, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        token = data["response"]["user"]["authentication_token"]
+
+        self.emisor.auth_token = token
+        self.emisor.token_generado_at = timezone.now()
+        self.emisor.save()
+        return token
+
     def _make_request(self, operation, params, method='POST', is_file_download=False):
         """
         Método genérico para construir y enviar las peticiones HTTP a la API de Factura Segura.
         """
         if self.simulation_mode and not is_file_download:
-            print(f"Modo simulación activo para operación: {operation}. No se realizará llamada real a la API.")
             return self._simulate_api_response(operation, params)
 
         token = self._get_auth_token()
@@ -80,32 +70,23 @@ class FacturaSeguraAPIClient:
         }
 
         url = self.base_url_esi
-        
+
         if method == 'POST':
             payload = {"operation": operation, "params": params}
-            try:
-                response = requests.post(url, headers=headers, json=payload)
-                response.raise_for_status()
-                return response.json()
-            except requests.exceptions.RequestException as e:
-                print(f"Error en la petición POST a la API ({operation}): {e}")
-                raise
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            return response.json()
         elif method == 'GET' and is_file_download:
-            # Para dwn_kude y dwn_xml, la URL es diferente
-            # https://apitest.facturasegura.com.py/misife00/v1/esi/operation/dRucEm/CDC
+            # Para dwn_kude y dwn_xml:
+            # https://.../misife00/v1/esi/{operation}/{dRucEm}/{CDC}
             cdc = params.get("CDC")
             dRucEm = params.get("dRucEm")
             if not cdc or not dRucEm:
                 raise ValueError("CDC y dRucEm son requeridos para descargar archivos.")
-            
             download_url = f"{self.base_url_esi}/{operation}/{dRucEm}/{cdc}"
-            try:
-                response = requests.get(download_url, headers={'Authentication-Token': token})
-                response.raise_for_status()
-                return response.content # Retorna el contenido binario del archivo
-            except requests.exceptions.RequestException as e:
-                print(f"Error al descargar archivo ({operation}): {e}")
-                raise
+            response = requests.get(download_url, headers={'Authentication-Token': token})
+            response.raise_for_status()
+            return response.content
         else:
             raise ValueError(f"Método HTTP no soportado o uso incorrecto para {operation}")
 
@@ -113,9 +94,7 @@ class FacturaSeguraAPIClient:
         """
         Simula una respuesta exitosa de la API de Factura Segura para desarrollo.
         """
-        print(f"Simulando respuesta para operación: {operation}")
         if operation == "generar_de":
-            # Generar un CDC ficticio para simulación
             fake_cdc = f"SIMULATED{uuid.uuid4().hex[:34].upper()}"
             return {
                 "code": 0,
@@ -138,11 +117,8 @@ class FacturaSeguraAPIClient:
                 }]
             }
         elif operation == "calcular_de":
-            # Retorna el mismo JSON resumido con algunos campos calculados ficticios
             de_json = params.get("DE", {})
-            # Aquí se podría añadir lógica para "calcular" algunos campos si es necesario para pruebas
-            de_json["dTotOpe"] = "1000000" # Ejemplo de campo calculado
-            de_json["dIVA10"] = "90909" # Ejemplo
+            # Puedes "calcular" algunos campos de prueba si lo deseas
             return {
                 "code": 0,
                 "description": "OK (Simulado)",
@@ -176,68 +152,70 @@ class FacturaSeguraAPIClient:
     def generar_de(self, json_de_completo, transaccion_id=None):
         """
         Llama a la operación 'generar_de' de la API para generar un documento electrónico.
-        Actualiza el siguiente número de factura del emisor.
+        Asigna dNumDoc del rango y completa datos del emisor antes de enviar.
         """
         emisor_instance = EmisorFacturaElectronica.objects.select_for_update().get(id=self.emisor.id)
 
-        # Asignar el número de documento antes de llamar a la API (o simularlo)
-        # Formatear a 7 dígitos con ceros a la izquierda
+        # Validar rango antes de asignar número
+        if emisor_instance.siguiente_numero_factura is None:
+            emisor_instance.siguiente_numero_factura = emisor_instance.rango_numeracion_inicio
+
+        if emisor_instance.siguiente_numero_factura < emisor_instance.rango_numeracion_inicio or emisor_instance.siguiente_numero_factura > emisor_instance.rango_numeracion_fin:
+            raise ValueError("Rango agotado o inválido para emisión de factura.")
+
         numero_doc_str = str(emisor_instance.siguiente_numero_factura).zfill(7)
         json_de_completo["dNumDoc"] = numero_doc_str
-        
+
+        # Inyectar datos del emisor en el DE
+        json_de_completo.setdefault("dRucEm", emisor_instance.ruc)
+        json_de_completo.setdefault("dDVEmi", emisor_instance.dv_ruc)
+        json_de_completo.setdefault("dEst", emisor_instance.establecimiento)
+        json_de_completo.setdefault("dPunExp", emisor_instance.punto_expedicion)
+        if emisor_instance.numero_timbrado_actual:
+            json_de_completo.setdefault("dNumTim", emisor_instance.numero_timbrado_actual)
+        if emisor_instance.fecha_inicio_timbrado:
+            json_de_completo.setdefault("dFeIniT", emisor_instance.fecha_inicio_timbrado.strftime("%Y-%m-%d"))
+
         params = {"DE": json_de_completo}
-        
-        try:
-            response = self._make_request("generar_de", params)
+        response = self._make_request("generar_de", params)
 
-            if response["code"] == 0:
-                cdc = response["results"][0]["CDC"]
-                estado_sifen = 'pendiente_aprobacion' if not self.simulation_mode else 'simulado'
-                descripcion_estado = response["description"]
-                
-                # Crear el DocumentoElectronico en la DB
-                doc_electronico = DocumentoElectronico.objects.create(
-                    emisor=emisor_instance,
-                    tipo_de='factura', # Asumimos factura por ahora, se puede hacer dinámico
-                    numero_documento=numero_doc_str,
-                    numero_timbrado=json_de_completo.get("dNumTim"),
-                    cdc=cdc,
-                    estado_sifen=estado_sifen,
-                    descripcion_estado=descripcion_estado,
-                    json_enviado_api=json_de_completo,
-                    json_respuesta_api=response,
-                    transaccion_asociada_id=transaccion_id
-                )
+        if response["code"] == 0:
+            cdc = response["results"][0]["CDC"]
+            estado_sifen = 'pendiente_aprobacion' if not self.simulation_mode else 'simulado'
+            descripcion_estado = response.get("description", "")
 
-                # Incrementar el siguiente número de factura SOLO si la generación fue exitosa
-                # y está dentro del rango.
-                if emisor_instance.siguiente_numero_factura < emisor_instance.rango_numeracion_fin:
-                    emisor_instance.siguiente_numero_factura += 1
-                    emisor_instance.save()
-                else:
-                    print(f"Advertencia: El rango de numeración para {emisor_instance.email_equipo} está por agotarse.")
+            doc_electronico = DocumentoElectronico.objects.create(
+                emisor=emisor_instance,
+                tipo_de='factura',
+                numero_documento=numero_doc_str,
+                numero_timbrado=json_de_completo.get("dNumTim"),
+                cdc=cdc,
+                estado_sifen=estado_sifen,
+                descripcion_estado=descripcion_estado,
+                json_enviado_api=json_de_completo,
+                json_respuesta_api=response,
+                transaccion_asociada_id=transaccion_id
+            )
 
-                return doc_electronico
-            else:
-                print(f"Error al generar DE: {response.get('description')}")
-                # Aquí se podría guardar un DocumentoElectronico con estado de error
-                DocumentoElectronico.objects.create(
-                    emisor=emisor_instance,
-                    tipo_de='factura',
-                    numero_documento=numero_doc_str,
-                    numero_timbrado=json_de_completo.get("dNumTim"),
-                    estado_sifen='error_api',
-                    descripcion_estado=response.get('description', 'Error desconocido de la API'),
-                    json_enviado_api=json_de_completo,
-                    json_respuesta_api=response,
-                    transaccion_asociada_id=transaccion_id
-                )
-                raise Exception(f"Error de API al generar DE: {response.get('description')}")
-        except Exception as e:
-            print(f"Excepción al generar DE: {e}")
-            # Si ocurre una excepción antes de guardar el DocumentoElectronico,
-            # se podría crear uno con estado de error aquí también.
-            raise
+            # Incrementar SIEMPRE tras uso exitoso del número
+            emisor_instance.siguiente_numero_factura = emisor_instance.siguiente_numero_factura + 1
+            emisor_instance.save(update_fields=["siguiente_numero_factura"])
+
+            return doc_electronico
+        else:
+            # Guardar documento con error para auditoría
+            DocumentoElectronico.objects.create(
+                emisor=emisor_instance,
+                tipo_de='factura',
+                numero_documento=numero_doc_str,
+                numero_timbrado=json_de_completo.get("dNumTim"),
+                estado_sifen='error_api',
+                descripcion_estado=response.get('description', 'Error desconocido de la API'),
+                json_enviado_api=json_de_completo,
+                json_respuesta_api=response,
+                transaccion_asociada_id=transaccion_id
+            )
+            raise Exception(f"Error de API al generar DE: {response.get('description')}")
 
     def get_estado_sifen(self, cdc, ruc_emisor):
         """
@@ -259,7 +237,7 @@ class FacturaSeguraAPIClient:
         """
         params = {
             "dRucEm": ruc_emisor,
-            "iTiDE": tipo_de, # '1' para Factura, '5' para Nota de Crédito
+            "iTiDE": tipo_de,  # '1' para Factura, '5' para Nota de Crédito
             "dNumTim": num_timbrado,
             "dEst": establecimiento,
             "dPunExp": punto_exp,

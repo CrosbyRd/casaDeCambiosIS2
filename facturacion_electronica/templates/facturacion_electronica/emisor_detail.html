@@ -19,6 +19,19 @@
             <p><strong>Ciudad:</strong> {{ emisor.descripcion_ciudad }} ({{ emisor.codigo_ciudad }})</p>
             <p><strong>Departamento:</strong> {{ emisor.descripcion_departamento }} ({{ emisor.codigo_departamento }})</p>
             <p><strong>Teléfono:</strong> {{ emisor.telefono }}</p>
+            <p><strong>Estado Activo:</strong> 
+                {% if emisor.activo %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activo</span>
+                {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactivo</span>
+                {% endif %}
+                <form action="{% url 'facturacion_electronica:toggle_emisor_activo' pk=emisor.pk %}" method="post" class="inline-block ml-2">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {% if emisor.activo %}Desactivar{% else %}Activar{% endif %}
+                    </button>
+                </form>
+            </p>
             <div class="md:col-span-2">
                 <p><strong>Actividades Económicas:</strong>
                     {% if emisor.actividades_economicas %}
