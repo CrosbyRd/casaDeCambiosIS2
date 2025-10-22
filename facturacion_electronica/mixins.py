@@ -28,13 +28,13 @@ def admin_required(func):
     """
     @wraps(func)
     def wrapper(request, *args, **kwargs):
-        mixin = AdminRequiredMixin()
-        # Simular el comportamiento de dispatch para una función de vista
-        # Esto es un poco hacky, pero permite reutilizar la lógica del mixin.
-        # En un caso real, se podría refactorizar la lógica de verificación de permisos
-        # en una función separada para ser usada por mixins y decoradores.
-        response = mixin.dispatch(request, *args, **kwargs)
-        if response: # Si dispatch devuelve una redirección o error, la devuelve
-            return response
+        if not request.user.is_authenticated:
+            messages.error(request, "Debes iniciar sesión para acceder a esta sección.")
+            return redirect(reverse_lazy('login')) # Asumiendo que tienes una URL 'login'
+        
+        if not request.user.roles.filter(name='Administrador').exists():
+            messages.error(request, "No tienes permisos para acceder a esta sección.")
+            return redirect(reverse_lazy('home')) # Redirige a la página de inicio
+        
         return func(request, *args, **kwargs)
     return wrapper

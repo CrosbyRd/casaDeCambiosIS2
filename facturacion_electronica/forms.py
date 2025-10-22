@@ -1,3 +1,4 @@
+import json
 from django import forms
 from .models import EmisorFacturaElectronica
 
@@ -17,15 +18,6 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
         help_texts = {
             'actividades_economicas': 'Ingrese un JSON válido para las actividades económicas. Ejemplo: [{"cActEco": "46699", "dDesActEco": "Comercio al por mayor..."}]',
         }
-
-    def clean_actividades_economicas(self):
-        data = self.cleaned_data['actividades_economicas']
-        if data:
-            try:
-                json.loads(data)
-            except json.JSONDecodeError:
-                raise forms.ValidationError("Formato JSON inválido para actividades económicas.")
-        return data
 
     def clean(self):
         cleaned_data = super().clean()

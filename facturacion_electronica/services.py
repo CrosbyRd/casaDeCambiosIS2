@@ -30,6 +30,17 @@ class FacturaSeguraAPIClient:
         """
         Genera un nuevo token de autenticación para el ESI.
         """
+        if self.simulation_mode:
+            # En modo simulación, generamos un token ficticio
+            print("Modo simulación activo: Generando token de autenticación ficticio.")
+            fake_token = "SIMULATED_AUTH_TOKEN_" + os.urandom(16).hex()
+            self.emisor.auth_token = fake_token
+            # Asegúrate de que timezone.now() esté disponible, si no, impórtalo
+            from django.utils import timezone
+            self.emisor.token_generado_at = timezone.now()
+            self.emisor.save()
+            return fake_token
+
         email = os.getenv("FACTURASEGURA_ESI_EMAIL")
         password = os.getenv("FACTURASEGURA_ESI_PASSWORD")
 
@@ -45,6 +56,7 @@ class FacturaSeguraAPIClient:
             data = response.json()
             token = data["response"]["user"]["authentication_token"]
             
+            from django.utils import timezone
             self.emisor.auth_token = token
             self.emisor.token_generado_at = timezone.now()
             self.emisor.save()
@@ -52,7 +64,6 @@ class FacturaSeguraAPIClient:
         except requests.exceptions.RequestException as e:
             print(f"Error al generar el token de autenticación: {e}")
             raise
-
     def _make_request(self, operation, params, method='POST', is_file_download=False):
         """
         Método genérico para construir y enviar las peticiones HTTP a la API de Factura Segura.
