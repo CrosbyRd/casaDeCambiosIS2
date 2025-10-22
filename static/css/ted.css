@@ -310,6 +310,18 @@
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); 
   gap:12px; 
 }
+
+/* Tecla de confirmar ocupa toda la fila inferior */
+.ted-key--action {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, rgba(124,58,237,0.3), rgba(124,58,237,0.15));
+  border-color: rgba(124,58,237,0.5);
+}
+
+.ted-key--action:hover {
+  background: linear-gradient(180deg, rgba(124,58,237,0.4), rgba(124,58,237,0.2));
+}
+
 .ted-key{ 
   display:flex; align-items:center; justify-content:center; 
   height:clamp(50px,10vw,58px); border-radius:14px; 
