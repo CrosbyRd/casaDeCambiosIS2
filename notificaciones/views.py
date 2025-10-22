@@ -118,3 +118,31 @@ class MarcarLeidaNotificacionView(LoginRequiredMixin, View):
             notificacion.leida = True
             notificacion.save()
         return JsonResponse({'status': 'ok', 'message': 'Notificación marcada como leída.'})
+def marcar_notificaciones_leidas(request):
+    """
+    Marca todas las notificaciones no leídas del usuario autenticado como leídas.
+    Devuelve un JSON indicando éxito.
+    """
+    Notificacion.objects.filter(destinatario=request.user, leida=False).update(leida=True)
+    return JsonResponse({"ok": True})
+# notificaciones/views.py
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from notificaciones.models import Notificacion
+
+@login_required
+def marcar_leidas(request):
+    if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        Notificacion.objects.filter(destinatario=request.user, leida=False, tipo='tasa').update(leida=True, fecha_lectura=timezone.now())
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"}, status=400)
+# notificaciones/views.py
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import Notificacion
+
+@login_required
+def ver_nuevas(request):
+    notis = Notificacion.objects.filter(destinatario=request.user, leida=False)
+    data = [{"mensaje": n.mensaje} for n in notis]
+    return JsonResponse(data, safe=False)

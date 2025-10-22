@@ -12,4 +12,6 @@ urlpatterns = [
 
     # URL de la página de resultado a la que se redirige al cliente
     path('resultado/<uuid:transaccion_id>/', views.ResultadoPagoView.as_view(), name='resultado_pago'),
+
+    path('cancelar-por-tasa/<uuid:transaccion_id>/', views.cancelar_por_tasa, name='cancelar_por_tasa'),#notificacion
 ]

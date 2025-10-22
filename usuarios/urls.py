@@ -46,4 +46,6 @@ urlpatterns = [
     path("admin_panel/", include("admin_panel.urls")),
     path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
+
+   
 ]

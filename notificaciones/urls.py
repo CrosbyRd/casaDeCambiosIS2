@@ -7,7 +7,8 @@ de notificaciones y las preferencias del usuario en el sistema Global Exchange.
 
 
 """
-
+from django.urls import path
+from . import views
 from django.urls import path
 from .views import (
     NotificacionListView,
@@ -23,4 +24,7 @@ urlpatterns = [
     path('preferencias/', PreferenciasNotificacionUpdateView.as_view(), name='preferencias'),
     path('<uuid:pk>/silenciar/', SilenciarNotificacionView.as_view(), name='silenciar'),
     path('<uuid:pk>/leer/', MarcarLeidaNotificacionView.as_view(), name='marcar_leida'),
+
+    path('marcar-leidas/', views.marcar_notificaciones_leidas, name='marcar_leidas'),
+    path('ver-nuevas/', views.ver_nuevas, name='ver_nuevas'),
 ]
