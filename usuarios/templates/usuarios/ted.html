@@ -60,6 +60,17 @@
   background:linear-gradient(90deg, transparent, #a78bfa, transparent);
   border-radius:99px; box-shadow:0 0 16px rgba(167,139,250,.6);
 }
+
+/* === Estados visuales de chips de divisa === */
+.currency-chip.match{
+  outline:2px solid rgba(124,58,237,.45);
+  box-shadow:0 0 0 3px rgba(124,58,237,.18), 0 8px 18px rgba(0,0,0,.22);
+  transform:translateY(-1px);
+}
+.currency-chip.dimmed{
+  opacity:.45;
+  filter:grayscale(.2);
+}
 </style>
 
 <main style="max-width:1100px;margin:0 auto;padding:24px">
@@ -126,11 +137,21 @@
               <section id="transaction-screen" class="ted-screen-view" aria-live="polite">
                 <div class="view-content">
                   <h3 id="tx-title">Operación</h3>
-                  <label for="transaction-number">Ingrese número de transacción</label>
-                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación" autocomplete="off" />
+                  <label for="transaction-number">Ingrese el código de operación</label>
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación" autocomplete="off" data-kb="num" />
+                  
+                  <!-- Divisas disponibles (solo para RETIRO) -->
+                  <div id="retiro-currencies" class="currency-section" style="display:none">
+                    <div class="currency-label">Divisas disponibles</div>
+                    <div id="retiro-currency-list" class="currency-list" aria-live="polite">
+                    </div>
+                  </div>
+
+                  <div class="button-group">
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-tx-cancelar">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-tx-validar">Validar</button>
                   </div>
+                </div>
               </section>
 
               <!-- VISTA: Confirmación de monto -->
@@ -261,7 +282,14 @@
 (() => {
   const qs = (sel, el=document) => el.querySelector(sel);
   const qsa = (sel, el=document) => [...el.querySelectorAll(sel)];
-  const flag = (code) => ({USD:'🇺🇸', EUR:'🇪🇺', PYG:'🇵🇾'})[String(code||'').toUpperCase()] || '🏳️';
+  const FLAGS = {
+    USD:'🇺🇸', EUR:'🇪🇺', ARS:'🇦🇷', BRL:'🇧🇷', PYG:'🇵🇾', CNY:'🇨🇳', JPY:'🇯🇵',
+    GBP:'🇬🇧', UYU:'🇺🇾', CLP:'🇨🇱', COP:'🇨🇴', BOB:'🇧🇴', PEN:'🇵🇪', MXN:'🇲🇽',
+    CAD:'🇨🇦', AUD:'🇦🇺', CHF:'🇨🇭', VES:'🇻🇪', VEF:'🇻🇪', RUB:'🇷🇺', ILS:'🇮🇱',
+    CRC:'🇨🇷', DOP:'🇩🇴', NOK:'🇳🇴', SEK:'🇸🇪', DKK:'🇩🇰', ZAR:'🇿🇦', HNL:'🇭🇳',
+    GTQ:'🇬🇹', PAB:'🇵🇦', NIO:'🇳🇮', TRY:'🇹🇷', INR:'🇮🇳', KRW:'🇰🇷', SGD:'🇸🇬', HKD:'🇭🇰'
+  };
+const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
   const formatAmountRaw = (a) => {
     try{ const n = Number(a); if(Number.isFinite(n)) return n.toLocaleString('es-PY',{maximumFractionDigits:0}); }
     catch(e){}
@@ -316,15 +344,75 @@
     confirmar: "{% url 'usuarios:ted_api_confirmar' %}",
     ubicaciones: "{% url 'usuarios:ted_api_ubicaciones' %}",
     terminal: "{% url 'usuarios:ted_api_terminal' %}",
+    divisas: "{% url 'ted:monedas_disponibles' %}",
   };
 
+  /* Carga y pinta las divisas disponibles para RETIRO (según sucursal) */
+async function loadRetiroCurrencies(){
+  try{
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if(!cont || !list) return;
+
+    // pedir al backend las divisas disponibles por ubicación
+    const data = await api(`${URLS.divisas}?ubicacion=${encodeURIComponent(ctx.ubicacion||'')}`);
+    const currencies = (data && (data.currencies || data.monedas)) || [];
+
+    // Render
+    if(currencies.length === 0){
+      list.innerHTML = '<span style="opacity:.8">Sin stock disponible.</span>';
+    }else{
+      list.innerHTML = currencies.map(c =>
+        `<span class="currency-chip" data-cur="${c}" title="${c}">${flag(c)}</span>`
+      ).join('');
+    }
+
+    // mostrar el bloque (se oculta cuando no es retiro)
+    cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+  }catch(_e){
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if(cont && list){
+      list.innerHTML = '<span style="opacity:.8">No se pudo cargar el stock.</span>';
+      cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+    }
+  }
+}
+
+  /* show() + control del “Bienvenido” SOLO en Inicio */
   const show = (id) => {
-    qsa('.ted-screen-view').forEach(el => {
-      el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
-    });
-    const el = qs('#'+id);
-    if(el){ el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block'; }
-  };
+  qsa('.ted-screen-view').forEach(el => {
+    el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
+  });
+  const el = qs('#'+id);
+  if(el){
+    el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block';
+  }
+
+  // Header compacto fuera del inicio
+  const header = qs('.ted-header');
+  header?.classList.toggle('compact', id !== 'login-screen');
+
+  // ✨ AÑADIDO: Agregar/quitar clase is-home en .ted-screen
+  const screen = qs('.ted-screen');
+  if(screen){
+    screen.classList.toggle('is-home', id === 'login-screen');
+  }
+
+  // "Bienvenido" visible SOLO en login-screen
+  const wb = qs('#welcome-badge');
+  if(wb){
+    const isHome = (id === 'login-screen');
+    wb.classList.toggle('hidden', !isHome);
+    if(isHome) wb.style.removeProperty('display');
+  }
+
+  // ocultar/mostrar bloque de divisas según modo/vista
+  const cont = qs('#retiro-currencies');
+  if(cont){
+    cont.style.display = (id === 'transaction-screen' && ctx.modo === 'retiro') ? 'block' : 'none';
+  }
+};
 
   function showError(stage, err){
     let userMsg = 'Ocurrió un error inesperado.';
@@ -332,7 +420,12 @@
     const raw = (err && (err.message||'')).toLowerCase();
 
     switch(err.status){
-      case 404: userMsg = 'Código no encontrado. Verificá el número e intentá de nuevo.'; code = 'E404-CODIGO'; break;
+      case 404:
+        userMsg = (stage==='validar')
+          ? 'Código no encontrado. Verificá el número e intentá de nuevo.'
+          : (stage==='confirmar' ? 'Reserva no encontrada o expirada. Volvé a validar el código.' : 'Recurso no encontrado.');
+        code = (stage==='validar') ? 'E404-CODIGO' : 'E404-RESERVA';
+        break;      
       case 409: userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.'; code = 'E409-STOCK'; break;
       case 403:
         if(raw.includes('csrf')){ userMsg = 'No autorizado: Protección CSRF. Refrescá la página e intentá de nuevo.'; code = 'E403-AUT-CSRF'; }
@@ -349,6 +442,7 @@
 
   // ====== helpers UI para limpiar estado ======
   const codeInput = () => qs('#transaction-number');
+  const isHome = document.querySelector('.ted-screen')?.classList.contains('is-home');
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) {
       const el = codeInput();
@@ -401,7 +495,11 @@
     ctx.ubicacion = ubicSel.value || null;
     btnLogin.disabled = !ctx.ubicacion;
     qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
+
+    // ← NUEVO: refrescar divisas visibles para Retiro
+    try { loadRetiroCurrencies(); } catch(_){}
   });
+
   btnLogin?.addEventListener('click', ()=>{
     resetTxUI();
     show('menu-screen');
@@ -413,20 +511,32 @@
     resetTxUI();
     qs('#tx-title').textContent = 'Retiro de Dinero';
     show('transaction-screen');
+    try { loadRetiroCurrencies(); } catch(_){}
   });
+
   qs('#btn-menu-deposito')?.addEventListener('click', ()=>{
     ctx.modo = 'deposito';
     resetTxUI();
     qs('#tx-title').textContent = 'Depósito de Dinero';
     show('transaction-screen');
+
+    // ← NUEVO: ocultar bloque de divisas al no ser necesario
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if (cont && list) {
+      list.innerHTML = '';
+      cont.style.display = 'none';
+      cont.setAttribute('aria-hidden','true');
+    }
   });
+
   qs('#btn-menu-salir')?.addEventListener('click', ()=>{
     ctx.modo = null; resetTxUI(); show('login-screen');
   });
 
   // ---------------- Código + validar ----------------
   qs('#transaction-number')?.addEventListener('input', (e)=>{
-    ctx.code = (e.target.value||'').trim().toUpperCase();
+    ctx.code = (e.target.value||'').trim();
     qs('#btn-tx-validar').disabled = !ctx.code;
   });
   qs('#btn-tx-cancelar')?.addEventListener('click', ()=>{
@@ -439,6 +549,18 @@
       if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
       const info = await api(URLS.validar, {codigo: ctx.code, modo: ctx.modo});
       ctx.raw = info;
+
+      if (ctx.modo === 'retiro') {
+        qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
+          if (ch.dataset.cur?.toUpperCase() === String(info.moneda||'').toUpperCase()) {
+            ch.classList.add('match');
+            ch.classList.remove('dimmed');
+          } else {
+            ch.classList.add('dimmed');
+            ch.classList.remove('match');
+          }
+        });
+      }
 
       const box = qs('#confirm-amount-box');
       const textEl = qs('#confirm-amount-text');
@@ -465,7 +587,7 @@
   qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
     try{
       const data = await api(URLS.precontar, { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion });
-      ctx.reserva_id = data.reserva_id;
+      ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
 
       const list = qs('#otp-summary');
       if(list){
@@ -485,7 +607,12 @@
       const otp = (qs('#otp-input')?.value || '').trim();
       if(!otp) throw new Error('Ingrese el código OTP.');
       await api(URLS.otp_verificar, {reserva_id: ctx.reserva_id, otp});
-      const result = await api(URLS.confirmar, {reserva_id: ctx.reserva_id, otp});
+      const result = await api(URLS.confirmar, {
+        reserva_id: ctx.reserva_id,
+        codigo: ctx.code,
+        modo: ctx.modo,
+        otp
+      });
       ctx.ticket_url = result.ticket_url || null;
 
       qs('#success-message') && (qs('#success-message').textContent =

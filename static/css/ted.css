@@ -612,3 +612,17 @@
 
 /* Medios fluidos dentro de la pantalla */
 img, canvas, video { max-width:100%; height:auto; }
+
+/* === Estados visuales de chips de divisa === */
+.currency-chip {
+  transition: all 0.3s ease;
+}
+.currency-chip.match {
+  outline: 2px solid rgba(124,58,237,.45);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.18), 0 8px 18px rgba(0,0,0,.22);
+  transform: translateY(-1px);
+}
+.currency-chip.dimmed {
+  opacity: .45;
+  filter: grayscale(.2);
+}

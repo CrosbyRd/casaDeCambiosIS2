@@ -74,16 +74,14 @@ urlpatterns = [
         name="password_reset_complete",
     ),
 
-
     path("medios-acreditacion/", include("medios_acreditacion.urls")),
 
     # Admin de Django
     path("admin/", admin.site.urls),
-
     path('configuracion/', include('configuracion.urls')),
-
     path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
-
-
     path('notificaciones/', include('notificaciones.urls', namespace='notificaciones')),
+
+    # TED
+    path("ted/", include(("ted.urls", "ted"), namespace="ted")),
 ]
