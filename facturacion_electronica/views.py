@@ -1,33 +1,30 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin # Mantener LoginRequiredMixin para las vistas basadas en clases
-from django.contrib.auth.decorators import login_required, permission_required # Importar los decoradores de permisos y login
+from django.contrib.auth.mixins import LoginRequiredMixin # Mantener LoginRequiredMixin para las vistas basadas en clases
+from django.contrib.auth.decorators import login_required # Importar los decoradores de permisos y login
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import EmisorFacturaElectronica, DocumentoElectronico, ItemDocumentoElectronico
 from .forms import EmisorFacturaElectronicaForm
 from .services import FacturaSeguraAPIClient
 from .tasks import generar_factura_electronica_task, get_estado_sifen_task, solicitar_cancelacion_task, solicitar_inutilizacion_task
+from .mixins import AdminRequiredMixin, admin_required # Importar el nuevo mixin y decorador
 import json
 import os
 
-# Mixin para permisos específicos de facturación electrónica
-class FacturacionElectronicaPermissionMixin(PermissionRequiredMixin):
-    permission_required = 'facturacion_electronica.access_facturacion_electronica_panel' # Definir este permiso en models.py
-
 # Vistas para EmisorFacturaElectronica
-class EmisorFacturaElectronicaListView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, ListView):
+class EmisorFacturaElectronicaListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     model = EmisorFacturaElectronica
     template_name = 'facturacion_electronica/emisor_list.html'
     context_object_name = 'emisores'
 
-class EmisorFacturaElectronicaDetailView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, DetailView):
+class EmisorFacturaElectronicaDetailView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     model = EmisorFacturaElectronica
     template_name = 'facturacion_electronica/emisor_detail.html'
     context_object_name = 'emisor'
 
-class EmisorFacturaElectronicaCreateView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, CreateView):
+class EmisorFacturaElectronicaCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = EmisorFacturaElectronica
     form_class = EmisorFacturaElectronicaForm
     template_name = 'facturacion_electronica/emisor_form.html'
@@ -37,7 +34,7 @@ class EmisorFacturaElectronicaCreateView(LoginRequiredMixin, FacturacionElectron
         messages.success(self.request, "Emisor de Factura Electrónica creado exitosamente.")
         return super().form_valid(form)
 
-class EmisorFacturaElectronicaUpdateView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, UpdateView):
+class EmisorFacturaElectronicaUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     model = EmisorFacturaElectronica
     form_class = EmisorFacturaElectronicaForm
     template_name = 'facturacion_electronica/emisor_form.html'
@@ -47,7 +44,7 @@ class EmisorFacturaElectronicaUpdateView(LoginRequiredMixin, FacturacionElectron
         messages.success(self.request, "Emisor de Factura Electrónica actualizado exitosamente.")
         return super().form_valid(form)
 
-class EmisorFacturaElectronicaDeleteView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, DeleteView):
+class EmisorFacturaElectronicaDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     model = EmisorFacturaElectronica
     template_name = 'facturacion_electronica/emisor_confirm_delete.html'
     success_url = reverse_lazy('facturacion_electronica:emisor_list')
@@ -57,13 +54,13 @@ class EmisorFacturaElectronicaDeleteView(LoginRequiredMixin, FacturacionElectron
         return super().form_valid(form)
 
 # Vistas para DocumentoElectronico
-class DocumentoElectronicoListView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, ListView):
+class DocumentoElectronicoListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     model = DocumentoElectronico
     template_name = 'facturacion_electronica/documento_list.html'
     context_object_name = 'documentos'
     paginate_by = 20
 
-class DocumentoElectronicoDetailView(LoginRequiredMixin, FacturacionElectronicaPermissionMixin, DetailView):
+class DocumentoElectronicoDetailView(LoginRequiredMixin, AdminRequiredMixin, DetailView):
     model = DocumentoElectronico
     template_name = 'facturacion_electronica/documento_detail.html'
     context_object_name = 'documento'
@@ -76,7 +73,7 @@ class DocumentoElectronicoDetailView(LoginRequiredMixin, FacturacionElectronicaP
 
 # Acciones para DocumentoElectronico (disparadas por POST)
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required # Usar el decorador de función
 def generar_token_view(request, emisor_id):
     emisor = get_object_or_404(EmisorFacturaElectronica, id=emisor_id)
     if request.method == 'POST':
@@ -89,7 +86,7 @@ def generar_token_view(request, emisor_id):
     return redirect('facturacion_electronica:emisor_detail', pk=emisor_id)
 
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required
 def consultar_estado_de_view(request, documento_id):
     documento = get_object_or_404(DocumentoElectronico, id=documento_id)
     if request.method == 'POST':
@@ -101,7 +98,7 @@ def consultar_estado_de_view(request, documento_id):
     return redirect('facturacion_electronica:documento_detail', pk=documento_id)
 
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required
 def solicitar_cancelacion_de_view(request, documento_id):
     documento = get_object_or_404(DocumentoElectronico, id=documento_id)
     if request.method == 'POST':
@@ -116,7 +113,7 @@ def solicitar_cancelacion_de_view(request, documento_id):
     return redirect('facturacion_electronica:documento_detail', pk=documento_id)
 
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required
 def solicitar_inutilizacion_de_view(request, documento_id):
     documento = get_object_or_404(DocumentoElectronico, id=documento_id)
     if request.method == 'POST':
@@ -131,7 +128,7 @@ def solicitar_inutilizacion_de_view(request, documento_id):
     return redirect('facturacion_electronica:documento_detail', pk=documento_id)
 
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required
 def descargar_kude_view(request, documento_id):
     documento = get_object_or_404(DocumentoElectronico, id=documento_id)
     if not documento.cdc:
@@ -149,7 +146,7 @@ def descargar_kude_view(request, documento_id):
         return redirect('facturacion_electronica:documento_detail', pk=documento_id)
 
 @login_required
-@permission_required('facturacion_electronica.access_facturacion_electronica_panel', raise_exception=True)
+@admin_required
 def descargar_xml_view(request, documento_id):
     documento = get_object_or_404(DocumentoElectronico, id=documento_id)
     if not documento.cdc:
