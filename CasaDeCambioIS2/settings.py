@@ -166,5 +166,8 @@ CELERY_TIMEZONE = TIME_ZONE
 TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES", "15"))
 # En desarrollo, permite operar con cotizaciones vencidas si se activa.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
-TED_ALLOWED_STATES = {"retiro": {"pendiente_retiro_tauser"},"deposito": {"pendiente_deposito_tauser"},}
+TED_ALLOWED_STATES = {
+    "deposito": {"pendiente_deposito_tauser", "pendiente_pago_cliente"},
+    "retiro": {"pendiente_retiro_tauser", "pendiente_pago_cliente"}, }
 TED_REQUIRE_KEY = False
+TED_SERIAL = "TED-001-CAMPUS"

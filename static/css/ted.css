@@ -18,9 +18,21 @@
 /* Layout */
 .ted-layout{ display:flex; flex-direction:column; gap:22px; }
 @media (min-width:768px){
-  .ted-layout{ flex-direction:row; align-items:flex-start; }
-  .ted-layout-main{ flex:1; min-width:0; }
-  .ted-layout-aside{ width:320px; flex-shrink:0; position:sticky; top:20px; }
+  .ted-layout{
+    flex-direction:row;
+    align-items:flex-start;
+    flex-wrap:nowrap;              /* evita que el aside salte abajo */
+  }
+  .ted-layout-main{
+    flex:1 1 0%;                   /* crece y puede encogerse */
+    min-width:0;                   /* clave para que no empuje al aside */
+  }
+  .ted-layout-aside{
+    flex:0 0 320px;                /* ancho fijo, sin encogerse */
+    width:320px;
+    position:sticky;
+    top:20px;
+  }
 }
 
 /* Pantalla */
@@ -75,7 +87,7 @@
 .ted-header.compact .ted-logo{
   height:32px;
 }
-.welcome-badge{ 
+.ted-screen.is-home .welcome-badge{ 
   display:inline-flex; align-items:center; gap:.4rem; 
   padding:.5rem 1rem; border-radius:999px; 
   background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft))); 
@@ -86,6 +98,13 @@
   max-height:50px;
   overflow:hidden;
 }
+
+/* En el resto de vistas se oculta y colapsa el espacio */
+.ted-screen:not(.is-home) .welcome-badge{ 
+  display:none;
+}
+
+/* (sigue vigente si ya lo usabas en algún script) */
 .welcome-badge.hidden{ 
   opacity:0; 
   transform:scale(0.8); 
@@ -94,6 +113,7 @@
   margin:0;
   padding:0;
 }
+
 .ted-title{ 
   font-size:clamp(18px,4vw,22px); font-weight:900; 
   letter-spacing:.06em; margin:0;
@@ -576,3 +596,19 @@
 
 /* (ya lo tenés, pero por las dudas) */
 #success-message.hidden{ display:none !important; }
+/* --- Fix explícito del campo de código --- */
+#transaction-number.ted-input {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  height: 44px;
+}
+
+/* Evita desbordes que rompen el layout (muy importante) */
+.ted-layout-main,
+.ted-screen,
+.view-content { min-width:0; }
+
+/* Medios fluidos dentro de la pantalla */
+img, canvas, video { max-width:100%; height:auto; }

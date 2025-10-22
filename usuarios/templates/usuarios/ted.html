@@ -127,12 +127,10 @@
                 <div class="view-content">
                   <h3 id="tx-title">Operación</h3>
                   <label for="transaction-number">Ingrese número de transacción</label>
-                  <input id="transaction-number" data-kb="1" type="text" class="ted-input" placeholder="Código de operación"/>
-                  <div class="button-group">
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación" autocomplete="off" />
                     <button class="gx-btn gx-btn--ghost" type="button" id="btn-tx-cancelar">Cancelar</button>
                     <button class="gx-btn" type="button" id="btn-tx-validar">Validar</button>
                   </div>
-                </div>
               </section>
 
               <!-- VISTA: Confirmación de monto -->
@@ -255,35 +253,61 @@
 </main>
 
 <script>
+  // Si querés limpiar también cuando cambiás de modo u operación:
+  function resetCodigo() {
+    const $code = document.getElementById("transaction-number");
+    if ($code) $code.value = "";
+  }
 (() => {
   const qs = (sel, el=document) => el.querySelector(sel);
   const qsa = (sel, el=document) => [...el.querySelectorAll(sel)];
   const flag = (code) => ({USD:'🇺🇸', EUR:'🇪🇺', PYG:'🇵🇾'})[String(code||'').toUpperCase()] || '🏳️';
   const formatAmountRaw = (a) => {
-    try{
-      const n = Number(a);
-      if(Number.isFinite(n)){
-        return n.toLocaleString('es-PY',{maximumFractionDigits:0});
-      }
-    }catch(e){}
+    try{ const n = Number(a); if(Number.isFinite(n)) return n.toLocaleString('es-PY',{maximumFractionDigits:0}); }
+    catch(e){}
     return String(a);
   };
   const formatAmount = (a, code)=> `${formatAmountRaw(a)} ${code}`;
 
   const ctx = { modo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null };
 
-  // --- HTTP helpers / endpoints ---
-  async function api(url, body){
-    const res = await fetch(url, {
-      method: body ? 'POST' : 'GET',
-      credentials:'same-origin',
-      headers: body ? {'Content-Type':'application/json'} : {},
-      body: body ? JSON.stringify(body||{}) : undefined
-    });
-    const data = await res.json().catch(()=>({}));
-    if(!res.ok || data.ok === false) throw new Error(data.error || 'Error');
-    return data.data || data;
+  // === CSRF ===
+  function getCookie(name){
+    const m = document.cookie.match(new RegExp('(^|; )'+name+'=([^;]+)'));
+    return m ? decodeURIComponent(m[2]) : null;
   }
+  const CSRF = getCookie('csrftoken');
+
+  async function api(url, body){
+    const isPost = !!body;
+    const res = await fetch(url, {
+      method: isPost ? 'POST' : 'GET',
+      credentials:'same-origin',
+      headers: isPost ? {'Content-Type':'application/json','X-CSRFToken': CSRF || ''} : {},
+      body: isPost ? JSON.stringify(body||{}) : undefined
+    });
+    const ct = res.headers.get('content-type') || '';
+    let payload = null;
+    if(ct.includes('application/json')){
+      try{ payload = await res.json(); }catch(_){ payload = null; }
+    }else{
+      const text = await res.text().catch(()=> '');
+      payload = { ok:false, error: text };
+    }
+    const notOk = !res.ok || (payload && payload.ok === false);
+    if(notOk){
+      let msg = (payload && (payload.error || payload.detail)) || res.statusText || 'Error';
+      if(res.status===403 && (!ct || !ct.includes('application/json'))){
+        msg = 'Protección CSRF: falta o es inválida. Refresque la página e intente de nuevo.';
+      }
+      const err = new Error(msg);
+      err.status  = res.status || 0;
+      err.payload = payload;
+      throw err;
+    }
+    return (payload && payload.data) || payload;
+  }
+
   const URLS = {
     validar: "{% url 'usuarios:ted_api_validar' %}",
     precontar: "{% url 'usuarios:ted_api_precontar' %}",
@@ -294,22 +318,59 @@
     terminal: "{% url 'usuarios:ted_api_terminal' %}",
   };
 
-  // --- Navegación entre vistas (FIX: alterna clase 'active') ---
   const show = (id) => {
     qsa('.ted-screen-view').forEach(el => {
-      el.classList.remove('active');
-      el.setAttribute('aria-hidden','true');
-      el.style.display='none';
+      el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
     });
     const el = qs('#'+id);
-    if(el){
-      el.classList.add('active');
-      el.setAttribute('aria-hidden','false');
-      el.style.display='block';
-    }
+    if(el){ el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block'; }
   };
 
-  // --- Login (cargar ubicaciones & terminal) ---
+  function showError(stage, err){
+    let userMsg = 'Ocurrió un error inesperado.';
+    let code = `E${err.status||'000'}-DESCONOCIDO`;
+    const raw = (err && (err.message||'')).toLowerCase();
+
+    switch(err.status){
+      case 404: userMsg = 'Código no encontrado. Verificá el número e intentá de nuevo.'; code = 'E404-CODIGO'; break;
+      case 409: userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.'; code = 'E409-STOCK'; break;
+      case 403:
+        if(raw.includes('csrf')){ userMsg = 'No autorizado: Protección CSRF. Refrescá la página e intentá de nuevo.'; code = 'E403-AUT-CSRF'; }
+        else if(raw.includes('cliente activo')){ userMsg = 'Debés seleccionar un cliente activo en tu cuenta antes de usar el TED.'; code = 'E403-CLIENTE'; }
+        else { userMsg = 'No autorizado para continuar.'; code = 'E403-AUT'; }
+        break;
+      case 410: userMsg = 'La operación expiró. Volvé a intentarlo.'; code = 'E410-EXPIRADO'; break;
+      case 400: userMsg = err.message || 'Solicitud inválida.'; code = 'E400-VALIDACION'; break;
+      default:  userMsg = err.message || userMsg;
+    }
+    qs('#cancel-sub') && (qs('#cancel-sub').textContent = `${userMsg} (${code})`);
+    show('cancel-screen');
+  }
+
+  // ====== helpers UI para limpiar estado ======
+  const codeInput = () => qs('#transaction-number');
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      const el = codeInput();
+      if (el) el.value = '';
+    }
+  });
+
+  const btnTxValidar = () => qs('#btn-tx-validar');
+
+  function resetTxUI() {
+    const inp = codeInput();
+    if (inp) inp.value = '';
+    const btn = btnTxValidar();
+    if (btn) btn.disabled = true;
+    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null;
+    // ocultar box de confirmación si quedó armado
+    const box = qs('#confirm-amount-box');
+    if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+    qs('#confirm-amount-text')?.classList.remove('hidden');
+  }
+
+  // ---------------- Login (ubicación + terminal) ----------------
   const ubicSel = qs('#select-ubicacion');
   const btnLogin = qs('#btn-login-ingresar');
 
@@ -317,64 +378,63 @@
     try{
       const data = await api(URLS.terminal);
       qs('#info-serie').textContent = (data && data.serial) || '—';
-    }catch(_e){
-      qs('#info-serie').textContent = '—';
-    }
+    }catch(_e){ qs('#info-serie').textContent = '—'; }
   }
-
   async function cargarUbicaciones(){
     try{
       const data = await api(URLS.ubicaciones);
       const list = (data && data.ubicaciones) || [];
       ubicSel.innerHTML = '<option value="">— Seleccioná una sucursal —</option>';
       list.forEach(u=>{
-        const opt = document.createElement('option');
-        opt.value = u; opt.textContent = u;
-        ubicSel.appendChild(opt);
+        const opt = document.createElement('option'); opt.value = u; opt.textContent = u; ubicSel.appendChild(opt);
       });
       if(list.length === 1){ ubicSel.value = list[0]; }
       ctx.ubicacion = ubicSel.value || null;
       btnLogin.disabled = !ctx.ubicacion;
       qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
-    }catch(_e){
+    }catch(e){
       ubicSel.innerHTML = '<option value="">(Sin ubicaciones cargadas)</option>';
       btnLogin.disabled = true;
     }
   }
-
   ubicSel?.addEventListener('change', ()=>{
     ctx.ubicacion = ubicSel.value || null;
     btnLogin.disabled = !ctx.ubicacion;
     qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
   });
-  btnLogin?.addEventListener('click', ()=> show('menu-screen'));
+  btnLogin?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
 
-  // --- Menú ---
+  // ---------------- Menú ----------------
   qs('#btn-menu-retirar')?.addEventListener('click', ()=>{
     ctx.modo = 'retiro';
+    resetTxUI();
     qs('#tx-title').textContent = 'Retiro de Dinero';
     show('transaction-screen');
   });
   qs('#btn-menu-deposito')?.addEventListener('click', ()=>{
     ctx.modo = 'deposito';
+    resetTxUI();
     qs('#tx-title').textContent = 'Depósito de Dinero';
     show('transaction-screen');
   });
   qs('#btn-menu-salir')?.addEventListener('click', ()=>{
-    ctx.modo = null; ctx.code = null; show('login-screen');
+    ctx.modo = null; resetTxUI(); show('login-screen');
   });
 
-  // --- Código + validar ---
-  const codeInput = qs('#transaction-number');
-  const btnTxValidar = qs('#btn-tx-validar');
-  const btnTxCancelar = qs('#btn-tx-cancelar');
-  codeInput?.addEventListener('input', ()=>{
-    ctx.code = (codeInput.value||'').trim().toUpperCase();
-    btnTxValidar.disabled = !ctx.code;
+  // ---------------- Código + validar ----------------
+  qs('#transaction-number')?.addEventListener('input', (e)=>{
+    ctx.code = (e.target.value||'').trim().toUpperCase();
+    qs('#btn-tx-validar').disabled = !ctx.code;
   });
-  btnTxCancelar?.addEventListener('click', ()=> show('menu-screen'));
+  qs('#btn-tx-cancelar')?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
 
-  btnTxValidar?.addEventListener('click', async ()=>{
+  qs('#btn-tx-validar')?.addEventListener('click', async ()=>{
     try{
       if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
       const info = await api(URLS.validar, {codigo: ctx.code, modo: ctx.modo});
@@ -394,14 +454,14 @@
       box.style.display = 'block';
       textEl?.classList.add('hidden');
       show('confirm-amount-screen');
-    }catch(err){
-      qs('#cancel-sub') && (qs('#cancel-sub').textContent = String(err.message||err));
-      show('cancel-screen');
-    }
+    }catch(err){ showError('validar', err); }
   });
 
-  // --- Precontar + OTP ---
-  qs('#btn-amount-cancel')?.addEventListener('click', ()=> show('menu-screen'));
+  // ---------------- Precontar + OTP ----------------
+  qs('#btn-amount-cancel')?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
   qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
     try{
       const data = await api(URLS.precontar, { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion });
@@ -415,13 +475,10 @@
 
       await api(URLS.otp_enviar, {reserva_id: ctx.reserva_id});
       show('otp-screen');
-    }catch(err){
-      qs('#cancel-sub') && (qs('#cancel-sub').textContent = String(err.message||err));
-      show('cancel-screen');
-    }
+    }catch(err){ showError('precontar', err); }
   });
 
-  // --- OTP confirmar ---
+  // ---------------- OTP confirmar ----------------
   qs('#btn-otp-back')?.addEventListener('click', ()=> show('confirm-amount-screen'));
   qs('#btn-otp-confirm')?.addEventListener('click', async ()=>{
     try{
@@ -434,13 +491,15 @@
       qs('#success-message') && (qs('#success-message').textContent =
         `${ctx.modo==='deposito'?'Depósito':'Retiro'} completado para la transacción ${ctx.code}.`);
       show('success-screen');
-    }catch(err){
-      qs('#cancel-sub') && (qs('#cancel-sub').textContent = String(err.message||err));
-      show('cancel-screen');
-    }
+    }catch(err){ showError('confirmar', err); }
   });
 
-  // --- Teclado virtual ---
+  // ---------------- Botones de salida/imprimir ----------------
+  qs('#btn-success-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+  qs('#btn-success-print')?.addEventListener('click', ()=> { if(ctx.ticket_url){ window.open(ctx.ticket_url, 'ticket', 'width=460,height=640'); } });
+  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+
+  // ---------------- Teclado virtual ----------------
   let active = null;
   qsa('input[data-kb]').forEach(inp=>{
     inp.addEventListener('focus',()=> active=inp);
@@ -459,15 +518,12 @@
     });
   });
 
-  // --- Reloj y arranque ---
   function tick(){ const now=new Date(); qs('#ted-clock').textContent = now.toLocaleTimeString('es-PY',{hour12:false}); }
   setInterval(tick, 1000); tick();
 
-  // Inicialización
   (async () => {
-    await cargarTerminal();
-    await cargarUbicaciones();
-    // Mostrar siempre la pantalla de login al iniciar
+    await Promise.all([cargarTerminal(), cargarUbicaciones()]);
+    resetTxUI();
     show('login-screen');
   })();
 })();

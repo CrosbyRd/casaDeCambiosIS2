@@ -30,6 +30,7 @@ import json
 import secrets
 from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
 from typing import Dict, List, Tuple
+import json
 
 from django.conf import settings
 from django.core.cache import cache
@@ -39,11 +40,28 @@ from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET
+from django.contrib.auth.decorators import login_required
 
 from usuarios.utils import get_cliente_activo
 from transacciones.models import Transaccion
 from monedas.models import Moneda, TedDenominacion, TedInventario, TedMovimiento
 
+def _body_json(request: HttpRequest) -> Dict:
+    """
+    Devuelve el payload del request como dict.
+    - Si viene con 'application/json', parsea request.body
+    - Si no, cae a request.POST (por si usás form-encoded)
+    Nunca levanta excepción; en caso de error devuelve {}.
+    """
+    try:
+        if (request.content_type or "").startswith("application/json"):
+            raw = request.body.decode("utf-8") if request.body else ""
+            return json.loads(raw or "{}")
+        # fallback: form-encoded
+        return request.POST.dict()
+    except Exception:
+        return {}
 
 # ==========================================================================
 # FLAGS / SETTINGS
@@ -65,12 +83,20 @@ ROUNDING_DEPOSITO = ROUND_CEILING
 # ==========================================================================
 # Helpers
 # ==========================================================================
-def _json_error(msg: str, status: int = 400) -> JsonResponse:
-    return JsonResponse({"ok": False, "error": msg}, status=status)
+def _json_error(msg: str, status: int = 400, **extra) -> JsonResponse:
+    """
+    Respuesta de error consistente.
+    Permite pasar 'code="E400-..."' u otros campos adicionales.
+    """
+    payload = {"ok": False, "error": msg}
+    if extra:
+        payload.update(extra)
+    return JsonResponse(payload, status=status)
 
 
 def _active_client(request: HttpRequest):
-    cliente = get_cliente_activo(request.user)
+    # BUG: antes estaba get_cliente_activo(request.user)  -> AttributeError
+    cliente = get_cliente_activo(request)  # ✅ pasar el request real para usar request.session
     if not cliente:
         raise PermissionError("Debe seleccionar un cliente activo antes de operar.")
     return cliente
@@ -101,72 +127,56 @@ def _cache_key_otp(rid: str) -> str:
 # Endpoint: VALIDAR (existente, se mantiene)
 # ==========================================================================
 @require_POST
-def validar_transaccion(request: HttpRequest) -> JsonResponse:
-    """
-    Valida un código TAUSER y retorna datos mínimos para operar con el TED.
+@login_required
+def validar_transaccion(request):
+    payload = _body_json(request)
+    codigo = (payload.get("codigo") or "").strip()
+    modo = (payload.get("modo") or "").strip()
 
-    Lógica de selección de moneda/monto:
-    - ``modo='deposito'`` → usa ``moneda_origen`` / ``monto_origen``.
-    - ``modo='retiro'``   → usa ``moneda_destino`` / ``monto_destino``.
+    if not codigo or not modo:
+        return _json_error("Faltan campos requeridos.", 400, code="E400-PAYLOAD")
 
-    En *modo pruebas* (``STRICT_STATE_VALIDATION=False``) se omiten reglas de
-    estado y tipo, validando únicamente que la transacción exista para el
-    cliente activo.
-    """
-    try:
-        payload = json.loads(request.body.decode("utf-8"))
-    except Exception:
-        return _json_error("JSON inválido.", 400)
+    tx = (
+        Transaccion.objects.select_related("cliente", "moneda_origen", "moneda_destino")
+        .filter(codigo_operacion_tauser__iexact=codigo)
+        .first()
+    )
+    if not tx:
+        return _json_error(
+            "No se encontró una transacción con ese código.",
+            404,
+            code="E404-CODIGO",
+        )
+    # Chequeo de estados permitidos por modo
+    allowed = settings.TED_ALLOWED_STATES.get(modo, set())
+    if allowed and tx.estado not in allowed:
+        return _json_error(
+            f"Estado {tx.estado} no permite {modo}.",
+            409,
+            code="E409-ESTADO",
+        )
+    # validar estado permitido para el modo
+    allowed = settings.TED_ALLOWED_STATES.get(modo, set())
+    if allowed and tx.estado not in allowed:
+        # si querés mostrar el label del estado en vez de la clave, usá get_estado_display()
+        return _json_error(
+            f"Estado {tx.get_estado_display() if hasattr(tx, 'get_estado_display') else tx.estado} no permite {modo}.",
+            409,
+            code="E409-ESTADO",
+        )
 
-    codigo = (payload.get("codigo") or "").strip().upper()
-    modo = (payload.get("modo") or "").strip().lower()  # 'retiro' | 'deposito'
-    if modo not in {"retiro", "deposito"}:
-        return _json_error("Modo inválido. Debe ser 'retiro' o 'deposito'.", 400)
 
-    try:
-        cliente = _active_client(request)
-    except PermissionError as e:
-        return _json_error(str(e), 403)
-
-    try:
-        tx = Transaccion.objects.select_related(
-            "moneda_origen", "moneda_destino", "cliente"
-        ).get(codigo_operacion_tauser=codigo, cliente=cliente)
-    except Transaccion.DoesNotExist:
-        return _json_error("Código no encontrado para el cliente activo.", 404)
-
-    # Reglas de estado (si se activan)
-    if STRICT_STATE_VALIDATION:
-        estado = (tx.estado or "").lower()
-        tipo = (tx.tipo_operacion or "").lower()
-        if modo == "deposito":
-            if tipo != "compra":
-                return _json_error("Este código no corresponde a un depósito.", 400)
-            elegibles = {"pendiente_deposito_tauser"}
-            if estado not in elegibles:
-                return _json_error("La transacción no está habilitada para depósito.", 400)
-        else:  # retiro
-            if tipo != "venta":
-                return _json_error("Este código no corresponde a un retiro.", 400)
-            elegibles = {"pendiente_retiro_tauser"}
-            if estado not in elegibles:
-                return _json_error("La transacción no está habilitada para retiro.", 400)
-
+    # El monto/moneda a usar según el modo
     monto, moneda = _monto_y_moneda(tx, modo)
+
     data = {
-        "id": str(tx.id),
         "codigo": tx.codigo_operacion_tauser,
-        "tipo_operacion": tx.tipo_operacion,
-        "estado": getattr(tx, "estado", None),
-        "moneda": moneda.codigo,
+        "modo": modo,
+        "moneda": moneda.codigo if isinstance(moneda, Moneda) else str(moneda),
         "monto": str(monto),
-        "moneda_origen": tx.moneda_origen.codigo,
-        "moneda_destino": tx.moneda_destino.codigo,
-        "monto_origen": str(tx.monto_origen),
-        "monto_destino": str(tx.monto_destino),
-        "tasa_cambio_aplicada": str(getattr(tx, "tasa_cambio_aplicada", "")),
+        "tx_id": str(tx.id),
     }
-    return JsonResponse({"ok": True, "data": data}, status=200)
+    return JsonResponse(data, status=200)
 
 
 # ==========================================================================
