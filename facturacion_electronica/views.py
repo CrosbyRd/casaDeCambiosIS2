@@ -13,6 +13,7 @@ from .mixins import AdminRequiredMixin, admin_required # Importar el nuevo mixin
 import json
 import os
 
+
 # Vistas para EmisorFacturaElectronica
 class EmisorFacturaElectronicaListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
     model = EmisorFacturaElectronica
@@ -175,3 +176,25 @@ def toggle_emisor_activo_view(request, pk):
         emisor.save()
         messages.success(request, f"El estado 'activo' del emisor {emisor.nombre} ha sido cambiado a {emisor.activo}.")
     return redirect('facturacion_electronica:emisor_detail', pk=pk)
+
+
+@login_required
+@admin_required
+def consultar_estado(request, pk):
+    """
+    Dispara la consulta de estado en SIFEN y da feedback inmediato en UI.
+    No bloquea esperando a Celery (asíncrono).
+    """
+    doc = get_object_or_404(DocumentoElectronico, pk=pk)
+
+    # dispara la consulta asíncrona
+    get_estado_sifen_task.delay(doc.id)
+
+    # feedback inmediato al usuario (mostrado en documento_detail.html)
+    messages.info(
+        request,
+        f"Consulta enviada a SIFEN. Estado actual: {doc.get_estado_sifen_display()}."
+    )
+
+    # redirige al detalle para que vea el badge/estado
+    return redirect("facturacion_electronica:documento_detail", pk=pk)

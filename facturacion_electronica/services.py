@@ -19,11 +19,13 @@ class FacturaSeguraAPIClient:
 
     def _get_auth_token(self):
         """
-        Obtiene el token de autenticación. Si no existe lo genera.
+        Devuelve un token válido para la API.
+        - Si no hay token, o quedó uno de simulación, genera uno nuevo contra /login.
         """
-        if not self.emisor.auth_token:
+        tok = (self.emisor.auth_token or "").strip()
+        if not tok or tok.startswith("SIMULATED_"):
             return self._generate_auth_token()
-        return self.emisor.auth_token
+        return tok
 
     def _generate_auth_token(self):
         """
@@ -55,40 +57,45 @@ class FacturaSeguraAPIClient:
         self.emisor.save()
         return token
 
-    def _make_request(self, operation, params, method='POST', is_file_download=False):
-        """
-        Método genérico para construir y enviar las peticiones HTTP a la API de Factura Segura.
-        """
-        if self.simulation_mode and not is_file_download:
+    def _make_request(self, operation, params, method='POST', _retry=False):
+        if self.simulation_mode:
             return self._simulate_api_response(operation, params)
 
         token = self._get_auth_token()
         headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authentication-Token': token
+            'Authentication-Token': token,   # según docs
+            # Si tus docs dicen 'Authorization: Bearer <token>', usa esta en su lugar:
+            # 'Authorization': f'Bearer {token}',
         }
-
         url = self.base_url_esi
 
-        if method == 'POST':
-            payload = {"operation": operation, "params": params}
-            response = requests.post(url, headers=headers, json=payload)
-            response.raise_for_status()
-            return response.json()
-        elif method == 'GET' and is_file_download:
-            # Para dwn_kude y dwn_xml:
-            # https://.../misife00/v1/esi/{operation}/{dRucEm}/{CDC}
-            cdc = params.get("CDC")
-            dRucEm = params.get("dRucEm")
-            if not cdc or not dRucEm:
-                raise ValueError("CDC y dRucEm son requeridos para descargar archivos.")
-            download_url = f"{self.base_url_esi}/{operation}/{dRucEm}/{cdc}"
-            response = requests.get(download_url, headers={'Authentication-Token': token})
-            response.raise_for_status()
-            return response.content
-        else:
-            raise ValueError(f"Método HTTP no soportado o uso incorrecto para {operation}")
+        try:
+            if method == 'POST':
+                resp = requests.post(url, json={"operation": operation, "params": params}, headers=headers, timeout=30)
+            else:
+                resp = requests.get(url, params={"operation": operation, **params}, headers=headers, timeout=30)
+
+            # intento de recuperación si el token es inválido
+            if resp.status_code == 401 and not _retry:
+                # limpiar y regenerar
+                self.emisor.auth_token = None
+                self.emisor.save(update_fields=['auth_token'])
+                new_token = self._generate_auth_token()
+                headers['Authentication-Token'] = new_token
+                # headers['Authorization'] = f'Bearer {new_token}'   # si tu API usa Authorization
+                if method == 'POST':
+                    resp = requests.post(url, json={"operation": operation, "params": params}, headers=headers, timeout=30)
+                else:
+                    resp = requests.get(url, params={"operation": operation, **params}, headers=headers, timeout=30)
+
+            resp.raise_for_status()
+            return resp.json()
+        except requests.HTTPError as e:
+            # log útil para diagnosticar
+            raise
+
 
     def _simulate_api_response(self, operation, params):
         """
