@@ -1,19 +1,232 @@
 {% extends 'base.html' %}
-
-{% block title %}
-    {% if form.instance.pk %}Editar Emisor{% else %}Crear Emisor{% endif %}
-{% endblock %}
+{% block title %}{{ form.instance.pk|yesno:"Editar Emisor,Crear Emisor" }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>{% if form.instance.pk %}Editar Emisor de Factura Electrónica{% else %}Crear Nuevo Emisor de Factura Electrónica{% endif %}</h2>
-    <hr>
+<style>
+  /* —— Wrapper y tarjeta —— */
+  .fe-wrap {max-width: 980px; margin: 32px auto;}
+  .fe-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    overflow: hidden;
+  }
+  .fe-header {padding: 18px 22px; border-bottom: 1px solid #f2f2f2;}
+  .fe-header h2 {margin: 0; font-size: 1.35rem; font-weight: 700;}
+  .fe-body {padding: 22px;}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+  /* —— Grid responsivo —— */
+  .fe-grid {display: grid; gap: 16px;}
+  .fe-1 {grid-template-columns: 1fr;}
+  @media (min-width: 768px) {
+    .fe-2 {grid-template-columns: repeat(2, 1fr);}
+    .fe-3 {grid-template-columns: repeat(3, 1fr);}
+  }
+
+  /* —— Campos —— */
+  .fe-field {display: flex; flex-direction: column;}
+  .fe-label {font-weight: 600; font-size: .95rem; margin-bottom: 6px;}
+  .fe-input input,
+  .fe-input select,
+  .fe-input textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dce0e6;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    background: #fff;
+  }
+  .fe-input input:focus,
+  .fe-input select:focus,
+  .fe-input textarea:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 4px rgba(111,66,193,.12);
+  }
+
+  .fe-help {font-size: .85rem; color: #6b7280; margin-top: 6px;}
+  .fe-error {font-size: .85rem; color: #b3261e; margin-top: 6px;}
+  .fe-divider {height: 1px; background: #f2f2f2; margin: 18px 0;}
+
+  /* —— Acciones —— */
+  .fe-actions {
+    padding: 16px 22px;
+    border-top: 1px solid #f2f2f2;
+    display: flex; gap: 12px; justify-content: flex-end;
+  }
+  /* En caso de no tener Bootstrap, aseguramos botones básicos */
+  .btn {display: inline-block; padding: 10px 16px; border-radius: 10px; text-decoration: none;}
+  .btn-primary {background: linear-gradient(135deg, #6f42c1, #8a5cf6); color: #fff; border: 0;}
+  .btn-primary:hover {filter: brightness(1.02);}
+  .btn-secondary {background: #eef2f7; color: #333;}
+  .btn-secondary:hover {background:#e6ebf3;}
+  .fe-checkbox {display:flex; align-items:center; gap:10px; padding: 6px 0;}
+</style>
+
+<div class="fe-wrap">
+  <div class="fe-card">
+    <div class="fe-header">
+      <h2>{{ form.instance.pk|yesno:"Editar Emisor,Crear Emisor" }}</h2>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="fe-body">
+        {# ——— Errores generales ——— #}
+        {% if form.non_field_errors %}
+          <div class="fe-error" style="margin-bottom:12px;">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        {# ——— Identificación ——— #}
+        <div class="fe-grid fe-2">
+          <div class="fe-field">
+            <label class="fe-label">Razón social / Nombre</label>
+            <div class="fe-input">{{ form.nombre }}</div>
+            {% for e in form.nombre.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Email de contacto</label>
+            <div class="fe-input">{{ form.email_contacto }}</div>
+            {% for e in form.email_contacto.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">RUC (sin DV)</label>
+            <div class="fe-input">{{ form.ruc }}</div>
+            {% for e in form.ruc.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">DV</label>
+            <div class="fe-input">{{ form.dv_ruc }}</div>
+            {% for e in form.dv_ruc.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Teléfono</label>
+            <div class="fe-input">{{ form.telefono_contacto }}</div>
+            {% for e in form.telefono_contacto.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Establecimiento / Punto de expedición ——— #}
+        <div class="fe-grid fe-3">
+          <div class="fe-field">
+            <label class="fe-label">Establecimiento (3 dígitos)</label>
+            <div class="fe-input">{{ form.establecimiento }}</div>
+            {% for e in form.establecimiento.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field">
+            <label class="fe-label">Punto de expedición (3 dígitos)</label>
+            <div class="fe-input">{{ form.punto_expedicion }}</div>
+            {% for e in form.punto_expedicion.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Timbrado ——— #}
+        <div class="fe-grid fe-3">
+          <div class="fe-field">
+            <label class="fe-label">N° Timbrado (8 dígitos)</label>
+            <div class="fe-input">{{ form.numero_timbrado_actual }}</div>
+            {% for e in form.numero_timbrado_actual.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field">
+            <label class="fe-label">Fecha inicio timbrado</label>
+            <div class="fe-input">{{ form.fecha_inicio_timbrado }}</div>
+            {% for e in form.fecha_inicio_timbrado.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Formato: YYYY-MM-DD (coincidir con el timbrado aprobado).</div>
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Actividades económicas ——— #}
+        <div class="fe-grid fe-2">
+          <div class="fe-field">
+            <label class="fe-label">Actividad Principal (cActEco)</label>
+            <div class="fe-input">{{ form.actividad_economica_principal }}</div>
+            {% for e in form.actividad_economica_principal.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Ejemplo: 62010</div>
+          </div>
+          <div class="fe-field">
+            <label class="fe-label">Actividades adicionales (cActEco)</label>
+            <div class="fe-input">{{ form.actividades_economicas_csv }}</div>
+            {% for e in form.actividades_economicas_csv.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Separadas por coma. Ej: 74909,56101</div>
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Dirección ——— #}
+        <div class="fe-grid fe-3">
+          <div class="fe-field" style="grid-column: span 2;">
+            <label class="fe-label">Dirección</label>
+            <div class="fe-input">{{ form.direccion }}</div>
+            {% for e in form.direccion.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field">
+            <label class="fe-label">N° Casa</label>
+            <div class="fe-input">{{ form.numero_casa }}</div>
+            {% for e in form.numero_casa.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Cod. Dpto</label>
+            <div class="fe-input">{{ form.codigo_departamento }}</div>
+            {% for e in form.codigo_departamento.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field" style="grid-column: span 2;">
+            <label class="fe-label">Desc. Dpto</label>
+            <div class="fe-input">{{ form.descripcion_departamento }}</div>
+            {% for e in form.descripcion_departamento.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Cod. Ciudad</label>
+            <div class="fe-input">{{ form.codigo_ciudad }}</div>
+            {% for e in form.codigo_ciudad.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field" style="grid-column: span 2;">
+            <label class="fe-label">Desc. Ciudad</label>
+            <div class="fe-input">{{ form.descripcion_ciudad }}</div>
+            {% for e in form.descripcion_ciudad.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">País</label>
+            <div class="fe-input">{{ form.pais }}</div>
+            {% for e in form.pais.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Ejemplo: PY</div>
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Estado ——— #}
+        <div class="fe-grid fe-1">
+          <div class="fe-checkbox">
+            {{ form.activo }}
+            <label for="{{ form.activo.id_for_label }}">Activo</label>
+          </div>
+          {% for e in form.activo.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="fe-actions">
         <button type="submit" class="btn btn-primary">Guardar</button>
         <a href="{% url 'facturacion_electronica:emisor_list' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
     </form>
+  </div>
 </div>
 {% endblock %}

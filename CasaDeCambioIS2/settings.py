@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "analista_panel",
     "facturacion_electronica", # Nueva app para facturación electrónica
+    "widget_tweaks",
 
 ]
 

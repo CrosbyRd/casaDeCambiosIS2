@@ -11,7 +11,10 @@ from .services import FacturaSeguraAPIClient
 from .tasks import generar_factura_electronica_task, get_estado_sifen_task, solicitar_cancelacion_task, solicitar_inutilizacion_task
 from .mixins import AdminRequiredMixin, admin_required # Importar el nuevo mixin y decorador
 import json
+from django.db import transaction
+from django.shortcuts import redirect
 import os
+
 
 
 # Vistas para EmisorFacturaElectronica
@@ -47,12 +50,30 @@ class EmisorFacturaElectronicaUpdateView(LoginRequiredMixin, AdminRequiredMixin,
 
 class EmisorFacturaElectronicaDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     model = EmisorFacturaElectronica
-    template_name = 'facturacion_electronica/emisor_confirm_delete.html'
-    success_url = reverse_lazy('facturacion_electronica:emisor_list')
+    template_name = "facturacion_electronica/emisor_confirm_delete.html"
+    context_object_name = "object"
+    success_url = reverse_lazy("facturacion_electronica:emisor_list")
 
-    def form_valid(self, form):
-        messages.success(self.request, "Emisor de Factura Electrónica eliminado exitosamente.")
-        return super().form_valid(form)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        with transaction.atomic():
+            # Borrar primero TODOS los documentos vinculados
+            relacionados = self.object.documentos.all()
+            eliminados = relacionados.count()
+            for doc in relacionados:
+                # Si el modelo tiene FileFields (PDF/KuDE), esto asegura que se borren del storage:
+                doc.delete()
+            # Luego borrar el emisor
+            self.object.delete()
+
+        messages.success(
+            request,
+            f"Emisor eliminado correctamente. También se eliminaron {eliminados} documento(s) electrónico(s) relacionado(s)."
+        )
+        return redirect(success_url)
+
 
 # Vistas para DocumentoElectronico
 class DocumentoElectronicoListView(LoginRequiredMixin, AdminRequiredMixin, ListView):

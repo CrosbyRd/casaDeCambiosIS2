@@ -2,53 +2,121 @@ from django.db import models
 from django.conf import settings
 import uuid
 from django.contrib.postgres.fields import JSONField  # Para almacenar JSON de la API
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from django.db import models
 from django.utils import timezone
 
 class EmisorFacturaElectronica(models.Model):
-    """
-    Almacena la configuración del emisor de facturas electrónicas.
-    """
-    nombre = models.CharField(max_length=200, verbose_name="Nombre del Emisor")
-    ruc = models.CharField(max_length=15, verbose_name="RUC del Emisor")
-    dv_ruc = models.CharField(max_length=1, verbose_name="Dígito Verificador del RUC")
-    email_emisor = models.EmailField(verbose_name="Email del Emisor")
-    direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección")
-    numero_casa = models.CharField(max_length=10, blank=True, null=True, verbose_name="Número de Casa")
-    codigo_departamento = models.CharField(max_length=5, blank=True, null=True, verbose_name="Código Departamento")
-    descripcion_departamento = models.CharField(max_length=50, blank=True, null=True, verbose_name="Descripción Departamento")
-    codigo_ciudad = models.CharField(max_length=5, blank=True, null=True, verbose_name="Código Ciudad")
-    descripcion_ciudad = models.CharField(max_length=50, blank=True, null=True, verbose_name="Descripción Ciudad")
-    telefono = models.CharField(max_length=20, blank=True, null=True, verbose_name="Teléfono")
-    activo = models.BooleanField(default=False, verbose_name="Emisor Activo")  # Nuevo campo
+    # Identificación del emisor (coincidir con XML)
+    nombre = models.CharField(max_length=255, verbose_name="Razón social / Nombre")
+    ruc = models.CharField(
+        max_length=8,
+        validators=[RegexValidator(r'^\d{7,8}$')],
+        verbose_name="RUC (sin DV)"
+    )
+    dv_ruc = models.CharField(
+        max_length=1,
+        validators=[RegexValidator(r'^\d$')],
+        verbose_name="DV"
+    )
 
-    # Datos específicos de la numeración
-    establecimiento = models.CharField(max_length=3, default="001", verbose_name="Establecimiento")
-    punto_expedicion = models.CharField(max_length=3, default="003", verbose_name="Punto de Expedición")
-    numero_timbrado_actual = models.CharField(max_length=8, blank=True, null=True, verbose_name="Número de Timbrado Actual")
-    # Fecha de inicio del timbrado (útil para dFeIniT si la API lo requiere)
-    fecha_inicio_timbrado = models.DateField(blank=True, null=True, verbose_name="Fecha de Inicio de Timbrado")
+    # Datos de contacto
+    email_contacto = models.EmailField(blank=True, null=True, verbose_name="Email de contacto")
+    telefono_contacto = models.CharField(max_length=25, blank=True, null=True, verbose_name="Teléfono de contacto")
 
-    # Rango de numeración asignado por equipo/email
-    email_equipo = models.EmailField(unique=True, verbose_name="Email del Equipo Asignado")
-    rango_numeracion_inicio = models.IntegerField(verbose_name="Inicio del Rango de Numeración")
-    rango_numeracion_fin = models.IntegerField(verbose_name="Fin del Rango de Numeración")
-    siguiente_numero_factura = models.IntegerField(verbose_name="Siguiente Número de Factura Disponible")
+    # Dirección (coincidente con nodos de cDepEmi, dDesDepEmi, cCiuEmi, dDesCiuEmi, dDirEmi, dNumCas, cPaisEmi)
+    codigo_departamento = models.PositiveIntegerField(blank=True, null=True, verbose_name="Código Dpto (cDepEmi)")
+    descripcion_departamento = models.CharField(max_length=60, blank=True, null=True, verbose_name="Desc. Dpto (dDesDepEmi)")
+    codigo_ciudad = models.PositiveIntegerField(blank=True, null=True, verbose_name="Código Ciudad (cCiuEmi)")
+    descripcion_ciudad = models.CharField(max_length=60, blank=True, null=True, verbose_name="Desc. Ciudad (dDesCiuEmi)")
+    direccion = models.CharField(max_length=255, blank=True, null=True, verbose_name="Dirección (dDirEmi)")
+    numero_casa = models.CharField(max_length=10, blank=True, null=True, verbose_name="N° Casa (dNumCas)")
+    pais = models.CharField(max_length=2, default="PY", verbose_name="País (cPaisEmi)")
 
-    # Token de autenticación de Factura Segura
-    auth_token = models.CharField(max_length=500, blank=True, null=True, verbose_name="Authentication Token API")
-    token_generado_at = models.DateTimeField(blank=True, null=True, verbose_name="Fecha de Generación del Token")
+    # Numeración fija del ejercicio (establecimiento y punto)
+    establecimiento = models.CharField(
+        max_length=3,
+        validators=[RegexValidator(r'^\d{3}$')],
+        verbose_name="Establecimiento (3 dígitos, ej. 001)"
+    )
+    punto_expedicion = models.CharField(
+        max_length=3,
+        validators=[RegexValidator(r'^\d{3}$')],
+        verbose_name="Punto de expedición (3 dígitos, ej. 003)"
+    )
 
-    # Actividades económicas (JSONField para flexibilidad)
-    actividades_economicas = models.JSONField(default=list, blank=True, null=True, verbose_name="Actividades Económicas")
+    # Timbrado (según XML del profe: dNumTim y dFeIniT)
+    numero_timbrado_actual = models.CharField(
+        max_length=8,
+        validators=[RegexValidator(r'^\d{8}$')],
+        verbose_name="Número de Timbrado (8 dígitos, ej. 02595733)"
+    )
+    fecha_inicio_timbrado = models.DateField(
+        verbose_name="Fecha de inicio de Timbrado (YYYY-MM-DD)"
+    )
+
+    # Actividades económicas (cActEco). Principal + adicionales
+    actividad_economica_principal = models.CharField(
+        max_length=6,
+        blank=True,
+        verbose_name="Actividad Económica Principal (cActEco, 6 dígitos)"
+    )
+    actividades_economicas = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Actividades Económicas adicionales (lista de cActEco)"
+    )
+
+    # Estado del emisor en el sistema
+    activo = models.BooleanField(default=True, verbose_name="Emisor activo")
 
     class Meta:
         verbose_name = "Emisor de Factura Electrónica"
-        verbose_name_plural = "Emisores de Facturas Electrónicas"
+        verbose_name_plural = "Emisores de Factura Electrónica"
 
     def __str__(self):
-        return f"{self.nombre} ({self.ruc})"
+        return f"{self.nombre} ({self.ruc}-{self.dv_ruc})"
 
+    def clean(self):
+        # RUC / DV
+        if not (self.ruc and self.ruc.isdigit() and 7 <= len(self.ruc) <= 8):
+            raise ValidationError(_("El RUC debe ser numérico de 7 u 8 dígitos."))
+        if not (self.dv_ruc and self.dv_ruc.isdigit() and len(self.dv_ruc) == 1):
+            raise ValidationError(_("El DV debe ser un dígito numérico."))
 
+        # Establecimiento y Punto de Expedición
+        if not (self.establecimiento and self.establecimiento.isdigit() and len(self.establecimiento) == 3):
+            raise ValidationError(_("El Establecimiento debe tener 3 dígitos (ej. 001)."))
+        if not (self.punto_expedicion and self.punto_expedicion.isdigit() and len(self.punto_expedicion) == 3):
+            raise ValidationError(_("El Punto de expedición debe tener 3 dígitos (ej. 003)."))
+
+        # Timbrado
+        if not (self.numero_timbrado_actual and self.numero_timbrado_actual.isdigit() and len(self.numero_timbrado_actual) == 8):
+            raise ValidationError(_("El Número de Timbrado debe tener exactamente 8 dígitos (ej. 02595733)."))
+        if not self.fecha_inicio_timbrado:
+            raise ValidationError(_("Debe indicar la fecha de inicio del timbrado (dFeIniT)."))
+
+        # Actividades económicas
+        if self.actividad_economica_principal:
+            if not (self.actividad_economica_principal.isdigit() and len(self.actividad_economica_principal) == 6):
+                raise ValidationError(_("La actividad económica principal (cActEco) debe tener 6 dígitos."))
+
+        if self.actividades_economicas:
+            if not isinstance(self.actividades_economicas, list):
+                raise ValidationError(_("Las actividades económicas adicionales deben ser una lista de strings de 6 dígitos."))
+            for code in self.actividades_economicas:
+                if not isinstance(code, str) or not code.isdigit() or len(code) != 6:
+                    raise ValidationError(_("Cada actividad económica adicional debe ser un string de 6 dígitos."))
+
+        # Ubicación (opcional, pero cuando se complete que sea coherente)
+        if self.codigo_departamento is not None and self.codigo_departamento < 0:
+            raise ValidationError(_("El código de departamento debe ser positivo."))
+        if self.codigo_ciudad is not None and self.codigo_ciudad < 0:
+            raise ValidationError(_("El código de ciudad debe ser positivo."))
+        
+        
 class DocumentoElectronico(models.Model):
     """
     Representa una factura o nota de crédito electrónica generada.
@@ -74,7 +142,7 @@ class DocumentoElectronico(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    emisor = models.ForeignKey(EmisorFacturaElectronica, on_delete=models.PROTECT, related_name='documentos_electronicos')
+    emisor = models.ForeignKey(EmisorFacturaElectronica, on_delete=models.CASCADE, related_name='documentos_electronicos')
 
     tipo_de = models.CharField(max_length=20, choices=TIPO_DE_CHOICES, verbose_name="Tipo de Documento Electrónico")
 
