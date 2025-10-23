@@ -233,28 +233,65 @@
 
         <div class="pad-bezel">
           <div class="ted-pad" aria-label="Teclado">
+
+            <!-- Estilos específicos SOLO del teclado -->
+            <style>
+              /* 4 columnas x 5 filas como en la imagen */
+              .ted-pad .grid{
+                display:grid;
+                grid-template-columns:repeat(4,minmax(0,1fr));
+                gap:12px;
+              }
+              /* Variantes de estilo para las teclas de acción de la última fila */
+              .ted-key--ghost{
+                background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
+                border-color:rgba(255,255,255,.25);
+              }
+              .ted-key--danger{
+                background:linear-gradient(180deg, rgba(239,68,68,0.25), rgba(239,68,68,0.12));
+                border-color:rgba(239,68,68,.45);
+                box-shadow:0 12px 24px -10px rgba(239,68,68,.25), inset 0 0 0 1px rgba(255,255,255,.06);
+              }
+              .ted-key--primary{
+                background:linear-gradient(180deg, color-mix(in oklab, var(--brand) 30%, #0000), color-mix(in oklab, var(--brand) 15%, #0000));
+                border-color:color-mix(in oklab, var(--brand) 50%, #0000);
+                box-shadow:0 12px 24px -10px rgba(124,58,237,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+              }
+              .ted-key .k-sub{
+                display:block; font-size:12px; opacity:.9; margin-top:2px; font-weight:700;
+              }
+            </style>
+
             <div class="grid">
+              <!-- Fila 1 -->
               <button class="ted-key" type="button" data-key="1">1</button>
               <button class="ted-key" type="button" data-key="2">2</button>
               <button class="ted-key" type="button" data-key="3">3</button>
               <button class="ted-key" type="button" data-key="a">a</button>
-              
+
+              <!-- Fila 2 -->
               <button class="ted-key" type="button" data-key="4">4</button>
               <button class="ted-key" type="button" data-key="5">5</button>
               <button class="ted-key" type="button" data-key="6">6</button>
               <button class="ted-key" type="button" data-key="b">b</button>
-              
+
+              <!-- Fila 3 -->
               <button class="ted-key" type="button" data-key="7">7</button>
               <button class="ted-key" type="button" data-key="8">8</button>
               <button class="ted-key" type="button" data-key="9">9</button>
               <button class="ted-key" type="button" data-key="c">c</button>
-              
+
+              <!-- Fila 4 -->
               <button class="ted-key" type="button" data-key="0">0</button>
-              <button class="ted-key" type="button" data-key="backspace">−</button>
-              <button class="ted-key" type="button" data-key="clear">✕</button>
-              <button class="ted-key" type="button" data-key="minus">⌫</button>
-              
-              <button class="ted-key ted-key--action" type="button" data-key="confirm">✓</button>
+              <button class="ted-key" type="button" data-key="d">d</button>
+              <button class="ted-key" type="button" data-key="e">e</button>
+              <button class="ted-key" type="button" data-key="f">f</button>
+
+              <!-- Fila 5 (acciones) -->
+              <button class="ted-key ted-key--ghost"  type="button" data-key="minus">−<span class="k-sub"></span></button>
+              <button class="ted-key"                type="button" data-key="backspace"><span class="k-sub">Borrar</span></button>
+              <button class="ted-key ted-key--danger" type="button" data-key="clear"><span class="k-sub">Cancelar</span></button>
+              <button class="ted-key ted-key--primary" type="button" data-key="confirm"><span class="k-sub">Continuar</span></button>
             </div>
           </div>
         </div>
@@ -665,31 +702,60 @@
   qs('#btn-success-print')?.addEventListener('click', ()=> { if(ctx.ticket_url){ window.open(ctx.ticket_url, 'ticket', 'width=460,height=640'); } });
   qs('#btn-cancel-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
 
-  // ---------------- Teclado virtual ----------------
+  // ---------------- Teclado virtual (delegación + foco seguro) ----------------
   let active = null;
+
+  // Seguimos actualizando active con focus/blur por si hay más inputs con data-kb
   qsa('input[data-kb]').forEach(inp=>{
     inp.addEventListener('focus',()=> active=inp);
-    inp.addEventListener('blur',()=> active=null);
+    inp.addEventListener('blur',()=> { if(active===inp) active=null; });
   });
 
-  qsa('.ted-key').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      if(!active) return;
-      const k = btn.dataset.key;
-      if(k==='a'){ active.value += 'A'; }
-      else if(k==='b'){ active.value += 'B'; }
-      else if(k==='c'){ active.value += 'C'; }
-      else if(k==='backspace'){ active.value = active.value.slice(0,-1); }
-      else if(k==='clear'){ active.value = ''; }
-      else if(k==='minus'){ active.value += '-'; }
-      else if(k==='confirm'){
-        const btnValidar = qs('#btn-tx-validar');
-        if(btnValidar && !btnValidar.disabled) btnValidar.click();
-        return;
-      }
-      else { active.value += k; }
-      active.dispatchEvent(new Event('input',{bubbles:true}));
-    });
+  // Obtiene el input destino: prioriza el enfocado; si no, usa #transaction-number visible
+  function getTargetInput(){
+    if (active && document.body.contains(active)) return active;
+    const focused = document.activeElement;
+    if (focused && focused.matches && focused.matches('input[data-kb]')) return focused;
+    const visible = qs('.ted-screen-view.active input[data-kb]') || qs('#transaction-number');
+    return visible || null;
+  }
+
+  // Delegación: un solo listener para todo el teclado
+  qs('.ted-pad')?.addEventListener('click', (ev)=>{
+    const btn = ev.target.closest('.ted-key');
+    if(!btn) return;
+
+    const input = getTargetInput();
+    if(!input) return;
+
+    const k = String(btn.dataset.key||'');
+    // Letras A-F se agregan en mayúscula
+    if (k==='a' || k==='b' || k==='c' || k==='d' || k==='e' || k==='f') {
+      input.value += k.toLowerCase();
+    }
+    else if (k==='backspace') {
+      input.value = input.value.slice(0,-1);
+    }
+    else if (k==='clear') {
+      input.value = '';
+    }
+    else if (k==='minus') {
+      input.value += '-';
+    }
+    else if (k==='confirm') {
+      const btnValidar = qs('#btn-tx-validar');
+      if (btnValidar && !btnValidar.disabled) btnValidar.click();
+      return; // no dispara 'input'
+    }
+    else {
+      // números u otros caracteres
+      input.value += k;
+    }
+
+    // Asegurar foco para que el usuario vea el cursor
+    input.focus();
+    // Notificar cambios a la UI (habilitar botón Validar, etc.)
+    input.dispatchEvent(new Event('input', { bubbles:true }));
   });
 
   function tick(){ const now=new Date(); qs('#ted-clock').textContent = now.toLocaleTimeString('es-PY',{hour12:false}); }
