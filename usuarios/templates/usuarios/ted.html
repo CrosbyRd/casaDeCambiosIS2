@@ -306,7 +306,7 @@
     CRC:'🇨🇷', DOP:'🇩🇴', NOK:'🇳🇴', SEK:'🇸🇪', DKK:'🇩🇰', ZAR:'🇿🇦', HNL:'🇭🇳',
     GTQ:'🇬🇹', PAB:'🇵🇦', NIO:'🇳🇮', TRY:'🇹🇷', INR:'🇮🇳', KRW:'🇰🇷', SGD:'🇸🇬', HKD:'🇭🇰'
   };
-const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
+  const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
   const formatAmountRaw = (a) => {
     try{ const n = Number(a); if(Number.isFinite(n)) return n.toLocaleString('es-PY',{maximumFractionDigits:0}); }
     catch(e){}
@@ -314,7 +314,7 @@ const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
   };
   const formatAmount = (a, code)=> `${formatAmountRaw(a)} ${code}`;
 
-  const ctx = { modo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null };
+  const ctx = { modo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null, tx_id:null };
 
   // === CSRF ===
   function getCookie(name){
@@ -328,8 +328,8 @@ const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
     const res = await fetch(url, {
       method: isPost ? 'POST' : 'GET',
       credentials:'same-origin',
-      headers: isPost ? {'Content-Type':'application/json','X-CSRFToken': CSRF || ''} : {},
-      body: isPost ? JSON.stringify(body||{}) : undefined
+      headers: isPost ? {'Content-Type':'application/json','X-CSRFToken': CSRF || ''} : {}
+      , body: isPost ? JSON.stringify(body||{}) : undefined
     });
     const ct = res.headers.get('content-type') || '';
     let payload = null;
@@ -353,6 +353,27 @@ const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
     return (payload && payload.data) || payload;
   }
 
+  // 👉 Helper para POST "form" (HTML) que puede redirigir; no esperamos JSON
+  async function postForm(url, formDataObj){
+    const form = new URLSearchParams();
+    Object.entries(formDataObj||{}).forEach(([k,v])=> form.append(k, v==null?'':String(v)));
+    const res = await fetch(url, {
+      method:'POST',
+      credentials:'same-origin',
+      headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','X-CSRFToken': CSRF || ''},
+      body: form.toString(),
+      redirect:'follow'
+    });
+    // Consideramos 2xx/3xx como éxito; no parseamos cuerpo
+    if(!res.ok && (res.status<300 || res.status>=400)){
+      const t = await res.text().catch(()=> '');
+      const e = new Error(t || 'Fallo activando cliente');
+      e.status = res.status;
+      throw e;
+    }
+    return true;
+  }
+
   const URLS = {
     validar: "{% url 'usuarios:ted_api_validar' %}",
     precontar: "{% url 'usuarios:ted_api_precontar' %}",
@@ -362,74 +383,65 @@ const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
     ubicaciones: "{% url 'usuarios:ted_api_ubicaciones' %}",
     terminal: "{% url 'usuarios:ted_api_terminal' %}",
     divisas: "{% url 'ted:monedas_disponibles' %}",
+    // 🆕 endpoint HTML que setea el cliente activo en la sesión
+    set_cliente: "{% url 'usuarios:seleccionar_cliente' %}"
   };
 
   /* Carga y pinta las divisas disponibles para RETIRO (según sucursal) */
-async function loadRetiroCurrencies(){
-  try{
-    const cont = qs('#retiro-currencies');
-    const list = qs('#retiro-currency-list');
-    if(!cont || !list) return;
+  async function loadRetiroCurrencies(){
+    try{
+      const cont = qs('#retiro-currencies');
+      const list = qs('#retiro-currency-list');
+      if(!cont || !list) return;
 
-    // pedir al backend las divisas disponibles por ubicación
-    const data = await api(`${URLS.divisas}?ubicacion=${encodeURIComponent(ctx.ubicacion||'')}`);
-    const currencies = (data && (data.currencies || data.monedas)) || [];
+      const data = await api(`${URLS.divisas}?ubicacion=${encodeURIComponent(ctx.ubicacion||'')}`);
+      const currencies = (data && (data.currencies || data.monedas)) || [];
 
-    // Render
-    if(currencies.length === 0){
-      list.innerHTML = '<span style="opacity:.8">Sin stock disponible.</span>';
-    }else{
-      list.innerHTML = currencies.map(c =>
-        `<span class="currency-chip" data-cur="${c}" title="${c}">${flag(c)}</span>`
-      ).join('');
-    }
-
-    // mostrar el bloque (se oculta cuando no es retiro)
-    cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
-  }catch(_e){
-    const cont = qs('#retiro-currencies');
-    const list = qs('#retiro-currency-list');
-    if(cont && list){
-      list.innerHTML = '<span style="opacity:.8">No se pudo cargar el stock.</span>';
+      if(currencies.length === 0){
+        list.innerHTML = '<span style="opacity:.8">Sin stock disponible.</span>';
+      }else{
+        list.innerHTML = currencies.map(c =>
+          `<span class="currency-chip" data-cur="${c}" title="${c}">${flag(c)}</span>`
+        ).join('');
+      }
       cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+    }catch(_e){
+      const cont = qs('#retiro-currencies');
+      const list = qs('#retiro-currency-list');
+      if(cont && list){
+        list.innerHTML = '<span style="opacity:.8">No se pudo cargar el stock.</span>';
+        cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+      }
     }
   }
-}
 
   /* show() + control del “Bienvenido” SOLO en Inicio */
   const show = (id) => {
-  qsa('.ted-screen-view').forEach(el => {
-    el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
-  });
-  const el = qs('#'+id);
-  if(el){
-    el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block';
-  }
+    qsa('.ted-screen-view').forEach(el => {
+      el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
+    });
+    const el = qs('#'+id);
+    if(el){
+      el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block';
+    }
+    const header = qs('.ted-header');
+    header?.classList.toggle('compact', id !== 'login-screen');
 
-  // Header compacto fuera del inicio
-  const header = qs('.ted-header');
-  header?.classList.toggle('compact', id !== 'login-screen');
-
-  // ✨ AÑADIDO: Agregar/quitar clase is-home en .ted-screen
-  const screen = qs('.ted-screen');
-  if(screen){
-    screen.classList.toggle('is-home', id === 'login-screen');
-  }
-
-  // "Bienvenido" visible SOLO en login-screen
-  const wb = qs('#welcome-badge');
-  if(wb){
-    const isHome = (id === 'login-screen');
-    wb.classList.toggle('hidden', !isHome);
-    if(isHome) wb.style.removeProperty('display');
-  }
-
-  // ocultar/mostrar bloque de divisas según modo/vista
-  const cont = qs('#retiro-currencies');
-  if(cont){
-    cont.style.display = (id === 'transaction-screen' && ctx.modo === 'retiro') ? 'block' : 'none';
-  }
-};
+    const screen = qs('.ted-screen');
+    if(screen){
+      screen.classList.toggle('is-home', id === 'login-screen');
+    }
+    const wb = qs('#welcome-badge');
+    if(wb){
+      const isHome = (id === 'login-screen');
+      wb.classList.toggle('hidden', !isHome);
+      if(isHome) wb.style.removeProperty('display');
+    }
+    const cont = qs('#retiro-currencies');
+    if(cont){
+      cont.style.display = (id === 'transaction-screen' && ctx.modo === 'retiro') ? 'block' : 'none';
+    }
+  };
 
   function showError(stage, err){
     let userMsg = 'Ocurrió un error inesperado.';
@@ -438,7 +450,6 @@ async function loadRetiroCurrencies(){
 
     switch(err.status){
       case 404: {
-        // Detalle más preciso según el mensaje del backend
         if (raw.includes('cliente activo') || raw.includes('no pertenece')) {
           userMsg = 'El código no pertenece al cliente activo seleccionado. Cambiá el cliente activo y volvé a intentarlo.';
           code = 'E404-CODIGO-CLIENTE';
@@ -448,8 +459,7 @@ async function loadRetiroCurrencies(){
             : (stage==='confirmar' ? 'Reserva no encontrada o expirada. Volvé a validar el código.' : 'Recurso no encontrado.');
           code = (stage==='validar') ? 'E404-CODIGO' : 'E404-RESERVA';
         }
-      break;
-      }    
+      break; }
 
       case 409: userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.'; code = 'E409-STOCK'; break;
       case 403:
@@ -467,14 +477,12 @@ async function loadRetiroCurrencies(){
 
   // ====== helpers UI para limpiar estado ======
   const codeInput = () => qs('#transaction-number');
-  const isHome = document.querySelector('.ted-screen')?.classList.contains('is-home');
   window.addEventListener('pageshow', function (e) {
     if (e.persisted) {
       const el = codeInput();
       if (el) el.value = '';
     }
   });
-
   const btnTxValidar = () => qs('#btn-tx-validar');
 
   function resetTxUI() {
@@ -482,8 +490,7 @@ async function loadRetiroCurrencies(){
     if (inp) inp.value = '';
     const btn = btnTxValidar();
     if (btn) btn.disabled = true;
-    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null;
-    // ocultar box de confirmación si quedó armado
+    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null; ctx.tx_id = null;
     const box = qs('#confirm-amount-box');
     if (box) { box.innerHTML = ''; box.style.display = 'none'; }
     qs('#confirm-amount-text')?.classList.remove('hidden');
@@ -520,8 +527,6 @@ async function loadRetiroCurrencies(){
     ctx.ubicacion = ubicSel.value || null;
     btnLogin.disabled = !ctx.ubicacion;
     qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
-
-    // ← NUEVO: refrescar divisas visibles para Retiro
     try { loadRetiroCurrencies(); } catch(_){}
   });
 
@@ -544,8 +549,6 @@ async function loadRetiroCurrencies(){
     resetTxUI();
     qs('#tx-title').textContent = 'Depósito de Dinero';
     show('transaction-screen');
-
-    // ← NUEVO: ocultar bloque de divisas al no ser necesario
     const cont = qs('#retiro-currencies');
     const list = qs('#retiro-currency-list');
     if (cont && list) {
@@ -576,6 +579,14 @@ async function loadRetiroCurrencies(){
       ctx.raw  = info;
       ctx.code = (info && info.codigo) ? String(info.codigo).trim() : (ctx.code||'').trim();
       ctx.tx_id = info && info.tx_id ? String(info.tx_id) : null;
+
+      // 🆕 Sincronizar el cliente activo de la sesión con el dueño del código
+      //    (la vista `seleccionar_cliente` guarda SESSION_KEY en la sesión)
+      const clienteId = info && (info.cliente_id || info.cliente || info.owner_id);
+      if (clienteId) {
+        try { await postForm(URLS.set_cliente + '?next=' + encodeURIComponent(location.pathname), {cliente_id: clienteId}); }
+        catch(_e){ /* si falla, continuamos: precontar devolverá 404 y lo mostraremos bonito */ }
+      }
 
       if (ctx.modo === 'retiro') {
         qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
@@ -611,11 +622,11 @@ async function loadRetiroCurrencies(){
   });
   qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
     try{
-    const payload = { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion };
-    if (ctx.tx_id) payload.tx_id = ctx.tx_id;  // opcional, para futura relajación del filtro en backend
-    const data = await api(URLS.precontar, payload);
+      const payload = { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion };
+      if (ctx.tx_id) payload.tx_id = ctx.tx_id;
+      const data = await api(URLS.precontar, payload);
 
-    ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
+      ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
 
       const list = qs('#otp-summary');
       if(list){
@@ -662,41 +673,24 @@ async function loadRetiroCurrencies(){
   });
 
   qsa('.ted-key').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(!active) return;
-    const k = btn.dataset.key;
-    
-    // Teclas alfabéticas (mayúsculas)
-    if(k==='a'){ active.value += 'A'; }
-    else if(k==='b'){ active.value += 'B'; }
-    else if(k==='c'){ active.value += 'C'; }
-    
-    // Teclas especiales
-    else if(k==='backspace'){ 
-      active.value = active.value.slice(0,-1); 
-    }
-    else if(k==='clear'){ 
-      active.value = ''; 
-    }
-    else if(k==='minus'){ 
-      active.value += '-'; 
-    }
-    else if(k==='confirm'){ 
-      // Simular click en el botón "Validar" si existe
-      const btnValidar = qs('#btn-tx-validar');
-      if(btnValidar && !btnValidar.disabled) btnValidar.click();
-      return; // No disparar evento 'input' para confirm
-    }
-    
-    // Teclas numéricas y cualquier otra
-    else { 
-      active.value += k; 
-    }
-    
-    // Disparar evento para actualizar estado de botones
-    active.dispatchEvent(new Event('input',{bubbles:true}));
+    btn.addEventListener('click', ()=>{
+      if(!active) return;
+      const k = btn.dataset.key;
+      if(k==='a'){ active.value += 'A'; }
+      else if(k==='b'){ active.value += 'B'; }
+      else if(k==='c'){ active.value += 'C'; }
+      else if(k==='backspace'){ active.value = active.value.slice(0,-1); }
+      else if(k==='clear'){ active.value = ''; }
+      else if(k==='minus'){ active.value += '-'; }
+      else if(k==='confirm'){
+        const btnValidar = qs('#btn-tx-validar');
+        if(btnValidar && !btnValidar.disabled) btnValidar.click();
+        return;
+      }
+      else { active.value += k; }
+      active.dispatchEvent(new Event('input',{bubbles:true}));
+    });
   });
-});
 
   function tick(){ const now=new Date(); qs('#ted-clock').textContent = now.toLocaleTimeString('es-PY',{hour12:false}); }
   setInterval(tick, 1000); tick();

@@ -1,3 +1,4 @@
+# usuarios/ted_api.py
 """
 API TED (Validación, Preconteo, OTP y Confirmación)
 ===================================================
@@ -30,7 +31,6 @@ import json
 import secrets
 from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
 from typing import Dict, List, Tuple
-import json
 
 from django.conf import settings
 from django.core.cache import cache
@@ -40,12 +40,13 @@ from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
+from django.db.models import BooleanField
 
 from usuarios.utils import get_cliente_activo
 from transacciones.models import Transaccion
 from monedas.models import Moneda, TedDenominacion, TedInventario, TedMovimiento
+
 
 def _body_json(request: HttpRequest) -> Dict:
     """
@@ -58,36 +59,38 @@ def _body_json(request: HttpRequest) -> Dict:
         if (request.content_type or "").startswith("application/json"):
             raw = request.body.decode("utf-8") if request.body else ""
             return json.loads(raw or "{}")
-        # fallback: form-encoded
         return request.POST.dict()
     except Exception:
         return {}
 
+
 # ==========================================================================
 # FLAGS / SETTINGS
 # ==========================================================================
-# Modo pruebas: validar existencia + pertenencia, omitir reglas de estado.
+# Modo pruebas: validar existencia + estado, sin forzar reglas adicionales.
 STRICT_STATE_VALIDATION: bool = False
+
+# ¿Exigir que el código pertenezca al cliente activo? (modo estricto multi-cliente)
+# - False (default): modo kiosco; no atamos al cliente de sesión en precontar/validar.
+# - True : se filtra por cliente activo.
+STRICT_CLIENT_OWNERSHIP: bool = getattr(settings, "TED_STRICT_CLIENT_OWNERSHIP", False)
+
+# Permitir *autosplit* en depósito si no llega breakdown desde el TED/front.
+TED_DEPOSITO_AUTOSPLIT: bool = getattr(settings, "TED_DEPOSITO_AUTOSPLIT", True)
 
 # Reservas de preconteo y OTP
 RESERVA_TTL_SECONDS: int = getattr(settings, "TED_RESERVA_TTL_SECONDS", 120)
 OTP_TTL_SECONDS: int = getattr(settings, "TED_OTP_TTL_SECONDS", 300)
 
 # Política de redondeo "a favor de la casa"
-# - Retiro: redondeo hacia abajo (paga menos billetes si hay decimales)
-# - Depósito: redondeo hacia arriba (cliente deposita de más si hay decimales)
-ROUNDING_RETIRO = ROUND_FLOOR
-ROUNDING_DEPOSITO = ROUND_CEILING
+ROUNDING_RETIRO = ROUND_FLOOR     # Retiro: hacia abajo
+ROUNDING_DEPOSITO = ROUND_CEILING # Depósito: hacia arriba
 
 
 # ==========================================================================
 # Helpers
 # ==========================================================================
 def _json_error(msg: str, status: int = 400, **extra) -> JsonResponse:
-    """
-    Respuesta de error consistente.
-    Permite pasar 'code="E400-..."' u otros campos adicionales.
-    """
     payload = {"ok": False, "error": msg}
     if extra:
         payload.update(extra)
@@ -95,8 +98,11 @@ def _json_error(msg: str, status: int = 400, **extra) -> JsonResponse:
 
 
 def _active_client(request: HttpRequest):
-    # BUG: antes estaba get_cliente_activo(request.user)  -> AttributeError
-    cliente = get_cliente_activo(request)  # ✅ pasar el request real para usar request.session
+    """
+    Obtiene el cliente activo desde la sesión del usuario.
+    Lanza PermissionError si no existe.
+    """
+    cliente = get_cliente_activo(request)
     if not cliente:
         raise PermissionError("Debe seleccionar un cliente activo antes de operar.")
     return cliente
@@ -109,7 +115,6 @@ def _monto_y_moneda(tx: Transaccion, modo: str) -> Tuple[Decimal, Moneda]:
 
 
 def _round_for_policy(amount: Decimal, modo: str) -> Decimal:
-    # Redondeo a la unidad entera de la moneda (p. ej., USD enteros)
     quant = Decimal("1")
     rounding = ROUNDING_DEPOSITO if modo == "deposito" else ROUNDING_RETIRO
     return amount.quantize(quant, rounding=rounding)
@@ -123,50 +128,85 @@ def _cache_key_otp(rid: str) -> str:
     return f"ted:otp:{rid}"
 
 
+def _marcar_tauser_usado(tx: Transaccion) -> bool:
+    """
+    Marca el TAUSER como usado en la transacción.
+    - Si `tauser_utilizado` es BooleanField -> True
+    - Si es FK(Tauser) -> vincula la instancia del código TAUSER
+      usando `tx.tauser` si existe, o buscando por `codigo_operacion_tauser`.
+    Devuelve True si modificó el campo.
+    """
+    try:
+        f = tx._meta.get_field("tauser_utilizado")
+    except Exception:
+        return False  # el campo no existe
+
+    if isinstance(f, BooleanField):
+        tx.tauser_utilizado = True
+        return True
+
+    # Es FK -> Tauser
+    TauserModel = f.remote_field.model
+    inst = getattr(tx, "tauser", None)
+    if not isinstance(inst, TauserModel):
+        try:
+            inst = TauserModel.objects.filter(
+                codigo__iexact=str(tx.codigo_operacion_tauser)
+            ).first()
+        except Exception:
+            inst = None
+
+    if inst:
+        tx.tauser_utilizado = inst
+        return True
+
+    return False
+
+
 # ==========================================================================
-# Endpoint: VALIDAR (existente, se mantiene)
+# Endpoint: VALIDAR
 # ==========================================================================
 @require_POST
 @login_required
-def validar_transaccion(request):
+def validar_transaccion(request: HttpRequest) -> JsonResponse:
+    """
+    Valida un código TAUSER y retorna datos mínimos para el TED.
+
+    - ``modo='deposito'`` → usa ``moneda_origen`` / ``monto_origen``.
+    - ``modo='retiro'``   → usa ``moneda_destino`` / ``monto_destino``.
+    """
     payload = _body_json(request)
     codigo = (payload.get("codigo") or "").strip()
-    modo = (payload.get("modo") or "").strip()
+    modo = (payload.get("modo") or "").strip().lower()
 
-    if not codigo or not modo:
-        return _json_error("Faltan campos requeridos.", 400, code="E400-PAYLOAD")
+    if not codigo or modo not in {"retiro", "deposito"}:
+        return _json_error("Faltan campos requeridos o modo inválido.", 400, code="E400-PAYLOAD")
 
     tx = (
-        Transaccion.objects.select_related("cliente", "moneda_origen", "moneda_destino")
-        .filter(codigo_operacion_tauser__iexact=codigo)
+        Transaccion.objects
+        .select_related("cliente", "moneda_origen", "moneda_destino")
+        .filter(codigo_operacion_tauser__iexact=codigo)  # case-insensitive
         .first()
     )
     if not tx:
-        return _json_error(
-            "No se encontró una transacción con ese código.",
-            404,
-            code="E404-CODIGO",
-        )
-    # Chequeo de estados permitidos por modo
-    allowed = settings.TED_ALLOWED_STATES.get(modo, set())
+        return _json_error("No se encontró una transacción con ese código.", 404, code="E404-CODIGO")
+
+    allowed = getattr(settings, "TED_ALLOWED_STATES", {}).get(modo, set())
     if allowed and tx.estado not in allowed:
         return _json_error(
-            f"Estado {tx.estado} no permite {modo}.",
-            409,
-            code="E409-ESTADO",
-        )
-    # validar estado permitido para el modo
-    allowed = settings.TED_ALLOWED_STATES.get(modo, set())
-    if allowed and tx.estado not in allowed:
-        # si querés mostrar el label del estado en vez de la clave, usá get_estado_display()
-        return _json_error(
-            f"Estado {tx.get_estado_display() if hasattr(tx, 'get_estado_display') else tx.estado} no permite {modo}.",
+            f"Estado {getattr(tx, 'get_estado_display', lambda: tx.estado)()} no permite {modo}.",
             409,
             code="E409-ESTADO",
         )
 
+    if STRICT_CLIENT_OWNERSHIP:
+        try:
+            cliente_activo = _active_client(request)
+        except PermissionError as e:
+            return _json_error(str(e), 403, code="E403-CLIENTE")
+        if str(tx.cliente_id) != str(cliente_activo.pk):
+            return _json_error("El código no pertenece al cliente activo.", 404, code="E404-CODIGO-CLIENTE")
 
-    # El monto/moneda a usar según el modo
     monto, moneda = _monto_y_moneda(tx, modo)
 
     data = {
@@ -175,6 +215,8 @@ def validar_transaccion(request):
         "moneda": moneda.codigo if isinstance(moneda, Moneda) else str(moneda),
         "monto": str(monto),
         "tx_id": str(tx.id),
+        "cliente_id": str(getattr(tx, "cliente_id", "")) or None,
+        "cliente_nombre": getattr(tx.cliente, "nombre", ""),
     }
     return JsonResponse(data, status=200)
 
@@ -187,63 +229,53 @@ def precontar(request: HttpRequest) -> JsonResponse:
     """
     Calcula una **combinación exacta de billetes** disponible en la **ubicación**
     dada para el monto de la transacción.
-
-    **Entradas**
-    ------------
-    - ``codigo``: Código TAUSER.
-    - ``modo``: ``'retiro'`` (usa monto/moneda de destino) o ``'deposito'``.
-    - ``ubicacion``: Texto exacto de la ubicación (ej.: ``"Campus, San Lorenzo – Paraguay"``).
-
-    **Salida**
-    ----------
-    - ``reserva_id``: ID temporal de la reserva (TTL configurable).
-    - ``monto_solicitado`` (str), ``monto_redondeado`` (str), ``diff`` (str).
-    - ``breakdown``: lista de objetos ``{denominacion, unidades, valor}``.
     """
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except Exception:
         return _json_error("JSON inválido.", 400)
 
-    codigo = (payload.get("codigo") or "").strip().upper()
+    codigo = (payload.get("codigo") or "").strip()  # sin upper(); buscamos con iexact
     modo = (payload.get("modo") or "").strip().lower()
     ubicacion = (payload.get("ubicacion") or "").strip()
     if not codigo or modo not in {"retiro", "deposito"} or not ubicacion:
         return _json_error("Parámetros inválidos.", 400)
 
-    try:
-        cliente = _active_client(request)
-    except PermissionError as e:
-        return _json_error(str(e), 403)
+    cliente = None
+    if STRICT_CLIENT_OWNERSHIP:
+        try:
+            cliente = _active_client(request)
+        except PermissionError as e:
+            return _json_error(str(e), 403)
 
+    # Búsqueda case-insensitive del código; si corresponde, filtramos por cliente activo
     try:
-        tx = Transaccion.objects.select_related(
-            "moneda_origen", "moneda_destino", "cliente"
-        ).get(codigo_operacion_tauser=codigo, cliente=cliente)
+        qs = Transaccion.objects.select_related("moneda_origen", "moneda_destino", "cliente")
+        if STRICT_CLIENT_OWNERSHIP and cliente:
+            tx = qs.get(codigo_operacion_tauser__iexact=codigo, cliente=cliente)
+        else:
+            tx = qs.get(codigo_operacion_tauser__iexact=codigo)
     except Transaccion.DoesNotExist:
-        return _json_error("Código no encontrado para el cliente activo.", 404)
+        return _json_error(
+            "Código no encontrado" + (" para el cliente activo." if STRICT_CLIENT_OWNERSHIP else "."),
+            404,
+            code="E404-CODIGO" if not STRICT_CLIENT_OWNERSHIP else "E404-CODIGO-CLIENTE",
+        )
 
     monto, moneda = _monto_y_moneda(tx, modo)
     monto_redondeado = _round_for_policy(Decimal(monto), modo)
     diff = (monto_redondeado - Decimal(monto))
 
-    # Denominaciones activas de la moneda
-    denoms = list(
-        TedDenominacion.objects.filter(moneda=moneda, activa=True).order_by("-valor")
-    )
+    denoms = list(TedDenominacion.objects.filter(moneda=moneda, activa=True).order_by("-valor"))
     if not denoms:
         return _json_error(f"No hay denominaciones configuradas para {moneda.codigo}.", 400)
 
-    # MODO RETIRO: exige combinación exacta y stock suficiente
-    breakdown: List[Tuple[int, int]] = []  # (denom_id, unidades)
+    breakdown: List[Tuple[int, int]] = []
     if modo == "retiro":
-        objetivo = int(monto_redondeado)  # unidades enteras
-        # Traer inventario por ubicación
+        objetivo = int(monto_redondeado)
         inv_map: Dict[int, int] = {
             inv.denominacion_id: inv.cantidad
-            for inv in TedInventario.objects.filter(
-                ubicacion=ubicacion, denominacion__in=denoms
-            )
+            for inv in TedInventario.objects.filter(ubicacion=ubicacion, denominacion__in=denoms)
         }
         if not inv_map:
             return _json_error("No hay inventario configurado para esta ubicación.", 400)
@@ -261,16 +293,8 @@ def precontar(request: HttpRequest) -> JsonResponse:
                 restante -= max_units * d.valor
 
         if restante != 0:
-            return _json_error(
-                "No hay combinación exacta de billetes disponible en esta ubicación.", 409
-            )
+            return _json_error("No hay combinación exacta de billetes disponible en esta ubicación.", 409)
 
-    else:  # deposito
-        # Para depósito, el cajero acepta lo que el cliente ingrese: el preconteo
-        # sólo devuelve el monto redondeado esperado; el breakdown vendrá en confirmar.
-        breakdown = []
-
-    # Crear reserva en cache
     reserva_id = secrets.token_urlsafe(12)
     reserva_data = {
         "tx_id": str(tx.id),
@@ -280,17 +304,15 @@ def precontar(request: HttpRequest) -> JsonResponse:
         "moneda": moneda.codigo,
         "monto_redondeado": str(monto_redondeado),
         "diff": str(diff),
-        "breakdown": breakdown,  # retiro: reserva exacta; deposito: vacío
+        "breakdown": breakdown,
         "user_id": request.user.id if request.user.is_authenticated else None,
         "created_at": timezone.now().isoformat(),
     }
     cache.set(_cache_key_reserva(reserva_id), reserva_data, RESERVA_TTL_SECONDS)
 
-    # Respuesta legible
-    breakdown_out = []
     id_to_valor = {d.id: d.valor for d in denoms}
-    for did, units in breakdown:
-        breakdown_out.append({"denominacion": did, "valor": id_to_valor.get(did, 0), "unidades": units})
+    breakdown_out = [{"denominacion": did, "valor": id_to_valor.get(did, 0), "unidades": units}
+                     for did, units in breakdown]
 
     return JsonResponse(
         {
@@ -326,7 +348,7 @@ def otp_enviar(request: HttpRequest) -> JsonResponse:
 
     data = cache.get(_cache_key_reserva(reserva_id))
     if not data:
-        return _json_error("Reserva expirada o inexistente.", 410)
+        return _json_error("Reserva expirada o inexistente.", 410, code="E404-RESERVA")
 
     if not request.user.is_authenticated or not getattr(request.user, "email", None):
         return _json_error("Usuario sin email para OTP.", 403)
@@ -339,7 +361,7 @@ def otp_enviar(request: HttpRequest) -> JsonResponse:
     try:
         send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [request.user.email])
     except Exception:
-        # En entornos de desarrollo puede fallar: devolver el código para pruebas
+        # Desarrollo: si falla SMTP devolvemos el código para pruebas
         return JsonResponse({"ok": True, "test_code": code}, status=200)
 
     return JsonResponse({"ok": True}, status=200)
@@ -367,7 +389,6 @@ def otp_verificar(request: HttpRequest) -> JsonResponse:
     if otp != expect:
         return _json_error("OTP incorrecto.", 400)
 
-    # Marcar como verificado (opcionalmente podríamos setear un flag en reserva)
     cache.set(_cache_key_otp(reserva_id), f"OK:{otp}", OTP_TTL_SECONDS)
     return JsonResponse({"ok": True}, status=200)
 
@@ -385,7 +406,8 @@ def confirmar(request: HttpRequest) -> JsonResponse:
     ------------
     - ``reserva_id``: ID devuelto por :func:`precontar`.
     - ``otp``: Código de verificación.
-    - ``billetes`` *(solo depósito)*: lista ``[{valor, unidades}]``.
+    - ``billetes`` *(solo depósito)*: lista ``[{valor, unidades}]`` (si no llega y
+      TED_DEPOSITO_AUTOSPLIT=True, se genera automáticamente con voraz).
 
     **Salida**
     ----------
@@ -401,17 +423,16 @@ def confirmar(request: HttpRequest) -> JsonResponse:
     billetes = payload.get("billetes") or []
 
     if not reserva_id or not otp:
-        return _json_error("Parámetros inválidos.", 400)
+        return _json_error("Parámetros inválidos.", 400, code="E400-VALIDACION")
 
     data = cache.get(_cache_key_reserva(reserva_id))
     if not data:
-        return _json_error("Reserva expirada o inexistente.", 410)
+        return _json_error("Reserva expirada o inexistente.", 410, code="E404-RESERVA")
 
     otp_cache = cache.get(_cache_key_otp(reserva_id))
     if not otp_cache or not str(otp_cache).startswith("OK:"):
         return _json_error("OTP no verificado.", 403)
 
-    # Releer transacción y contexto
     try:
         tx = Transaccion.objects.select_related(
             "moneda_origen", "moneda_destino", "cliente"
@@ -424,14 +445,12 @@ def confirmar(request: HttpRequest) -> JsonResponse:
     ubicacion = data["ubicacion"]
     monto_redondeado = Decimal(str(data["monto_redondeado"]))
 
-    # Denominaciones de la moneda (mapa valor->obj, id->obj)
     denoms = list(TedDenominacion.objects.filter(moneda=moneda, activa=True).order_by("-valor"))
     id_map = {d.id: d for d in denoms}
     val_map = {d.valor: d for d in denoms}
 
     with db_transaction.atomic():
         if modo == "retiro":
-            # Reaplicar reserva contra stock con bloqueo pesimista
             rows = (
                 TedInventario.objects.select_for_update()
                 .filter(ubicacion=ubicacion, denominacion__in=denoms)
@@ -442,7 +461,6 @@ def confirmar(request: HttpRequest) -> JsonResponse:
                 if not r or r.cantidad < units:
                     return _json_error("Stock insuficiente al confirmar.", 409)
 
-            # Descontar y registrar movimientos
             for did, units in data["breakdown"]:
                 r = inv[did]
                 r.cantidad -= int(units)
@@ -454,15 +472,31 @@ def confirmar(request: HttpRequest) -> JsonResponse:
                     transaccion_ref=str(tx.codigo_operacion_tauser),
                 )
 
-            # Cambiar estado a 'completada' (ajustar si necesitás otro nombre)
             tx.estado = "completada"
-            tx.tauser_utilizado = True
-            tx.save(update_fields=["estado", "tauser_utilizado", "fecha_actualizacion"])
+            changed_tu = _marcar_tauser_usado(tx)
+            update_fields = ["estado", "fecha_actualizacion"]
+            if changed_tu:
+                update_fields.append("tauser_utilizado")
+            tx.save(update_fields=update_fields)
 
         else:  # deposito
-            # Tomar breakdown del payload y sumar
+            # Si no llegó breakdown y está permitido, generamos uno vorazmente.
+            if (not isinstance(billetes, list) or not billetes) and TED_DEPOSITO_AUTOSPLIT:
+                objetivo = int(monto_redondeado)
+                billetes = []
+                for valor in sorted(val_map.keys(), reverse=True):
+                    if objetivo <= 0:
+                        break
+                    k = objetivo // valor
+                    if k > 0:
+                        billetes.append({"valor": int(valor), "unidades": int(k)})
+                        objetivo -= valor * k
+                if objetivo != 0:
+                    return _json_error("No se pudo generar breakdown automático para depósito.", 500)
+
             if not isinstance(billetes, list) or not billetes:
-                return _json_error("Debe enviar breakdown de billetes para depósito.", 400)
+                return _json_error("Debe enviar breakdown de billetes para depósito.", 400, code="E400-VALIDACION")
+
             total_calc = 0
             for item in billetes:
                 try:
@@ -477,7 +511,6 @@ def confirmar(request: HttpRequest) -> JsonResponse:
             if total_calc != int(monto_redondeado):
                 return _json_error("El breakdown no coincide con el monto redondeado.", 400)
 
-            # Incrementar stock y registrar movimientos
             rows = (
                 TedInventario.objects.select_for_update()
                 .filter(ubicacion=ubicacion, denominacion__in=denoms)
@@ -488,7 +521,6 @@ def confirmar(request: HttpRequest) -> JsonResponse:
                 unidades = int(item["unidades"])
                 r = inv_by_val.get(valor)
                 if not r:
-                    # Crear registro de stock si no existe para la ubicación
                     r = TedInventario.objects.create(denominacion=val_map[valor], ubicacion=ubicacion, cantidad=0)
                 r.cantidad += unidades
                 r.save(update_fields=["cantidad", "updated_at"])
@@ -499,14 +531,14 @@ def confirmar(request: HttpRequest) -> JsonResponse:
                     transaccion_ref=str(tx.codigo_operacion_tauser),
                 )
 
-            # Cambiar estado a 'procesando_acreditacion'
             tx.estado = "procesando_acreditacion"
-            tx.tauser_utilizado = True
-            tx.save(update_fields=["estado", "tauser_utilizado", "fecha_actualizacion"])
+            changed_tu = _marcar_tauser_usado(tx)
+            update_fields = ["estado", "fecha_actualizacion"]
+            if changed_tu:
+                update_fields.append("tauser_utilizado")
+            tx.save(update_fields=update_fields)
 
-    # Ticket simple (HTML): devolvemos URL imprimible
     ticket_url = reverse("usuarios:ted_ticket", kwargs={"codigo": tx.codigo_operacion_tauser})
-    # Limpiar reserva
     cache.delete_many([_cache_key_reserva(reserva_id), _cache_key_otp(reserva_id)])
 
     return JsonResponse({"ok": True, "data": {"ticket_url": ticket_url}}, status=200)
