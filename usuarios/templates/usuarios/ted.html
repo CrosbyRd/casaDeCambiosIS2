@@ -437,12 +437,20 @@ async function loadRetiroCurrencies(){
     const raw = (err && (err.message||'')).toLowerCase();
 
     switch(err.status){
-      case 404:
-        userMsg = (stage==='validar')
-          ? 'Código no encontrado. Verificá el número e intentá de nuevo.'
-          : (stage==='confirmar' ? 'Reserva no encontrada o expirada. Volvé a validar el código.' : 'Recurso no encontrado.');
-        code = (stage==='validar') ? 'E404-CODIGO' : 'E404-RESERVA';
-        break;      
+      case 404: {
+        // Detalle más preciso según el mensaje del backend
+        if (raw.includes('cliente activo') || raw.includes('no pertenece')) {
+          userMsg = 'El código no pertenece al cliente activo seleccionado. Cambiá el cliente activo y volvé a intentarlo.';
+          code = 'E404-CODIGO-CLIENTE';
+        } else {
+          userMsg = (stage==='validar')
+            ? 'Código no encontrado. Verificá el número e intentá de nuevo.'
+            : (stage==='confirmar' ? 'Reserva no encontrada o expirada. Volvé a validar el código.' : 'Recurso no encontrado.');
+          code = (stage==='validar') ? 'E404-CODIGO' : 'E404-RESERVA';
+        }
+      break;
+      }    
+
       case 409: userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.'; code = 'E409-STOCK'; break;
       case 403:
         if(raw.includes('csrf')){ userMsg = 'No autorizado: Protección CSRF. Refrescá la página e intentá de nuevo.'; code = 'E403-AUT-CSRF'; }
@@ -564,17 +572,17 @@ async function loadRetiroCurrencies(){
   qs('#btn-tx-validar')?.addEventListener('click', async ()=>{
     try{
       if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
-      const info = await api(URLS.validar, {codigo: ctx.code, modo: ctx.modo});
-      ctx.raw = info;
+      const info = await api(URLS.validar, { codigo: (ctx.code||'').trim(), modo: ctx.modo });
+      ctx.raw  = info;
+      ctx.code = (info && info.codigo) ? String(info.codigo).trim() : (ctx.code||'').trim();
+      ctx.tx_id = info && info.tx_id ? String(info.tx_id) : null;
 
       if (ctx.modo === 'retiro') {
         qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
-          if (ch.dataset.cur?.toUpperCase() === String(info.moneda||'').toUpperCase()) {
-            ch.classList.add('match');
-            ch.classList.remove('dimmed');
+          if ((ch.dataset.cur||'').toUpperCase() === String(info.moneda||'').toUpperCase()) {
+            ch.classList.add('match'); ch.classList.remove('dimmed');
           } else {
-            ch.classList.add('dimmed');
-            ch.classList.remove('match');
+            ch.classList.add('dimmed'); ch.classList.remove('match');
           }
         });
       }
@@ -588,7 +596,7 @@ async function loadRetiroCurrencies(){
           <div class="cb-mode">${ctx.modo==='deposito'?'Depósito':'Retiro'}</div>
         </div>
         <div class="cb-value"><span class="cb-number">${formatAmountRaw(info.monto)}</span> <span class="cb-code">${info.moneda}</span></div>
-        <div class="cb-sub">Transacción <code>${info.codigo}</code></div>
+        <div class="cb-sub">Transacción <code>${ctx.code}</code></div>
       `;
       box.style.display = 'block';
       textEl?.classList.add('hidden');
@@ -603,8 +611,11 @@ async function loadRetiroCurrencies(){
   });
   qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
     try{
-      const data = await api(URLS.precontar, { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion });
-      ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
+    const payload = { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion };
+    if (ctx.tx_id) payload.tx_id = ctx.tx_id;  // opcional, para futura relajación del filtro en backend
+    const data = await api(URLS.precontar, payload);
+
+    ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
 
       const list = qs('#otp-summary');
       if(list){
