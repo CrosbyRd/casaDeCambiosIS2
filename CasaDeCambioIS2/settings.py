@@ -174,5 +174,21 @@ TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES
 # TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
 
-# Configuración de Facturación Electrónica
-FACTURASEGURA_SIMULATION_MODE = os.getenv("FACTURASEGURA_SIMULATION_MODE", "True").strip().lower() in ("1", "true", "yes", "on")
+# --- Configuración de Facturación Electrónica (FacturaSegura) ---
+# Los valores se toman del .env; en DEBUG usa *_TEST, en PROD usa *_PROD.
+FACTURASEGURA = {
+    "BASE_URL": os.getenv(
+        "FACTURASEGURA_API_URL_TEST" if DEBUG else "FACTURASEGURA_API_URL_PROD",
+        "https://apitest.facturasegura.com.py/misife00/v1/esi"
+    ).rstrip("/"),
+    "LOGIN_URL": os.getenv(
+        "FACTURASEGURA_LOGIN_URL_TEST" if DEBUG else "FACTURASEGURA_LOGIN_URL_PROD",
+        "https://apitest.facturasegura.com.py/login?include_auth_token"
+    ),
+    "TIMEOUT": int(os.getenv("FACTURASEGURA_TIMEOUT", 30)),
+    "RETRIES": int(os.getenv("FACTURASEGURA_RETRIES", 3)),
+    "SIMULATION_MODE": os.getenv("FACTURASEGURA_SIMULATION_MODE", "true").strip().lower() in ("1", "true", "yes", "on"),
+    "EMAIL": os.getenv("FACTURASEGURA_ESI_EMAIL"),
+    "PASSWORD": os.getenv("FACTURASEGURA_ESI_PASSWORD"),
+}
+

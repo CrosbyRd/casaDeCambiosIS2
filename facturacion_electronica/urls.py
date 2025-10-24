@@ -11,7 +11,7 @@ urlpatterns = [
     path('emisores/<int:pk>/editar/', views.EmisorFacturaElectronicaUpdateView.as_view(), name='emisor_update'),
     path('emisores/<int:pk>/eliminar/', views.EmisorFacturaElectronicaDeleteView.as_view(), name='emisor_delete'),
     path('emisores/<int:emisor_id>/generar_token/', views.generar_token_view, name='generar_token'),
-    path('emisores/<int:pk>/toggle_activo/', views.toggle_emisor_activo_view, name='toggle_emisor_activo'), # Nueva URL
+    path('emisores/<int:pk>/toggle_activo/', views.toggle_emisor_activo_view, name='toggle_emisor_activo'),
 
     # URLs para DocumentoElectronico
     path('documentos/', views.DocumentoElectronicoListView.as_view(), name='documento_list'),

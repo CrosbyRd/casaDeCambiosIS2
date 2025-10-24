@@ -23,8 +23,8 @@ class EmisorFacturaElectronica(models.Model):
     )
 
     # Datos de contacto
-    email_contacto = models.EmailField(blank=True, null=True, verbose_name="Email de contacto")
-    telefono_contacto = models.CharField(max_length=25, blank=True, null=True, verbose_name="Teléfono de contacto")
+    email_emisor= models.EmailField(blank=True, null=True, verbose_name="Email de contacto")
+    telefono = models.CharField(max_length=25, blank=True, null=True, verbose_name="Teléfono de contacto")
 
     # Dirección (coincidente con nodos de cDepEmi, dDesDepEmi, cCiuEmi, dDesCiuEmi, dDirEmi, dNumCas, cPaisEmi)
     codigo_departamento = models.PositiveIntegerField(blank=True, null=True, verbose_name="Código Dpto (cDepEmi)")
@@ -69,12 +69,27 @@ class EmisorFacturaElectronica(models.Model):
         verbose_name="Actividades Económicas adicionales (lista de cActEco)"
     )
 
+    auth_token = models.TextField(blank=True, null=True, verbose_name="Token de autenticación (FacturaSegura)")
+    token_generado_at = models.DateTimeField(blank=True, null=True, verbose_name="Fecha/hora de generación del token")
+
     # Estado del emisor en el sistema
     activo = models.BooleanField(default=True, verbose_name="Emisor activo")
+
+    # --- NUEVOS CAMPOS (numeración 401–450) ---
+    rango_numeracion_inicio = models.PositiveIntegerField(default=401, verbose_name="Inicio de numeración")
+    rango_numeracion_fin = models.PositiveIntegerField(default=450, verbose_name="Fin de numeración")
+    siguiente_numero_factura = models.PositiveIntegerField(default=401, verbose_name="Próximo número a emitir")
+
 
     class Meta:
         verbose_name = "Emisor de Factura Electrónica"
         verbose_name_plural = "Emisores de Factura Electrónica"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["ruc", "dv_ruc", "establecimiento", "punto_expedicion", "numero_timbrado_actual"],
+                name="uniq_emisor_ruc_estab_punto_timbrado"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.nombre} ({self.ruc}-{self.dv_ruc})"
@@ -115,6 +130,36 @@ class EmisorFacturaElectronica(models.Model):
             raise ValidationError(_("El código de departamento debe ser positivo."))
         if self.codigo_ciudad is not None and self.codigo_ciudad < 0:
             raise ValidationError(_("El código de ciudad debe ser positivo."))
+        
+                # --- VALIDACIONES DE RANGO ---
+        if self.rango_numeracion_inicio > self.rango_numeracion_fin:
+            raise ValidationError("El rango de numeración es inválido (inicio > fin).")
+
+        if not (self.rango_numeracion_inicio <= self.siguiente_numero_factura <= self.rango_numeracion_fin):
+            raise ValidationError(
+                f"El siguiente número ({self.siguiente_numero_factura}) debe estar entre "
+                f"{self.rango_numeracion_inicio} y {self.rango_numeracion_fin}."
+            )
+        
+
+    def reservar_numero_y_avanzar(self):
+        """
+        Devuelve (numero_int, numero_str_7dig) y avanza 'siguiente_numero_factura' en forma concurrencia-segura.
+        Úsalo al crear un DocumentoElectronico propio (emisión).
+        """
+        self.refresh_from_db(lock=True)  # bloquea la fila del emisor
+        n = self.siguiente_numero_factura
+        if n > self.rango_numeracion_fin:
+            raise ValidationError(
+                f"No hay numeración disponible en el rango {self.rango_numeracion_inicio}–{self.rango_numeracion_fin}."
+            )
+        self.siguiente_numero_factura = n + 1
+        self.save(update_fields=["siguiente_numero_factura"])
+        return n, f"{n:07d}"
+
+    def etiqueta_con(self, numero_int: int) -> str:
+        """Devuelve '001-003-0000401' según estab/punto y el número dado."""
+        return f"{self.establecimiento}-{self.punto_expedicion}-{numero_int:07d}"
         
         
 class DocumentoElectronico(models.Model):
@@ -181,6 +226,11 @@ class DocumentoElectronico(models.Model):
         ordering = ['-fecha_emision']
         unique_together = ('emisor', 'numero_documento')
 
+    def clean(self):
+        # Validación suave: exactamente 7 dígitos (permitimos cualquier rango para poder importar/verificar XML ajenos)
+        if self.numero_documento and (len(self.numero_documento) != 7 or not self.numero_documento.isdigit()):
+            raise ValidationError("El número de documento debe tener exactamente 7 dígitos (con ceros a la izquierda).")
+
     def __str__(self):
         return f"{self.get_tipo_de_display()} Nro. {self.emisor.establecimiento}-{self.emisor.punto_expedicion}-{self.numero_documento} ({self.get_estado_sifen_display()})"
 
@@ -206,6 +256,7 @@ class ItemDocumentoElectronico(models.Model):
     class Meta:
         verbose_name = "Ítem de Documento Electrónico"
         verbose_name_plural = "Ítems de Documentos Electrónicos"
+        
 
     def __str__(self):
         return f"{self.descripcion_producto_servicio} ({self.cantidad} x {self.precio_unitario})"

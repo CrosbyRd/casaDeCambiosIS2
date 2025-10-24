@@ -62,6 +62,7 @@
   .btn-secondary {background: #eef2f7; color: #333;}
   .btn-secondary:hover {background:#e6ebf3;}
   .fe-checkbox {display:flex; align-items:center; gap:10px; padding: 6px 0;}
+  .fe-section-title {font-weight:700; font-size:1.05rem; margin-bottom:6px;}
 </style>
 
 <div class="fe-wrap">
@@ -82,6 +83,7 @@
         {% endif %}
 
         {# ——— Identificación ——— #}
+        <div class="fe-section-title">Identificación</div>
         <div class="fe-grid fe-2">
           <div class="fe-field">
             <label class="fe-label">Razón social / Nombre</label>
@@ -90,9 +92,9 @@
           </div>
 
           <div class="fe-field">
-            <label class="fe-label">Email de contacto</label>
-            <div class="fe-input">{{ form.email_contacto }}</div>
-            {% for e in form.email_contacto.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <label class="fe-label">Email del emisor</label>
+            <div class="fe-input">{{ form.email_emisor }}</div>
+            {% for e in form.email_emisor.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
 
           <div class="fe-field">
@@ -109,14 +111,15 @@
 
           <div class="fe-field">
             <label class="fe-label">Teléfono</label>
-            <div class="fe-input">{{ form.telefono_contacto }}</div>
-            {% for e in form.telefono_contacto.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-input">{{ form.telefono }}</div>
+            {% for e in form.telefono.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
         </div>
 
         <div class="fe-divider"></div>
 
-        {# ——— Establecimiento / Punto de expedición ——— #}
+        {# ——— Establecimiento / Punto ——— #}
+        <div class="fe-section-title">Punto de Emisión</div>
         <div class="fe-grid fe-3">
           <div class="fe-field">
             <label class="fe-label">Establecimiento (3 dígitos)</label>
@@ -133,6 +136,7 @@
         <div class="fe-divider"></div>
 
         {# ——— Timbrado ——— #}
+        <div class="fe-section-title">Timbrado</div>
         <div class="fe-grid fe-3">
           <div class="fe-field">
             <label class="fe-label">N° Timbrado (8 dígitos)</label>
@@ -150,24 +154,26 @@
         <div class="fe-divider"></div>
 
         {# ——— Actividades económicas ——— #}
+        <div class="fe-section-title">Actividades Económicas</div>
         <div class="fe-grid fe-2">
           <div class="fe-field">
             <label class="fe-label">Actividad Principal (cActEco)</label>
             <div class="fe-input">{{ form.actividad_economica_principal }}</div>
             {% for e in form.actividad_economica_principal.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
-            <div class="fe-help">Ejemplo: 62010</div>
+            <div class="fe-help">Código cActEco de 5 o 6 dígitos. Ej.: 62010</div>
           </div>
           <div class="fe-field">
             <label class="fe-label">Actividades adicionales (cActEco)</label>
-            <div class="fe-input">{{ form.actividades_economicas_csv }}</div>
-            {% for e in form.actividades_economicas_csv.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
-            <div class="fe-help">Separadas por coma. Ej: 74909,56101</div>
+            <div class="fe-input">{{ form.actividades_economicas }}</div>
+            {% for e in form.actividades_economicas.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Separadas por coma. Ej.: 74909, 56101</div>
           </div>
         </div>
 
         <div class="fe-divider"></div>
 
         {# ——— Dirección ——— #}
+        <div class="fe-section-title">Dirección</div>
         <div class="fe-grid fe-3">
           <div class="fe-field" style="grid-column: span 2;">
             <label class="fe-label">Dirección</label>
@@ -181,23 +187,23 @@
           </div>
 
           <div class="fe-field">
-            <label class="fe-label">Cod. Dpto</label>
+            <label class="fe-label">Cod. Dpto (cDepEmi)</label>
             <div class="fe-input">{{ form.codigo_departamento }}</div>
             {% for e in form.codigo_departamento.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
           <div class="fe-field" style="grid-column: span 2;">
-            <label class="fe-label">Desc. Dpto</label>
+            <label class="fe-label">Desc. Dpto (dDesDepEmi)</label>
             <div class="fe-input">{{ form.descripcion_departamento }}</div>
             {% for e in form.descripcion_departamento.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
 
           <div class="fe-field">
-            <label class="fe-label">Cod. Ciudad</label>
+            <label class="fe-label">Cod. Ciudad (cCiuEmi)</label>
             <div class="fe-input">{{ form.codigo_ciudad }}</div>
             {% for e in form.codigo_ciudad.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
           <div class="fe-field" style="grid-column: span 2;">
-            <label class="fe-label">Desc. Ciudad</label>
+            <label class="fe-label">Desc. Ciudad (dDesCiuEmi)</label>
             <div class="fe-input">{{ form.descripcion_ciudad }}</div>
             {% for e in form.descripcion_ciudad.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
@@ -212,13 +218,52 @@
 
         <div class="fe-divider"></div>
 
-        {# ——— Estado ——— #}
-        <div class="fe-grid fe-1">
-          <div class="fe-checkbox">
-            {{ form.activo }}
-            <label for="{{ form.activo.id_for_label }}">Activo</label>
+        {# ——— Numeración del equipo (401–450) ——— #}
+        <div class="fe-section-title">Numeración del equipo (401–450)</div>
+        <div class="fe-grid fe-3">
+          <div class="fe-field">
+            <label class="fe-label">Inicio</label>
+            <div class="fe-input">{{ form.rango_numeracion_inicio }}</div>
+            {% for e in form.rango_numeracion_inicio.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
           </div>
-          {% for e in form.activo.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          <div class="fe-field">
+            <label class="fe-label">Fin</label>
+            <div class="fe-input">{{ form.rango_numeracion_fin }}</div>
+            {% for e in form.rango_numeracion_fin.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+          <div class="fe-field">
+            <label class="fe-label">Siguiente número</label>
+            <div class="fe-input">{{ form.siguiente_numero_factura }}</div>
+            {% for e in form.siguiente_numero_factura.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Se sugiere no modificar manualmente salvo corrección.</div>
+          </div>
+        </div>
+
+        <div class="fe-divider"></div>
+
+        {# ——— Estado / Token ——— #}
+        <div class="fe-section-title">Estado & Autenticación</div>
+        <div class="fe-grid fe-2">
+          <div class="fe-field">
+            <div class="fe-checkbox">
+              {{ form.activo }}
+              <label for="{{ form.activo.id_for_label }}">Activo</label>
+            </div>
+            {% for e in form.activo.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Token de autenticación</label>
+            <div class="fe-input">{{ form.auth_token }}</div>
+            {% for e in form.auth_token.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+            <div class="fe-help">Solo lectura. Se genera desde el detalle del emisor.</div>
+          </div>
+
+          <div class="fe-field">
+            <label class="fe-label">Token generado el</label>
+            <div class="fe-input">{{ form.token_generado_at }}</div>
+            {% for e in form.token_generado_at.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
+          </div>
         </div>
       </div>
 

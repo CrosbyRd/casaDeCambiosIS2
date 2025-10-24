@@ -1,115 +1,126 @@
-import requests
 import os
-import json
 import uuid
+import requests
 from datetime import datetime, timedelta
+
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from .models import EmisorFacturaElectronica, DocumentoElectronico, ItemDocumentoElectronico
-from transacciones.models import Transaccion  # Asumiendo que Transaccion está en la app transacciones
+
+from .models import EmisorFacturaElectronica, DocumentoElectronico, ItemDocumentoElectronico  # noqa
+from transacciones.models import Transaccion  # noqa  # Asumiendo que Transaccion está en la app transacciones
+
 
 class FacturaSeguraAPIClient:
-    def __init__(self, emisor_id):
+    """
+    Cliente de la API de Factura Segura con:
+    - Modo simulación (sinpega a la red, útil en DEBUG).
+    - Login con persistencia de token en Emisor.
+    - Reintento automático ante 401 (token expirado).
+    - Descarga binaria (PDF/XML) cuando se pide.
+    - Respeto del rango de numeración (401–450) en generar_de().
+    """
+
+    def __init__(self, emisor_id: int):
         self.emisor = EmisorFacturaElectronica.objects.get(id=emisor_id)
-        self.base_url_esi = os.getenv("FACTURASEGURA_API_URL_TEST") if settings.DEBUG else os.getenv("FACTURASEGURA_API_URL_PROD")
-        self.login_url = os.getenv("FACTURASEGURA_LOGIN_URL_TEST") if settings.DEBUG else os.getenv("FACTURASEGURA_LOGIN_URL_PROD")
-        # Debes tener FACTURASEGURA_SIMULATION_MODE en settings.py
-        self.simulation_mode = getattr(settings, "FACTURASEGURA_SIMULATION_MODE", True)
+
+        cfg = getattr(settings, "FACTURASEGURA", {})
+        # BASE apuntando ya a /misife00/v1/esi
+        self.base_url_esi = (cfg.get("BASE_URL") or "").rstrip("/")
+        self.login_url = cfg.get("LOGIN_URL")
+        self.timeout = cfg.get("TIMEOUT", 30)
+        self.retries = cfg.get("RETRIES", 3)
+        self.simulation_mode = cfg.get("SIMULATION_MODE", True)
+
+        self.session = requests.Session()
+
+    # ---------------------------
+    # Autenticación
+    # ---------------------------
 
     def _get_auth_token(self):
-        """
-        Devuelve un token válido para la API.
-        - Si no hay token, o quedó uno de simulación, genera uno nuevo contra /login.
-        """
-        tok = (self.emisor.auth_token or "").strip()
-        if not tok or tok.startswith("SIMULATED_"):
-            return self._generate_auth_token()
-        return tok
+        # Usa el token guardado; si no hay, genera uno y lo persiste
+        if self.emisor.auth_token:
+            return self.emisor.auth_token
+        return self._generate_auth_token()
 
-    def _generate_auth_token(self):
+    def _make_request(self, operation: str, params: dict):
+        token = self._get_auth_token()
+        payload = {"operation": operation, "params": params or {}}
+        headers = {
+            "Authentication-Token": token,
+            "Content-Type": "application/json",
+        }
+        resp = self.session.post(self.base_url_esi, json=payload, headers=headers, timeout=self.timeout)
+        resp.raise_for_status()
+        return resp.json()
+
+    def _generate_auth_token(self) -> str:
         """
-        Genera un nuevo token de autenticación para el ESI.
+        Genera un nuevo token de autenticación para el ESI y lo persiste en el Emisor.
         """
         if self.simulation_mode:
             fake_token = "SIMULATED_AUTH_TOKEN_" + os.urandom(16).hex()
             self.emisor.auth_token = fake_token
             self.emisor.token_generado_at = timezone.now()
-            self.emisor.save()
+            self.emisor.save(update_fields=["auth_token", "token_generado_at"])
             return fake_token
 
-        email = os.getenv("FACTURASEGURA_ESI_EMAIL")
-        password = os.getenv("FACTURASEGURA_ESI_PASSWORD")
+        email = os.getenv("FACTURASEGURA_ESI_EMAIL") or getattr(settings, "FACTURASEGURA", {}).get("EMAIL")
+        password = os.getenv("FACTURASEGURA_ESI_PASSWORD") or getattr(settings, "FACTURASEGURA", {}).get("PASSWORD")
 
         if not email or not password:
-            raise ValueError("Las credenciales del usuario ESI no están configuradas en las variables de entorno.")
+            raise ValueError("Credenciales del usuario ESI no configuradas (FACTURASEGURA_ESI_EMAIL/_PASSWORD o settings.FACTURASEGURA).")
 
-        headers = {"Content-Type": "application/json"}
+        if not self.login_url:
+            raise ValueError("URL de login de FacturaSegura no configurada (FACTURASEGURA_LOGIN_URL_* o settings.FACTURASEGURA['LOGIN_URL']).")
+
+        headers = {"Content-Type": "application/json", "accept": "application/json"}
         payload = {"email": email, "password": password}
 
-        response = requests.post(self.login_url, headers=headers, json=payload)
-        response.raise_for_status()
-        data = response.json()
+        resp = requests.post(self.login_url, headers=headers, json=payload, timeout=self.timeout)
+        resp.raise_for_status()
+        data = resp.json()
+        # Adapta esta ruta si tu API devuelve el token en otro atributo:
         token = data["response"]["user"]["authentication_token"]
 
         self.emisor.auth_token = token
         self.emisor.token_generado_at = timezone.now()
-        self.emisor.save()
+        self.emisor.save(update_fields=["auth_token", "token_generado_at"])
         return token
 
-    def _make_request(self, operation, params, method='POST', _retry=False):
-        if self.simulation_mode:
-            return self._simulate_api_response(operation, params)
 
-        token = self._get_auth_token()
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authentication-Token': token,   # según docs
-            # Si tus docs dicen 'Authorization: Bearer <token>', usa esta en su lugar:
-            # 'Authorization': f'Bearer {token}',
-        }
-        url = self.base_url_esi
+    # ---------------------------
+    # Simulación (DEV)
+    # ---------------------------
 
-        try:
-            if method == 'POST':
-                resp = requests.post(url, json={"operation": operation, "params": params}, headers=headers, timeout=30)
-            else:
-                resp = requests.get(url, params={"operation": operation, **params}, headers=headers, timeout=30)
-
-            # intento de recuperación si el token es inválido
-            if resp.status_code == 401 and not _retry:
-                # limpiar y regenerar
-                self.emisor.auth_token = None
-                self.emisor.save(update_fields=['auth_token'])
-                new_token = self._generate_auth_token()
-                headers['Authentication-Token'] = new_token
-                # headers['Authorization'] = f'Bearer {new_token}'   # si tu API usa Authorization
-                if method == 'POST':
-                    resp = requests.post(url, json={"operation": operation, "params": params}, headers=headers, timeout=30)
-                else:
-                    resp = requests.get(url, params={"operation": operation, **params}, headers=headers, timeout=30)
-
-            resp.raise_for_status()
-            return resp.json()
-        except requests.HTTPError as e:
-            # log útil para diagnosticar
-            raise
-
-
-    def _simulate_api_response(self, operation, params):
+    def _simulate_api_response(self, operation: str, params: dict, is_file: bool = False):
         """
-        Simula una respuesta exitosa de la API de Factura Segura para desarrollo.
+        Simula la API de Factura Segura.
+        - Para 'dwn_kude' retorna bytes tipo PDF.
+        - Para 'dwn_xml' retorna bytes tipo XML.
+        - Para 'generar_de' retorna CDC simulado.
+        - Para 'get_estado_sifen' retorna 'Aprobado'.
+        - Para 'calcular_de' re-eco del DE.
         """
+        if operation == "dwn_kude" and is_file:
+            # PDF mínimo simulado
+            return b"%PDF-1.4\n% Simulado KuDE\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
+
+        if operation == "dwn_xml" and is_file:
+            # XML mínimo simulado
+            return b'<?xml version="1.0" encoding="UTF-8"?><DE Simulado="true"></DE>'
+
         if operation == "generar_de":
             fake_cdc = f"SIMULATED{uuid.uuid4().hex[:34].upper()}"
             return {
                 "code": 0,
                 "description": "OK (Simulado)",
                 "operation_info": {"id": str(uuid.uuid4())},
-                "results": [{"CDC": fake_cdc}]
+                "results": [{"CDC": fake_cdc}],
             }
-        elif operation == "get_estado_sifen":
+
+        if operation == "get_estado_sifen":
             return {
                 "code": 0,
                 "description": "OK (Simulado)",
@@ -120,60 +131,67 @@ class FacturaSeguraAPIClient:
                     "error_sifen": "",
                     "fch_sifen": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "estado_can": "", "desc_can": "", "error_can": "", "fch_can": "",
-                    "estado_inu": "", "desc_inu": "", "error_inu": "", "fch_inu": ""
-                }]
-            }
-        elif operation == "calcular_de":
-            de_json = params.get("DE", {})
-            # Puedes "calcular" algunos campos de prueba si lo deseas
-            return {
-                "code": 0,
-                "description": "OK (Simulado)",
-                "operation_info": {"id": str(uuid.uuid4())},
-                "results": [{"DE": de_json}]
-            }
-        elif operation in ["sol_cancelacion", "sol_inutilizacion"]:
-            return {
-                "code": 0,
-                "description": "OK (Simulado)",
-                "operation_info": {"id": str(uuid.uuid4())},
-                "results": []
-            }
-        else:
-            return {
-                "code": -9999,
-                "description": f"Operación '{operation}' no simulada.",
-                "operation_info": {"id": str(uuid.uuid4())},
-                "results": []
+                    "estado_inu": "", "desc_inu": "", "error_inu": "", "fch_inu": "",
+                }],
             }
 
-    def calcular_de(self, json_resumido_de):
+        if operation == "calcular_de":
+            de_json = params.get("DE", {}) or {}
+            return {
+                "code": 0,
+                "description": "OK (Simulado)",
+                "operation_info": {"id": str(uuid.uuid4())},
+                "results": [{"DE": de_json}],
+            }
+
+        if operation in ["sol_cancelacion", "sol_inutilizacion"]:
+            return {
+                "code": 0,
+                "description": "OK (Simulado)",
+                "operation_info": {"id": str(uuid.uuid4())},
+                "results": [],
+            }
+
+        return {
+            "code": -9999,
+            "description": f"Operación '{operation}' no simulada.",
+            "operation_info": {"id": str(uuid.uuid4())},
+            "results": [],
+        }
+
+    # ---------------------------
+    # Operaciones DE
+    # ---------------------------
+
+    def calcular_de(self, json_resumido_de: dict):
         """
-        Llama a la operación 'calcular_de' de la API.
-        Recibe un JSON resumido y retorna el JSON con campos calculados.
+        Llama a 'calcular_de': recibe DE resumido y devuelve DE con cálculos.
         """
         params = {"DE": json_resumido_de}
         return self._make_request("calcular_de", params)
 
     @transaction.atomic
-    def generar_de(self, json_de_completo, transaccion_id=None):
+    def generar_de(self, json_de_completo: dict, transaccion_id=None):
         """
-        Llama a la operación 'generar_de' de la API para generar un documento electrónico.
-        Asigna dNumDoc del rango y completa datos del emisor antes de enviar.
+        Llama a 'generar_de' para crear el DE en FacturaSegura.
+        - Asigna dNumDoc dentro del rango 401–450 (con lock de fila).
+        - Inyecta datos del emisor según XML del profe.
+        - Crea DocumentoElectronico local con la respuesta (CDC/estado).
         """
         emisor_instance = EmisorFacturaElectronica.objects.select_for_update().get(id=self.emisor.id)
 
-        # Validar rango antes de asignar número
+        # Validar/normalizar correlativo
         if emisor_instance.siguiente_numero_factura is None:
             emisor_instance.siguiente_numero_factura = emisor_instance.rango_numeracion_inicio
 
-        if emisor_instance.siguiente_numero_factura < emisor_instance.rango_numeracion_inicio or emisor_instance.siguiente_numero_factura > emisor_instance.rango_numeracion_fin:
+        if not (emisor_instance.rango_numeracion_inicio <= emisor_instance.siguiente_numero_factura <= emisor_instance.rango_numeracion_fin):
             raise ValueError("Rango agotado o inválido para emisión de factura.")
 
-        numero_doc_str = str(emisor_instance.siguiente_numero_factura).zfill(7)
-        json_de_completo["dNumDoc"] = numero_doc_str
+        numero_doc_int = emisor_instance.siguiente_numero_factura
+        numero_doc_str = f"{numero_doc_int:07d}"
 
-        # Inyectar datos del emisor en el DE
+        # Inyectar numeración y datos del emisor (respetando claves del XML)
+        json_de_completo.setdefault("dNumDoc", numero_doc_str)
         json_de_completo.setdefault("dRucEm", emisor_instance.ruc)
         json_de_completo.setdefault("dDVEmi", emisor_instance.dv_ruc)
         json_de_completo.setdefault("dEst", emisor_instance.establecimiento)
@@ -183,17 +201,29 @@ class FacturaSeguraAPIClient:
         if emisor_instance.fecha_inicio_timbrado:
             json_de_completo.setdefault("dFeIniT", emisor_instance.fecha_inicio_timbrado.strftime("%Y-%m-%d"))
 
-        params = {"DE": json_de_completo}
+        params = {
+            "dRucEm": emisor_instance.ruc,
+            "dDVEmi": emisor_instance.dv_ruc,
+            "dEst": emisor_instance.establecimiento,
+            "dPunExp": emisor_instance.punto_expedicion,
+            "dNumTim": emisor_instance.numero_timbrado_actual,
+            "DE": json_de_completo,
+        }
+
         response = self._make_request("generar_de", params)
 
-        if response["code"] == 0:
-            cdc = response["results"][0]["CDC"]
-            estado_sifen = 'pendiente_aprobacion' if not self.simulation_mode else 'simulado'
+        if response.get("code") == 0:
+            # Éxito
+            # Algunas APIs devuelven en results[0]['CDC'], otras en response['cdc']; mantenemos tu contrato
+            results = response.get("results") or []
+            cdc = (results[0].get("CDC") if results else None) or response.get("cdc")
+
+            estado_sifen = "pendiente_aprobacion" if not self.simulation_mode else "simulado"
             descripcion_estado = response.get("description", "")
 
             doc_electronico = DocumentoElectronico.objects.create(
                 emisor=emisor_instance,
-                tipo_de='factura',
+                tipo_de="factura",
                 numero_documento=numero_doc_str,
                 numero_timbrado=json_de_completo.get("dNumTim"),
                 cdc=cdc,
@@ -201,67 +231,86 @@ class FacturaSeguraAPIClient:
                 descripcion_estado=descripcion_estado,
                 json_enviado_api=json_de_completo,
                 json_respuesta_api=response,
-                transaccion_asociada_id=transaccion_id
+                transaccion_asociada_id=transaccion_id,
             )
 
-            # Incrementar SIEMPRE tras uso exitoso del número
-            emisor_instance.siguiente_numero_factura = emisor_instance.siguiente_numero_factura + 1
+            # Avanzar correlativo SOLO luego de éxito
+            emisor_instance.siguiente_numero_factura = numero_doc_int + 1
             emisor_instance.save(update_fields=["siguiente_numero_factura"])
 
             return doc_electronico
-        else:
-            # Guardar documento con error para auditoría
-            DocumentoElectronico.objects.create(
-                emisor=emisor_instance,
-                tipo_de='factura',
-                numero_documento=numero_doc_str,
-                numero_timbrado=json_de_completo.get("dNumTim"),
-                estado_sifen='error_api',
-                descripcion_estado=response.get('description', 'Error desconocido de la API'),
-                json_enviado_api=json_de_completo,
-                json_respuesta_api=response,
-                transaccion_asociada_id=transaccion_id
-            )
-            raise Exception(f"Error de API al generar DE: {response.get('description')}")
 
-    def get_estado_sifen(self, cdc, ruc_emisor):
+        # Error API: registrar documento en estado error para auditoría
+        DocumentoElectronico.objects.create(
+            emisor=emisor_instance,
+            tipo_de="factura",
+            numero_documento=numero_doc_str,
+            numero_timbrado=json_de_completo.get("dNumTim"),
+            estado_sifen="error_api",
+            descripcion_estado=response.get("description", "Error desconocido de la API"),
+            json_enviado_api=json_de_completo,
+            json_respuesta_api=response,
+            transaccion_asociada_id=transaccion_id,
+        )
+        raise Exception(f"Error de API al generar DE: {response.get('description')}")
+
+    def get_estado_sifen(self, cdc: str, ruc_emisor: str):
         """
-        Consulta el estado de un documento electrónico en SIFEN.
+        Consulta el estado SIFEN de un DE.
         """
         params = {"CDC": cdc, "dRucEm": ruc_emisor}
         return self._make_request("get_estado_sifen", params)
 
-    def solicitar_cancelacion(self, cdc, ruc_emisor):
+    def solicitar_cancelacion(self, cdc: str, ruc_emisor: str):
         """
-        Solicita la cancelación de un documento electrónico.
+        Solicita la cancelación de un DE.
         """
         params = {"CDC": cdc, "dRucEm": ruc_emisor}
         return self._make_request("sol_cancelacion", params)
 
-    def solicitar_inutilizacion(self, ruc_emisor, tipo_de, num_timbrado, establecimiento, punto_exp, num_doc):
+    def solicitar_inutilizacion(self, ruc_emisor: str, tipo_de: str, num_timbrado: str, establecimiento: str, punto_exp: str, num_doc: str):
         """
-        Solicita la inutilización de un número de documento electrónico.
+        Solicita la inutilización de un número de DE.
         """
         params = {
             "dRucEm": ruc_emisor,
-            "iTiDE": tipo_de,  # '1' para Factura, '5' para Nota de Crédito
+            "iTiDE": tipo_de,  # '1' Factura, '5' Nota de Crédito (ajusta si tu API usa otro código)
             "dNumTim": num_timbrado,
             "dEst": establecimiento,
             "dPunExp": punto_exp,
-            "dNumDoc": num_doc
+            "dNumDoc": num_doc,
         }
         return self._make_request("sol_inutilizacion", params)
 
-    def descargar_kude(self, cdc, ruc_emisor):
-        """
-        Descarga el KuDE en PDF.
-        """
-        params = {"CDC": cdc, "dRucEm": ruc_emisor}
-        return self._make_request("dwn_kude", params, method='GET', is_file_download=True)
+    # ---------------------------
+    # Descargas
+    # ---------------------------
 
-    def descargar_xml(self, cdc, ruc_emisor):
-        """
-        Descarga el XML firmado.
-        """
-        params = {"CDC": cdc, "dRucEm": ruc_emisor}
-        return self._make_request("dwn_xml", params, method='GET', is_file_download=True)
+def descargar_kude(self, cdc: str, ruc_emisor: str) -> bytes:
+    """
+    Descarga el KuDE (PDF) con endpoint path-style:
+    GET {BASE_URL}/dwn_kude/{dRucEm}/{CDC}
+    """
+    if self.simulation_mode:
+        return b"%PDF-1.4\n% Simulado KuDE\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
+
+    token = self._get_auth_token()
+    url = f"{self.base_url_esi}/dwn_kude/{ruc_emisor}/{cdc}"
+    resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
+    resp.raise_for_status()
+    return resp.content
+
+def descargar_xml(self, cdc: str, ruc_emisor: str) -> bytes:
+    """
+    Descarga el XML firmado con endpoint path-style:
+    GET {BASE_URL}/dwn_xml/{dRucEm}/{CDC}
+    """
+    if self.simulation_mode:
+        return b'<?xml version="1.0" encoding="UTF-8"?><DE Simulado="true"></DE>'
+
+    token = self._get_auth_token()
+    url = f"{self.base_url_esi}/dwn_xml/{ruc_emisor}/{cdc}"
+    resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
+    resp.raise_for_status()
+    return resp.content
+
