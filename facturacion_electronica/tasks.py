@@ -20,7 +20,6 @@ def _to_int(value):
         return 0
 
 
-
 def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="receptor@test.com"):
     """
     DE 'resumido' con nomenclatura alineada al XML del profe / SIFEN:
@@ -88,9 +87,23 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="re
     # === Actividades económicas como lista de objetos (cActEco + descripción opcional) ===
     act_list = []
     if getattr(emisor, "actividad_economica_principal", None):
-        act_list.append({"cActEco": str(emisor.actividad_economica_principal), "dDesActEco": ""})
+        # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
+        act_list.append({"cActEco": str(int(emisor.actividad_economica_principal)), "dDesActEco": ""})
     for code in (getattr(emisor, "actividades_economicas", []) or []):
-        act_list.append({"cActEco": str(code), "dDesActEco": ""})
+        # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
+        act_list.append({"cActEco": str(int(code)), "dDesActEco": ""})
+
+    # === Contacto del emisor (robusto ante nombres de campo distintos) ===
+    tel_emi = (
+        getattr(emisor, "telefono", None)
+        or getattr(emisor, "telefono_contacto", None)
+        or ""
+    )
+    email_emi = (
+        getattr(emisor, "email_emisor", None)
+        or getattr(emisor, "email_contacto", None)
+        or ""
+    )
 
     # === Bloque Emisor (sufijo Emi) + mínimos globales ===
     de = {
@@ -104,9 +117,10 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="re
         "dDesDepEmi": getattr(emisor, "descripcion_departamento", "") or "",
         "cCiuEmi": getattr(emisor, "codigo_ciudad", "") or "",
         "dDesCiuEmi": getattr(emisor, "descripcion_ciudad", "") or "",
-        "dTelEmi": getattr(emisor, "telefono", "") or "",
-        "dEmailE": getattr(emisor, "email_emisor", "") or "",
+        "dTelEmi": tel_emi,
+        "dEmailE": email_emi,
         "gActEco": act_list,
+        # Numeración fija (el profe exige 001-003)
         "dEst": getattr(emisor, "establecimiento", "001") or "001",
         "dPunExp": getattr(emisor, "punto_expedicion", "003") or "003",
         "dNumTim": str(getattr(emisor, "numero_timbrado_actual", "") or ""),
@@ -116,7 +130,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="re
         "dFeEmiDE": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
         # Mínimos globales (ajusta según tu régimen)
         "iTipTra": "1",  # 1=Venta de mercaderías/servicios (genérico)
-        "iTImp": "1",    # 1=IVA (aunque los ítems estén exentos; la API lo admite)
+        "iTImp": "5",    # Corregido a 5 según XML de ejemplo (IVA - Renta)
         "cMoneOpe": "PYG" if codigo_dest == "PYG" else "USD",
         "dCondTiCam": "1",
         "dTiCam": "1" if codigo_dest == "PYG" else str(int(tasa)),
@@ -125,7 +139,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="re
         "iNatRec": "1",
         "iTiOpe": "1",
         "cPaisRec": "PRY",
-        "iTiContRec": "1",
+        "iTiContRec": "1", # Corregido a "1" (string) según XML de ejemplo
         "dRucRec": str(ruc_rec) if ruc_rec else "80000000",
         "dDVRec": str(dv_rec) if dv_rec is not None else "0",
         "iTipIDRec": "0",
@@ -153,10 +167,10 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, email_receptor="re
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_completo=None, email_receptor="globalexchangea2@gmail.com"):
     """
-    Flujo correcto ESI:
+    Flujo recomendado por la doc de ESI:
     1) construir DE 'resumido' (si no fue provisto)
-    2) calcular_de -> devuelve DE con campos calculados
-    3) generar_de -> asigna dNumDoc del rango / inyecta datos del emisor / CDC
+    2) calcular_de (contrato estricto: params={"DE":...}) -> devuelve DE con campos calculados
+    3) generar_de (solo DE) -> CDC y persistencia (vía services)
     4) (si no es simulación) agendar consulta de estado
     """
     try:
@@ -172,15 +186,17 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
                 tx, emisor=emisor, email_receptor=email_receptor
             )
 
-        # 2) calcular_de
-        calc_resp = client.calcular_de(json_de_resumido)
-        if calc_resp.get("code", -1) != 0:
-            raise Exception(f"Error calcular_de: {calc_resp}")
+        # 2) calcular_de – prioriza contrato estricto si existe
+        if hasattr(client, "calcular_de_contrato_estricto"):
+            de_completo = client.calcular_de_contrato_estricto(json_de_resumido)
+        else:
+            calc_resp = client.calcular_de(json_de_resumido)
+            if calc_resp.get("code", -1) != 0:
+                raise Exception(f"Error calcular_de: {calc_resp}")
+            de_completo = (calc_resp.get("results") or [{}])[0].get("DE") or json_de_resumido
 
-        # tomar DE enriquecido si vino, sino usamos el resumido
-        de_completo = (calc_resp.get("results") or [{}])[0].get("DE") or json_de_resumido
-
-        # 3) generar_de
+        # 3) generar_de – usamos el services para persistir el DocumentoElectronico
+        #    (si actualizaste services con contrato estricto, ahí adentro ya se envía solo DE)
         doc_electronico = client.generar_de(de_completo, transaccion_id)
 
         # 4) agendar consulta si corresponde
@@ -197,7 +213,7 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
     except Exception as e:
         # No reintentar si es falta de permisos específicos
         msg = str(e).lower()
-        if "-80001" in msg or "no tiene permiso" in msg:
+        if "-80001" in msg or "no tiene permiso" in msg or "sin permiso" in msg:
             doc = DocumentoElectronico.objects.filter(transaccion_asociada_id=transaccion_id).first()
             if doc:
                 doc.estado_sifen = "error_api"
@@ -254,7 +270,6 @@ def get_estado_sifen_task(self, documento_electronico_id):
             doc_electronico.estado_sifen = "error_api"
             doc_electronico.descripcion_estado = msg or "RUC del CDC no coincide con dRucEm"
             doc_electronico.json_respuesta_api = resp
-            # si tu modelo tiene este campo:
             if hasattr(doc_electronico, "fecha_ultimo_cambio_estado"):
                 doc_electronico.fecha_ultimo_cambio_estado = timezone.now()
                 doc_electronico.save(update_fields=["estado_sifen", "descripcion_estado", "json_respuesta_api", "fecha_ultimo_cambio_estado"])

@@ -14,11 +14,12 @@ from transacciones.models import Transaccion  # noqa  # Asumiendo que Transaccio
 class FacturaSeguraAPIClient:
     """
     Cliente de la API de Factura Segura con:
-    - Modo simulación (sinpega a la red, útil en DEBUG).
+    - Modo simulación (sin pegar a la red, útil en DEBUG).
     - Login con persistencia de token en Emisor.
     - Reintento automático ante 401 (token expirado).
     - Descarga binaria (PDF/XML) cuando se pide.
     - Respeto del rango de numeración (401–450) en generar_de().
+    - Flujo 'contrato estricto' de la API (params={"DE": ...}) por defecto.
     """
 
     def __init__(self, emisor_id: int):
@@ -31,6 +32,8 @@ class FacturaSeguraAPIClient:
         self.timeout = cfg.get("TIMEOUT", 30)
         self.retries = cfg.get("RETRIES", 3)
         self.simulation_mode = cfg.get("SIMULATION_MODE", True)
+        # Permite forzar el modo estricto del contrato del API
+        self.strict_contract = cfg.get("STRICT_CONTRACT", True)
 
         self.session = requests.Session()
 
@@ -38,22 +41,11 @@ class FacturaSeguraAPIClient:
     # Autenticación
     # ---------------------------
 
-    def _get_auth_token(self):
+    def _get_auth_token(self) -> str:
         # Usa el token guardado; si no hay, genera uno y lo persiste
         if self.emisor.auth_token:
             return self.emisor.auth_token
         return self._generate_auth_token()
-
-    def _make_request(self, operation: str, params: dict):
-        token = self._get_auth_token()
-        payload = {"operation": operation, "params": params or {}}
-        headers = {
-            "Authentication-Token": token,
-            "Content-Type": "application/json",
-        }
-        resp = self.session.post(self.base_url_esi, json=payload, headers=headers, timeout=self.timeout)
-        resp.raise_for_status()
-        return resp.json()
 
     def _generate_auth_token(self) -> str:
         """
@@ -81,7 +73,6 @@ class FacturaSeguraAPIClient:
         resp = requests.post(self.login_url, headers=headers, json=payload, timeout=self.timeout)
         resp.raise_for_status()
         data = resp.json()
-        # Adapta esta ruta si tu API devuelve el token en otro atributo:
         token = data["response"]["user"]["authentication_token"]
 
         self.emisor.auth_token = token
@@ -89,9 +80,8 @@ class FacturaSeguraAPIClient:
         self.emisor.save(update_fields=["auth_token", "token_generado_at"])
         return token
 
-
     # ---------------------------
-    # Simulación (DEV)
+    # Core request (con simulación y refresh de token)
     # ---------------------------
 
     def _simulate_api_response(self, operation: str, params: dict, is_file: bool = False):
@@ -159,6 +149,49 @@ class FacturaSeguraAPIClient:
             "results": [],
         }
 
+    def _make_request(self, operation: str, params: dict, *, is_file: bool = False):
+        """
+        Envía la operación al endpoint ESI con header Authentication-Token.
+        - Si simulation_mode: retorna respuesta simulada.
+        - Si 401: regenera token y reintenta 1 vez.
+        """
+        if self.simulation_mode:
+            return self._simulate_api_response(operation, params, is_file=is_file)
+
+        token = self._get_auth_token()
+        payload = {"operation": operation, "params": params or {}}
+        headers = {
+            "Authentication-Token": token,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
+        try:
+            import json
+            print(f"DEBUG: [FacturaSeguraAPI] Enviando a {self.base_url_esi} (Operación: {operation}): {json.dumps(payload, indent=2)}")
+            resp = self.session.post(self.base_url_esi, json=payload, headers=headers, timeout=self.timeout)
+            print(f"DEBUG: [FacturaSeguraAPI] Respuesta de {self.base_url_esi} (Operación: {operation}) - Status: {resp.status_code}, Contenido: {resp.text}")
+            if resp.status_code == 401:
+                # Token inválido/expirado -> refrescar y reintentar 1 vez
+                self.emisor.auth_token = ""
+                self.emisor.save(update_fields=["auth_token"])
+                token = self._generate_auth_token()
+                headers["Authentication-Token"] = token
+                print(f"DEBUG: [FacturaSeguraAPI] Reintentando con nuevo token. Enviando a {self.base_url_esi} (Operación: {operation}): {json.dumps(payload, indent=2)}")
+                resp = self.session.post(self.base_url_esi, json=payload, headers=headers, timeout=self.timeout)
+                print(f"DEBUG: [FacturaSeguraAPI] Respuesta de reintento de {self.base_url_esi} (Operación: {operation}) - Status: {resp.status_code}, Contenido: {resp.text}")
+
+            resp.raise_for_status()
+            return resp.json()
+        except requests.HTTPError as e:
+            detail_text = getattr(e.response, "text", str(e))
+            try:
+                detail_json = e.response.json()
+            except Exception:
+                detail_json = None
+            # Puedes agregar logging aquí si lo deseas
+            raise requests.HTTPError(f"HTTP {e.response.status_code if e.response else ''} en {operation}: {detail_text}") from e
+
     # ---------------------------
     # Operaciones DE
     # ---------------------------
@@ -166,6 +199,7 @@ class FacturaSeguraAPIClient:
     def calcular_de(self, json_resumido_de: dict):
         """
         Llama a 'calcular_de': recibe DE resumido y devuelve DE con cálculos.
+        (Contrato estricto: params={"DE": ...})
         """
         params = {"DE": json_resumido_de}
         return self._make_request("calcular_de", params)
@@ -175,8 +209,9 @@ class FacturaSeguraAPIClient:
         """
         Llama a 'generar_de' para crear el DE en FacturaSegura.
         - Asigna dNumDoc dentro del rango 401–450 (con lock de fila).
-        - Inyecta datos del emisor según XML del profe.
+        - Inyecta datos del emisor según XML del profe si faltan.
         - Crea DocumentoElectronico local con la respuesta (CDC/estado).
+        - Modo estricto por defecto: params={"DE": json_de_completo}
         """
         emisor_instance = EmisorFacturaElectronica.objects.select_for_update().get(id=self.emisor.id)
 
@@ -194,27 +229,20 @@ class FacturaSeguraAPIClient:
         json_de_completo.setdefault("dNumDoc", numero_doc_str)
         json_de_completo.setdefault("dRucEm", emisor_instance.ruc)
         json_de_completo.setdefault("dDVEmi", emisor_instance.dv_ruc)
-        json_de_completo.setdefault("dEst", emisor_instance.establecimiento)
-        json_de_completo.setdefault("dPunExp", emisor_instance.punto_expedicion)
+        json_de_completo.setdefault("dEst", emisor_instance.establecimiento or "001")
+        json_de_completo.setdefault("dPunExp", emisor_instance.punto_expedicion or "003")
         if emisor_instance.numero_timbrado_actual:
             json_de_completo.setdefault("dNumTim", emisor_instance.numero_timbrado_actual)
         if emisor_instance.fecha_inicio_timbrado:
             json_de_completo.setdefault("dFeIniT", emisor_instance.fecha_inicio_timbrado.strftime("%Y-%m-%d"))
 
-        params = {
-            "dRucEm": emisor_instance.ruc,
-            "dDVEmi": emisor_instance.dv_ruc,
-            "dEst": emisor_instance.establecimiento,
-            "dPunExp": emisor_instance.punto_expedicion,
-            "dNumTim": emisor_instance.numero_timbrado_actual,
-            "DE": json_de_completo,
-        }
+        # ------ CONTRATO ESTRICTO (por defecto) ------
+        params = {"DE": json_de_completo}
 
         response = self._make_request("generar_de", params)
 
         if response.get("code") == 0:
             # Éxito
-            # Algunas APIs devuelven en results[0]['CDC'], otras en response['cdc']; mantenemos tu contrato
             results = response.get("results") or []
             cdc = (results[0].get("CDC") if results else None) or response.get("cdc")
 
@@ -229,7 +257,7 @@ class FacturaSeguraAPIClient:
                 cdc=cdc,
                 estado_sifen=estado_sifen,
                 descripcion_estado=descripcion_estado,
-                json_enviado_api=json_de_completo,
+                json_enviado_api={"operation": "generar_de", "params": params},
                 json_respuesta_api=response,
                 transaccion_asociada_id=transaccion_id,
             )
@@ -248,7 +276,7 @@ class FacturaSeguraAPIClient:
             numero_timbrado=json_de_completo.get("dNumTim"),
             estado_sifen="error_api",
             descripcion_estado=response.get("description", "Error desconocido de la API"),
-            json_enviado_api=json_de_completo,
+            json_enviado_api={"operation": "generar_de", "params": params},
             json_respuesta_api=response,
             transaccion_asociada_id=transaccion_id,
         )
@@ -286,31 +314,105 @@ class FacturaSeguraAPIClient:
     # Descargas
     # ---------------------------
 
-def descargar_kude(self, cdc: str, ruc_emisor: str) -> bytes:
-    """
-    Descarga el KuDE (PDF) con endpoint path-style:
-    GET {BASE_URL}/dwn_kude/{dRucEm}/{CDC}
-    """
-    if self.simulation_mode:
-        return b"%PDF-1.4\n% Simulado KuDE\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
+    def descargar_kude(self, cdc: str, ruc_emisor: str) -> bytes:
+        """
+        Descarga el KuDE (PDF) con endpoint path-style:
+        GET {BASE_URL}/dwn_kude/{dRucEm}/{CDC}
+        """
+        if self.simulation_mode:
+            return b"%PDF-1.4\n% Simulado KuDE\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
 
-    token = self._get_auth_token()
-    url = f"{self.base_url_esi}/dwn_kude/{ruc_emisor}/{cdc}"
-    resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
-    resp.raise_for_status()
-    return resp.content
+        token = self._get_auth_token()
+        url = f"{self.base_url_esi}/dwn_kude/{ruc_emisor}/{cdc}"
+        resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
+        resp.raise_for_status()
+        return resp.content
 
-def descargar_xml(self, cdc: str, ruc_emisor: str) -> bytes:
-    """
-    Descarga el XML firmado con endpoint path-style:
-    GET {BASE_URL}/dwn_xml/{dRucEm}/{CDC}
-    """
-    if self.simulation_mode:
-        return b'<?xml version="1.0" encoding="UTF-8"?><DE Simulado="true"></DE>'
+    def descargar_xml(self, cdc: str, ruc_emisor: str) -> bytes:
+        """
+        Descarga el XML firmado con endpoint path-style:
+        GET {BASE_URL}/dwn_xml/{dRucEm}/{CDC}
+        """
+        if self.simulation_mode:
+            return b'<?xml version="1.0" encoding="UTF-8"?><DE Simulado="true"></DE>'
 
-    token = self._get_auth_token()
-    url = f"{self.base_url_esi}/dwn_xml/{ruc_emisor}/{cdc}"
-    resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
-    resp.raise_for_status()
-    return resp.content
+        token = self._get_auth_token()
+        url = f"{self.base_url_esi}/dwn_xml/{ruc_emisor}/{cdc}"
+        resp = self.session.get(url, headers={"Authentication-Token": token}, timeout=self.timeout)
+        resp.raise_for_status()
+        return resp.content
 
+    # --- INICIO: flujo contrato estricto utilitario ---
+
+    def calcular_de_contrato_estricto(self, de_resumido: dict) -> dict:
+        """
+        Llama a operation=calcular_de cumpliendo el contrato del API:
+        params = {"DE": <JSON_RESUMIDO_DE>}
+        Retorna el JSON_DE completo que viene en results[0]["DE"].
+        """
+        payload_params = {"DE": de_resumido}
+        resp = self._make_request("calcular_de", payload_params)
+        code = resp.get("code", -1)
+        if code < 0:
+            raise RuntimeError(f"Error calcular_de: {resp.get('description')} | {resp}")
+        results = resp.get("results") or []
+        if not results or "DE" not in results[0]:
+            raise RuntimeError(f"Respuesta calcular_de sin DE: {resp}")
+        return results[0]["DE"]
+
+    def generar_de_contrato_estricto(self, de_completo: dict) -> str:
+        """
+        Llama a operation=generar_de cumpliendo el contrato del API:
+        params = {"DE": <JSON_DE>}
+        Retorna el CDC (results[0]["CDC"]).
+        """
+        payload_params = {"DE": de_completo}
+        resp = self._make_request("generar_de", payload_params)
+        code = resp.get("code", -1)
+        if code < 0:
+            # Propaga la descripción exacta (p.ej. -80001 ESI sin permiso)
+            raise RuntimeError(f"Error generar_de: {resp.get('description')} | {resp}")
+        results = resp.get("results") or []
+        if not results or "CDC" not in results[0]:
+            raise RuntimeError(f"Respuesta generar_de sin CDC: {resp}")
+        return results[0]["CDC"]
+
+    def emitir_end_to_end_contrato_estricto(self, de_resumido: dict) -> dict:
+        """
+        Pipeline recomendado por el doc de la API:
+        1) calcular_de -> devuelve DE completo
+        2) generar_de -> devuelve CDC
+        Retorna dict con {"cdc": ..., "de": ...} para que lo guardes en BD.
+        """
+        de_completo = self.calcular_de_contrato_estricto(de_resumido)
+        cdc = self.generar_de_contrato_estricto(de_completo)
+        return {"cdc": cdc, "de": de_completo}
+
+    # --- FIN: flujo contrato estricto utilitario ---
+
+    def calcular_de_contrato_estricto(self, de_resumido: dict) -> dict:
+        payload_params = {"DE": de_resumido}
+        resp = self._make_request("calcular_de", payload_params)
+        code = resp.get("code", -1)
+        if code < 0:
+            raise RuntimeError(f"Error calcular_de: {resp.get('description')} | {resp}")
+        results = resp.get("results") or []
+        if not results or "DE" not in results[0]:
+            raise RuntimeError(f"Respuesta calcular_de sin DE: {resp}")
+        return results[0]["DE"]
+
+    def generar_de_contrato_estricto(self, de_completo: dict) -> str:
+        payload_params = {"DE": de_completo}
+        resp = self._make_request("generar_de", payload_params)
+        code = resp.get("code", -1)
+        if code < 0:
+            raise RuntimeError(f"Error generar_de: {resp.get('description')} | {resp}")
+        results = resp.get("results") or []
+        if not results or "CDC" not in results[0]:
+            raise RuntimeError(f"Respuesta generar_de sin CDC: {resp}")
+        return results[0]["CDC"]
+
+    def emitir_end_to_end_contrato_estricto(self, de_resumido: dict) -> dict:
+        de_completo = self.calcular_de_contrato_estricto(de_resumido)
+        cdc = self.generar_de_contrato_estricto(de_completo)
+        return {"cdc": cdc, "de": de_completo}
