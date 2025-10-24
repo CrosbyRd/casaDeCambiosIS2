@@ -1,0 +1,108 @@
+[
+  {
+    "model": "medios_acreditacion.tipomedioacreditacion",
+    "pk": "11111111-1111-1111-1111-111111111111",
+    "fields": {
+      "nombre": "Cuenta bancaria",
+      "descripcion": "Cuenta PY VIP",
+      "activo": true
+    }
+  },
+  {
+    "model": "medios_acreditacion.tipomedioacreditacion",
+    "pk": "22222222-2222-2222-2222-222222222222",
+    "fields": {
+      "nombre": "Tarjeta",
+      "descripcion": "Tarjeta Corporate",
+      "activo": true
+    }
+  },
+  {
+    "model": "medios_acreditacion.tipomedioacreditacion",
+    "pk": "33333333-3333-3333-3333-333333333333",
+    "fields": {
+      "nombre": "Wallet",
+      "descripcion": "Billetera PY VIP",
+      "activo": true
+    }
+  },
+  {
+    "model": "medios_acreditacion.tipomedioacreditacion",
+    "pk": "44444444-4444-4444-4444-444444444444",
+    "fields": {
+      "nombre": "QR",
+      "descripcion": "Código QR PY Corporate",
+      "activo": true
+    }
+  },
+  {
+    "model": "medios_acreditacion.tipomedioacreditacion",
+    "pk": "55555555-5555-5555-5555-555555555555",
+    "fields": {
+      "nombre": "Débito",
+      "descripcion": "Débito PY VIP",
+      "activo": true
+    }
+  },
+
+  {
+    "model": "pagos.mediopagocliente",
+    "pk": "mc1",
+    "fields": {
+      "cliente": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      "tipo": "11111111-1111-1111-1111-111111111111",
+      "alias": "Cuenta PY VIP",
+      "datos": {"numero_cuenta": "1234567890"},
+      "activo": true,
+      "predeterminado": true
+    }
+  },
+  {
+    "model": "pagos.mediopagocliente",
+    "pk": "mc2",
+    "fields": {
+      "cliente": "b1fccb00-0d1c-4ff9-cc7e-7cc0ce491b22",
+      "tipo": "22222222-2222-2222-2222-222222222222",
+      "alias": "Tarjeta Corporate",
+      "datos": {"numero_tarjeta": "4111111111111111", "vencimiento": "12/26"},
+      "activo": true,
+      "predeterminado": true
+    }
+  },
+  {
+    "model": "pagos.mediopagocliente",
+    "pk": "mc3",
+    "fields": {
+      "cliente": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      "tipo": "33333333-3333-3333-3333-333333333333",
+      "alias": "Wallet PY VIP",
+      "datos": {"telefono": "0981123456"},
+      "activo": true,
+      "predeterminado": false
+    }
+  },
+  {
+    "model": "pagos.mediopagocliente",
+    "pk": "mc4",
+    "fields": {
+      "cliente": "b1fccb00-0d1c-4ff9-cc7e-7cc0ce491b22",
+      "tipo": "44444444-4444-4444-4444-444444444444",
+      "alias": "QR PY Corporate",
+      "datos": {"codigo_qr": "QR12345"},
+      "activo": true,
+      "predeterminado": false
+    }
+  },
+  {
+    "model": "pagos.mediopagocliente",
+    "pk": "mc5",
+    "fields": {
+      "cliente": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      "tipo": "55555555-5555-5555-5555-555555555555",
+      "alias": "Débito PY VIP",
+      "datos": {"numero_cuenta": "0987654321"},
+      "activo": true,
+      "predeterminado": false
+    }
+  }
+]
