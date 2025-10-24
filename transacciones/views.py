@@ -27,6 +27,7 @@ from django.shortcuts import get_object_or_404
 
 
 @csrf_exempt
+@csrf_exempt
 def cancelar_por_tasa(request, transaccion_id):
     if request.method == 'POST' and request.user.is_authenticated:
         transaccion = get_object_or_404(Transaccion, id=transaccion_id)
@@ -34,6 +35,7 @@ def cancelar_por_tasa(request, transaccion_id):
         transaccion.save()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
 
 
 class IniciarCompraDivisaView(LoginRequiredMixin, TemplateView):

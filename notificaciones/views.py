@@ -136,13 +136,32 @@ def marcar_leidas(request):
         Notificacion.objects.filter(destinatario=request.user, leida=False, tipo='tasa').update(leida=True, fecha_lectura=timezone.now())
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "error"}, status=400)
-# notificaciones/views.py
+from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Notificacion
 
 @login_required
+
 def ver_nuevas(request):
-    notis = Notificacion.objects.filter(destinatario=request.user, leida=False)
-    data = [{"mensaje": n.mensaje} for n in notis]
-    return JsonResponse(data, safe=False)
+    """
+    Devuelve la última notificación de tipo 'tasa' no leída para el usuario.
+    Una vez que se devuelve, la marca como leída para no volver a mostrarla.
+    """
+    # Buscamos la notificación más reciente de tipo 'tasa' que no haya sido leída.
+    noti = Notificacion.objects.filter(
+        destinatario=request.user, 
+        leida=False, 
+        tipo='tasa'
+    ).order_by('-fecha_creacion').first()
+    
+    if noti:
+        # ¡Paso clave! La marcamos como leída para que no vuelva a aparecer.
+        noti.leida = True
+        noti.save(update_fields=['leida'])
+        
+        # Devolvemos el mensaje para que el frontend lo muestre.
+        return JsonResponse({"mensaje": noti.mensaje, "id": noti.id})
+    
+    # No hay notificaciones nuevas
+    return JsonResponse({})

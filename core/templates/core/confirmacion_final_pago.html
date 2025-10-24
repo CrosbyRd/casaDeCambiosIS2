@@ -65,7 +65,12 @@
     <div class="popup-contenido">
         <h2>📈 Cambio de Tasa</h2>
         <div id="contenidoNotificaciones"></div>
-        <button id="cerrarPopup">Cerrar</button>
+        <div class="mt-4 flex justify-center gap-4">
+            <button id="cerrarPopup">Cerrar</button>
+            <button id="cancelarOperacion" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
+                Cancelar Operación
+            </button>
+        </div>
     </div>
 </div>
 
@@ -94,22 +99,18 @@
     padding: 10px 25px;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 15px;
 }
 </style>
 
 <!-- Script para manejar notificaciones dinámicas -->
 <script>
-function mostrarPopup(notificaciones) {
+function mostrarPopup(noti) {
     const popup = document.getElementById('popupNotificacion');
     const contenido = document.getElementById('contenidoNotificaciones');
-    contenido.innerHTML = '';
-    notificaciones.forEach(n => {
-        contenido.innerHTML += `<p>${n.mensaje}</p>`;
-    });
+    contenido.innerHTML = `<p>${noti.mensaje}</p>`;
     popup.style.display = 'flex';
 
-    document.getElementById('cerrarPopup').addEventListener('click', () => {
+    document.getElementById('cerrarPopup').onclick = () => {
         popup.style.display = 'none';
         fetch("{% url 'notificaciones:marcar_leidas' %}", {
             method: "POST",
@@ -118,23 +119,46 @@ function mostrarPopup(notificaciones) {
                 "X-CSRFToken": "{{ csrf_token }}"
             }
         });
-    });
+    };
+
+    document.getElementById('cancelarOperacion').onclick = () => {
+        fetch("{% url 'transacciones:cancelar_por_tasa' transaccion.id %}", {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success){
+                window.location.href = "{% url 'usuarios:dashboard' %}";
+            } else {
+                alert("Error al cancelar la operación.");
+            }
+        })
+        .catch(err => console.error(err));
+    };
 }
 
 function checkNotificaciones() {
     fetch("{% url 'notificaciones:ver_nuevas' %}")
         .then(res => res.json())
         .then(data => {
-            if (data.length > 0) {
+            if (data.mensaje) {
                 mostrarPopup(data);
             }
         })
         .catch(err => console.error(err));
 }
 
-// Revisar cada 5 segundos y al cargar
 setInterval(checkNotificaciones, 5000);
 checkNotificaciones();
+
+
+
+
+
 </script>
 
 {% endblock %}
