@@ -18,9 +18,21 @@
 /* Layout */
 .ted-layout{ display:flex; flex-direction:column; gap:22px; }
 @media (min-width:768px){
-  .ted-layout{ flex-direction:row; align-items:flex-start; }
-  .ted-layout-main{ flex:1; min-width:0; }
-  .ted-layout-aside{ width:320px; flex-shrink:0; position:sticky; top:20px; }
+  .ted-layout{
+    flex-direction:row;
+    align-items:flex-start;
+    flex-wrap:nowrap;              /* evita que el aside salte abajo */
+  }
+  .ted-layout-main{
+    flex:1 1 0%;                   /* crece y puede encogerse */
+    min-width:0;                   /* clave para que no empuje al aside */
+  }
+  .ted-layout-aside{
+    flex:0 0 320px;                /* ancho fijo, sin encogerse */
+    width:320px;
+    position:sticky;
+    top:20px;
+  }
 }
 
 /* Pantalla */
@@ -75,7 +87,7 @@
 .ted-header.compact .ted-logo{
   height:32px;
 }
-.welcome-badge{ 
+.ted-screen.is-home .welcome-badge{ 
   display:inline-flex; align-items:center; gap:.4rem; 
   padding:.5rem 1rem; border-radius:999px; 
   background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft))); 
@@ -86,6 +98,13 @@
   max-height:50px;
   overflow:hidden;
 }
+
+/* En el resto de vistas se oculta y colapsa el espacio */
+.ted-screen:not(.is-home) .welcome-badge{ 
+  display:none;
+}
+
+/* (sigue vigente si ya lo usabas en algún script) */
 .welcome-badge.hidden{ 
   opacity:0; 
   transform:scale(0.8); 
@@ -94,6 +113,7 @@
   margin:0;
   padding:0;
 }
+
 .ted-title{ 
   font-size:clamp(18px,4vw,22px); font-weight:900; 
   letter-spacing:.06em; margin:0;
@@ -290,6 +310,18 @@
   display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); 
   gap:12px; 
 }
+
+/* Tecla de confirmar ocupa toda la fila inferior */
+.ted-key--action {
+  grid-column: 1 / -1;
+  background: linear-gradient(180deg, rgba(124,58,237,0.3), rgba(124,58,237,0.15));
+  border-color: rgba(124,58,237,0.5);
+}
+
+.ted-key--action:hover {
+  background: linear-gradient(180deg, rgba(124,58,237,0.4), rgba(124,58,237,0.2));
+}
+
 .ted-key{ 
   display:flex; align-items:center; justify-content:center; 
   height:clamp(50px,10vw,58px); border-radius:14px; 
@@ -539,4 +571,70 @@
   .button-group{ flex-direction:column; width:100%; }
   .gx-btn{ width:100%; }
   .slots-container{ padding:0 5px; }
+}
+
+/* === Tarjeta de resultado (pantalla de éxito) === */
+.result-box{
+  display:block;              /* la mostramos cuando la completamos */
+  margin:18px auto 8px;
+  max-width:640px;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border: 1.5px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  padding:18px 20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.25) inset;
+}
+.result-box .rb-top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin-bottom:6px;
+}
+.result-box .rb-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 10px; border-radius:999px;
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+  font-weight:700; letter-spacing:.3px;
+}
+.result-box .rb-flag{ font-size:18px; line-height:1; }
+.result-box .rb-code{ opacity:.95; }
+.result-box .rb-mode{ font-size:14px; opacity:.85; }
+.result-box .rb-value{
+  font-weight:900; line-height:1.15; letter-spacing:.2px;
+  font-size:32px; margin:6px 0 2px; text-shadow:0 1px 0 rgba(0,0,0,.35);
+}
+.result-box .rb-value .rb-code{
+  font-size:18px; font-weight:800; margin-left:6px; opacity:.9;
+}
+.result-box .rb-sub{ margin-top:6px; font-size:14px; opacity:.9; }
+
+/* (ya lo tenés, pero por las dudas) */
+#success-message.hidden{ display:none !important; }
+/* --- Fix explícito del campo de código --- */
+#transaction-number.ted-input {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  height: 44px;
+}
+
+/* Evita desbordes que rompen el layout (muy importante) */
+.ted-layout-main,
+.ted-screen,
+.view-content { min-width:0; }
+
+/* Medios fluidos dentro de la pantalla */
+img, canvas, video { max-width:100%; height:auto; }
+
+/* === Estados visuales de chips de divisa === */
+.currency-chip {
+  transition: all 0.3s ease;
+}
+.currency-chip.match {
+  outline: 2px solid rgba(124,58,237,.45);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.18), 0 8px 18px rgba(0,0,0,.22);
+  transform: translateY(-1px);
+}
+.currency-chip.dimmed {
+  opacity: .45;
+  filter: grayscale(.2);
 }
