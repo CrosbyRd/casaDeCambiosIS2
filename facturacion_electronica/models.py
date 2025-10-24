@@ -147,7 +147,7 @@ class EmisorFacturaElectronica(models.Model):
         Devuelve (numero_int, numero_str_7dig) y avanza 'siguiente_numero_factura' en forma concurrencia-segura.
         Úsalo al crear un DocumentoElectronico propio (emisión).
         """
-        self.refresh_from_db(lock=True)  # bloquea la fila del emisor
+        self.refresh_from_db()  # bloquea la fila del emisor
         n = self.siguiente_numero_factura
         if n > self.rango_numeracion_fin:
             raise ValidationError(
