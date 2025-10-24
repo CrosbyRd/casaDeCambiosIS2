@@ -1,13 +1,13 @@
 [
   {
     "model": "configuracion.transactionlimit",
-    "pk": "limite_base",
+    "pk": 1,
     "fields": {
+      "moneda_codigo": "PYG",
       "aplica_diario": true,
       "monto_diario": 100000000,
       "aplica_mensual": true,
-      "monto_mensual": 1000000000,
-      "activo": true
+      "monto_mensual": 1000000000
     }
   }
 ]
