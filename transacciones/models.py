@@ -136,7 +136,7 @@ class Transaccion(models.Model):
     )
     
     def __str__(self):
-        return f"ID: {self.id} - {self.get_tipo_operacion_display()} para {self.cliente.username} [{self.get_estado_display()}]"
+        return f"ID: {self.id} - {self.get_tipo_operacion_display()} para {self.cliente} [{self.get_estado_display()}]"
 
     @property
     def is_tasa_expirada(self):
