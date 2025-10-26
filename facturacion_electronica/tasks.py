@@ -1,6 +1,7 @@
 from celery import shared_task
 from django.utils import timezone
 from .services import FacturaSeguraAPIClient
+from notificaciones.tasks import enviar_factura_por_email_task
 from .models import DocumentoElectronico, EmisorFacturaElectronica
 from transacciones.models import Transaccion
 
@@ -107,11 +108,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         # Si ninguna es PYG, asumimos que monto_origen es la base y se convierte a PYG
         monto_operacion_pyg = _to_int((getattr(transaccion, "monto_origen", 0) or 0) * tasa)
 
-    comision = getattr(transaccion, "comision_aplicada", 0) or 0
-    # La comisión siempre debe estar en PYG para la factura si la moneda de operación es PYG
-    comision_pyg = _to_int(comision if codigo_origen == "PYG" or codigo_dest == "PYG" else comision * tasa) if comision > 0 else 0
-    
-    total_gs = monto_operacion_pyg + comision_pyg
+    total_gs = monto_operacion_pyg
     monto_operacion_gs = monto_operacion_pyg # Renombrado para claridad
 
     # === Cliente / receptor ===
@@ -167,29 +164,6 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
             "dBasExe": _format_decimal_to_str(_calcular_bas_exe("1", monto_operacion_gs, "100", "10")),
         }
     ]
-    if comision_pyg > 0: # Usar comision_pyg en lugar de comision_gs
-        items.append({
-            "dCodInt": "COMISION-FX",
-            "dDesProSer": "Comisión por servicio de cambio",
-            "cUniMed": "77",
-            "dCantProSer": "1",
-            "dPUniProSer": _format_decimal_to_str(comision_pyg),
-            "dTiCamIt": "",
-            "dTotBruOpeItem": _format_decimal_to_str(comision_pyg),
-            "dDescItem": _format_decimal_to_str(0),
-            "dPorcDesIt": _format_decimal_to_str(0),
-            "dDescGloItem": _format_decimal_to_str(0),
-            "dAntPreUniIt": _format_decimal_to_str(0),
-            "dAntGloPreUniIt": _format_decimal_to_str(0),
-            "dTotOpeItem": _format_decimal_to_str(comision_pyg),
-            "dTotOpeGs": "",
-            "iAfecIVA": "3", # Commission is exempt
-            "dPropIVA": "0",
-            "dTasaIVA": "0",
-            "dBasGravIVA": _format_decimal_to_str(_calcular_bas_grav_iva("3", comision_pyg, "0", "0")),
-            "dLiqIVAItem": _format_decimal_to_str(_calcular_liq_iva_item(_calcular_bas_grav_iva("3", comision_pyg, "0", "0"), "0")),
-            "dBasExe": _format_decimal_to_str(_calcular_bas_exe("3", comision_pyg, "0", "0")),
-        })
 
     # Calculate summary fields
     dSubExe = _to_decimal("0")
@@ -492,6 +466,11 @@ def get_estado_sifen_task(self, documento_electronico_id):
                 new_estado, new_desc = "cancelado", "Documento cancelado en SIFEN."
             elif est == "APROBADO":
                 new_estado, new_desc = "aprobado", info.get("desc_sifen", "Aprobado en SIFEN.")
+                # --- INICIO: Enviar factura por email ---
+                # Solo enviar si el estado está cambiando a 'aprobado' para evitar envíos múltiples.
+                if doc_electronico.estado_sifen != "aprobado":
+                    enviar_factura_por_email_task.delay(doc_electronico.id)
+                # --- FIN: Enviar factura por email ---
             elif est == "APROBADO CON OBSERVACIÓN":
                 new_estado, new_desc = "aprobado_obs", info.get("desc_sifen", "Aprobado con observación.")
             elif est == "RECHAZADO":
