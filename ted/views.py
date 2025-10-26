@@ -32,14 +32,19 @@ PERM_INV_ALT2 = "ted.puede_gestionar_inventario"
 
 def _check_inv_perm(request):
     """
-    Verifica permiso de inventario. Si no lo tiene:
-    - muestra mensaje
-    - REDIRIGE a 'home'
-    Devuelve None si OK, o un HttpResponseRedirect si NO OK.
+    Verifica si el usuario tiene cualquiera de los permisos de inventario.
+    Si no, muestra mensaje y redirige a 'home'.
+    Devuelve None si OK; un redirect si NO OK.
     """
-    if not request.user.has_perm("ted.puede_gestionar_inventario"):
-        return redirect("home")
-    return None
+    ok = (
+        request.user.has_perm(PERM_INV_MAIN) or
+        request.user.has_perm(PERM_INV_ALT1) or
+        request.user.has_perm(PERM_INV_ALT2)
+    )
+    if ok:
+        return None
+    messages.error(request, "No tenés permisos para ver/editar el inventario TED.")
+    return redirect("home")
 
 def _is_pyg(moneda: Moneda) -> bool:
     return moneda.codigo.upper() == "PYG"
@@ -247,7 +252,6 @@ def inventario(request):
     if resp:
         return resp
     
-    _check_inv_perm(request)
     ubicacion_sel = (request.GET.get("ubicacion") or "").strip() or None  # None = sin filtro
     ubicaciones_todas = _inv_distinct_ubicaciones()
 
@@ -257,6 +261,32 @@ def inventario(request):
         .select_related("moneda")
         .order_by("moneda__codigo", "valor")
     )
+
+        # --- Filtro por moneda ---
+    moneda_sel = (request.GET.get("moneda") or "").strip() or None
+
+    # Monedas que existen en inventario (respetando ubicación si se eligió)
+    inv_qs_base = TedInventario.objects.filter(
+        denominacion__activa=True,
+        denominacion__moneda__admite_terminal=True,
+    )
+    if ubicacion_sel:
+        inv_qs_base = _inv_filter_by_ubicacion(inv_qs_base, ubicacion_sel)
+
+    mon_ids = inv_qs_base.values_list("denominacion__moneda_id", flat=True).distinct()
+    monedas_filtro = list(Moneda.objects.filter(id__in=mon_ids).order_by("codigo"))
+
+    # Emoji display: usa campo 'emoji' si existe; si no, mapea por código
+    EMOJI_MAP = {
+        "USD": "🇺🇸", "EUR": "🇪🇺", "BRL": "🇧🇷", "ARS": "🇦🇷",
+        "CLP": "🇨🇱", "PEN": "🇵🇪", "UYU": "🇺🇾", "JPY": "🇯🇵", "GBP": "🇬🇧",
+    }
+    for m in monedas_filtro:
+        setattr(m, "emoji_display", getattr(m, "emoji", EMOJI_MAP.get(m.codigo.upper(), "💱")))
+
+    # Si eligieron una moneda, filtra las denominaciones
+    if moneda_sel:
+        den_qs = den_qs.filter(moneda__codigo__iexact=moneda_sel)
 
     grupos = []
 
@@ -312,6 +342,8 @@ def inventario(request):
         "filtro_ubicacion": ubicacion_sel,
         "filtro_aplicado": filtro_aplicado,
         "grupos": grupos,
+        "monedas": monedas_filtro,
+        "filtro_moneda": moneda_sel,
     }
     return render(request, "ted/admin_inventario.html", ctx)
 
@@ -323,7 +355,6 @@ def inventario_ajustar(request, den_id: int):
     if resp:
         return resp
     
-    _check_inv_perm(request)
     ubicacion = request.GET.get("ubicacion") or TED_DIRECCION
 
     den = get_object_or_404(
@@ -369,12 +400,10 @@ def inventario_ajustar(request, den_id: int):
 
 @login_required
 def inventario_movimientos(request):
-
     resp = _check_inv_perm(request)
     if resp:
         return resp
 
-    _check_inv_perm(request)
     movs = (
         TedMovimiento.objects
         .select_related("denominacion", "denominacion__moneda", "creado_por")
@@ -397,8 +426,6 @@ def crear_stock(request):
     if resp:
         return resp
     
-    _check_inv_perm(request)
-
     monedas = Moneda.objects.exclude(codigo__iexact="PYG").order_by("codigo")
 
     prefill_moneda_id = request.GET.get("moneda") or request.POST.get("moneda_locked")
@@ -563,8 +590,6 @@ def eliminar_denominacion(request, den_id: int):
     if resp:
         return resp
 
-    _check_inv_perm(request)
-
     ubicacion = request.GET.get("ubicacion") or request.POST.get("ubicacion") or TED_DIRECCION
     den = get_object_or_404(TedDenominacion.objects.select_related("moneda"), pk=den_id)
     inv = _inv_get(den, ubicacion, for_update=True)
@@ -638,37 +663,3 @@ def ubicaciones_disponibles(request):
     Devuelve el listado de ubicaciones distintas presentes en TedInventario.
     """
     return JsonResponse({"ubicaciones": _inv_distinct_ubicaciones()})
-
-# --- JSON API para el kiosco -------------------------------------------------
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-
-# Import robusto según dónde tengas el modelo
-try:
-    from ted.models import TedInventario  # tu modelo de stock por (denominacion, ubicacion)
-except Exception:  # si lo definiste en 'monedas'
-    from monedas.models import TedInventario
-
-
-@login_required
-def ubicaciones_disponibles(request):
-    """Devuelve todas las ubicaciones donde hay inventario."""
-    ubicaciones = list(
-        TedInventario.objects.values_list("ubicacion", flat=True)
-        .distinct()
-        .order_by("ubicacion")
-    )
-    return JsonResponse({"ubicaciones": ubicaciones})
-
-
-@login_required
-def monedas_disponibles(request):
-    """Devuelve los códigos de monedas disponibles para una ubicación (o todas)."""
-    ubic = request.GET.get("ubicacion")
-    qs = TedInventario.objects.all()
-    if ubic:
-        qs = qs.filter(ubicacion=ubic)
-
-    # Camino de relación: inventario -> denominacion -> moneda -> codigo
-    codigos = sorted(set(qs.values_list("denominacion__moneda__codigo", flat=True)))
-    return JsonResponse({"monedas": codigos})
