@@ -3,59 +3,175 @@
 {% block title %}Emisores de Factura Electrónica{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-bold text-gray-900">Emisores de Factura Electrónica</h2>
-        <a href="{% url 'facturacion_electronica:emisor_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Crear Nuevo Emisor
+<main class="max-w-[1200px] mx-auto px-6 py-8 space-y-6">
+  <!-- Encabezado -->
+  <section class="space-y-4">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight text-[var(--ink)]">
+          Emisores de Factura Electrónica
+        </h1>
+        <p class="text-[var(--muted)] max-w-2xl leading-relaxed">
+          Gestioná tus emisores para SIFEN/Factura Segura: verificá RUC, establecimiento, punto de expedición, rango de numeración y token.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{% url 'admin_panel:dashboard' %}"
+           class="px-4 py-2 rounded-xl font-semibold bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]">
+          ⬅ Volver al Panel
         </a>
+        <a href="{% url 'facturacion_electronica:emisor_create' %}"
+           class="px-4 py-2 rounded-xl font-semibold text-white bg-[var(--brand)] hover:brightness-110 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]">
+          ➕ Crear Nuevo Emisor
+        </a>
+      </div>
     </div>
+  </section>
 
+  <!-- Tabla -->
+  <section>
     {% if emisores %}
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RUC</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Emisor</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Establecimiento</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Punto Expedición</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siguiente Nro. Factura</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rango</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Token Presente</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                </tr>
+      <div class="rounded-2xl border border-[var(--line)] bg-white shadow-sm">
+        <!-- (1) Se elimina el título redundante "Listado" sobre la tabla -->
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="gx-thead sticky top-0 z-10">
+              <tr>
+                <th scope="col" class="px-4 py-3 text-left">Nombre</th>
+                <th scope="col" class="px-4 py-3 text-left">RUC</th>
+                <th scope="col" class="px-4 py-3 text-left hidden md:table-cell">Email Emisor</th>
+                <th scope="col" class="px-4 py-3 text-left">Establecimiento</th>
+                <th scope="col" class="px-4 py-3 text-left">Punto Expedición</th>
+                <th scope="col" class="px-4 py-3 text-left hidden lg:table-cell">Siguiente Nro. Factura</th>
+                <th scope="col" class="px-4 py-3 text-left">Rango</th>
+                <th scope="col" class="px-4 py-3 text-left">Token</th>
+                <th scope="col" class="px-4 py-3 text-left">Acciones</th>
+              </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for emisor in emisores %}
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ emisor.nombre }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.ruc }}-{{ emisor.dv_ruc }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.email_emisor }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.establecimiento }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.punto_expedicion }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.siguiente_numero_factura }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ emisor.rango_numeracion_inicio }} - {{ emisor.rango_numeracion_fin }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {% if emisor.auth_token %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Sí</span>
-                        {% else %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">No</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{% url 'facturacion_electronica:emisor_detail' pk=emisor.pk %}" class="text-indigo-600 hover:text-indigo-900 mr-2">Ver</a>
-                        <a href="{% url 'facturacion_electronica:emisor_update' pk=emisor.pk %}" class="text-yellow-600 hover:text-yellow-900 mr-2">Editar</a>
-                        <a href="{% url 'facturacion_electronica:emisor_delete' pk=emisor.pk %}" class="text-red-600 hover:text-red-900">Eliminar</a>
-                    </td>
+
+            <tbody class="divide-y divide-neutral-200">
+              {% for emisor in emisores %}
+                <tr class="hover:bg-[var(--brand-soft)]/60 transition-colors">
+                  <td class="px-4 py-3 font-semibold text-[var(--ink)]">
+                    {{ emisor.nombre }}
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center gap-1 font-mono bg-neutral-50 border border-[var(--line)] rounded-lg px-2 py-1">
+                      {{ emisor.ruc }}<span class="opacity-60">-</span>{{ emisor.dv_ruc }}
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3 hidden md:table-cell text-neutral-700">
+                    {{ emisor.email_emisor }}
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center rounded-lg bg-neutral-50 border border-[var(--line)] px-2 py-1 font-medium">
+                      {{ emisor.establecimiento }}
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center rounded-lg bg-neutral-50 border border-[var(--line)] px-2 py-1 font-medium">
+                      {{ emisor.punto_expedicion }}
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3 hidden lg:table-cell">
+                    <span class="inline-flex items-center gap-1 rounded-lg bg-neutral-50 border border-[var(--line)] px-2 py-1 font-mono">
+                      {{ emisor.siguiente_numero_factura }}
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center gap-2">
+                      <span class="inline-flex items-center rounded-lg bg-neutral-50 border border-[var(--line)] px-2 py-1 font-mono">
+                        {{ emisor.rango_numeracion_inicio }}
+                      </span>
+                      <span class="text-neutral-400">—</span>
+                      <span class="inline-flex items-center rounded-lg bg-neutral-50 border border-[var(--line)] px-2 py-1 font-mono">
+                        {{ emisor.rango_numeracion_fin }}
+                      </span>
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    {% if emisor.auth_token %}
+                      <!-- (3) Mejora visual del "Sí": punto de estado + etiqueta -->
+                      <span title="Token cargado"
+                            class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                        <span class="h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_0_2px_rgba(16,185,129,0.25)]"></span>
+                        Sí
+                      </span>
+                    {% else %}
+                      <span title="Sin token"
+                            class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                        <span class="h-2.5 w-2.5 rounded-full bg-red-500 shadow-[0_0_0_2px_rgba(239,68,68,0.25)]"></span>
+                        No
+                      </span>
+                    {% endif %}
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <!-- (2) Eliminar emojis: solo texto -->
+                      <a href="{% url 'facturacion_electronica:emisor_detail' pk=emisor.pk %}"
+                         class="inline-flex items-center px-3 py-1.5 rounded-xl border border-[var(--line)] bg-white text-[var(--ink)] hover:bg-neutral-50 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                         title="Ver detalle">
+                        Ver
+                      </a>
+
+                      <a href="{% url 'facturacion_electronica:emisor_update' pk=emisor.pk %}"
+                         class="inline-flex items-center px-3 py-1.5 rounded-xl bg-[var(--brand-soft)] text-[var(--brand-dark)] hover:brightness-95 border border-[var(--line)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]"
+                         title="Editar emisor">
+                        Editar
+                      </a>
+
+                      <a href="{% url 'facturacion_electronica:emisor_delete' pk=emisor.pk %}"
+                         class="inline-flex items-center px-3 py-1.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
+                         title="Eliminar emisor">
+                        Eliminar
+                      </a>
+                    </div>
+                  </td>
                 </tr>
-                {% endfor %}
+              {% endfor %}
             </tbody>
-        </table>
-    </div>
+          </table>
+        </div>
+      </div>
     {% else %}
-    <p class="text-gray-700">No hay emisores de factura electrónica registrados.</p>
+      <!-- Estado vacío -->
+      <div class="rounded-2xl border border-[var(--line)] bg-white shadow-sm p-8 text-center space-y-3">
+        <div class="text-5xl">📭</div>
+        <h3 class="text-xl font-bold text-[var(--ink)]">No hay emisores registrados</h3>
+        <p class="text-[var(--muted)]">Creá tu primer emisor para comenzar a facturar electrónicamente.</p>
+        <div>
+          <a href="{% url 'facturacion_electronica:emisor_create' %}"
+             class="inline-flex items-center px-4 py-2 rounded-xl font-semibold text-white bg-[var(--brand)] hover:brightness-110 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)]">
+            ➕ Crear Nuevo Emisor
+          </a>
+        </div>
+      </div>
     {% endif %}
-</div>
+  </section>
+</main>
+
+<style>
+  /* Encabezado de tabla lila con texto blanco según guía de UI */
+  .gx-thead tr { background: var(--brand); }
+  .gx-thead th {
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: .02em;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  /* Ajustes de accesibilidad y enfoque */
+  a:focus-visible, button:focus-visible { outline: none; }
+</style>
 {% endblock %}

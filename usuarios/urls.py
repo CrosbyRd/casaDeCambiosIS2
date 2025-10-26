@@ -7,13 +7,15 @@ URLs de la app Usuarios.
 
 Incluye rutas de autenticación, dashboard y utilidades internas.
 Se añade la ruta ``/usuarios/ted/`` que renderiza la plantilla
-``usuarios/ted.html`` mediante TemplateView.
+``usuarios/ted.html`` mediante TemplateView y **endpoints de API** para el TED.
 """
 
 from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required  # ← agregado
+from django.contrib.auth.decorators import login_required
 from . import views
+from . import ted_api
+from . import ted_catalog
 
 # Espacio de nombres de la app
 app_name = "usuarios"
@@ -37,13 +39,23 @@ urlpatterns = [
         name="ted",
     ),
 
+    # --- API TED ---
+    path("ted/api/validar/", ted_api.validar_transaccion, name="ted_api_validar"),
+    path("ted/api/precontar/", ted_api.precontar,           name="ted_api_precontar"),
+    path("ted/api/otp/enviar/",   ted_api.otp_enviar,       name="ted_api_otp_enviar"),
+    path("ted/api/otp/verificar/",ted_api.otp_verificar,    name="ted_api_otp_verificar"),
+    path("ted/api/confirmar/",    ted_api.confirmar,        name="ted_api_confirmar"),
+    path("ted/api/ubicaciones/",  ted_catalog.ubicaciones,  name="ted_api_ubicaciones"),
+    path("ted/api/terminal/",      ted_catalog.terminal_info,   name="ted_api_terminal"),
+    path("ted/ticket/<str:codigo>/", ted_api.ticket_html,   name="ted_ticket"),
+
     # --- Herramientas de administración internas ---
+    path("admin_panel/", include(("admin_panel.urls", "admin_panel"), namespace="admin_panel")),
     path("listar/", views.listar_usuarios, name="listar_usuarios"),
     path("agregar-cliente/<int:user_id>/<uuid:cliente_id>/", views.agregar_cliente, name="agregar_cliente"),
     path("quitar-cliente/<int:user_id>/<uuid:cliente_id>/", views.quitar_cliente, name="quitar_cliente"),
 
     # Rutas del módulo admin_panel
-    path("admin_panel/", include("admin_panel.urls")),
-    path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
+    path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
 ]

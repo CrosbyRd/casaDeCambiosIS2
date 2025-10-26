@@ -155,8 +155,6 @@ LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "usuarios:login_redirect"
 LOGOUT_REDIRECT_URL = "/"
 
-
-
 # --- CELERY SETTINGS ---NOTIFICACION DE TASAS
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -167,12 +165,14 @@ CELERY_TIMEZONE = TIME_ZONE
 
 # --- TED / Cotizaciones ---
 # Minutos de vigencia considerados "recientes" para una cotización.
-# Puedes sobreescribirlo con la variable de entorno TED_COTIZACION_VIGENCIA_MINUTES.
 TED_COTIZACION_VIGENCIA_MINUTES = int(os.getenv("TED_COTIZACION_VIGENCIA_MINUTES", "15"))
-
 # En desarrollo, permite operar con cotizaciones vencidas si se activa.
-# TED_ALLOW_STALE_RATES=true en el entorno para activarlo.
 TED_ALLOW_STALE_RATES = os.getenv("TED_ALLOW_STALE_RATES", "true").strip().lower() in ("1", "true", "yes", "on")
+TED_ALLOWED_STATES = {
+    "deposito": {"pendiente_deposito_tauser", "pendiente_pago_cliente"},
+    "retiro": {"pendiente_retiro_tauser", "pendiente_pago_cliente"}, }
+TED_REQUIRE_KEY = False
+
 
 # --- Configuración de Facturación Electrónica (FacturaSegura) ---
 # Los valores se toman del .env; en DEBUG usa *_TEST, en PROD usa *_PROD.
@@ -191,4 +191,3 @@ FACTURASEGURA = {
     "EMAIL": os.getenv("FACTURASEGURA_ESI_EMAIL"),
     "PASSWORD": os.getenv("FACTURASEGURA_ESI_PASSWORD"),
 }
-

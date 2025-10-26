@@ -74,17 +74,16 @@ urlpatterns = [
         name="password_reset_complete",
     ),
 
-
     path("medios-acreditacion/", include("medios_acreditacion.urls")),
 
     # Admin de Django
     path("admin/", admin.site.urls),
-
     path('configuracion/', include('configuracion.urls')),
-
     path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
+
     path('facturacion-electronica/', include('facturacion_electronica.urls', namespace='facturacion_electronica')), # Nueva app de facturación electrónica
-
-
     path('notificaciones/', include('notificaciones.urls', namespace='notificaciones')),
+
+    # TED
+    path("ted/", include(("ted.urls", "ted"), namespace="ted")),
 ]
