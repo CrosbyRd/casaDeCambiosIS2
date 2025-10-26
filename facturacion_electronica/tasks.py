@@ -122,9 +122,21 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         or "CLIENTE TEST"
     )
     email_cliente = getattr(cliente, "email", None) or email_receptor or "receptor@test.com"
-    ruc_rec = getattr(cliente, "ruc", None)
-    dv_rec = getattr(cliente, "dv", None)
-    dNumIDRec = getattr(cliente, "documento", None) or "0"
+    # Hardcodeamos los datos del receptor para que siempre sea un "no contribuyente innominado"
+    # para el entorno de pruebas, según lo solicitado.
+    # Esto evita el error "1306 - TEST - RUC del receptor inexistente en la base de datos de Marangatu".
+    
+    # Valores fijos para "no contribuyente innominado"
+    iNatRec_val = "2" # 2=no contribuyente
+    iTiOpe_val = "2" # 2=B2C (Business to Consumer)
+    cPaisRec_val = "PRY"
+    iTiContRec_val = "" # No informar si D201 = 2
+    dRucRec_val = "" # No informar si D201 = 2
+    dDVRec_val = "" # No informar si D201 = 2
+    iTipIDRec_val = "5" # 5=Innominado
+    dNumIDRec_val = "0" # Si es Innominado, completar con 0
+    dNomRec_val = "Sin Nombre" # Si es Innominado, completar con "Sin Nombre"
+    email_cliente = email_receptor or "receptor@test.com" # El email del receptor sigue siendo obligatorio para Factura Segura
 
     # === Ítems ===
     desc_fx = (
@@ -269,7 +281,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     de = {
         # Emisor
         "dRucEm": str(getattr(emisor, "ruc", "")),
-        "dDVEmi": str(getattr(emisor, "dv_ruc", "")),
+        "dDVEmi": str(emisor.dv_ruc),
         "iTipCont": "2", # Tipo contribuyente del emisor
         "dNomEmi": getattr(emisor, "nombre", "") or "",
         "dDirEmi": getattr(emisor, "direccion", "") or "",
@@ -294,20 +306,20 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         # Mínimos globales (ajusta según tu régimen)
         "iTipTra": "1",  # 1=Venta de mercaderías/servicios (genérico)
         "iTImp": "5",    # Corregido a 5 según XML de ejemplo (IVA - Renta)
-        "cMoneOpe": "PYG" if codigo_dest == "PYG" else "USD",
+        "cMoneOpe": "PYG", # La moneda de la operación debe ser PYG si los ítems están en PYG
         "dCondTiCam": "1",
-        "dTiCam": "1" if codigo_dest == "PYG" else _format_decimal_to_str(tasa, decimal_places=0),
+        "dTiCam": "", # No informar dTiCam si cMoneOpe es PYG
         "iCondOpe": "1",  # 1=Contado
         # Receptor
-        "iNatRec": "1",
-        "iTiOpe": "1",
-        "cPaisRec": "PRY",
-        "iTiContRec": "1", # Corregido a "1" (string) según XML de ejemplo
-        "dRucRec": str(ruc_rec) if ruc_rec else "80000000",
-        "dDVRec": str(dv_rec) if dv_rec is not None else "0",
-        "iTipIDRec": "0",
-        "dNumIDRec": str(dNumIDRec),
-        "dNomRec": nombre_cliente,
+        "iNatRec": iNatRec_val,
+        "iTiOpe": iTiOpe_val,
+        "cPaisRec": cPaisRec_val,
+        "iTiContRec": iTiContRec_val,
+        "dRucRec": dRucRec_val,
+        "dDVRec": dDVRec_val,
+        "iTipIDRec": iTipIDRec_val,
+        "dNumIDRec": dNumIDRec_val,
+        "dNomRec": dNomRec_val,
         "dEmailRec": email_cliente,
         "iIndPres": "1", # Indicador de presencia.
         # Pago contado simple
