@@ -57,22 +57,6 @@ class EmisorFacturaElectronica(models.Model):
         verbose_name="Fecha de inicio de Timbrado (YYYY-MM-DD)"
     )
 
-    # Actividades económicas (cActEco). Principal + adicionales
-    actividad_economica_principal = models.CharField(
-        max_length=6,
-        blank=True,
-        verbose_name="Actividad Económica Principal (cActEco, 6 dígitos)"
-    )
-    descripcion_actividad_economica_principal = models.CharField(
-        max_length=255,
-        blank=True,
-        verbose_name="Descripción Actividad Económica Principal (dDesActEco)"
-    )
-    actividades_economicas = models.JSONField(
-        default=list,
-        blank=True,
-        verbose_name="Actividades Económicas adicionales (lista de cActEco, dDesActEco})"
-    )
 
     auth_token = models.TextField(blank=True, null=True, verbose_name="Token de autenticación (FacturaSegura)")
     token_generado_at = models.DateTimeField(blank=True, null=True, verbose_name="Fecha/hora de generación del token")
@@ -118,24 +102,6 @@ class EmisorFacturaElectronica(models.Model):
         if not self.fecha_inicio_timbrado:
             raise ValidationError(_("Debe indicar la fecha de inicio del timbrado (dFeIniT)."))
 
-        # Actividades económicas
-        if self.actividad_economica_principal:
-            if not (self.actividad_economica_principal.isdigit() and len(self.actividad_economica_principal) == 6):
-                raise ValidationError(_("La actividad económica principal (cActEco) debe tener 6 dígitos."))
-
-        if self.actividades_economicas:
-            if not isinstance(self.actividades_economicas, list):
-                raise ValidationError(_("Las actividades económicas adicionales deben ser una lista de objetos JSON."))
-            for item in self.actividades_economicas:
-                if not isinstance(item, dict):
-                    raise ValidationError(_("Cada actividad económica adicional debe ser un objeto con 'cActEco' y 'dDesActEco'."))
-                c_act_eco = item.get("cActEco")
-                d_des_act_eco = item.get("dDesActEco")
-
-                if not c_act_eco or not (isinstance(c_act_eco, str) and c_act_eco.isdigit() and len(c_act_eco) in (5, 6)):
-                    raise ValidationError(_("Cada 'cActEco' debe ser un string numérico de 5 o 6 dígitos."))
-                if not d_des_act_eco or not isinstance(d_des_act_eco, str) or not d_des_act_eco.strip():
-                    raise ValidationError(_("Cada 'dDesActEco' debe ser una descripción no vacía."))
 
         # Ubicación (opcional, pero cuando se complete que sea coherente)
         if self.codigo_departamento is not None and self.codigo_departamento < 0:

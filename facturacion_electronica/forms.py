@@ -13,19 +13,6 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
     - Token visible (solo lectura) para diagnóstico
     """
 
-    # Carga cómoda de múltiples cActEco (CSV)
-    actividades_economicas = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={
-            "rows": 5,
-            "placeholder": "Ej.: 62010,Actividades de programación informática\n74909,Otras actividades profesionales"
-        }),
-        help_text=(
-            "Ingrese las actividades adicionales, una por línea, en formato 'código,descripción'. "
-            "Cada código cActEco debe tener 5 o 6 dígitos y la descripción no puede estar vacía."
-        ),
-        label="Actividades Económicas adicionales (cActEco, dDesActEco)"
-    )
 
     # Token: solo lectura para no tocar desde el form (útil para ver si hay sesión)
     auth_token = forms.CharField(
@@ -54,10 +41,10 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
             "establecimiento", "punto_expedicion",
             # Timbrado
             "numero_timbrado_actual", "fecha_inicio_timbrado",
-            # Actividades
-            "actividad_economica_principal", "actividades_economicas",
             # Estado
             "activo",
+            # Campos de descripción de actividad económica principal eliminados del modelo
+            # "descripcion_actividad_economica_principal",
             # Rango y correlativo
             "rango_numeracion_inicio", "rango_numeracion_fin", "siguiente_numero_factura",
             # Token FS (solo lectura)
@@ -73,7 +60,6 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
             "numero_timbrado_actual": "8 dígitos. Ej.: 02595733",
             "establecimiento": "3 dígitos. Ej.: 001",
             "punto_expedicion": "3 dígitos. Ej.: 003",
-            "actividad_economica_principal": "Código cActEco de 5 o 6 dígitos. Ej.: 62010",
             "rango_numeracion_inicio": "Inicio del rango del equipo (por ej., 401).",
             "rango_numeracion_fin": "Fin del rango del equipo (por ej., 450).",
             "siguiente_numero_factura": "Correlativo a emitir (se sugiere no modificar manualmente).",
@@ -83,57 +69,11 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Si hay instancia existente, mostrar la lista de objetos JSON como "código,descripción"
-        inst = getattr(self, "instance", None)
-        if inst and inst.pk and isinstance(inst.actividades_economicas, list):
-            formatted_activities = []
-            for item in inst.actividades_economicas:
-                if isinstance(item, dict) and "cActEco" in item and "dDesActEco" in item:
-                    formatted_activities.append(f"{item['cActEco']},{item['dDesActEco']}")
-            self.fields["actividades_economicas"].initial = "\n".join(formatted_activities)
 
         # Estética: opcional, marcar 'auth_token' y 'token_generado_at' como deshabilitados
         self.fields["auth_token"].widget.attrs["readonly"] = "readonly"
         self.fields["token_generado_at"].widget.attrs["readonly"] = "readonly"
 
-    # === Validaciones específicas ===
-
-    def clean_actividad_economica_principal(self):
-        """
-        Acepta 5 o 6 dígitos (el XML del profe trae 5 dígitos, ej.: 62010).
-        Cambia a ==6 si querés forzar 6 dígitos.
-        """
-        val = (self.cleaned_data.get("actividad_economica_principal") or "").strip()
-        if val:
-            if not (val.isdigit() and len(val) in (5, 6)):
-                raise ValidationError(_("La actividad económica principal debe tener 5 o 6 dígitos numéricos."))
-        return val
-
-    def clean_actividades_economicas(self):
-        """
-        Acepta CSV y lo transforma a lista de strings de 5 o 6 dígitos.
-        """
-        raw = (self.cleaned_data.get("actividades_economicas") or "").strip()
-        if not raw:
-            return []
-
-        parsed_activities = []
-        lines = [line.strip() for line in raw.split("\n") if line.strip()]
-        for line in lines:
-            parts = [p.strip() for p in line.split(",", 1) if p.strip()]
-            if len(parts) != 2:
-                raise ValidationError(_(f"Formato incorrecto en la línea '{line}'. Use 'código,descripción'."))
-            
-            code, description = parts[0], parts[1]
-
-            if not (code.isdigit() and len(code) in (5, 6)):
-                raise ValidationError(_(f"El código '{code}' en la línea '{line}' debe tener 5 o 6 dígitos numéricos."))
-            if not description:
-                raise ValidationError(_(f"La descripción en la línea '{line}' no puede estar vacía."))
-            
-            parsed_activities.append({"cActEco": code, "dDesActEco": description})
-        
-        return parsed_activities
 
     def clean(self):
         cleaned = super().clean()

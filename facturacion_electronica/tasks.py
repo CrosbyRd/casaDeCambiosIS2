@@ -5,6 +5,14 @@ from .models import DocumentoElectronico, EmisorFacturaElectronica
 from transacciones.models import Transaccion
 
 
+# Mapeo de códigos de actividad económica a descripciones
+ACTIVIDADES_ECONOMICAS_MAP = {
+    "62010": "Actividades de programación informática",
+    "74909": "Otras actividades profesionales, científicas y técnicas n.c.p.",
+    # Agrega más códigos y descripciones según sea necesario
+}
+
+
 # ----------------------------
 # Helpers
 # ----------------------------
@@ -233,21 +241,17 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     dTBasGraIVA = dBaseGrav5 + dBaseGrav10
     dTotalGs = "" # Calculated if cMoneOpe != PYG
 
-    # === Actividades económicas como lista de objetos (cActEco + descripción opcional) ===
-    act_list = []
-    if getattr(emisor, "actividad_economica_principal", None):
-        # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
-        act_list.append({
-            "cActEco": str(int(emisor.actividad_economica_principal)),
-            "dDesActEco": getattr(emisor, "descripcion_actividad_economica_principal", "") or ""
-        })
-    for act_eco_data in (getattr(emisor, "actividades_economicas", []) or []):
-        # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
-        # y que la descripción se tome del JSONField
-        c_act_eco = act_eco_data.get("cActEco")
-        d_des_act_eco = act_eco_data.get("dDesActEco", "")
-        if c_act_eco:
-            act_list.append({"cActEco": str(int(c_act_eco)), "dDesActEco": d_des_act_eco or ""})
+    # === Actividades económicas hardcodeadas según XML de ejemplo ===
+    act_list = [
+        {
+            "cActEco": "62010",
+            "dDesActEco": "Actividades de programación informática"
+        },
+        {
+            "cActEco": "74909",
+            "dDesActEco": "Otras actividades profesionales, científicas y técnicas n.c.p."
+        }
+    ]
 
     # === Contacto del emisor (robusto ante nombres de campo distintos) ===
     tel_emi = (

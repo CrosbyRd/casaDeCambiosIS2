@@ -153,24 +153,6 @@
 
         <div class="fe-divider"></div>
 
-        {# ——— Actividades económicas ——— #}
-        <div class="fe-section-title">Actividades Económicas</div>
-        <div class="fe-grid fe-2">
-          <div class="fe-field">
-            <label class="fe-label">Actividad Principal (cActEco)</label>
-            <div class="fe-input">{{ form.actividad_economica_principal }}</div>
-            {% for e in form.actividad_economica_principal.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
-            <div class="fe-help">Código cActEco de 5 o 6 dígitos. Ej.: 62010</div>
-          </div>
-          <div class="fe-field">
-            <label class="fe-label">Actividades adicionales (cActEco)</label>
-            <div class="fe-input">{{ form.actividades_economicas }}</div>
-            {% for e in form.actividades_economicas.errors %}<div class="fe-error">{{ e }}</div>{% endfor %}
-            <div class="fe-help">Separadas por coma. Ej.: 74909, 56101</div>
-          </div>
-        </div>
-
-        <div class="fe-divider"></div>
 
         {# ——— Dirección ——— #}
         <div class="fe-section-title">Dirección</div>
