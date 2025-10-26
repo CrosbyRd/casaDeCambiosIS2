@@ -17,14 +17,14 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
     actividades_economicas = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
-            "rows": 3,
-            "placeholder": "Ej.: 62010,74909  (admite 5 o 6 dígitos por código)"
+            "rows": 5,
+            "placeholder": "Ej.: 62010,Actividades de programación informática\n74909,Otras actividades profesionales"
         }),
         help_text=(
-            "Ingrese las actividades adicionales separadas por comas. "
-            "Cada código cActEco debe tener 5 o 6 dígitos (según catastro vigente)."
+            "Ingrese las actividades adicionales, una por línea, en formato 'código,descripción'. "
+            "Cada código cActEco debe tener 5 o 6 dígitos y la descripción no puede estar vacía."
         ),
-        label="Actividades Económicas adicionales (cActEco)"
+        label="Actividades Económicas adicionales (cActEco, dDesActEco)"
     )
 
     # Token: solo lectura para no tocar desde el form (útil para ver si hay sesión)
@@ -83,10 +83,14 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Si hay instancia existente, mostrar la lista como CSV
+        # Si hay instancia existente, mostrar la lista de objetos JSON como "código,descripción"
         inst = getattr(self, "instance", None)
         if inst and inst.pk and isinstance(inst.actividades_economicas, list):
-            self.fields["actividades_economicas"].initial = ", ".join(inst.actividades_economicas)
+            formatted_activities = []
+            for item in inst.actividades_economicas:
+                if isinstance(item, dict) and "cActEco" in item and "dDesActEco" in item:
+                    formatted_activities.append(f"{item['cActEco']},{item['dDesActEco']}")
+            self.fields["actividades_economicas"].initial = "\n".join(formatted_activities)
 
         # Estética: opcional, marcar 'auth_token' y 'token_generado_at' como deshabilitados
         self.fields["auth_token"].widget.attrs["readonly"] = "readonly"
@@ -112,11 +116,24 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
         raw = (self.cleaned_data.get("actividades_economicas") or "").strip()
         if not raw:
             return []
-        parts = [p.strip() for p in raw.split(",") if p.strip()]
-        for code in parts:
+
+        parsed_activities = []
+        lines = [line.strip() for line in raw.split("\n") if line.strip()]
+        for line in lines:
+            parts = [p.strip() for p in line.split(",", 1) if p.strip()]
+            if len(parts) != 2:
+                raise ValidationError(_(f"Formato incorrecto en la línea '{line}'. Use 'código,descripción'."))
+            
+            code, description = parts[0], parts[1]
+
             if not (code.isdigit() and len(code) in (5, 6)):
-                raise ValidationError(_("Cada actividad económica debe tener 5 o 6 dígitos numéricos."))
-        return parts
+                raise ValidationError(_(f"El código '{code}' en la línea '{line}' debe tener 5 o 6 dígitos numéricos."))
+            if not description:
+                raise ValidationError(_(f"La descripción en la línea '{line}' no puede estar vacía."))
+            
+            parsed_activities.append({"cActEco": code, "dDesActEco": description})
+        
+        return parsed_activities
 
     def clean(self):
         cleaned = super().clean()

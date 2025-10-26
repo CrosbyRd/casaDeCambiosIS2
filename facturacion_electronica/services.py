@@ -1,7 +1,7 @@
 import os
 import uuid
 import requests
-from datetime import datetime, timedelta
+import decimal # Importar el módulo decimal
 
 from django.conf import settings
 from django.db import transaction
@@ -101,6 +101,9 @@ class FacturaSeguraAPIClient:
             # XML mínimo simulado
             return b'<?xml version="1.0" encoding="UTF-8"?><DE Simulado="true"></DE>'
 
+        import json
+        print(f"DEBUG: [FacturaSeguraAPI - SIMULACION] JSON de entrada para '{operation}': {json.dumps(params, indent=2)}")
+
         if operation == "generar_de":
             fake_cdc = f"SIMULATED{uuid.uuid4().hex[:34].upper()}"
             return {
@@ -126,12 +129,69 @@ class FacturaSeguraAPIClient:
             }
 
         if operation == "calcular_de":
-            de_json = params.get("DE", {}) or {}
+            de_resumido = params.get("DE", {}) or {}
+            # Aquí simulamos los cálculos que haría la API real
+            # Para esto, podemos usar una versión simplificada de _build_de_resumido_desde_transaccion
+            # o simplemente devolver un JSON con algunos campos calculados de ejemplo.
+            # Para una simulación más útil, intentaremos replicar algunos cálculos básicos.
+            
+            # Nota: Para una simulación completa y precisa, necesitaríamos replicar toda la lógica
+            # de cálculo de SIFEN, lo cual es complejo. Aquí haremos una aproximación.
+            
+            # Copiamos el DE resumido y añadimos algunos campos calculados
+            simulated_de_completo = de_resumido.copy()
+            
+            # Ejemplo de cómo podrías simular algunos cálculos si tuvieras la lógica aquí
+            # Para este caso, simplemente devolveremos el mismo JSON de entrada, pero
+            # en un escenario real, aquí se aplicarían las reglas de cálculo de SIFEN.
+            # Dado que el objetivo es "ver el JSON", devolver el input es un buen primer paso.
+            
+            # Sin embargo, para que sea más útil, podemos intentar simular los totales
+            # basándonos en los ítems si están presentes.
+            
+            total_ope_items = decimal.Decimal("0")
+            total_iva_items = decimal.Decimal("0")
+            
+            for item in simulated_de_completo.get("gCamItem", []):
+                try:
+                    cant = decimal.Decimal(item.get("dCantProSer", "0"))
+                    precio = decimal.Decimal(item.get("dPUniProSer", "0"))
+                    desc = decimal.Decimal(item.get("dDescItem", "0"))
+                    
+                    item_total = (precio - desc) * cant
+                    total_ope_items += item_total
+                    
+                    # Simulación básica de IVA (asumiendo 10% para gravados)
+                    if item.get("iAfecIVA") == "1" and item.get("dTasaIVA") == "10":
+                        total_iva_items += item_total / decimal.Decimal("11") * decimal.Decimal("1") # 10% IVA
+                    elif item.get("iAfecIVA") == "1" and item.get("dTasaIVA") == "5":
+                        total_iva_items += item_total / decimal.Decimal("21") * decimal.Decimal("1") # 5% IVA
+                        
+                except Exception:
+                    pass # Ignorar errores en ítems simulados
+            
+            simulated_de_completo["dTotOpe"] = str(total_ope_items.normalize())
+            simulated_de_completo["dTotGralOpe"] = str(total_ope_items.normalize())
+            simulated_de_completo["dTotIVA"] = str(total_iva_items.normalize())
+            
+            # Añadir otros campos calculados que la API de Factura Segura devolvería
+            # Estos son solo ejemplos, la lista completa está en la documentación
+            simulated_de_completo["dSubExe"] = simulated_de_completo.get("dSubExe", "0")
+            simulated_de_completo["dSubExo"] = simulated_de_completo.get("dSubExo", "0")
+            simulated_de_completo["dSub5"] = simulated_de_completo.get("dSub5", "0")
+            simulated_de_completo["dSub10"] = simulated_de_completo.get("dSub10", "0")
+            simulated_de_completo["dTotDesc"] = simulated_de_completo.get("dTotDesc", "0")
+            simulated_de_completo["dIVA5"] = simulated_de_completo.get("dIVA5", "0")
+            simulated_de_completo["dIVA10"] = simulated_de_completo.get("dIVA10", "0")
+            simulated_de_completo["dBaseGrav5"] = simulated_de_completo.get("dBaseGrav5", "0")
+            simulated_de_completo["dBaseGrav10"] = simulated_de_completo.get("dBaseGrav10", "0")
+            simulated_de_completo["dTBasGraIVA"] = simulated_de_completo.get("dTBasGraIVA", "0")
+            
             return {
                 "code": 0,
                 "description": "OK (Simulado)",
                 "operation_info": {"id": str(uuid.uuid4())},
-                "results": [{"DE": de_json}],
+                "results": [{"DE": simulated_de_completo}],
             }
 
         if operation in ["sol_cancelacion", "sol_inutilizacion"]:

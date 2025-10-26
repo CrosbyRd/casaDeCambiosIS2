@@ -23,9 +23,28 @@ def _to_int(value):
 
 def _to_decimal(value, decimal_places=8):
     try:
-        return decimal.Decimal(str(value)).quantize(decimal.Decimal(f"1e-{decimal_places}"))
+        return decimal.Decimal(str(value)).quantize(decimal.Decimal(f"1e-{decimal_places}")).normalize()
     except Exception:
-        return decimal.Decimal("0.00")
+        return decimal.Decimal("0.00").normalize()
+
+def _format_decimal_to_str(value, decimal_places=8):
+    """
+    Formatea un Decimal a string, eliminando ceros finales y el punto decimal
+    si el valor es un entero.
+    """
+    if isinstance(value, (int, float)):
+        value = _to_decimal(value, decimal_places)
+    elif not isinstance(value, decimal.Decimal):
+        value = _to_decimal(value, decimal_places)
+
+    # Normalizar para eliminar ceros finales innecesarios
+    normalized_value = value.normalize()
+
+    # Si es un entero después de normalizar, convertir a int y luego a str
+    if normalized_value == normalized_value.to_integral_value():
+        return str(int(normalized_value))
+    # Si tiene decimales, convertir directamente a str
+    return str(normalized_value)
 
 def _calcular_bas_grav_iva(iAfecIVA, dTotOpeItem, dPropIVA, dTasaIVA):
     dTotOpeItem = _to_decimal(dTotOpeItem)
@@ -69,14 +88,23 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     codigo_origen = getattr(m_origen, "codigo", "PYG") if m_origen else "PYG"
     tasa = getattr(transaccion, "tasa_cambio_aplicada", 1) or 1
 
-    if codigo_dest == "PYG":
-        monto_operacion_gs = _to_int(getattr(transaccion, "monto_destino", 0) or 0)
+    # El monto en PYG de la operación es siempre el monto_origen si la moneda origen es PYG,
+    # o el monto_destino si la moneda destino es PYG.
+    # Si ninguna es PYG, entonces el monto_origen * tasa_cambio_aplicada.
+    if codigo_origen == "PYG":
+        monto_operacion_pyg = _to_int(getattr(transaccion, "monto_origen", 0) or 0)
+    elif codigo_dest == "PYG":
+        monto_operacion_pyg = _to_int(getattr(transaccion, "monto_destino", 0) or 0)
     else:
-        monto_operacion_gs = _to_int((getattr(transaccion, "monto_origen", 0) or 0) * tasa)
+        # Si ninguna es PYG, asumimos que monto_origen es la base y se convierte a PYG
+        monto_operacion_pyg = _to_int((getattr(transaccion, "monto_origen", 0) or 0) * tasa)
 
     comision = getattr(transaccion, "comision_aplicada", 0) or 0
-    comision_gs = _to_int(comision if codigo_dest == "PYG" else comision * tasa) if comision > 0 else 0
-    total_gs = monto_operacion_gs + comision_gs
+    # La comisión siempre debe estar en PYG para la factura si la moneda de operación es PYG
+    comision_pyg = _to_int(comision if codigo_origen == "PYG" or codigo_dest == "PYG" else comision * tasa) if comision > 0 else 0
+    
+    total_gs = monto_operacion_pyg + comision_pyg
+    monto_operacion_gs = monto_operacion_pyg # Renombrado para claridad
 
     # === Cliente / receptor ===
     cliente = getattr(transaccion, "cliente", None)
@@ -101,58 +129,58 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
             "dDesProSer": desc_fx,
             "cUniMed": "77",
             "dCantProSer": "1",
-            "dPUniProSer": str(monto_operacion_gs),
+            "dPUniProSer": _format_decimal_to_str(monto_operacion_gs),
             "dTiCamIt": "", # hardcoded. Factura segura no soporta tipo de cambio por item.
-            "dTotBruOpeItem": str(monto_operacion_gs), # dPUniProSer * dCantProSer
-            "dDescItem": "0", # Descuento unitario.
-            "dPorcDesIt": "0", # dDescItem /dPUniProSer * 100
-            "dDescGloItem": "0", # hardcoded. Factura Segura no soporta descuento global.
-            "dAntPreUniIt": "0", # hardcoded. Factura Segura no soporta anticipo por item
-            "dAntGloPreUniIt": "0", # hardcoded. Factura Segura no soporta anticipo global
-            "dTotOpeItem": str(monto_operacion_gs), # (dPUniProSer – dDescItem – dDescGloItem – dAntPreUniIt – dAntGloPreUniIt) * dCantProSer
+            "dTotBruOpeItem": _format_decimal_to_str(monto_operacion_gs), # dPUniProSer * dCantProSer
+            "dDescItem": _format_decimal_to_str(0), # Descuento unitario.
+            "dPorcDesIt": _format_decimal_to_str(0), # dDescItem /dPUniProSer * 100
+            "dDescGloItem": _format_decimal_to_str(0), # hardcoded. Factura Segura no soporta descuento global.
+            "dAntPreUniIt": _format_decimal_to_str(0), # hardcoded. Factura Segura no soporta anticipo por item
+            "dAntGloPreUniIt": _format_decimal_to_str(0), # hardcoded. Factura Segura no soporta anticipo global
+            "dTotOpeItem": _format_decimal_to_str(monto_operacion_gs), # (dPUniProSer – dDescItem – dDescGloItem – dAntPreUniIt – dAntGloPreUniIt) * dCantProSer
             "dTotOpeGs": "", # hardcoded
             "iAfecIVA": "1",  # Default to 1=Gravado
             "dPropIVA": "100", # Default to 100%
             "dTasaIVA": "10", # Default to 10%
-            "dBasGravIVA": str(_calcular_bas_grav_iva("1", monto_operacion_gs, "100", "10")),
-            "dLiqIVAItem": str(_calcular_liq_iva_item(_calcular_bas_grav_iva("1", monto_operacion_gs, "100", "10"), "10")),
-            "dBasExe": str(_calcular_bas_exe("1", monto_operacion_gs, "100", "10")),
+            "dBasGravIVA": _format_decimal_to_str(_calcular_bas_grav_iva("1", monto_operacion_gs, "100", "10")),
+            "dLiqIVAItem": _format_decimal_to_str(_calcular_liq_iva_item(_calcular_bas_grav_iva("1", monto_operacion_gs, "100", "10"), "10")),
+            "dBasExe": _format_decimal_to_str(_calcular_bas_exe("1", monto_operacion_gs, "100", "10")),
         }
     ]
-    if comision_gs > 0:
+    if comision_pyg > 0: # Usar comision_pyg en lugar de comision_gs
         items.append({
             "dCodInt": "COMISION-FX",
             "dDesProSer": "Comisión por servicio de cambio",
             "cUniMed": "77",
             "dCantProSer": "1",
-            "dPUniProSer": str(comision_gs),
+            "dPUniProSer": _format_decimal_to_str(comision_pyg),
             "dTiCamIt": "",
-            "dTotBruOpeItem": str(comision_gs),
-            "dDescItem": "0",
-            "dPorcDesIt": "0",
-            "dDescGloItem": "0",
-            "dAntPreUniIt": "0",
-            "dAntGloPreUniIt": "0",
-            "dTotOpeItem": str(comision_gs),
+            "dTotBruOpeItem": _format_decimal_to_str(comision_pyg),
+            "dDescItem": _format_decimal_to_str(0),
+            "dPorcDesIt": _format_decimal_to_str(0),
+            "dDescGloItem": _format_decimal_to_str(0),
+            "dAntPreUniIt": _format_decimal_to_str(0),
+            "dAntGloPreUniIt": _format_decimal_to_str(0),
+            "dTotOpeItem": _format_decimal_to_str(comision_pyg),
             "dTotOpeGs": "",
             "iAfecIVA": "3", # Commission is exempt
             "dPropIVA": "0",
             "dTasaIVA": "0",
-            "dBasGravIVA": str(_calcular_bas_grav_iva("3", comision_gs, "0", "0")),
-            "dLiqIVAItem": str(_calcular_liq_iva_item(_calcular_bas_grav_iva("3", comision_gs, "0", "0"), "0")),
-            "dBasExe": str(_calcular_bas_exe("3", comision_gs, "0", "0")),
+            "dBasGravIVA": _format_decimal_to_str(_calcular_bas_grav_iva("3", comision_pyg, "0", "0")),
+            "dLiqIVAItem": _format_decimal_to_str(_calcular_liq_iva_item(_calcular_bas_grav_iva("3", comision_pyg, "0", "0"), "0")),
+            "dBasExe": _format_decimal_to_str(_calcular_bas_exe("3", comision_pyg, "0", "0")),
         })
 
     # Calculate summary fields
-    dSubExe = decimal.Decimal("0")
-    dSubExo = decimal.Decimal("0")
-    dSub5 = decimal.Decimal("0")
-    dSub10 = decimal.Decimal("0")
-    dTotDesc = decimal.Decimal("0")
-    dIVA5 = decimal.Decimal("0")
-    dIVA10 = decimal.Decimal("0")
-    dBaseGrav5 = decimal.Decimal("0")
-    dBaseGrav10 = decimal.Decimal("0")
+    dSubExe = _to_decimal("0")
+    dSubExo = _to_decimal("0")
+    dSub5 = _to_decimal("0")
+    dSub10 = _to_decimal("0")
+    dTotDesc = _to_decimal("0")
+    dIVA5 = _to_decimal("0")
+    dIVA10 = _to_decimal("0")
+    dBaseGrav5 = _to_decimal("0")
+    dBaseGrav10 = _to_decimal("0")
 
     for item in items:
         dTotOpeItem_dec = _to_decimal(item.get("dTotOpeItem", "0"))
@@ -172,7 +200,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         if iAfecIVA == "2":
             dSubExo += dTotOpeItem_dec
 
-        if dTasaIVA_dec == decimal.Decimal("5"):
+        if dTasaIVA_dec == _to_decimal("5"):
             if iAfecIVA == "1":
                 dSub5 += dTotOpeItem_dec
             elif iAfecIVA == "4":
@@ -180,7 +208,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
             dIVA5 += dLiqIVAItem_dec
             dBaseGrav5 += dBasGravIVA_dec
 
-        if dTasaIVA_dec == decimal.Decimal("10"):
+        if dTasaIVA_dec == _to_decimal("10"):
             if iAfecIVA == "1":
                 dSub10 += dTotOpeItem_dec
             elif iAfecIVA == "4":
@@ -189,18 +217,18 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
             dBaseGrav10 += dBasGravIVA_dec
 
     dTotOpe = dSubExe + dSubExo + dSub5 + dSub10
-    dTotDescGlotem = decimal.Decimal("0") # hardcoded
-    dTotAntItem = decimal.Decimal("0") # hardcoded
-    dTotAnt = decimal.Decimal("0") # hardcoded
-    dPorcDescTotal = decimal.Decimal("0") # hardcoded
+    dTotDescGlotem = _to_decimal("0") # hardcoded
+    dTotAntItem = _to_decimal("0") # hardcoded
+    dTotAnt = _to_decimal("0") # hardcoded
+    dPorcDescTotal = _to_decimal("0") # hardcoded
     dDescTotal = dTotDesc + dTotDescGlotem
-    dAnticipo = decimal.Decimal("0") # hardcoded
-    dRedon = decimal.Decimal("0") # hardcoded
-    dComi = decimal.Decimal("0") # hardcoded
+    dAnticipo = _to_decimal("0") # hardcoded
+    dRedon = _to_decimal("0") # hardcoded
+    dComi = _to_decimal("0") # hardcoded
     dTotGralOpe = dTotOpe - dRedon + dComi
-    dLiqTotIVA5 = decimal.Decimal("0") # hardcoded
-    dLiqTotIVA10 = decimal.Decimal("0") # hardcoded
-    dIVAComi = decimal.Decimal("0") # hardcoded
+    dLiqTotIVA5 = _to_decimal("0") # hardcoded
+    dLiqTotIVA10 = _to_decimal("0") # hardcoded
+    dIVAComi = _to_decimal("0") # hardcoded
     dTotIVA = dIVA10 + dIVA5 - dLiqTotIVA5 - dLiqTotIVA10 + dIVAComi
     dTBasGraIVA = dBaseGrav5 + dBaseGrav10
     dTotalGs = "" # Calculated if cMoneOpe != PYG
@@ -209,10 +237,17 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     act_list = []
     if getattr(emisor, "actividad_economica_principal", None):
         # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
-        act_list.append({"cActEco": str(int(emisor.actividad_economica_principal)), "dDesActEco": ""})
-    for code in (getattr(emisor, "actividades_economicas", []) or []):
+        act_list.append({
+            "cActEco": str(int(emisor.actividad_economica_principal)),
+            "dDesActEco": getattr(emisor, "descripcion_actividad_economica_principal", "") or ""
+        })
+    for act_eco_data in (getattr(emisor, "actividades_economicas", []) or []):
         # Asegurarse de que el código no tenga ceros a la izquierda si no es necesario
-        act_list.append({"cActEco": str(int(code)), "dDesActEco": ""})
+        # y que la descripción se tome del JSONField
+        c_act_eco = act_eco_data.get("cActEco")
+        d_des_act_eco = act_eco_data.get("dDesActEco", "")
+        if c_act_eco:
+            act_list.append({"cActEco": str(int(c_act_eco)), "dDesActEco": d_des_act_eco or ""})
 
     # === Contacto del emisor (robusto ante nombres de campo distintos) ===
     tel_emi = (
@@ -257,7 +292,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "iTImp": "5",    # Corregido a 5 según XML de ejemplo (IVA - Renta)
         "cMoneOpe": "PYG" if codigo_dest == "PYG" else "USD",
         "dCondTiCam": "1",
-        "dTiCam": "1" if codigo_dest == "PYG" else str(int(tasa)),
+        "dTiCam": "1" if codigo_dest == "PYG" else _format_decimal_to_str(tasa, decimal_places=0),
         "iCondOpe": "1",  # 1=Contado
         # Receptor
         "iNatRec": "1",
@@ -273,36 +308,36 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "iIndPres": "1", # Indicador de presencia.
         # Pago contado simple
         "gPaConEIni": [
-            {"iTiPago": "5", "dMonTiPag": str(total_gs), "cMoneTiPag": "PYG", "dTiCamTiPag": "1"}
+            {"iTiPago": "5", "dMonTiPag": _format_decimal_to_str(total_gs), "cMoneTiPag": "PYG", "dTiCamTiPag": "1"}
         ],
         # Ítems
         "gCamItem": items,
         # Resumen de totales
-        "dSubExe": str(dSubExe),
-        "dSubExo": str(dSubExo),
-        "dSub5": str(dSub5),
-        "dSub10": str(dSub10),
-        "dTotOpe": str(dTotOpe),
-        "dTotDesc": str(dTotDesc),
-        "dTotDescGlotem": str(dTotDescGlotem),
-        "dTotAntItem": str(dTotAntItem),
-        "dTotAnt": str(dTotAnt),
-        "dPorcDescTotal": str(dPorcDescTotal),
-        "dDescTotal": str(dDescTotal),
-        "dAnticipo": str(dAnticipo),
-        "dRedon": str(dRedon),
-        "dComi": str(dComi),
-        "dTotGralOpe": str(dTotGralOpe),
-        "dIVA5": str(dIVA5),
-        "dIVA10": str(dIVA10),
-        "dLiqTotIVA5": str(dLiqTotIVA5),
-        "dLiqTotIVA10": str(dLiqTotIVA10),
-        "dIVAComi": str(dIVAComi),
-        "dTotIVA": str(dTotIVA),
-        "dBaseGrav5": str(dBaseGrav5),
-        "dBaseGrav10": str(dBaseGrav10),
-        "dTBasGraIVA": str(dTBasGraIVA),
-        "dTotalGs": str(dTotalGs) if codigo_dest != "PYG" else "", # Calculated if cMoneOpe != PYG
+        "dSubExe": _format_decimal_to_str(dSubExe),
+        "dSubExo": _format_decimal_to_str(dSubExo),
+        "dSub5": _format_decimal_to_str(dSub5),
+        "dSub10": _format_decimal_to_str(dSub10),
+        "dTotOpe": _format_decimal_to_str(dTotOpe),
+        "dTotDesc": _format_decimal_to_str(dTotDesc),
+        "dTotDescGlotem": _format_decimal_to_str(dTotDescGlotem),
+        "dTotAntItem": _format_decimal_to_str(dTotAntItem),
+        "dTotAnt": _format_decimal_to_str(dTotAnt),
+        "dPorcDescTotal": _format_decimal_to_str(dPorcDescTotal),
+        "dDescTotal": _format_decimal_to_str(dDescTotal),
+        "dAnticipo": _format_decimal_to_str(dAnticipo),
+        "dRedon": _format_decimal_to_str(dRedon),
+        "dComi": _format_decimal_to_str(dComi),
+        "dTotGralOpe": _format_decimal_to_str(dTotGralOpe),
+        "dIVA5": _format_decimal_to_str(dIVA5),
+        "dIVA10": _format_decimal_to_str(dIVA10),
+        "dLiqTotIVA5": _format_decimal_to_str(dLiqTotIVA5),
+        "dLiqTotIVA10": _format_decimal_to_str(dLiqTotIVA10),
+        "dIVAComi": _format_decimal_to_str(dIVAComi),
+        "dTotIVA": _format_decimal_to_str(dTotIVA),
+        "dBaseGrav5": _format_decimal_to_str(dBaseGrav5),
+        "dBaseGrav10": _format_decimal_to_str(dBaseGrav10),
+        "dTBasGraIVA": _format_decimal_to_str(dTBasGraIVA),
+        "dTotalGs": _format_decimal_to_str(dTotalGs) if codigo_dest != "PYG" and dTotalGs else "", # Calculated if cMoneOpe != PYG
         # Info adicional
         "dInfAdic": f"Tx {transaccion.id} • {getattr(transaccion, 'tipo_operacion', '')} • Estado {getattr(transaccion, 'estado', '')}",
         # Placeholders
