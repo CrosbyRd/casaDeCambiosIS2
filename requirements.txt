@@ -21,3 +21,4 @@ whitenoise==6.9.0
 stripe
 python-dotenv
 celery
+django-widget-tweaks
