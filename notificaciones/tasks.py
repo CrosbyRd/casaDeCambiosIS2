@@ -199,16 +199,16 @@ def enviar_factura_por_email_task(self, documento_electronico_id):
     try:
         doc = DocumentoElectronico.objects.select_related('transaccion_asociada__cliente').get(id=documento_electronico_id)
         
-        if not doc.transaccion_asociada or not doc.transaccion_asociada.cliente:
-            print(f"Documento {doc.id} no tiene transacción o cliente asociado. No se envía correo.")
+        if not doc.transaccion_asociada or not doc.transaccion_asociada.usuario_operador:
+            print(f"Documento {doc.id} no tiene transacción o usuario operador asociado. No se envía correo.")
             return
 
-        cliente = doc.transaccion_asociada.cliente
-        destinatario_email = cliente.email
-        nombre_cliente = cliente.get_full_name() or "Cliente"
+        usuario_operador = doc.transaccion_asociada.usuario_operador
+        destinatario_email = usuario_operador.email
+        nombre_cliente = usuario_operador.get_full_name() or "Cliente" # Eliminado .username
 
         if not destinatario_email:
-            print(f"Cliente {cliente.id} no tiene email. No se puede enviar factura para Doc {doc.id}.")
+            print(f"Usuario Operador {usuario_operador.id} no tiene email. No se puede enviar factura para Doc {doc.id}.")
             return
 
         # Descargar el KuDE (PDF)

@@ -1,6 +1,6 @@
 # notificaciones/emails.py (NUEVO ARCHIVO)
 
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.html import strip_tags
@@ -57,7 +57,7 @@ def enviar_email_con_adjunto(destinatario_email, asunto, template_html, contexto
     plain_message = strip_tags(html_message)
 
     try:
-        email = EmailMessage(
+        email = EmailMultiAlternatives(
             asunto,
             plain_message,
             from_email,

@@ -466,11 +466,10 @@ def get_estado_sifen_task(self, documento_electronico_id):
                 new_estado, new_desc = "cancelado", "Documento cancelado en SIFEN."
             elif est == "APROBADO":
                 new_estado, new_desc = "aprobado", info.get("desc_sifen", "Aprobado en SIFEN.")
-                # --- INICIO: Enviar factura por email ---
-                # Solo enviar si el estado está cambiando a 'aprobado' para evitar envíos múltiples.
-                if doc_electronico.estado_sifen != "aprobado":
-                    enviar_factura_por_email_task.delay(doc_electronico.id)
-                # --- FIN: Enviar factura por email ---
+                # --- INICIO: Enviar factura por email (para pruebas) ---
+                # Se envía cada vez que se consulta y el estado es 'aprobado'.
+                enviar_factura_por_email_task.delay(doc_electronico.id)
+                # --- FIN: Enviar factura por email (para pruebas) ---
             elif est == "APROBADO CON OBSERVACIÓN":
                 new_estado, new_desc = "aprobado_obs", info.get("desc_sifen", "Aprobado con observación.")
             elif est == "RECHAZADO":
