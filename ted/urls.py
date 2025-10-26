@@ -46,6 +46,7 @@ urlpatterns = [
     path("inventario/crear/", views.crear_stock, name="crear_stock"),
     # Alias opcional por compatibilidad con referencias antiguas
     path("inventario/crear/", views.crear_stock, name="inventario_crear"),
+    path("inventario/eliminar-moneda/<int:moneda_id>/", views.eliminar_moneda, name="inventario_eliminar_moneda"),
 
     # Ajustar / eliminar / movimientos
     path("inventario/ajustar/<int:den_id>/", views.inventario_ajustar, name="inventario_ajustar"),

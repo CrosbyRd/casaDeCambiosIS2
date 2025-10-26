@@ -110,6 +110,12 @@
                class="px-4 py-2 rounded-lg font-bold text-[var(--brand-dark)] bg-white border hover:bg-[var(--surface)]"
                style="border-color:var(--line)">➕ Nueva denominación</a>
           {% endif %}
+          {% if g.moneda.codigo != "PYG" %}
+          <a href="{% url 'admin_panel:ted:inventario_eliminar_moneda' g.moneda.id %}"
+            class="px-4 py-2 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700">
+            🗑️ Eliminar moneda
+          </a>
+        {% endif %}
         </div>
 
         {% if g.secciones %}
