@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from cotizaciones.models import Cotizacion
 from monedas.models import Moneda
 from django.core.exceptions import ObjectDoesNotExist
+from ted.logic import ajustar_monto_a_denominaciones_disponibles
 
 User = get_user_model()
 
@@ -37,7 +38,9 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         'error': None,
         'monto_recibido': Decimal('0.0'),
         'tasa_aplicada': Decimal('0.0'),
-        'bonificacion_aplicada': Decimal('0.0')
+        'bonificacion_aplicada': Decimal('0.0'),
+        'monto_ajustado': False,
+        'monto_maximo_posible': Decimal('0.0'),
     }
 
     moneda_origen_obj = None
@@ -87,6 +90,19 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
                 raise ValueError(f"Tasa de cambio de venta inválida para {moneda_destino}.")
             
             monto_recibido = monto_origen / tasa_final
+
+            # Ajuste por denominaciones disponibles
+            ajuste = ajustar_monto_a_denominaciones_disponibles(
+                monto_recibido, moneda_destino_obj, 'venta'
+            )
+            monto_recibido_ajustado = ajuste['monto_ajustado']
+
+            if ajuste['ajustado']:
+                monto_recibido = monto_recibido_ajustado
+                # Recalcular el monto_origen basado en el monto_recibido ajustado
+                monto_origen = monto_recibido * tasa_final
+                resultado['monto_ajustado'] = True
+                resultado['monto_maximo_posible'] = ajuste['monto_maximo_posible']
 
         elif moneda_origen != 'PYG' and moneda_destino == 'PYG':
             # COMPRA DE DIVISA (La casa de cambios COMPRA USD, EUR, etc. al cliente)
