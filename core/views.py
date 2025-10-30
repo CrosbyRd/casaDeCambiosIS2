@@ -29,7 +29,8 @@ from django.views.generic import View, TemplateView # Para las nuevas vistas bas
 from django.contrib.auth.mixins import LoginRequiredMixin # Para las nuevas vistas
 from usuarios.forms import VerificacionForm # Para el formulario de OTP
 from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
-from decimal import Decimal # Para manejar decimales
+from decimal import Decimal, ROUND_HALF_UP # Para manejar decimales y redondeo
+from ted.logic import ajustar_monto_a_denominaciones_disponibles # Importar la lógica de ajuste
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -335,22 +336,22 @@ def confirmar_operacion(request):
                     messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
                     return redirect('core:iniciar_operacion')
 
-            transaccion = Transaccion.objects.create(
-                cliente=cliente_activo,
-                usuario_operador=request.user,
-                tipo_operacion=tipo_operacion,
-                estado=estado_inicial_flotante,
-                moneda_origen=moneda_origen_obj,
-                monto_origen=operacion_pendiente['monto_origen'],
-                moneda_destino=moneda_destino_obj,
-                monto_destino=operacion_pendiente['monto_recibido'],
-                tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
-                comision_aplicada=operacion_pendiente['comision_aplicada'],
-                codigo_operacion_tauser=codigo_operacion_tauser,
-                tasa_garantizada_hasta=None,
-                modalidad_tasa=modalidad_tasa,
-                medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
-            )
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente_activo,
+                    usuario_operador=request.user,
+                    tipo_operacion=tipo_operacion,
+                    estado=estado_inicial_flotante,
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']), # Usar el monto_origen actualizado de la sesión
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_pendiente['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    codigo_operacion_tauser=codigo_operacion_tauser,
+                    tasa_garantizada_hasta=None,
+                    modalidad_tasa=modalidad_tasa,
+                    medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+                )
             request.session.pop('operacion_pendiente', None)
 
             messages.info(request, "Operación iniciada con tasa flotante. Por favor, confirma el pago.")
@@ -589,22 +590,70 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
                 moneda_base=transaccion.moneda_origen,
                 moneda_destino=transaccion.moneda_destino
             )
-            tasa_actual = cotizacion_actual.total_venta # Asumiendo que es una venta de divisa (cliente compra)
-            monto_destino_actual = transaccion.monto_origen / tasa_actual
+            # La tasa de mercado actual
+            tasa_actual = cotizacion_actual.total_venta if transaccion.tipo_operacion == 'venta' else cotizacion_actual.total_compra
+            
+            # Recalcular monto_destino_actual y monto_origen_actual con la tasa actual
+            if transaccion.tipo_operacion == 'venta': # Cliente compra divisa extranjera
+                # --- CORRECCIÓN ---
+                # El monto a recibir (destino) es fijo. Se ajusta por denominación.
+                ajuste = ajustar_monto_a_denominaciones_disponibles(
+                    transaccion.monto_destino, transaccion.moneda_destino, 'venta'
+                )
+                monto_destino_actual = ajuste['monto_ajustado']
+
+                # Se recalcula el monto a pagar (origen) en PYG con la nueva tasa.
+                monto_origen_actual = (monto_destino_actual * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                
+                # Actualizar operacion_pendiente en sesión con los montos ajustados
+                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
+                operacion_pendiente['monto_ajustado'] = ajuste['ajustado']
+                operacion_pendiente['monto_maximo_posible'] = str(ajuste['monto_maximo_posible'])
+                self.request.session['operacion_pendiente'] = operacion_pendiente
+
+            else: # Cliente vende divisa extranjera
+                monto_origen_actual = transaccion.monto_origen # El monto origen es el que el cliente entrega
+                monto_destino_actual = (transaccion.monto_origen * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                
+                # Actualizar operacion_pendiente en sesión con los montos ajustados
+                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
+                operacion_pendiente['monto_ajustado'] = False # No hay ajuste de denominaciones para este caso
+                operacion_pendiente['monto_maximo_posible'] = str(transaccion.monto_destino) # O el monto original
+                self.request.session['operacion_pendiente'] = operacion_pendiente
+
+
         except Cotizacion.DoesNotExist:
-            # Este caso ya debería ser manejado en el método get()
-            # Si llega aquí, es un error inesperado o un estado inconsistente
             messages.error(self.request, "Error interno: No se pudo obtener la tasa de cambio actual para el contexto.")
-            tasa_actual = Decimal('0.00') # Valor por defecto para evitar errores
-            monto_destino_actual = Decimal('0.00') # Valor por defecto para evitar errores
+            tasa_actual = Decimal('0.00')
+            monto_destino_actual = Decimal('0.00')
+            monto_origen_actual = Decimal('0.00')
         
         context['transaccion'] = transaccion
         context['tasa_actual'] = tasa_actual
         context['monto_destino_actual'] = monto_destino_actual
+        context['monto_origen_actual'] = monto_origen_actual # Añadir el monto origen actual
         context['email_usuario'] = self.request.user.email # Para mostrar en la plantilla
         return context
 
     def post(self, request, transaccion_id, *args, **kwargs):
-        # Este POST solo redirige a la vista de inicio de pago en transacciones
-        # La lógica de MFA y actualización de tasa se manejará en IniciarPagoTransaccionView
+        cliente_activo = get_cliente_activo(self.request)
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+        operacion_pendiente = self.request.session.get('operacion_pendiente')
+
+        if not operacion_pendiente:
+            messages.error(request, "No hay una operación pendiente para confirmar.")
+            return redirect('core:iniciar_operacion')
+
+        # Actualizar la transacción con los valores de la sesión antes de redirigir
+        transaccion.monto_origen = Decimal(operacion_pendiente['monto_origen'])
+        transaccion.tasa_cambio_aplicada = Decimal(operacion_pendiente['tasa_aplicada'])
+        transaccion.save()
+        
+        messages.success(request, "Operación actualizada con la tasa de cambio actual. Procediendo al pago.")
         return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)
