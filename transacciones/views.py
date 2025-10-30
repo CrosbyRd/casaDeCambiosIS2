@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.contrib import messages
-from decimal import Decimal # Necesario para manejar Decimal
+from decimal import Decimal, ROUND_HALF_UP # Necesario para manejar Decimal y redondeo
 
 from .models import Transaccion
 from pagos.services import iniciar_cobro_a_cliente
@@ -19,6 +19,7 @@ from usuarios.utils import get_cliente_activo, send_otp_email, validate_otp_code
 from usuarios.forms import VerificacionForm # Importar formulario de verificación
 from pagos.models import TipoMedioPago
 from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
+from ted.logic import ajustar_monto_a_denominaciones_disponibles # Importar la lógica de ajuste
 
 #notificacion
 from django.http import JsonResponse
@@ -116,9 +117,20 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
                         moneda_destino=transaccion.moneda_destino
                     )
                     transaccion.tasa_cambio_aplicada = cotizacion.total_venta
-                    transaccion.monto_destino = transaccion.monto_origen / cotizacion.total_venta
-                    transaccion.save(update_fields=['tasa_cambio_aplicada', 'monto_destino'])
-                    messages.info(request, f"Tasa de cambio actualizada a {cotizacion.total_venta} (final con comisiones) para la operación flotante.")
+                    
+                    # Para VENTA (cliente compra divisa extranjera):
+                    # El monto_destino (USD) es fijo. Recalcular monto_origen (PYG)
+                    # y aplicar ajuste por denominaciones si es necesario.
+                    ajuste = ajustar_monto_a_denominaciones_disponibles(
+                        transaccion.monto_destino, transaccion.moneda_destino, 'venta'
+                    )
+                    transaccion.monto_destino = ajuste['monto_ajustado'] # Asegurar que el monto destino esté ajustado
+
+                    # Se recalcula el monto a pagar (origen) en PYG con la nueva tasa.
+                    transaccion.monto_origen = (transaccion.monto_destino * transaccion.tasa_cambio_aplicada).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                    
+                    transaccion.save(update_fields=['tasa_cambio_aplicada', 'monto_origen', 'monto_destino'])
+                    messages.info(request, f"Tasa de cambio actualizada a {cotizacion.total_venta} (final con comisiones) para la operación flotante. Monto a pagar ajustado a {transaccion.monto_origen} PYG.")
                 except Cotizacion.DoesNotExist:
                     messages.error(request, "No se encontró una cotización válida para actualizar la tasa.")
                     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
