@@ -55,6 +55,9 @@ def notificar_cambio_de_tasa_a_usuarios(cotizacion_id, mensaje, compra_cambio, v
     # 1. Definir los estados de transacción que consideramos "pendientes"
     estados_pendientes = [
         'pendiente_pago_cliente',
+        'pendiente_confirmacion_pago',
+        'pendiente_deposito_tauser',
+        'pendiente_pago_stripe'
     ]
 
     # 2. Construir el filtro base para transacciones pendientes de la moneda afectada
