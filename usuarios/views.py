@@ -14,6 +14,7 @@ from roles.models import Role # Importar el modelo Role
 from transacciones.models import Transaccion
 from django.contrib.auth import get_user_model
 
+
 # ----------------------------
 # Registro + verificación de cuenta
 # ----------------------------

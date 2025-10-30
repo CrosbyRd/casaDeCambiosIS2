@@ -14,4 +14,7 @@ urlpatterns = [
     
     # El endpoint al que el formulario de la página de pago envía la confirmación
     path('confirmar_pago/<str:transaccion_id>/', views.ConfirmarPagoSimuladoView.as_view(), name='confirmar_pago'),
+
+
+    
 ]

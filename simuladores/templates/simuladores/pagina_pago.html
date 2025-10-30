@@ -16,6 +16,33 @@
         .btn-success { background-color: #28a745; color: white; margin-right: 15px; }
         .btn-danger { background-color: #dc3545; color: white; }
         .error { color: #dc3545; text-align: center; font-weight: bold; }
+
+        /* Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: none; /* por defecto oculto */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .popup-contenido {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+        #cerrarPopup {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -27,7 +54,13 @@
         {% elif pago and transaccion %}
             <div class="payment-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
+                <p><strong>Tipo de Operación:</strong> 
+                    {% if transaccion.tipo_operacion == 'compra' %}
+                        Compra de Divisa (Tú vendes, Casa de Cambio compra)
+                    {% else %}
+                        Venta de Divisa (Tú compras, Casa de Cambio vende)
+                    {% endif %}
+                </p>
                 <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
                 <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
                 <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
@@ -49,5 +82,55 @@
              <p class="error">No se encontraron detalles de la transacción o del pago.</p>
         {% endif %}
     </div>
+
+    <!-- Popup de Notificación -->
+    <div id="popupNotificacion" class="popup-overlay">
+        <div class="popup-contenido">
+            <h2>📈 Cambio de Tasa</h2>
+            <div id="contenidoNotificaciones"></div>
+            <button id="cerrarPopup">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        function mostrarPopup(notificaciones) {
+            const popup = document.getElementById('popupNotificacion');
+            const contenido = document.getElementById('contenidoNotificaciones');
+            contenido.innerHTML = '';
+            notificaciones.forEach(n => {
+                contenido.innerHTML += `<p>${n.mensaje}</p>`;
+            });
+            popup.style.display = 'flex';
+
+            document.getElementById('cerrarPopup').addEventListener('click', () => {
+                popup.style.display = 'none';
+                // Marcar notificaciones como leídas
+                fetch("{% url 'notificaciones:marcar_leidas' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                });
+            });
+        }
+
+        function checkNotificaciones() {
+            fetch("{% url 'notificaciones:ver_nuevas' %}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        mostrarPopup(data);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Revisar cada 5 segundos
+        setInterval(checkNotificaciones, 5000);
+
+        // Opcional: revisar al cargar la página
+        checkNotificaciones();
+    </script>
 </body>
 </html>

@@ -20,6 +20,23 @@ from usuarios.forms import VerificacionForm # Importar formulario de verificaci√
 from pagos.models import TipoMedioPago
 from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
 
+#notificacion
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+
+
+@csrf_exempt
+@csrf_exempt
+def cancelar_por_tasa(request, transaccion_id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+        transaccion.estado = 'cancelada_usuario_tasa'
+        transaccion.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
 
 class IniciarCompraDivisaView(LoginRequiredMixin, TemplateView):
     """
