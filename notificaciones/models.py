@@ -91,6 +91,12 @@ class Notificacion(models.Model):
         on_delete=models.CASCADE,
         related_name='notificaciones'
     )
+    TIPO_CHOICES = [
+        ('tasa', 'Cambio de Tasa'),
+        ('transaccion', 'Actualización de Transacción'),
+        ('general', 'General'),
+    ]
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default='general')
     mensaje = models.TextField()
     leida = models.BooleanField(default=False)
     silenciada = models.BooleanField(default=False, help_text="Si es True, no se muestra en el tablón principal.")
