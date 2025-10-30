@@ -57,5 +57,10 @@ urlpatterns = [
 
     # Rutas del módulo admin_panel
     path("pagos/", include(("pagos.urls", "pagos"), namespace="pagos")),
+
+
+
+
     path("seleccionar-cliente/", views.seleccionar_cliente, name="seleccionar_cliente"),
+
 ]
