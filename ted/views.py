@@ -32,14 +32,19 @@ PERM_INV_ALT2 = "ted.puede_gestionar_inventario"
 
 def _check_inv_perm(request):
     """
-    Verifica permiso de inventario. Si no lo tiene:
-    - muestra mensaje
-    - REDIRIGE a 'home'
-    Devuelve None si OK, o un HttpResponseRedirect si NO OK.
+    Verifica si el usuario tiene cualquiera de los permisos de inventario.
+    Si no, muestra mensaje y redirige a 'home'.
+    Devuelve None si OK; un redirect si NO OK.
     """
-    if not request.user.has_perm("ted.puede_gestionar_inventario"):
-        return redirect("home")
-    return None
+    ok = (
+        request.user.has_perm(PERM_INV_MAIN) or
+        request.user.has_perm(PERM_INV_ALT1) or
+        request.user.has_perm(PERM_INV_ALT2)
+    )
+    if ok:
+        return None
+    messages.error(request, "No tenés permisos para ver/editar el inventario TED.")
+    return redirect("home")
 
 def _is_pyg(moneda: Moneda) -> bool:
     return moneda.codigo.upper() == "PYG"
@@ -247,7 +252,6 @@ def inventario(request):
     if resp:
         return resp
     
-    _check_inv_perm(request)
     ubicacion_sel = (request.GET.get("ubicacion") or "").strip() or None  # None = sin filtro
     ubicaciones_todas = _inv_distinct_ubicaciones()
 
@@ -257,6 +261,32 @@ def inventario(request):
         .select_related("moneda")
         .order_by("moneda__codigo", "valor")
     )
+
+        # --- Filtro por moneda ---
+    moneda_sel = (request.GET.get("moneda") or "").strip() or None
+
+    # Monedas que existen en inventario (respetando ubicación si se eligió)
+    inv_qs_base = TedInventario.objects.filter(
+        denominacion__activa=True,
+        denominacion__moneda__admite_terminal=True,
+    )
+    if ubicacion_sel:
+        inv_qs_base = _inv_filter_by_ubicacion(inv_qs_base, ubicacion_sel)
+
+    mon_ids = inv_qs_base.values_list("denominacion__moneda_id", flat=True).distinct()
+    monedas_filtro = list(Moneda.objects.filter(id__in=mon_ids).order_by("codigo"))
+
+    # Emoji display: usa campo 'emoji' si existe; si no, mapea por código
+    EMOJI_MAP = {
+        "USD": "🇺🇸", "EUR": "🇪🇺", "BRL": "🇧🇷", "ARS": "🇦🇷",
+        "CLP": "🇨🇱", "PEN": "🇵🇪", "UYU": "🇺🇾", "JPY": "🇯🇵", "GBP": "🇬🇧",
+    }
+    for m in monedas_filtro:
+        setattr(m, "emoji_display", getattr(m, "emoji", EMOJI_MAP.get(m.codigo.upper(), "💱")))
+
+    # Si eligieron una moneda, filtra las denominaciones
+    if moneda_sel:
+        den_qs = den_qs.filter(moneda__codigo__iexact=moneda_sel)
 
     grupos = []
 
@@ -312,6 +342,8 @@ def inventario(request):
         "filtro_ubicacion": ubicacion_sel,
         "filtro_aplicado": filtro_aplicado,
         "grupos": grupos,
+        "monedas": monedas_filtro,
+        "filtro_moneda": moneda_sel,
     }
     return render(request, "ted/admin_inventario.html", ctx)
 
@@ -323,7 +355,6 @@ def inventario_ajustar(request, den_id: int):
     if resp:
         return resp
     
-    _check_inv_perm(request)
     ubicacion = request.GET.get("ubicacion") or TED_DIRECCION
 
     den = get_object_or_404(
@@ -369,12 +400,10 @@ def inventario_ajustar(request, den_id: int):
 
 @login_required
 def inventario_movimientos(request):
-
     resp = _check_inv_perm(request)
     if resp:
         return resp
 
-    _check_inv_perm(request)
     movs = (
         TedMovimiento.objects
         .select_related("denominacion", "denominacion__moneda", "creado_por")
@@ -397,8 +426,6 @@ def crear_stock(request):
     if resp:
         return resp
     
-    _check_inv_perm(request)
-
     monedas = Moneda.objects.exclude(codigo__iexact="PYG").order_by("codigo")
 
     prefill_moneda_id = request.GET.get("moneda") or request.POST.get("moneda_locked")
@@ -558,27 +585,84 @@ def crear_stock(request):
 # ──────────────────────────────────────────────────────────────────────────────
 @login_required
 @transaction.atomic
+@login_required
+@transaction.atomic
 def eliminar_denominacion(request, den_id: int):
     resp = _check_inv_perm(request)
     if resp:
         return resp
 
-    _check_inv_perm(request)
-
     ubicacion = request.GET.get("ubicacion") or request.POST.get("ubicacion") or TED_DIRECCION
     den = get_object_or_404(TedDenominacion.objects.select_related("moneda"), pk=den_id)
-    inv = _inv_get(den, ubicacion, for_update=True)
+
+    # Para el resumen global en la pantalla GET
+    try:
+        inv_rows = (TedInventario.objects
+                    .filter(denominacion=den)
+                    .values("ubicacion", "cantidad"))
+        resumen_global = [
+            {"ubicacion": (r.get("ubicacion") or TED_DIRECCION), "cantidad": r["cantidad"]}
+            for r in inv_rows
+        ]
+    except FieldError:
+        fila = TedInventario.objects.filter(denominacion=den).first()
+        resumen_global = [{"ubicacion": TED_DIRECCION, "cantidad": getattr(fila, "cantidad", 0)}] if fila else []
+    total_global = sum(r["cantidad"] for r in resumen_global)
 
     if request.method == "GET":
+        inv = _inv_get(den, ubicacion, for_update=False)
         return render(
             request,
             "ted/admin_eliminar_den.html",
-            {"den": den, "inv": inv, "serial": TED_SERIAL, "ubicacion": ubicacion},
+            {
+                "den": den,
+                "inv": inv,
+                "serial": TED_SERIAL,
+                "ubicacion": ubicacion,
+                "resumen_global": resumen_global,
+                "total_global": total_global,
+            },
         )
 
+    # POST
+    scope = (request.POST.get("scope") or "ubicacion").lower()
+    motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
+
+    if scope == "global":
+        # 1) Ajustar a 0 y borrar TODAS las filas de inventario de esta denominación
+        inv_qs = _inv_manager(for_update=True).filter(denominacion=den)
+        for inv in inv_qs:
+            if motivo_ajuste is not None and inv.cantidad and inv.cantidad != 0:
+                try:
+                    TedMovimiento.objects.create(
+                        denominacion=den,
+                        delta=-inv.cantidad,
+                        motivo=motivo_ajuste,
+                        creado_por=request.user,
+                        transaccion_ref=f"ELIMINAR_DENOMINACION_GLOBAL[{den.moneda.codigo}]",
+                    )
+                except Exception:
+                    pass
+            inv.cantidad = 0
+            inv.save()
+            # Borramos la fila de inventario (tenga o no campo ubicacion)
+            inv.delete()
+
+        # 2) Desactivar la denominación (preserva historial de movimientos)
+        if den.activa:
+            den.activa = False
+            den.save(update_fields=["activa"])
+
+        messages.success(
+            request,
+            f"Se eliminó la denominación {den.moneda.codigo} {den.valor} en TODAS las ubicaciones y fue desactivada."
+        )
+        return redirect("admin_panel:ted:inventario")
+
+    # --- scope por defecto: solo esta ubicación ---
+    inv = _inv_get(den, ubicacion, for_update=True)
     if inv:
         if inv.cantidad != 0:
-            motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
             delta = -inv.cantidad
             inv.cantidad = 0
             inv.save()
@@ -590,16 +674,105 @@ def eliminar_denominacion(request, den_id: int):
                     creado_por=request.user,
                     transaccion_ref=f"ELIMINAR_DENOMINACION[{ubicacion}]",
                 )
-        if hasattr(inv, "ubicacion"):
-            inv.delete()
+        # Si manejás ubicaciones, borramos la fila de inventario
+        inv.delete()
         messages.success(request, "Denominación eliminada para esta ubicación.")
     else:
         messages.info(request, "La denominación no tiene inventario en esta ubicación.")
 
+    # Volver respetando el filtro de ubicación si vino en la URL
     if request.GET.get("ubicacion") or request.POST.get("ubicacion"):
         return redirect(f"{request.build_absolute_uri('/admin_panel/ted/inventario/')}?ubicacion={ubicacion}")
     return redirect("/admin_panel/ted/inventario/")
 
+@login_required
+@transaction.atomic
+def eliminar_moneda(request, moneda_id: int):
+    """
+    Elimina COMPLETAMENTE una moneda del TED:
+      - Borra TODO el inventario (todas las ubicaciones) de todas sus denominaciones.
+      - Registra movimientos de ajuste a 0 por cada fila de inventario eliminada.
+      - Desactiva las denominaciones (activa=False) para preservar el historial.
+      - Desmarca la moneda para el terminal (admite_terminal=False) para que desaparezca de filtros y del kiosco.
+    No toca PYG.
+    """
+    resp = _check_inv_perm(request)
+    if resp:
+        return resp
+
+    moneda = get_object_or_404(Moneda, pk=moneda_id)
+
+    # Nunca permitir acciones sobre PYG
+    if _is_pyg(moneda):
+        messages.error(request, "No se puede eliminar PYG del TED.")
+        return redirect("admin_panel:ted:inventario")
+
+    # Denominaciones de esta moneda
+    den_qs = TedDenominacion.objects.filter(moneda=moneda)
+
+    # GET: pantalla de confirmación
+    if request.method == "GET":
+        # Conteos para mostrar en la confirmación
+        try:
+            inv_rows = (TedInventario.objects
+                        .filter(denominacion__in=den_qs)
+                        .values("ubicacion").distinct())
+            ubicaciones = sorted([(r.get("ubicacion") or TED_DIRECCION) for r in inv_rows])
+        except FieldError:
+            # Si el modelo no tiene 'ubicacion'
+            ubicaciones = [TED_DIRECCION] if TedInventario.objects.filter(denominacion__in=den_qs).exists() else []
+
+        total_denom = den_qs.count()
+        total_filas_inv = TedInventario.objects.filter(denominacion__in=den_qs).count()
+
+        return render(
+            request,
+            "ted/admin_eliminar_moneda.html",
+            {
+                "serial": TED_SERIAL,
+                "moneda": moneda,
+                "total_denom": total_denom,
+                "total_filas_inv": total_filas_inv,
+                "ubicaciones": ubicaciones,
+            },
+        )
+
+    # POST: ejecutar eliminación
+    motivo_ajuste = getattr(TedMovimiento, "MOTIVO_AJUSTE", None)
+
+    # Bloque 1: pasar a 0 y borrar TODO el inventario de esta moneda (todas las ubicaciones)
+    # Usamos select_for_update para consistencia del stock.
+    inv_qs = _inv_manager(for_update=True).filter(denominacion__in=den_qs)
+    for inv in inv_qs:
+        if motivo_ajuste is not None and inv.cantidad and inv.cantidad != 0:
+            try:
+                TedMovimiento.objects.create(
+                    denominacion=inv.denominacion,
+                    delta=-inv.cantidad,
+                    motivo=motivo_ajuste,
+                    creado_por=request.user,
+                    transaccion_ref=f"ELIMINAR_MONEDA[{moneda.codigo}]",
+                )
+            except Exception:
+                # En caso de que el modelo de movimientos tenga restricciones,
+                # igual llevamos el inventario a cero y seguimos.
+                pass
+        inv.cantidad = 0
+        inv.save()
+        # Si el modelo tiene 'ubicacion', eliminamos la fila para no dejar residuos
+        if hasattr(inv, "delete"):
+            inv.delete()
+
+    # Bloque 2: desactivar denominaciones para preservar historial (no las borramos por si están referenciadas)
+    den_qs.update(activa=False)
+
+    # Bloque 3: ocultar la moneda del terminal
+    if getattr(moneda, "admite_terminal", None) is not None and moneda.admite_terminal:
+        moneda.admite_terminal = False
+        moneda.save(update_fields=["admite_terminal"])
+
+    messages.success(request, f"Se eliminó la moneda {moneda.codigo} del TED (inventario y denominaciones desactivadas).")
+    return redirect("admin_panel:ted:inventario")
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Endpoints JSON para el kiosco
@@ -638,37 +811,3 @@ def ubicaciones_disponibles(request):
     Devuelve el listado de ubicaciones distintas presentes en TedInventario.
     """
     return JsonResponse({"ubicaciones": _inv_distinct_ubicaciones()})
-
-# --- JSON API para el kiosco -------------------------------------------------
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-
-# Import robusto según dónde tengas el modelo
-try:
-    from ted.models import TedInventario  # tu modelo de stock por (denominacion, ubicacion)
-except Exception:  # si lo definiste en 'monedas'
-    from monedas.models import TedInventario
-
-
-@login_required
-def ubicaciones_disponibles(request):
-    """Devuelve todas las ubicaciones donde hay inventario."""
-    ubicaciones = list(
-        TedInventario.objects.values_list("ubicacion", flat=True)
-        .distinct()
-        .order_by("ubicacion")
-    )
-    return JsonResponse({"ubicaciones": ubicaciones})
-
-
-@login_required
-def monedas_disponibles(request):
-    """Devuelve los códigos de monedas disponibles para una ubicación (o todas)."""
-    ubic = request.GET.get("ubicacion")
-    qs = TedInventario.objects.all()
-    if ubic:
-        qs = qs.filter(ubicacion=ubic)
-
-    # Camino de relación: inventario -> denominacion -> moneda -> codigo
-    codigos = sorted(set(qs.values_list("denominacion__moneda__codigo", flat=True)))
-    return JsonResponse({"monedas": codigos})

@@ -31,8 +31,10 @@
   </header>
 
   <!-- Filtro de ubicación -->
+    <!-- Filtros -->
   <form method="get" class="mb-6">
-    <div class="flex items-center gap-3 bg-white border rounded-xl p-4" style="border-color:var(--line)">
+    <div class="flex flex-wrap items-center gap-3 bg-white border rounded-xl p-4" style="border-color:var(--line)">
+      <!-- Filtro: ubicación -->
       <label for="id_ubicacion" class="font-semibold text-[var(--ink)]">Filtrar por ubicación</label>
       <select id="id_ubicacion" name="ubicacion" class="min-w-[320px] bg-white border rounded-lg px-3 py-2"
               style="border-color: var(--line); color: var(--ink);" onchange="this.form.submit()">
@@ -41,8 +43,26 @@
           <option value="{{ u }}" {% if filtro_ubicacion == u %}selected{% endif %}>{{ u }}</option>
         {% endfor %}
       </select>
+
+      <!-- Filtro: moneda (NUEVO) -->
+      <label for="id_moneda" class="font-semibold text-[var(--ink)] ml-2">Filtrar por moneda</label>
+      <select id="id_moneda" name="moneda" class="min-w-[260px] bg-white border rounded-lg px-3 py-2"
+          style="border-color: var(--line); color: var(--ink);" onchange="this.form.submit()">
+        <option value="" {% if not filtro_moneda %}selected{% endif %}>Todas las monedas</option>
+        {% for m in monedas %}
+          <option value="{{ m.codigo }}" {% if filtro_moneda == m.codigo %}selected{% endif %}>
+            {{ m.emoji_display }} {{ m.nombre }} ({{ m.codigo }})
+          </option>
+        {% endfor %}
+      </select>
+
+      <!-- Botón de accesibilidad para usuarios sin JS -->
+      <noscript>
+        <button class="px-4 py-2 rounded-lg font-semibold text-white" style="background:var(--brand)">Aplicar</button>
+      </noscript>
     </div>
   </form>
+
 
   {% if messages %}
     <div class="max-w-5xl mx-auto px-0 mt-4 space-y-3">
@@ -90,6 +110,12 @@
                class="px-4 py-2 rounded-lg font-bold text-[var(--brand-dark)] bg-white border hover:bg-[var(--surface)]"
                style="border-color:var(--line)">➕ Nueva denominación</a>
           {% endif %}
+          {% if g.moneda.codigo != "PYG" %}
+          <a href="{% url 'admin_panel:ted:inventario_eliminar_moneda' g.moneda.id %}"
+            class="px-4 py-2 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700">
+            🗑️ Eliminar moneda
+          </a>
+        {% endif %}
         </div>
 
         {% if g.secciones %}
