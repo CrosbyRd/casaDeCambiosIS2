@@ -100,6 +100,23 @@ def iniciar_operacion(request):
                 'moneda_destino': moneda_destino_from_url,
                 'tipo_operacion': 'venta' if moneda_origen_from_url == 'PYG' else 'compra'
             }
+            # Ejecutar simulación en GET para mostrar ajustes desde el inicio
+            monto_origen_decimal = Decimal(monto_from_url)
+            resultado_simulacion = calcular_simulacion(
+                monto_origen_decimal, moneda_origen_from_url, moneda_destino_from_url, user=request.user
+            )
+            if resultado_simulacion and not resultado_simulacion.get('error'):
+                # Actualizar initial_data con los montos ajustados si hubo ajuste
+                if resultado_simulacion.get('monto_ajustado'):
+                    initial_data['monto'] = str(resultado_simulacion['monto_origen']) # Monto origen ajustado
+                initial_data['monto_recibido_simulacion'] = str(resultado_simulacion['monto_recibido'])
+                initial_data['tasa_aplicada_simulacion'] = str(resultado_simulacion['tasa_aplicada'])
+                initial_data['bonificacion_aplicada_simulacion'] = str(resultado_simulacion['bonificacion_aplicada'])
+                initial_data['monto_ajustado_simulacion'] = resultado_simulacion['monto_ajustado']
+                initial_data['monto_maximo_posible_simulacion'] = str(resultado_simulacion['monto_maximo_posible'])
+            elif resultado_simulacion and resultado_simulacion.get('error'):
+                messages.error(request, resultado_simulacion['error'])
+                resultado_simulacion = None # Limpiar resultado si hay error
 
     medios_pago_cliente = MedioPagoCliente.objects.filter(cliente=cliente, activo=True)
     medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(cliente=cliente, activo=True)
@@ -114,7 +131,18 @@ def iniciar_operacion(request):
 
 
     form = OperacionForm(request.POST or initial_data, cliente=cliente)
-    resultado_simulacion = None
+    # Si es GET y ya se hizo una simulación, usar ese resultado
+    if request.method == 'GET' and 'monto_recibido_simulacion' in initial_data:
+        resultado_simulacion = {
+            'monto_recibido': Decimal(initial_data['monto_recibido_simulacion']),
+            'tasa_aplicada': Decimal(initial_data['tasa_aplicada_simulacion']),
+            'bonificacion_aplicada': Decimal(initial_data['bonificacion_aplicada_simulacion']),
+            'monto_ajustado': initial_data['monto_ajustado_simulacion'],
+            'monto_maximo_posible': Decimal(initial_data['monto_maximo_posible_simulacion']),
+            'error': None,
+        }
+    else:
+        resultado_simulacion = None # Resetear si no hay simulación previa en GET
 
     medios_pago_para_js = {}
     for medio in medios_pago_cliente.prefetch_related('tipo__campos').all():
@@ -189,7 +217,13 @@ def iniciar_operacion(request):
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
             'modalidad_tasa': form.cleaned_data['modalidad_tasa'],
+            'monto_ajustado': resultado_simulacion.get('monto_ajustado', False), # Guardar si hubo ajuste
+            'monto_maximo_posible': str(resultado_simulacion.get('monto_maximo_posible', Decimal('0'))), # Guardar el máximo posible
         }
+        # Usar el monto_origen ajustado si existe, de lo contrario el original del formulario
+        if resultado_simulacion.get('monto_ajustado'):
+            operacion_data['monto_origen'] = str(resultado_simulacion['monto_origen'])
+        
         if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
             operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
         

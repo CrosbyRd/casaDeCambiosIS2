@@ -100,9 +100,11 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
             if ajuste['ajustado']:
                 monto_recibido = monto_recibido_ajustado
                 # Recalcular el monto_origen basado en el monto_recibido ajustado
-                monto_origen = monto_recibido * tasa_final
+                # Redondear hacia arriba para favorecer a la casa de cambios y asegurar enteros
+                monto_origen = (monto_recibido * tasa_final).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
                 resultado['monto_ajustado'] = True
                 resultado['monto_maximo_posible'] = ajuste['monto_maximo_posible']
+                resultado['monto_origen_ajustado'] = monto_origen # Añadir el monto_origen ajustado
 
         elif moneda_origen != 'PYG' and moneda_destino == 'PYG':
             # COMPRA DE DIVISA (La casa de cambios COMPRA USD, EUR, etc. al cliente)
@@ -141,7 +143,8 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         resultado.update({
             'tasa_aplicada': tasa_final,
             'bonificacion_aplicada': bonificacion_monto,
-            'monto_recibido': monto_recibido
+            'monto_recibido': monto_recibido,
+            'monto_origen': monto_origen # Asegurarse de que el monto_origen final esté en el resultado
         })
 
     # Capturar errores específicos con mensajes más informativos
