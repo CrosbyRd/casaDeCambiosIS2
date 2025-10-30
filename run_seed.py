@@ -26,15 +26,18 @@ if __name__ == "__main__":
     run_seed("seed_tasas")
 
     # 4️⃣ Cargar tipos de pago
-    run_seed("seed_tipos_pago")
+    run_seed("seed_pagos")
 
     # 5️⃣ Cargar campos dinámicos de medios de pago
     run_seed("seed_campos_pago")   # <--- Lo nuevo se agrega aquí
 
     # 6️⃣ Cargar medios de acreditación
     run_seed("seed_medio_acreditacion")
-
+    # 7️⃣ Cargar campos dinámicos de medios de acreditación
+    run_seed("seed_campos_acreditacion")   # 👈 NUEVO
     # 7️⃣ Cargar configuración general
     run_seed("seed_configuracion")
+    # 8️⃣ Cargar terminales TED
+    run_seed("seed_ted")
 
     print("✅ Todos los seeds ejecutados correctamente.")

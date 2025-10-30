@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from monedas.models import Moneda
@@ -34,10 +35,10 @@ class Command(BaseCommand):
                 moneda_base=moneda_base,
                 moneda_destino=moneda_destino,
                 defaults={
-                    "valor_compra": int(fields.get("valor_compra", 0)),
-                    "valor_venta": int(fields.get("valor_venta", 0)),
-                    "comision_compra": int(fields.get("comision_compra", 0)),
-                    "comision_venta": int(fields.get("comision_venta", 0)),
+                    "valor_compra": Decimal(fields.get("valor_compra", "0")),
+                    "valor_venta": Decimal(fields.get("valor_venta", "0")),
+                    "comision_compra": Decimal(fields.get("comision_compra", "0")),
+                    "comision_venta": Decimal(fields.get("comision_venta", "0")),
                   
                     # "fecha_actualizacion" se maneja automáticamente si no querés forzarla
                 }
