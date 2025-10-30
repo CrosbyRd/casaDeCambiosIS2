@@ -55,6 +55,9 @@ def notificar_cambio_de_tasa_a_usuarios(cotizacion_id, mensaje, compra_cambio, v
     # 1. Definir los estados de transacción que consideramos "pendientes"
     estados_pendientes = [
         'pendiente_pago_cliente',
+        'pendiente_confirmacion_pago',
+        'pendiente_deposito_tauser',
+        'pendiente_pago_stripe'
     ]
 
     # 2. Construir el filtro base para transacciones pendientes de la moneda afectada
@@ -183,3 +186,60 @@ def notificar_cambio_de_tasa_a_usuarios(cotizacion_id, mensaje, compra_cambio, v
 #             enviar_email_cambio_tasa(usuario, mensaje, cotizacion)
 
 #     return f"Notificaciones enviadas para la cotización {cotizacion_id} a {usuarios_a_notificar.count()} usuarios."
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=180)
+def enviar_factura_por_email_task(self, documento_electronico_id):
+    """
+    Tarea de Celery para enviar la factura (KuDE) por correo electrónico al cliente.
+    """
+    from facturacion_electronica.models import DocumentoElectronico
+    from facturacion_electronica.services import FacturaSeguraAPIClient
+    from .emails import enviar_email_con_adjunto
+
+    try:
+        doc = DocumentoElectronico.objects.select_related('transaccion_asociada__cliente').get(id=documento_electronico_id)
+        
+        if not doc.transaccion_asociada or not doc.transaccion_asociada.usuario_operador:
+            print(f"Documento {doc.id} no tiene transacción o usuario operador asociado. No se envía correo.")
+            return
+
+        usuario_operador = doc.transaccion_asociada.usuario_operador
+        destinatario_email = usuario_operador.email
+        nombre_cliente = usuario_operador.get_full_name() or "Cliente" # Eliminado .username
+
+        if not destinatario_email:
+            print(f"Usuario Operador {usuario_operador.id} no tiene email. No se puede enviar factura para Doc {doc.id}.")
+            return
+
+        # Descargar el KuDE (PDF)
+        client = FacturaSeguraAPIClient(doc.emisor.id)
+        pdf_content = client.descargar_kude(doc.cdc, doc.emisor.ruc)
+
+        # Enviar el correo
+        asunto = f"Factura Electrónica N° {doc.numero_documento}"
+        template = 'notificaciones/emails/factura_electronica.html'
+        contexto = {
+            'nombre_cliente': nombre_cliente,
+            'numero_factura': doc.numero_documento,
+            'nombre_sitio': 'Tu Casa de Cambio',
+        }
+        nombre_adjunto = f"Factura-{doc.numero_documento}.pdf"
+
+        enviar_email_con_adjunto(
+            destinatario_email,
+            asunto,
+            template,
+            contexto,
+            nombre_adjunto,
+            pdf_content,
+            'application/pdf'
+        )
+
+        return f"Correo de factura para Doc {doc.id} enviado a {destinatario_email}"
+
+    except DocumentoElectronico.DoesNotExist:
+        print(f"No se encontró el DocumentoElectronico con id={documento_electronico_id}")
+    except Exception as e:
+        print(f"Error en enviar_factura_por_email_task para Doc ID {documento_electronico_id}: {e}")
+        self.retry(exc=e)

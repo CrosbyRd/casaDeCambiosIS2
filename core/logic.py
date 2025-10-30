@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from cotizaciones.models import Cotizacion
 from monedas.models import Moneda
 from django.core.exceptions import ObjectDoesNotExist
+from ted.logic import ajustar_monto_a_denominaciones_disponibles
 
 User = get_user_model()
 
@@ -37,7 +38,9 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         'error': None,
         'monto_recibido': Decimal('0.0'),
         'tasa_aplicada': Decimal('0.0'),
-        'bonificacion_aplicada': Decimal('0.0')
+        'bonificacion_aplicada': Decimal('0.0'),
+        'monto_ajustado': False,
+        'monto_maximo_posible': Decimal('0.0'),
     }
 
     moneda_origen_obj = None
@@ -88,6 +91,21 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
             
             monto_recibido = monto_origen / tasa_final
 
+            # Ajuste por denominaciones disponibles
+            ajuste = ajustar_monto_a_denominaciones_disponibles(
+                monto_recibido, moneda_destino_obj, 'venta'
+            )
+            monto_recibido_ajustado = ajuste['monto_ajustado']
+
+            if ajuste['ajustado']:
+                monto_recibido = monto_recibido_ajustado
+                # Recalcular el monto_origen basado en el monto_recibido ajustado
+                # Redondear hacia arriba para favorecer a la casa de cambios y asegurar enteros
+                monto_origen = (monto_recibido * tasa_final).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                resultado['monto_ajustado'] = True
+                resultado['monto_maximo_posible'] = ajuste['monto_maximo_posible']
+                resultado['monto_origen_ajustado'] = monto_origen # Añadir el monto_origen ajustado
+
         elif moneda_origen != 'PYG' and moneda_destino == 'PYG':
             # COMPRA DE DIVISA (La casa de cambios COMPRA USD, EUR, etc. al cliente)
             try:
@@ -125,7 +143,8 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         resultado.update({
             'tasa_aplicada': tasa_final,
             'bonificacion_aplicada': bonificacion_monto,
-            'monto_recibido': monto_recibido
+            'monto_recibido': monto_recibido,
+            'monto_origen': monto_origen # Asegurarse de que el monto_origen final esté en el resultado
         })
 
     # Capturar errores específicos con mensajes más informativos
