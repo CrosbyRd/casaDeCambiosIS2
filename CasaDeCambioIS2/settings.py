@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     "ted",
     "django_extensions",
     "analista_panel",
+    "facturacion_electronica", # Nueva app para facturación electrónica
+    "widget_tweaks",
 
 ]
 
@@ -170,4 +172,22 @@ TED_ALLOWED_STATES = {
     "deposito": {"pendiente_deposito_tauser", "pendiente_pago_cliente"},
     "retiro": {"pendiente_retiro_tauser", "pendiente_pago_cliente"}, }
 TED_REQUIRE_KEY = False
-TED_SERIAL = "TED-001-CAMPUS"
+
+
+# --- Configuración de Facturación Electrónica (FacturaSegura) ---
+# Los valores se toman del .env; en DEBUG usa *_TEST, en PROD usa *_PROD.
+FACTURASEGURA = {
+    "BASE_URL": os.getenv(
+        "FACTURASEGURA_API_URL_TEST" if DEBUG else "FACTURASEGURA_API_URL_PROD",
+        "https://apitest.facturasegura.com.py/misife00/v1/esi"
+    ).rstrip("/"),
+    "LOGIN_URL": os.getenv(
+        "FACTURASEGURA_LOGIN_URL_TEST" if DEBUG else "FACTURASEGURA_LOGIN_URL_PROD",
+        "https://apitest.facturasegura.com.py/login?include_auth_token"
+    ),
+    "TIMEOUT": int(os.getenv("FACTURASEGURA_TIMEOUT", 30)),
+    "RETRIES": int(os.getenv("FACTURASEGURA_RETRIES", 3)),
+    "SIMULATION_MODE": os.getenv("FACTURASEGURA_SIMULATION_MODE", "true").strip().lower() in ("1", "true", "yes", "on"),
+    "EMAIL": os.getenv("FACTURASEGURA_ESI_EMAIL"),
+    "PASSWORD": os.getenv("FACTURASEGURA_ESI_PASSWORD"),
+}
