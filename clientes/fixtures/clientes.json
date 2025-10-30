@@ -40,18 +40,8 @@
       "fecha_registro": "2025-01-04T13:00:00Z",
       "ultima_modificacion": "2025-01-04T13:00:00Z"
     }
-  },
+  }
 
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente VIP", "categoria": "vip", "activo": true}},
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente Minorista", "categoria": "minorista", "activo": true}},
-  {"model": "clientes.cliente", "fields": {"nombre": "Cliente PY1", "categoria": "minorista", "activo": true}},
-  {"model": "clientes.cliente", "fields": {"nombre": "Cliente PY2", "categoria": "vip", "activo": true}},
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente PY3", "categoria": "Minorista", "activo": true}},
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente PY4", "categoria": "minorista", "activo": true}},
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente PY5", "categoria": "vip", "activo": true}},
-  {"model": "clientes.cliente",  "fields": {"nombre": "Cliente PY6", "categoria": "minorista", "activo": true}},
-  {"model": "clientes.cliente", "fields": {"nombre": "Cliente PY7", "categoria": "minorista", "activo": true}},
-  {"model": "clientes.cliente", "fields": {"nombre": "Cliente PY8", "categoria": "vip", "activo": true}}
 
 
 ]

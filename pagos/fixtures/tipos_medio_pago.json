@@ -19,7 +19,7 @@
       "comision_porcentaje": 2.0,
       "descripcion": "Visa/Mastercard",
       "activo": true,
-      "engine": "stripe",
+      "engine": "local",
       "engine_config": {"api_key": "sk_test_XXXXX"}
     }
   },
@@ -39,7 +39,7 @@
     "model": "pagos.tipomediopago",
     "pk": "p4",
     "fields": {
-      "nombre": "QR PY",
+      "nombre": "Tarjeta de Debito",
       "comision_porcentaje": 0.5,
       "descripcion": "Cobro rápido con QR",
       "activo": true,
@@ -51,12 +51,13 @@
     "model": "pagos.tipomediopago",
     "pk": "p5",
     "fields": {
-      "nombre": "Débito Automático",
-      "comision_porcentaje": 1.2,
-      "descripcion": "Débito automático en cuentas PY",
+      "nombre": "Stripe ",
+      "comision_porcentaje": 0.5,
+      "descripcion": "",
       "activo": true,
-      "engine": "sipap",
+      "engine": "stripe ",
       "engine_config": {}
     }
   }
+
 ]

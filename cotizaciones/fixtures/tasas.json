@@ -1,52 +1,62 @@
 [
   {
     "model": "cotizaciones.cotizacion",
-    "pk": "1001",
     "fields": {
-      "moneda": "1b2c3d4e-0001-0002-0003-000000000002",
-      "compra": 7200,
-      "venta": 7250,
-      "fecha": "2025-10-24T10:00:00Z"
+      "moneda_base": "PYG",
+      "moneda_destino": "USD",
+      "valor_compra": 7236,
+      "comision_compra": 150,
+      "valor_venta": 7213,
+      "comision_venta": 150,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
     }
   },
   {
     "model": "cotizaciones.cotizacion",
-    "pk": "1002",
     "fields": {
-      "moneda": "1b2c3d4e-0001-0002-0003-000000000003",
-      "compra": 1300,
-      "venta": 1320,
-      "fecha": "2025-10-24T10:00:00Z"
+      "moneda_base": "PYG",
+      "moneda_destino": "BRL",
+      "valor_compra": 1307,
+      "comision_compra": 50,
+      "valor_venta": 1313,
+      "comision_venta": 50,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
     }
   },
   {
     "model": "cotizaciones.cotizacion",
-    "pk": "1003",
     "fields": {
-      "moneda": "1b2c3d4e-0001-0002-0003-000000000004",
-      "compra": 7800,
-      "venta": 7850,
-      "fecha": "2025-10-24T10:00:00Z"
+      "moneda_base": "PYG",
+      "moneda_destino": "EUR",
+      "valor_compra": 7839,
+      "comision_compra": 170,
+      "valor_venta": 7811,
+      "comision_venta": 170,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
     }
   },
   {
     "model": "cotizaciones.cotizacion",
-    "pk": "1004",
     "fields": {
-      "moneda": "1b2c3d4e-0001-0002-0003-000000000005",
-      "compra": 45,
-      "venta": 46,
-      "fecha": "2025-10-24T10:00:00Z"
+      "moneda_base": "PYG",
+      "moneda_destino": "ARS",
+      "valor_compra": 45,
+      "comision_compra": 5,
+      "valor_venta": 46,
+      "comision_venta": 5,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
     }
   },
   {
     "model": "cotizaciones.cotizacion",
-    "pk": "1005",
     "fields": {
-      "moneda": "1b2c3d4e-0001-0002-0003-000000000001",
-      "compra": 1,
-      "venta": 1,
-      "fecha": "2025-10-24T10:00:00Z"
+      "moneda_base": "PYG",
+      "moneda_destino": "PEN",
+      "valor_compra": 1500,
+      "comision_compra": 90,
+      "valor_venta": 1600,
+      "comision_venta": 95,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
     }
   }
 ]
