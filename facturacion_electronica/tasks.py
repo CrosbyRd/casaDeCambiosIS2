@@ -350,11 +350,20 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
     4) (si no es simulación) agendar consulta de estado
     """
     try:
+        # Si emisor_id es None, buscar un emisor por defecto
+        if emisor_id is None:
+            emisor = EmisorFacturaElectronica.objects.filter(activo=True).first()
+            if not emisor:
+                raise Exception("No se encontró ningún EmisorFacturaElectronica activo configurado.")
+            emisor_id = emisor.id
+        else:
+            emisor = EmisorFacturaElectronica.objects.get(id=emisor_id)
+
         client = FacturaSeguraAPIClient(emisor_id)
         tx = Transaccion.objects.get(pk=transaccion_id)
 
         # 1) DE resumido (o usar el completo provisto)
-        emisor = client.emisor
+        # El emisor ya se obtuvo arriba, no es necesario client.emisor
         if json_de_completo:
             json_de_resumido = json_de_completo
         else:
@@ -466,6 +475,13 @@ def get_estado_sifen_task(self, documento_electronico_id):
                 new_estado, new_desc = "cancelado", "Documento cancelado en SIFEN."
             elif est == "APROBADO":
                 new_estado, new_desc = "aprobado", info.get("desc_sifen", "Aprobado en SIFEN.")
+                # --- INICIO: Lógica para actualizar estado de la transacción ---
+                transaccion = doc_electronico.transaccion_asociada
+                if transaccion and transaccion.estado == 'procesando_acreditacion':
+                    transaccion.estado = 'completada'
+                    transaccion.save(update_fields=['estado'])
+                # --- FIN: Lógica para actualizar estado de la transacción ---
+                
                 # --- INICIO: Enviar factura por email (para pruebas) ---
                 # Se envía cada vez que se consulta y el estado es 'aprobado'.
                 enviar_factura_por_email_task.delay(doc_electronico.id)

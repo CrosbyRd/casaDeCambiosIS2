@@ -31,6 +31,7 @@
                     <th scope="col" class="px-4 py-3">Fecha Emisión</th>
                     <th scope="col" class="px-4 py-3">Transacción Asociada</th>
                     <th scope="col" class="px-4 py-3">Acciones</th>
+                    <th scope="col" class="px-4 py-3">Eliminar</th>
                 </tr>
             </thead>
             <tbody class="divide-y" style="divide-color:var(--line)">
@@ -67,6 +68,12 @@
                     </td>
                     <td>
                         <a href="{% url 'facturacion_electronica:documento_detail' pk=doc.pk %}" class="btn btn-info btn-sm">Ver</a>
+                    </td>
+                    <td>
+                        <form action="{% url 'facturacion_electronica:documento_delete' pk=doc.pk %}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este documento electrónico? Esta acción es irreversible.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

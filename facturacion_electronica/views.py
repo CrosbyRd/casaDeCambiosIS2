@@ -232,3 +232,17 @@ def consultar_estado(request, pk):
 
     # redirige al detalle para que vea el badge/estado
     return redirect("facturacion_electronica:documento_detail", pk=pk)
+
+
+class DocumentoElectronicoDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
+    model = DocumentoElectronico
+    template_name = "facturacion_electronica/documento_confirm_delete.html" # Podríamos crear una plantilla específica si se necesita confirmación
+    context_object_name = "documento"
+    success_url = reverse_lazy("facturacion_electronica:documento_list")
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.delete()
+        messages.success(request, f"Documento electrónico {self.object} eliminado correctamente.")
+        return redirect(success_url)
