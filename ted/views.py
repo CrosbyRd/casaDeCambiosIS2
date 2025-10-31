@@ -2,6 +2,46 @@
 """
 Vistas del módulo TED (Terminal).
 =================================
+
+Este módulo contiene las vistas para operar el kiosco TED, gestionar inventario,
+crear y eliminar stock, y endpoints JSON para consumo desde la terminal.
+
+Configuración y constantes:
+- TED_SERIAL: Serial del terminal.
+- TED_DIRECCION: Ubicación física del terminal.
+- PERM_INV_MAIN / PERM_INV_ALT1 / PERM_INV_ALT2: permisos para inventario.
+
+Funciones auxiliares:
+--------------------
+- _check_inv_perm(request)
+- _is_pyg(moneda)
+- _monedas_operables()
+- _inv_manager(for_update=False)
+- _inv_filter_by_ubicacion(qs, ubicacion)
+- _inv_distinct_ubicaciones()
+- _inv_get_or_create(den, ubicacion, for_update=False)
+- _inv_get(den, ubicacion, for_update=False)
+
+Vistas principales:
+------------------
+- panel(request)
+- operar(request)
+- ticket_popup(request)
+- cheque_mock(request)
+
+Vistas de inventario:
+--------------------
+- inventario(request)
+- inventario_ajustar(request, den_id)
+- inventario_movimientos(request)
+- crear_stock(request)
+- eliminar_denominacion(request, den_id)
+- eliminar_moneda(request)
+
+Endpoints JSON:
+---------------
+- monedas_disponibles(request)
+- ubicaciones_disponibles(request)
 """
 
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
@@ -102,6 +142,19 @@ def _inv_get(den, ubicacion: str, for_update: bool = False):
 @login_required
 @permission_required("ted.puede_operar_terminal", raise_exception=True)
 def panel(request):
+    """
+    Vista principal del kiosco TED.
+
+    Permisos:
+        - Login obligatorio.
+        - Permiso 'ted.puede_operar_terminal'.
+
+    Funcionalidad:
+        - Muestra las monedas disponibles para operar (excluye PYG).
+
+    Retorna:
+        - Render del template "ted/panel.html" con las monedas operables.
+    """
     monedas = _monedas_operables()
     return render(request, "ted/panel.html", {"monedas": monedas})
 
@@ -111,6 +164,32 @@ def panel(request):
 @transaction.atomic
 def operar(request):
     """
+    Ejecuta una operación COMPRA o VENTA en el kiosco TED.
+
+    Flujo:
+        - COMPRA: el cliente compra moneda extranjera, se descuenta del inventario,
+                  se cobra en PYG usando tasa de VENTA.
+        - VENTA: el cliente vende moneda extranjera, se incrementa inventario,
+                 se paga en PYG usando tasa de COMPRA.
+
+    Parámetros:
+        - GET/POST 'moneda': id de la moneda a operar.
+        - POST 'operacion': 'COMPRA' o 'VENTA'.
+        - POST 'den_<id>': cantidades por denominación.
+    
+    Validaciones:
+        - Verifica existencia de moneda y cotización vigente.
+        - Verifica cantidades positivas y stock suficiente (en COMPRA).
+    
+    Postcondiciones:
+        - Actualiza inventario TED.
+        - Crea movimientos TedMovimiento.
+        - Guarda ticket en sesión.
+    
+    Retorna:
+        - Redirección a 'ticket_popup' si POST exitoso.
+        - Render de "ted/operar.html" si GET o errores.
+    
     COMPRA = el cliente compra extranjera  -> retiramos billetes -> cobramos PYG (usa tasa VENTA)
     VENTA  = el cliente vende extranjera   -> depositan billetes -> pagamos PYG (usa tasa COMPRA)
     """
@@ -228,6 +307,23 @@ def operar(request):
 @login_required
 @permission_required("ted.puede_operar_terminal", raise_exception=True)
 def ticket_popup(request):
+    """
+    Muestra el ticket de la última operación TED guardado en sesión.
+
+    Permisos:
+        - Login obligatorio.
+        - Permiso 'ted.puede_operar_terminal'.
+
+    Flujo:
+        - Si no hay ticket en sesión, redirige con mensaje de error.
+        - Si existe, renderiza el template 'ted/ticket_popup.html'.
+
+    Parámetros:
+        - Ninguno.
+
+    Retorna:
+        - Render de ticket_popup con detalles de la operación.
+    """
     ticket = request.session.get("ted_ticket")
     if not ticket:
         messages.error(request, "Ticket no disponible o expirado.")
@@ -238,6 +334,23 @@ def ticket_popup(request):
 @login_required
 @permission_required("ted.puede_operar_terminal", raise_exception=True)
 def cheque_mock(request):
+    """
+    Muestra el ticket de la última operación TED guardado en sesión.
+
+    Permisos:
+        - Login obligatorio.
+        - Permiso 'ted.puede_operar_terminal'.
+
+    Flujo:
+        - Si no hay ticket en sesión, redirige con mensaje de error.
+        - Si existe, renderiza el template 'ted/ticket_popup.html'.
+
+    Parámetros:
+        - Ninguno.
+
+    Retorna:
+        - Render de ticket_popup con detalles de la operación.
+    """
     monedas = _monedas_operables()
     return render(request, "ted/cheque_mock.html", {"monedas": monedas})
 
@@ -248,6 +361,46 @@ def cheque_mock(request):
 
 @login_required
 def inventario(request):
+    """
+    Vista para mostrar el inventario completo de TED.
+
+    Permite:
+    - Filtrar por ubicación (una específica o todas)
+    - Filtrar por moneda
+    - Mostrar todas las denominaciones activas y sus cantidades
+    - Mostrar íconos/emojis de monedas
+    - Agrupar denominaciones por moneda y por ubicación
+    - Proveer contexto para botones de creación, ajuste o eliminación
+
+    Flujo general:
+    ----------------
+    1. Verifica permisos TED mediante `_check_inv_perm`.
+    2. Obtiene filtro de ubicación y todas las ubicaciones disponibles.
+    3. Construye queryset de denominaciones activas y ordena por moneda y valor.
+    4. Filtra por moneda si se especifica en GET.
+    5. Construye queryset base de inventario (filtrando por denominaciones activas
+       y monedas visibles en terminal) y aplica filtro de ubicación si existe.
+    6. Genera lista de monedas presentes en el inventario para mostrar en filtros.
+    7. Asigna un emoji a cada moneda para visualización, usando campo `emoji` o
+       mapeo por código.
+    8. Agrupa el inventario:
+       - Si hay filtro de ubicación: muestra un grupo por moneda con items (denominación + stock)
+       - Si no hay filtro de ubicación: muestra todas las ubicaciones, creando secciones
+         por moneda y por ubicación
+    9. Prepara contexto con serial TED, grupos, ubicaciones y filtros aplicados.
+    10. Renderiza plantilla `admin_inventario.html`.
+
+    Notas de diseño:
+    ----------------
+    - `_inv_filter_by_ubicacion` centraliza la lógica de filtrado por ubicación.
+    - Agrupamiento por moneda facilita la visualización en tablas o secciones.
+    - Se maneja caso FieldError para modelos sin campo 'ubicacion'.
+    - Se distinguen filtros aplicados para marcar visualmente en la interfaz.
+    - La función no modifica datos, solo construye el contexto para renderizar.
+
+    :param request: HttpRequest
+    :return: HttpResponse renderizado con contexto de inventario TED
+    """
     resp = _check_inv_perm(request)
     if resp:
         return resp
@@ -351,6 +504,23 @@ def inventario(request):
 @login_required
 @transaction.atomic
 def inventario_ajustar(request, den_id: int):
+    """
+    Ajuste manual de stock de una denominación TED.
+
+    Flujo:
+    1. Obtiene la denominación por den_id.
+    2. Inicializa AjusteInventarioForm con cantidad actual.
+    3. Si POST:
+       - Valida la cantidad ingresada
+       - Actualiza inventario
+       - Registra movimiento en TedMovimiento
+       - Muestra mensaje de éxito
+    4. Si GET, muestra formulario con cantidad actual
+
+    :param request: HttpRequest
+    :param den_id: int
+    :return: Render de 'ted/admin_ajustar.html' o redirect
+    """
     resp = _check_inv_perm(request)
     if resp:
         return resp
@@ -400,6 +570,19 @@ def inventario_ajustar(request, den_id: int):
 
 @login_required
 def inventario_movimientos(request):
+    """
+    Crear nueva denominación en inventario TED.
+
+    Flujo:
+    1. Formulario de denominación y cantidad inicial
+    2. Validación de datos
+    3. Guardado en TedDenominacion y TedInventario
+    4. Registro inicial en TedMovimiento
+    5. Mensaje de éxito y redirect al inventario
+
+    :param request: HttpRequest
+    :return: Render de 'ted/admin_crear.html' o redirect
+    """
     resp = _check_inv_perm(request)
     if resp:
         return resp
@@ -422,6 +605,47 @@ def inventario_movimientos(request):
 @login_required
 @transaction.atomic
 def crear_stock(request):
+    """
+    Vista para crear nuevas denominaciones y stock TED.
+
+    Esta función permite agregar nuevas denominaciones a una moneda específica
+    en una ubicación determinada. Incluye soporte para prefill de moneda y 
+    ubicación, validaciones de valores y stock, y registro automático de 
+    movimientos en TedMovimiento.
+
+    Flujo general:
+    ----------------
+    1. Verifica permisos de inventario TED mediante `_check_inv_perm`.
+    2. Obtiene listado de monedas disponibles (excluye PYG) para mostrar en formulario.
+    3. Determina prefill de moneda y ubicación a partir de GET o POST.
+    4. Si existe prefill, busca denominaciones existentes y construye listado
+       de filas existentes con cantidad para mostrar en el formulario.
+    5. GET: Renderiza la plantilla `admin_crear_stock.html` con información
+       de monedas, prefill, filas existentes y serial TED.
+    6. POST: Procesa los datos enviados por formulario:
+       - Valida que se haya seleccionado una moneda.
+       - Obtiene valores y stocks de las denominaciones a crear.
+       - Valida que los valores sean enteros positivos y stocks >= 0.
+       - Detecta denominaciones repetidas en la misma carga.
+       - Detecta choque con denominaciones ya existentes en la ubicación.
+       - Crea denominaciones nuevas si no existen o reactiva existentes inactivas.
+       - Crea o actualiza inventario en la ubicación.
+       - Registra movimientos de ajuste en TedMovimiento.
+       - Marca la moneda como visible en terminal si no lo estaba.
+       - Muestra mensaje de éxito y redirige al inventario.
+
+    Notas de diseño:
+    ----------------
+    - Uso de `@transaction.atomic` asegura consistencia entre creación de 
+      denominaciones, inventario y movimientos.
+    - Se implementa prefill dinámico para mejorar UX del administrador.
+    - Validaciones estrictas de valores y stock previenen errores de inventario.
+    - Movimientos TED se registran solo si cantidad != 0 y existe MOTIVO_AJUSTE.
+    - La función distingue entre GET (renderizar formulario) y POST (persistir datos).
+
+    :param request: HttpRequest
+    :return: HttpResponse renderizado o redirect a inventario TED
+    """
     resp = _check_inv_perm(request)
     if resp:
         return resp
@@ -588,6 +812,35 @@ def crear_stock(request):
 @login_required
 @transaction.atomic
 def eliminar_denominacion(request, den_id: int):
+    """
+    Elimina una denominación específica del inventario TED.
+
+    Flujo completo:
+    ----------------
+    1. Verifica que el usuario tenga permisos para gestión de inventario TED.
+    2. Obtiene la denominación a eliminar mediante `den_id`.
+    3. Construye un resumen global de stock de esta denominación en todas las ubicaciones.
+       - Esto permite mostrar información en la confirmación GET.
+       - Maneja errores si no existen campos de ubicación.
+    4. GET: muestra la pantalla de confirmación con resumen global.
+    5. POST: realiza la eliminación:
+       - `scope="global"`: elimina la denominación de todas las ubicaciones y desactiva la denominación.
+       - Por defecto (`scope="ubicacion"`): elimina la denominación solo de la ubicación especificada.
+    6. Registra ajustes en `TedMovimiento` para mantener historial.
+    7. Muestra mensajes informativos o de éxito según resultado.
+    8. Redirige al inventario TED, respetando filtros de ubicación.
+
+    Notas de diseño:
+    ----------------
+    - Uso de `@transaction.atomic` para garantizar consistencia de inventario y movimientos.
+    - La denominación nunca se borra completamente de la base; se desactiva (`activa=False`) para preservar historial.
+    - Los movimientos de ajuste se registran solo si existe cantidad distinta de cero y `MOTIVO_AJUSTE` definido.
+    - El filtrado de ubicación se hace dinámico según GET o POST; si no se indica, se toma la ubicación principal `TED_DIRECCION`.
+
+    :param request: HttpRequest
+    :param den_id: int, ID de la denominación a eliminar
+    :return: HttpResponseRedirect al inventario TED o render de confirmación
+    """
     resp = _check_inv_perm(request)
     if resp:
         return resp
@@ -695,6 +948,36 @@ def eliminar_moneda(request, moneda_id: int):
       - Desactiva las denominaciones (activa=False) para preservar el historial.
       - Desmarca la moneda para el terminal (admite_terminal=False) para que desaparezca de filtros y del kiosco.
     No toca PYG.
+    
+    Elimina completamente una moneda del TED, incluyendo todas sus denominaciones
+    y movimientos de inventario, preservando historial.
+
+    Flujo completo:
+    ----------------
+    1. Verifica permisos de inventario TED.
+    2. Recupera la moneda por ID. Nunca permite PYG.
+    3. Recupera todas las denominaciones de la moneda.
+    4. GET: pantalla de confirmación con:
+       - Cantidad de denominaciones
+       - Total de filas de inventario
+       - Ubicaciones afectadas
+    5. POST: ejecutar eliminación:
+       - Ajusta inventario a 0 y registra movimientos para cada fila de inventario.
+       - Desactiva denominaciones (`activa=False`) para preservar historial.
+       - Desmarca moneda para el terminal (`admite_terminal=False`) para ocultarla en filtros.
+    6. Muestra mensaje de éxito.
+    7. Redirige a inventario TED.
+
+    Notas de diseño:
+    ----------------
+    - Uso de `@transaction.atomic` para consistencia de inventario y movimientos.
+    - Movimientos se crean solo si cantidad > 0 y `MOTIVO_AJUSTE` definido.
+    - La moneda nunca se borra de la base para preservar integridad referencial; solo se oculta del terminal.
+    - Bloqueo de filas (`select_for_update`) para evitar race conditions en operaciones concurrentes.
+
+    :param request: HttpRequest
+    :param moneda_id: int, ID de la moneda a eliminar
+    :return: HttpResponseRedirect al inventario TED o render de confirmación
     """
     resp = _check_inv_perm(request)
     if resp:
@@ -808,6 +1091,9 @@ def monedas_disponibles(request):
 @login_required  # ← solo login; sin permiso extra
 def ubicaciones_disponibles(request):
     """
-    Devuelve el listado de ubicaciones distintas presentes en TedInventario.
+    Devuelve todas las ubicaciones de inventario TED en formato JSON.
+
+    :param request: HttpRequest
+    :return: JsonResponse {'ubicaciones': [str]}
     """
     return JsonResponse({"ubicaciones": _inv_distinct_ubicaciones()})
