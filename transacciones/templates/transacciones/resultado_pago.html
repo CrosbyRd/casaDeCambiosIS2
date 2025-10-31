@@ -24,7 +24,7 @@
     <div class="container">
         {% if transaccion.estado == 'pendiente_retiro_tauser' %}
             <h1 class="status-success">¡Pago Exitoso!</h1>
-            <p>Tu pago ha sido confirmado. Ya puedes retirar tus divisas en el Tauser más cercano.</p>
+            <p>Tu pago ha sido confirmado. Ya puedes retirar tus divisas en el TED más cercano.</p>
             <div class="transaction-details">
                 <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
                 <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
