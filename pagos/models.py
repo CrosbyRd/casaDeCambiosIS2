@@ -40,7 +40,7 @@ class TipoMedioPago(models.Model):
     :param str engine: Motor o integración usada para procesar pagos.
     :param dict engine_config: Configuración JSON específica del motor.
     """
-    id_tipo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=100, unique=True)
 
     # Comisión en porcentaje que aplica este medio (0 a 100)
@@ -117,7 +117,7 @@ class CampoMedioPago(models.Model):
         TELEFONO_PY_LOCAL = r"^09\d{8}$", "Teléfono PY (09xxxxxxxx)"
         RUC_PY = r"^\d{6,8}-\d{1}$", "RUC PY (########-#)"
 
-    id_campo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tipo = models.ForeignKey(TipoMedioPago, related_name="campos", on_delete=models.CASCADE)
     nombre_campo = models.CharField(max_length=100)
     tipo_dato = models.CharField(max_length=15, choices=TipoDato.choices, default=TipoDato.TEXTO)
@@ -158,7 +158,7 @@ class MedioPagoCliente(models.Model):
     :param datetime creado_en: Fecha de creación.
     :param datetime actualizado_en: Última modificación.
     """
-    id_medio = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # 🔴 DUEÑO CORRECTO
     cliente = models.ForeignKey("clientes.Cliente",
