@@ -65,8 +65,8 @@ class TipoMedioPago(models.Model):
     
     descripcion = models.TextField(blank=True)
     activo = models.BooleanField(default=True)
-    creado_en = models.DateTimeField(default=timezone.now, editable=False)
-    actualizado_en = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     ENGINE_CHOICES = [
         ('manual', 'Manual'),
@@ -186,9 +186,9 @@ class MedioPagoCliente(models.Model):
     activo = models.BooleanField(default=True)
     predeterminado = models.BooleanField(default=False)
 
-    creado_en = models.DateTimeField(default=timezone.now, editable=False)
-    actualizado_en = models.DateTimeField(auto_now=True)
-
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
         db_table = "pagos_medio_cliente"
         constraints = [
