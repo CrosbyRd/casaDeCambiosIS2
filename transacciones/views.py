@@ -112,30 +112,22 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
             # Si la modalidad de tasa es flotante, actualizar la tasa de cambio aplicada con la tasa final
             if transaccion.modalidad_tasa == 'flotante':
                 try:
-                    cotizacion = Cotizacion.objects.get(
-                        moneda_base=transaccion.moneda_origen,
-                        moneda_destino=transaccion.moneda_destino
-                    )
-                    transaccion.tasa_cambio_aplicada = cotizacion.total_venta
-                    
-                    # Para VENTA (cliente compra divisa extranjera):
-                    # El monto_destino (USD) es fijo. Recalcular monto_origen (PYG)
-                    # y aplicar ajuste por denominaciones si es necesario.
-                    ajuste = ajustar_monto_a_denominaciones_disponibles(
-                        transaccion.monto_destino, transaccion.moneda_destino, 'venta'
-                    )
-                    transaccion.monto_destino = ajuste['monto_ajustado'] # Asegurar que el monto destino esté ajustado
+                    # Recuperar los valores actualizados de la sesión
+                    operacion_pendiente = request.session.get('operacion_pendiente')
+                    if not operacion_pendiente:
+                        messages.error(request, "No hay datos de operación pendiente en la sesión.")
+                        return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
-                    # Se recalcula el monto a pagar (origen) en PYG con la nueva tasa.
-                    transaccion.monto_origen = (transaccion.monto_destino * transaccion.tasa_cambio_aplicada).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                    # Actualizar la transacción con los valores de la sesión que ya incluyen la bonificación
+                    transaccion.monto_origen = Decimal(operacion_pendiente['monto_origen'])
+                    transaccion.monto_destino = Decimal(operacion_pendiente['monto_recibido'])
+                    transaccion.tasa_cambio_aplicada = Decimal(operacion_pendiente['tasa_aplicada'])
+                    transaccion.comision_aplicada = Decimal(operacion_pendiente['comision_aplicada'])
                     
-                    transaccion.save(update_fields=['tasa_cambio_aplicada', 'monto_origen', 'monto_destino'])
-                    messages.info(request, f"Tasa de cambio actualizada a {cotizacion.total_venta} (final con comisiones) para la operación flotante. Monto a pagar ajustado a {transaccion.monto_origen} PYG.")
-                except Cotizacion.DoesNotExist:
-                    messages.error(request, "No se encontró una cotización válida para actualizar la tasa.")
-                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+                    transaccion.save(update_fields=['tasa_cambio_aplicada', 'monto_origen', 'monto_destino', 'comision_aplicada'])
+                    messages.info(request, f"Tasa de cambio y montos actualizados (final con comisiones y bonificación) para la operación flotante. Monto a pagar ajustado a {transaccion.monto_origen} PYG.")
                 except Exception as e:
-                    messages.error(request, f"Error al actualizar la tasa de cambio: {e}")
+                    messages.error(request, f"Error al actualizar la tasa de cambio y montos: {e}")
                     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
             medio_pago_id = transaccion.medio_pago_utilizado.id_tipo if transaccion.medio_pago_utilizado else None
