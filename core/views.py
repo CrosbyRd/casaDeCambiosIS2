@@ -770,9 +770,9 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
         # Actualizar la transacción con los valores de la sesión
         transaccion.monto_origen = Decimal(operacion_pendiente['monto_origen'])
         transaccion.tasa_cambio_aplicada = Decimal(operacion_pendiente['tasa_aplicada'])
-        # Also update monto_destino if it was adjusted in the get method
-        if 'monto_destino' in operacion_pendiente and operacion_pendiente.get('monto_ajustado'):
-             transaccion.monto_destino = Decimal(operacion_pendiente['monto_destino'])
+        # Asegurar que monto_destino y comision_aplicada siempre se actualicen con los valores de la sesión
+        transaccion.monto_destino = Decimal(operacion_pendiente['monto_recibido'])
+        transaccion.comision_aplicada = Decimal(operacion_pendiente['comision_aplicada'])
 
         # --- NEW LOGIC FOR COMPRA WITH TASA FLOTANTE ---
         if transaccion.tipo_operacion == 'compra' and transaccion.modalidad_tasa == 'flotante':
