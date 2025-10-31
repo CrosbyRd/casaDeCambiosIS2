@@ -31,7 +31,9 @@ urlpatterns = [
     path("admin_panel/", include("admin_panel.urls")),
     path("operaciones/", include("operaciones.urls")),
     path("core/", include("core.urls")), # Incluir las URLs de la app core
-    path("", include("payments.urls")),
+    path("payments/", include("payments.urls")), # Corregir la inclusión de las URLs de payments
+    path("simulador/", include("simuladores.urls")),
+    path("transacciones/", include("transacciones.urls", namespace="transacciones")),
     
     # Autenticación (OTP + reset)
     path("cuentas/login/", usuarios_views.login_view, name="login"),
@@ -72,11 +74,16 @@ urlpatterns = [
         name="password_reset_complete",
     ),
 
-
     path("medios-acreditacion/", include("medios_acreditacion.urls")),
 
     # Admin de Django
     path("admin/", admin.site.urls),
-
     path('configuracion/', include('configuracion.urls')),
+    path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
+
+    path('facturacion-electronica/', include('facturacion_electronica.urls', namespace='facturacion_electronica')), # Nueva app de facturación electrónica
+    path('notificaciones/', include('notificaciones.urls', namespace='notificaciones')),
+
+    # TED
+    path("ted/", include(("ted.urls", "ted"), namespace="ted")),
 ]

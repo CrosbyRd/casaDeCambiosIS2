@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete operaciones &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete pagos" href="pagos.html" />
+    <link rel="prev" title="paquete medios_acreditacion" href="medios_acreditacion.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete operaciones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.admin">módulo operaciones.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.apps">módulo operaciones.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.apps.OperacionesConfig"><code class="docutils literal notranslate"><span class="pre">OperacionesConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.models">módulo operaciones.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser"><code class="docutils literal notranslate"><span class="pre">Tauser</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.tests">módulo operaciones.tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests"><code class="docutils literal notranslate"><span class="pre">TauserAPITests</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.urls">módulo operaciones.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.views">módulo operaciones.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.views.api_confirmar_deposito_tauser"><code class="docutils literal notranslate"><span class="pre">api_confirmar_deposito_tauser()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.views.api_resolver_variacion_tasa"><code class="docutils literal notranslate"><span class="pre">api_resolver_variacion_tasa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.views.obtener_tasa_de_cambio_actual"><code class="docutils literal notranslate"><span class="pre">obtener_tasa_de_cambio_actual()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete operaciones</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/operaciones.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-operaciones">
+<h1>paquete operaciones<a class="headerlink" href="#paquete-operaciones" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-operaciones.admin">
+<span id="modulo-operaciones-admin"></span><h2>módulo operaciones.admin<a class="headerlink" href="#module-operaciones.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-operaciones.apps">
+<span id="modulo-operaciones-apps"></span><h2>módulo operaciones.apps<a class="headerlink" href="#module-operaciones.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">operaciones.apps.</span></span><span class="sig-name descname"><span class="pre">OperacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/apps.html#OperacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.apps.OperacionesConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#operaciones.apps.OperacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'operaciones'</span></em><a class="headerlink" href="#operaciones.apps.OperacionesConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-operaciones.models">
+<span id="modulo-operaciones-models"></span><h2>módulo operaciones.models<a class="headerlink" href="#module-operaciones.models" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">operaciones.models.</span></span><span class="sig-name descname"><span class="pre">CanalFinanciero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/models.html#CanalFinanciero"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.models.CanalFinanciero" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una entidad financiera (Banco, Billetera) con la que
+la Casa de Cambio opera para mover Guaraníes.
+Es una configuración interna y administrativa.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.TIPO_CANAL_CHOICES">
+<span class="sig-name descname"><span class="pre">TIPO_CANAL_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('banco',</span> <span class="pre">'Cuenta</span> <span class="pre">Bancaria'),</span> <span class="pre">('billetera',</span> <span class="pre">'Billetera</span> <span class="pre">Electrónica')]</span></em><a class="headerlink" href="#operaciones.models.CanalFinanciero.TIPO_CANAL_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.get_tipo_display">
+<span class="sig-name descname"><span class="pre">get_tipo_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operaciones.models.CanalFinanciero.get_tipo_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.medioacreditacion_set">
+<span class="sig-name descname"><span class="pre">medioacreditacion_set</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.medioacreditacion_set" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#operaciones.models.CanalFinanciero.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.CanalFinanciero.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><a class="headerlink" href="#operaciones.models.CanalFinanciero.tipo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="operaciones.models.Tauser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">operaciones.models.</span></span><span class="sig-name descname"><span class="pre">Tauser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/models.html#Tauser"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.models.Tauser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una Terminal de Autoservicio (Tauser) física.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#operaciones.models.Tauser.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#operaciones.models.Tauser.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#operaciones.models.Tauser.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.codigo_identificador">
+<span class="sig-name descname"><span class="pre">codigo_identificador</span></span><a class="headerlink" href="#operaciones.models.Tauser.codigo_identificador" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.fecha_creacion">
+<span class="sig-name descname"><span class="pre">fecha_creacion</span></span><a class="headerlink" href="#operaciones.models.Tauser.fecha_creacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.get_next_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operaciones.models.Tauser.get_next_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.get_previous_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#operaciones.models.Tauser.get_previous_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#operaciones.models.Tauser.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#operaciones.models.Tauser.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.transaccion_set">
+<span class="sig-name descname"><span class="pre">transaccion_set</span></span><a class="headerlink" href="#operaciones.models.Tauser.transaccion_set" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="operaciones.models.Tauser.ubicacion">
+<span class="sig-name descname"><span class="pre">ubicacion</span></span><a class="headerlink" href="#operaciones.models.Tauser.ubicacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-operaciones.tests">
+<span id="modulo-operaciones-tests"></span><h2>módulo operaciones.tests<a class="headerlink" href="#module-operaciones.tests" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">operaciones.tests.</span></span><span class="sig-name descname"><span class="pre">TauserAPITests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Pruebas para los endpoints de la API del Tauser relacionados con GEG-105.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.setUp"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.setUp" title="Link to this definition"></a></dt>
+<dd><p>Configura los datos iniciales para todas las pruebas.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio">
+<span class="sig-name descname"><span class="pre">test_confirmar_deposito_tasa_expirada_con_cambio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_ejecutar_acreditacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio" title="Link to this definition"></a></dt>
+<dd><p>Verifica el caso GEG-105: la tasa expiró y es diferente.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio">
+<span class="sig-name descname"><span class="pre">test_confirmar_deposito_tasa_expirada_sin_cambio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_ejecutar_acreditacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio" title="Link to this definition"></a></dt>
+<dd><p>Verifica el caso donde la tasa expiró, pero el valor actual es el mismo.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_valida">
+<span class="sig-name descname"><span class="pre">test_confirmar_deposito_tasa_valida</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_ejecutar_acreditacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.test_confirmar_deposito_tasa_valida"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_valida" title="Link to this definition"></a></dt>
+<dd><p>Verifica el «camino feliz»: la tasa está garantizada y vigente.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.test_resolver_variacion_aceptar">
+<span class="sig-name descname"><span class="pre">test_resolver_variacion_aceptar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_ejecutar_acreditacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.test_resolver_variacion_aceptar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.test_resolver_variacion_aceptar" title="Link to this definition"></a></dt>
+<dd><p>Verifica que el cliente acepta la nueva tasa.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="operaciones.tests.TauserAPITests.test_resolver_variacion_cancelar">
+<span class="sig-name descname"><span class="pre">test_resolver_variacion_cancelar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mock_ejecutar_acreditacion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/tests.html#TauserAPITests.test_resolver_variacion_cancelar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.tests.TauserAPITests.test_resolver_variacion_cancelar" title="Link to this definition"></a></dt>
+<dd><p>Verifica que el cliente cancela la transacción.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-operaciones.urls">
+<span id="modulo-operaciones-urls"></span><h2>módulo operaciones.urls<a class="headerlink" href="#module-operaciones.urls" title="Link to this heading"></a></h2>
+</section>
+<section id="module-operaciones.views">
+<span id="modulo-operaciones-views"></span><h2>módulo operaciones.views<a class="headerlink" href="#module-operaciones.views" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="operaciones.views.api_confirmar_deposito_tauser">
+<span class="sig-prename descclassname"><span class="pre">operaciones.views.</span></span><span class="sig-name descname"><span class="pre">api_confirmar_deposito_tauser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/views.html#api_confirmar_deposito_tauser"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.views.api_confirmar_deposito_tauser" title="Link to this definition"></a></dt>
+<dd><p>Endpoint para que el Tauser confirme el depósito de una transacción.
+Implementa el modelo híbrido:
+1. Verifica si la tasa garantizada está vigente (camino feliz).
+2. Si expiró, activa el fallback para confirmar la nueva tasa.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operaciones.views.api_resolver_variacion_tasa">
+<span class="sig-prename descclassname"><span class="pre">operaciones.views.</span></span><span class="sig-name descname"><span class="pre">api_resolver_variacion_tasa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/views.html#api_resolver_variacion_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.views.api_resolver_variacion_tasa" title="Link to this definition"></a></dt>
+<dd><p>Endpoint para que el Tauser registre la decisión del cliente
+cuando la tasa de cambio ha variado y la garantía ha expirado.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="operaciones.views.obtener_tasa_de_cambio_actual">
+<span class="sig-prename descclassname"><span class="pre">operaciones.views.</span></span><span class="sig-name descname"><span class="pre">obtener_tasa_de_cambio_actual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">moneda_origen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_destino</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/views.html#obtener_tasa_de_cambio_actual"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.views.obtener_tasa_de_cambio_actual" title="Link to this definition"></a></dt>
+<dd><p>Obtiene la tasa de cambio más reciente para un par de monedas.
+Devuelve la tasa de “compra” desde la perspectiva de la casa de cambio.</p>
+</dd></dl>
+
+</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-operaciones"></span></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="medios_acreditacion.html" class="btn btn-neutral float-left" title="paquete medios_acreditacion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="pagos.html" class="btn btn-neutral float-right" title="paquete pagos" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

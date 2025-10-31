@@ -1,17 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail # Mantener por si se usa en otros lugares, aunque OTP se moverá
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .utils import SESSION_KEY, get_cliente_activo
+from .utils import SESSION_KEY, get_cliente_activo, send_otp_email, validate_otp_code
 from .models import CustomUser
 from .forms import RegistroForm, VerificacionForm
 from clientes.models import Cliente
 from roles.models import Role # Importar el modelo Role
 from transacciones.models import Transaccion
+from django.contrib.auth import get_user_model
+
 
 # ----------------------------
 # Registro + verificación de cuenta
@@ -29,13 +31,20 @@ def register(request):
             user.password = make_password(form.cleaned_data["password"])
             user.save()
 
-            user.generate_verification_code()
-            send_mail(
+            # Asignar el rol de "Cliente" por defecto
+            try:
+                cliente_role = Role.objects.get(name="Cliente")
+                user.roles.add(cliente_role)
+            except Role.DoesNotExist:
+                # Opcional: Manejar el caso en que el rol no exista.
+                # Por ahora, simplemente lo ignoramos, pero podrías loggear un error.
+                pass
+
+            # Usar la nueva función para enviar OTP
+            send_otp_email(
+                user,
                 "Código de verificación",
-                f"Tu código de verificación es: {user.verification_code}",
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
+                "Tu código de verificación es: {code}. Válido por {minutes} minutos."
             )
             request.session["email_verificacion"] = user.email
             return redirect("usuarios:verify")
@@ -59,12 +68,13 @@ def verify(request):
     form = VerificacionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         codigo = form.cleaned_data["codigo"]
-        if user.is_code_valid(codigo, minutes_valid=5):
+        # Usar la nueva función para validar OTP
+        if validate_otp_code(user, codigo, minutes_valid=5):
             user.is_active = True
             user.is_verified = True
             user.verification_code = None
             user.code_created_at = None
-            user.save()
+            user.save(update_fields=['is_active', 'is_verified', 'verification_code', 'code_created_at'])
             request.session.pop("email_verificacion", None)
             messages.success(request, "¡Cuenta verificada correctamente! Ya puedes iniciar sesión.")
             return redirect("login")
@@ -81,13 +91,11 @@ def reenviar_codigo(request):
         return redirect("usuarios:register")
 
     user = get_object_or_404(CustomUser, email=email)
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para reenviar OTP
+    send_otp_email(
+        user,
         "Nuevo código de verificación",
-        f"Tu nuevo código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu nuevo código de verificación es: {code}. Válido por {minutes} minutos."
     )
     messages.success(request, f"Se ha enviado un nuevo código a {user.email}.")
     return redirect("usuarios:verify")
@@ -121,13 +129,11 @@ def login_view(request):
         next_url = request.session.pop("pending_login_next", None)
         return redirect(next_url or "usuarios:login_redirect")
 
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para enviar OTP
+    send_otp_email(
+        user,
         "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu código de verificación es: {code}. Válido por {minutes} minutos."
     )
 
     request.session["pending_login_user_id"] = user.id
@@ -151,7 +157,8 @@ def login_otp(request):
 
     if request.method == "POST":
         code = (request.POST.get("codigo") or "").strip()
-        if user.is_code_valid(code, minutes_valid=5):
+        # Usar la nueva función para validar OTP
+        if validate_otp_code(user, code, minutes_valid=5):
             user.verification_code = None
             user.code_created_at = None
             user.save(update_fields=["verification_code", "code_created_at"])
@@ -172,13 +179,11 @@ def login_otp_resend(request):
         return redirect("login")
 
     user = get_object_or_404(CustomUser, id=uid)
-    user.generate_verification_code()
-    send_mail(
+    # Usar la nueva función para reenviar OTP
+    send_otp_email(
+        user,
         "Tu código de acceso",
-        f"Tu código de verificación es: {user.verification_code}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False,
+        "Tu nuevo código de verificación es: {code}. Válido por {minutes} minutos."
     )
     messages.success(request, f"Enviamos un nuevo código a {user.email}.")
     return redirect("login_otp")
@@ -202,8 +207,14 @@ def login_redirect(request):
     if not user.is_authenticated:
         return redirect("login")
     
+    # ROL DE ADMINISTRADOR
     if user.roles.filter(name__iexact="Administrador").exists():
         return redirect("admin_panel:dashboard")
+
+    # ROL DE ANALISTA
+    if user.roles.filter(name__iexact="Analista").exists() \
+       or user.has_perm("analista_panel.access_analista_dashboard"):
+        return redirect("analista_panel:dashboard")
 
     messages.success(request, "¡Bienvenido!")
     return redirect("usuarios:dashboard")
@@ -213,13 +224,32 @@ from transacciones.models import Transaccion
 
 @login_required
 def dashboard(request):
-    transacciones = Transaccion.objects.filter(cliente=request.user).order_by('-fecha_creacion')[:5]
-    cliente = get_cliente_activo(request)              # ← NUEVO
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
+    
+    # 1. OBTENER el cliente activo
+    cliente_activo = get_cliente_activo(request)
+    
+    # 2. Corregir la consulta de transacciones
+    if cliente_activo:
+        # Filtramos por el objeto Cliente activo. ¡ESTA ES LA CORRECCIÓN CLAVE!
+        transacciones = Transaccion.objects.filter(
+            cliente=cliente_activo # ✅ CORRECTO: Filtra por la instancia de Cliente
+        ).order_by('-fecha_creacion')[:5]
+    else:
+        # Si no hay cliente activo, el usuario debería ir a seleccionarlo.
+        # Mientras tanto, mostramos transacciones vacías.
+        transacciones = Transaccion.objects.none() 
+
+    # 3. Renderizar
     return render(
         request,
         "usuarios/dashboard.html",
-        {'transacciones': transacciones, 'cliente': cliente}  # ← NUEVO
+        {'transacciones': transacciones, 'cliente': cliente_activo}
     )
+
+
 @login_required
 def admin_panel(request):
     if not request.user.is_staff:
@@ -266,12 +296,25 @@ def quitar_cliente(request, user_id, cliente_id):
 
 @login_required
 def seleccionar_cliente(request):
-    user = request.user
+
+    if not request.user.roles.filter(name__iexact="Cliente").exists():
+        return redirect("home")
+    
+        # 🚨 SOLUCIÓN: Cargar el CustomUser fresco directamente de la DB
+    try:
+        User = get_user_model()
+        user = User.objects.get(pk=request.user.pk)
+    except User.DoesNotExist:
+        # Si falla la recarga, el usuario debe desloguearse.
+        messages.error(request, "Error de sesión: Usuario no encontrado.")
+        return redirect('logout') # O a donde te dirija el logout
+    
     clientes = user.clientes.all()
 
     if not clientes.exists():
         messages.warning(request, "Aún no tenés clientes asociados a tu usuario.")
-        return render(request, "usuarios/seleccionar_cliente.html", {"clientes": clientes})
+        next_url = request.GET.get("next") or request.META.get("HTTP_REFERER") or "usuarios:dashboard"
+        return redirect(next_url)
 
     if request.method == "POST":
         cid = request.POST.get("cliente_id")

@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -71,26 +71,19 @@
              
   <h1>Código fuente para clientes.models</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">operaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CanalFinanciero</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">configuracion.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionLimit</span>
 
 <div class="viewcode-block" id="Cliente">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Cliente</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Representa a un cliente de la casa de cambios.</span>
-
-<span class="sd">    Almacena información básica del cliente, su categoría y estado.</span>
-<span class="sd">    También define propiedades y métodos para calcular beneficios y límites.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Cliente.Categoria">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente.Categoria">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Categoria</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Define las categorías de clientes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">MINORISTA</span> <span class="o">=</span> <span class="s1">&#39;minorista&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Minorista&#39;</span><span class="p">)</span>
         <span class="n">CORPORATIVO</span> <span class="o">=</span> <span class="s1">&#39;corporativo&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Corporativo&#39;</span><span class="p">)</span>
         <span class="n">VIP</span> <span class="o">=</span> <span class="s1">&#39;vip&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;VIP&#39;</span><span class="p">)</span></div>
@@ -101,40 +94,34 @@
         <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span>
         <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;ID del cliente&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Identificador único universal para el cliente.&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;ID del cliente&#39;</span><span class="p">)</span>
     <span class="p">)</span>
     
     <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Nombre completo o razón social&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Nombre completo del cliente o razón social de la empresa.&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Nombre completo o razón social&#39;</span><span class="p">)</span>
     <span class="p">)</span>
     
     <span class="n">categoria</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="n">Categoria</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">Categoria</span><span class="o">.</span><span class="n">MINORISTA</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Categoría del cliente&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Clasificación del cliente (Minorista, Corporativo, VIP).&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Categoría del cliente&#39;</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente activo&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Indica si el cliente está activo en el sistema.&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente activo&#39;</span><span class="p">)</span>
     <span class="p">)</span>
     
     <span class="n">fecha_registro</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
         <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Fecha de registro&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora en que el cliente fue registrado.&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Fecha de registro&#39;</span><span class="p">)</span>
     <span class="p">)</span>
     
     <span class="n">ultima_modificacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
         <span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Última modificación&#39;</span><span class="p">),</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de la última modificación de los datos del cliente.&quot;</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Última modificación&#39;</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># -----------------------------</span>
@@ -142,12 +129,7 @@
     <span class="c1"># -----------------------------</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">bonificacion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Devuelve el porcentaje de bonificación según la categoría del cliente.</span>
-
-<span class="sd">        :return: El porcentaje de bonificación.</span>
-<span class="sd">        :rtype: Decimal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Devuelve el porcentaje de bonificación según la categoría del cliente.&quot;&quot;&quot;</span>
         <span class="n">bonificaciones</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Categoria</span><span class="o">.</span><span class="n">VIP</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;10.0&#39;</span><span class="p">),</span>      
             <span class="bp">self</span><span class="o">.</span><span class="n">Categoria</span><span class="o">.</span><span class="n">CORPORATIVO</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;5.0&#39;</span><span class="p">),</span>
@@ -157,12 +139,7 @@
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">limite_compra_usd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Devuelve el límite de compra en USD según la categoría del cliente.</span>
-
-<span class="sd">        :return: El límite de compra en USD.</span>
-<span class="sd">        :rtype: Decimal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Devuelve el límite de compra en USD según la categoría del cliente.&quot;&quot;&quot;</span>
         <span class="n">limites_usd</span> <span class="o">=</span> <span class="p">{</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Categoria</span><span class="o">.</span><span class="n">VIP</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;50000.00&#39;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">Categoria</span><span class="o">.</span><span class="n">CORPORATIVO</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;25000.00&#39;</span><span class="p">),</span>
@@ -173,14 +150,7 @@
 <div class="viewcode-block" id="Cliente.obtener_limite_compra">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente.obtener_limite_compra">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">obtener_limite_compra</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moneda</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Devuelve el límite de compra para una moneda específica.</span>
-
-<span class="sd">        :param moneda: El código de la moneda (ej. &quot;USD&quot;).</span>
-<span class="sd">        :type moneda: str</span>
-<span class="sd">        :return: El límite de compra para la moneda especificada.</span>
-<span class="sd">        :rtype: Decimal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Devuelve el límite de compra para una moneda específica.&quot;&quot;&quot;</span>
         <span class="n">limites</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;USD&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">limite_compra_usd</span><span class="p">,</span>
             <span class="c1"># Si después quieres, puedes definir límites específicos para EUR, BRL, PYG</span>
@@ -188,13 +158,21 @@
         <span class="k">return</span> <span class="n">limites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">moneda</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">))</span></div>
 
 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">obtener_limite_global</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtiene el límite global de transacciones para el cliente.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">limite</span> <span class="o">=</span> <span class="n">TransactionLimit</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>  <span class="c1"># Obtiene el primer límite global</span>
+        <span class="k">if</span> <span class="n">limite</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">limite</span><span class="o">.</span><span class="n">monto_diario</span><span class="p">,</span> <span class="n">limite</span><span class="o">.</span><span class="n">monto_mensual</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">),</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">)</span>  <span class="c1"># Si no existe límite global, retorna 0</span>
+    
     <span class="c1"># -----------------------------</span>
     <span class="c1"># Meta y representación</span>
     <span class="c1"># -----------------------------</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Metadatos para el modelo Cliente.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente&#39;</span><span class="p">)</span>
         <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Clientes&#39;</span><span class="p">)</span>
         <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span>
@@ -203,42 +181,48 @@
     <span class="p">]</span>
     
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Representación en cadena del objeto Cliente.</span>
-
-<span class="sd">        :return: Una cadena que identifica al cliente.</span>
-<span class="sd">        :rtype: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_categoria_display</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
     
 <div class="viewcode-block" id="Cliente.esta_activo">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente.esta_activo">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">esta_activo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Verifica si el cliente está activo.</span>
-
-<span class="sd">        :return: True si el cliente está activo, False en caso contrario.</span>
-<span class="sd">        :rtype: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activo</span></div>
 
     
 <div class="viewcode-block" id="Cliente.puede_comprar">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.Cliente.puede_comprar">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">puede_comprar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moneda</span><span class="p">,</span> <span class="n">monto</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Verifica si el cliente puede realizar una compra del monto especificado.</span>
-
-<span class="sd">        :param moneda: El código de la moneda de la compra.</span>
-<span class="sd">        :type moneda: str</span>
-<span class="sd">        :param monto: El monto de la compra.</span>
-<span class="sd">        :type monto: Decimal</span>
-<span class="sd">        :return: Una tupla con un booleano y un mensaje.</span>
-<span class="sd">        :rtype: tuple</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifica si el cliente puede realizar una compra del monto especificado.&quot;&quot;&quot;</span>
         <span class="n">limite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obtener_limite_compra</span><span class="p">(</span><span class="n">moneda</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">monto</span> <span class="o">&lt;=</span> <span class="n">limite</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Límite: </span><span class="si">{</span><span class="n">limite</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">moneda</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="MedioAcreditacion">
+<a class="viewcode-back" href="../../clientes.html#clientes.forms.MedioAcreditacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioAcreditacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Almacena un medio de acreditación de un cliente.</span>
+<span class="sd">    Está directamente vinculado a un CanalFinanciero que la empresa soporta.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;medios_acreditacion&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># El cliente debe elegir entre los canales que la empresa tiene configurados.</span>
+    <span class="n">canal</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">CanalFinanciero</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Entidad financiera soportada por la casa de cambio.&quot;</span><span class="p">)</span>
+    
+    <span class="n">identificador</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Ej: Número de cuenta, CBU, Número de Teléfono, etc.&quot;</span><span class="p">)</span>
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Un nombre fácil de recordar para este medio.&quot;</span><span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">canal</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alias</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">identificador</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Medio de Acreditación&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Medios de Acreditación&quot;</span>
+        <span class="c1"># Un cliente no puede tener el mismo identificador dos veces para el mismo canal.</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;cliente&#39;</span><span class="p">,</span> <span class="s1">&#39;canal&#39;</span><span class="p">,</span> <span class="s1">&#39;identificador&#39;</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+{% load configuracion_extras %}
+
+{% block title %}Confirmar Pago - Global Exchange{% endblock %}
+#original
+{% block content %}
+<main class="max-w-md mx-auto px-6 py-6">
+    <header class="mb-6 text-center">
+        <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">✅ Confirmar Operación</h1>
+        <p class="text-base leading-relaxed text-[var(--muted)]">
+            Estás a punto de confirmar una operación de **Tasa Flotante**. La tasa de cambio puede variar hasta el momento exacto del pago.
+        </p>
+    </header>
+
+    {% if messages %}
+        <div id="flash-messages" class="mb-4 space-y-2">
+            {% for message in messages %}
+                <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="bg-white border rounded-xl shadow-sm p-6 mb-6" style="border-color:var(--line)">
+        <h2 class="text-xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h2>
+        <div class="space-y-2 text-[var(--ink)]">
+            <p><strong>Tipo de Operación:</strong> {{ transaccion.get_tipo_operacion_display }}</p>
+            <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}</p>
+            <p><strong>Monto a Recibir (Estimado):</strong> {{ transaccion.monto_destino|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</p>
+            <p><strong>Tasa Indicativa Inicial:</strong> {{ transaccion.tasa_cambio_aplicada|floatformat:4 }}</p>
+            <hr class="my-3" style="border-color:var(--line);">
+            <p class="text-lg font-bold">
+                Tasa de Mercado Actual: <span class="text-[var(--brand-dark)]">{{ tasa_actual|floatformat:4 }}</span>
+            </p>
+            <p class="text-lg font-bold">
+                Monto Final a Recibir: <span class="text-[var(--brand-dark)]">{{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</span>
+            </p>
+            <p class="text-sm text-[var(--muted)] mt-2">
+                Esta es la tasa actual del mercado. Al confirmar, esta tasa será la aplicada a tu operación.
+            </p>
+        </div>
+    </section>
+
+    <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit"
+                    class="w-full inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
+                    style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
+                Confirmar y Pagar Ahora
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="text-sm text-[var(--brand-dark)] hover:underline">
+                Volver al detalle de la transacción
+            </a>
+        </div>
+    </section>
+</main>
+
+<!-- Popup de notificaciones -->
+<div id="popupNotificacion" class="popup-overlay" style="display:none;">
+    <div class="popup-contenido">
+        <h2>📈 Cambio de Tasa</h2>
+        <div id="contenidoNotificaciones"></div>
+        <div class="mt-4 flex justify-center gap-4">
+            <button id="cerrarPopup">Cerrar</button>
+            <button id="cancelarOperacion" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
+                Cancelar Operación
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos del popup -->
+<style>
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.popup-contenido {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+}
+#cerrarPopup {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+
+<!-- Script para manejar notificaciones dinámicas -->
+<script>
+function mostrarPopup(noti) {
+    const popup = document.getElementById('popupNotificacion');
+    const contenido = document.getElementById('contenidoNotificaciones');
+    contenido.innerHTML = `<p>${noti.mensaje}</p>`;
+    popup.style.display = 'flex';
+
+    document.getElementById('cerrarPopup').onclick = () => {
+        popup.style.display = 'none';
+        fetch("{% url 'notificaciones:marcar_leidas' %}", {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+    };
+
+    document.getElementById('cancelarOperacion').onclick = () => {
+        fetch("{% url 'transacciones:cancelar_por_tasa' transaccion.id %}", {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success){
+                window.location.href = "{% url 'usuarios:dashboard' %}";
+            } else {
+                alert("Error al cancelar la operación.");
+            }
+        })
+        .catch(err => console.error(err));
+    };
+}
+
+function checkNotificaciones() {
+    fetch("{% url 'notificaciones:ver_nuevas' %}")
+        .then(res => res.json())
+        .then(data => {
+            if (data.mensaje) {
+                mostrarPopup(data);
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+setInterval(checkNotificaciones, 5000);
+checkNotificaciones();
+
+
+
+
+
+</script>
+
+{% endblock %}

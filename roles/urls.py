@@ -1,4 +1,11 @@
 # roles/urls.py
+"""
+Rutas URL para la aplicación **Roles**.
+
+Define los endpoints para:
+    - Panel de administración de roles.
+    - Gestión de roles por usuario.
+"""
 from django.urls import path
 from . import views # Importamos el módulo de vistas completo
 
@@ -8,6 +15,7 @@ urlpatterns = [
     # La URL principal ahora apunta al panel de administración de roles
     path('', views.role_panel, name='role-panel'),
     
-    # Nueva URL para eliminar un rol por su ID
-    path('delete/<int:pk>/', views.role_delete, name='role-delete'),
+
+    # URL para gestionar los roles de un usuario específico
+    path('user/<int:user_id>/manage/', views.manage_user_roles, name='manage-user-roles'),
 ]

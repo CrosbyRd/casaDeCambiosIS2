@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page">
+
+  <style>
+    /* ====== Contenedor centrado (tipo “container”) ====== */
+    .page{
+      max-width: 1240px;      /* centrado y con paddings para respirar */
+      margin: 0 auto;
+      padding: 40px 16px 24px; /* MÁS espacio arriba para despegar del base */
+    }
+
+    /* ====== Cabecera ====== */
+    .page-header{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .page-title-wrap{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+    .client-pill{
+      display:inline-flex; align-items:center; gap:.45rem;
+      background: #ede9fe; color:#4c1d95; border:1px solid #c4b5fd;
+      padding:.35rem .6rem; border-radius:999px; font-weight:800; font-size:.80rem;
+      white-space: nowrap;
+    }
+    .client-pill .dot{
+      width:8px; height:8px; background:#10b981; border-radius:999px; display:inline-block;
+      box-shadow:0 0 0 2px rgba(16,185,129,.18);
+    }
+
+    /* ====== Grid: 3 columnas, separación contenida ====== */
+    .grid-cards{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(360px, 1fr));
+      column-gap: 14px;
+      row-gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 1280px){
+      .grid-cards{ grid-template-columns: repeat(2, minmax(340px, 1fr)); }
+    }
+    @media (max-width: 760px){
+      .grid-cards{ grid-template-columns: 1fr; }
+    }
+
+    /* ====== Card-Tabla ====== */
+    .card{
+      width:100%;
+      max-width: 480px;      /* tamaño más grande y “cuadrado” */
+      margin: 0 auto;
+      border:1.5px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    .card:hover{ box-shadow:0 8px 22px rgba(0,0,0,.08); border-color:var(--brand-soft); }
+    .card.current{ border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.18); }
+    .card.inactive{ background:#fee2e2; border-color:#fecaca; }
+
+    /* Cabecera lila por método (tipo como título) */
+    .card-head{
+      background:var(--brand); color:#fff;
+      padding:10px 14px; font-weight:900; border-bottom:1px solid rgba(255,255,255,.15);
+      display:flex; align-items:center; justify-content:space-between;
+      white-space:nowrap;
+    }
+    .ribbon{
+      background:#d1fae5; color:#065f46; border:1px solid #a7f3d0;
+      padding:.28rem .55rem; border-radius:999px; font-weight:800; font-size:.72rem;
+    }
+
+    .card-body{ padding:12px 14px 14px; }
+    .card-title{ font-weight:900; font-size:1.05rem; margin-bottom:.4rem; }
+
+    /* Chips */
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:.7rem }
+    .chip{
+      border:1px solid var(--line); border-radius:999px;
+      padding:.22rem .6rem; background:#f8fafc; font-size:.74rem;
+    }
+    .pill-green{ background:#d1fae5; color:#065f46; border:1px solid #a7f3d0 }
+    .pill-red{ background:#fecaca; color:#7f1d1d; border:1px solid #fca5a5 }
+    .pill-gray{ background:#e2e8f0; color:#334155; border:1px solid #cbd5e1 }
+
+    /* Acciones */
+    .actions{ display:flex; gap:10px; flex-wrap:wrap }
+    .btn-sm{ padding:.5rem .8rem; font-weight:800; border-radius:12px; }
+    .btn-choose{ background:#22c55e; color:#064e3b }
+    .btn-edit{ background:var(--brand-soft); color:var(--brand-dark) }
+    .btn-danger{ background:#ef4444; color:#fff }
+    .btn-sm[disabled]{ opacity:.6; cursor:not-allowed }
+
+    /* Modales */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45);
+      display:flex; align-items:center; justify-content:center; z-index:50 }
+    .modal-card{ width:100%; max-width:560px; border-radius:16px; background:#fff;
+      border:1px solid var(--line); box-shadow:0 25px 60px rgba(0,0,0,.25); overflow:hidden }
+    .modal-head{ padding:14px 16px; color:#fff; font-weight:900 }
+    .modal-body{ padding:18px 16px }
+    .modal-foot{ padding:12px 16px; background:#f8fafc; display:flex; align-items:center; justify-content:flex-end; gap:10px }
+    .modal-hidden{ display:none }
+  </style>
+
+  <header class="page-header">
+    <div class="page-title-wrap">
+      <h1 class="text-4xl font-extrabold">Mis metodos de pago</h1>
+      {# 👇 Indicador de cliente activo (no toca lógica, usa view.cliente del mixin) #}
+      {% if view.cliente %}
+        <span class="client-pill" title="Cliente activo">
+          <span class="dot"></span> 👤 {{ view.cliente.nombre }}
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="space-x-3 flex">
+      <a href="{% url 'usuarios:dashboard' %}"
+        class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+      <a href="{% url 'pagos:clientes_create' %}"
+         class="px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
+        ➕ Agregar
+      </a>
+    </div>
+  </header>
+
+  {% include "partials/messages.html" %}
+
+  <section class="grid-cards">
+    {% for m in medios %}
+      <article class="card
+        {% if not m.activo or not m.tipo.activo %}inactive{% endif %}
+        {% if m.predeterminado %}current{% endif %}">
+        <!-- Título por método: el TIPO en barra lila -->
+        <div class="card-head">
+          <span>{{ m.tipo.nombre }}</span>
+          {% if m.predeterminado %}<span class="ribbon">★ Predeterminado</span>{% endif %}
+        </div>
+
+        <div class="card-body">
+          <div class="card-title">{{ m.alias }}</div>
+
+          <div class="chips">
+            {% if m.activo %}
+              <span class="pill-green chip">Activo</span>
+            {% else %}
+              <span class="pill-red chip">Deshabilitado por el usuario</span>
+            {% endif %}
+
+            <span class="chip">Comisión {{ m.tipo.comision_porcentaje }}%</span>
+            <span class="pill-gray chip">Engine {{ m.tipo.engine|title }}</span>
+
+            {% if not m.tipo.activo %}
+              <span class="pill-red chip">Indisponible por el administrador</span>
+            {% endif %}
+          </div>
+
+          <div class="actions">
+            <button type="button"
+                    class="btn-sm btn-choose"
+                    data-choose
+                    data-url="{% url 'pagos:clientes_predeterminar' m.id_medio %}"
+                    data-name="{{ m.alias|default:m.tipo.nombre }}"
+                    {% if m.predeterminado or not m.activo or not m.tipo.activo %}disabled{% endif %}>
+              Elegir
+            </button>
+
+            <a class="btn-sm btn-edit" href="{% url 'pagos:clientes_update' m.id_medio %}">Editar</a>
+
+            <button type="button"
+                    class="btn-sm btn-danger"
+                    data-delete
+                    data-url="{% url 'pagos:clientes_delete' m.id_medio %}"
+                    data-name="{{ m.alias|default:m.tipo.nombre }}">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="rounded-xl border border-[var(--line)] bg-white p-6 text-center text-gray-500">
+        Aún no tenés medios de acreditación. Usá “Agregar”.
+      </div>
+    {% endfor %}
+  </section>
+</div>
+
+{# ===== Modal: Eliminar ===== #}
+<div id="modal-delete" class="modal-backdrop modal-hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div class="modal-head" style="background:#b91c1c">Eliminar medio</div>
+    <div class="modal-body">
+      <p class="text-[var(--muted)] mb-1">¿Seguro que querés eliminar <strong id="del-name">este medio</strong>?</p>
+      <p class="text-[var(--muted)] text-sm">Esta acción es <strong>permanente</strong> y no se puede deshacer.</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" id="btn-cancel-del" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Cancelar</button>
+      <button type="button" id="btn-confirm-del" class="btn btn-danger">Eliminar definitivamente</button>
+    </div>
+  </div>
+</div>
+
+{# ===== Modal: Elegir (predeterminar) ===== #}
+<div id="modal-choose" class="modal-backdrop modal-hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div class="modal-head" style="background:#065f46">Elegir medio predeterminado</div>
+    <div class="modal-body">
+      <p class="text-[var(--muted)] mb-1">¿Querés que <strong id="choose-name">este medio</strong> sea tu <strong>predeterminado</strong>?</p>
+      <p class="text-[var(--muted)] text-sm">El medio actualmente predeterminado dejará de serlo.</p>
+    </div>
+    <div class="modal-foot">
+      <button type="button" id="btn-cancel-choose" class="btn bg-[var(--brand-soft)] text-[var(--brand-dark)]">Cancelar</button>
+      <button type="button" id="btn-confirm-choose" class="btn btn-choose">Sí, elegir</button>
+    </div>
+  </div>
+</div>
+
+{# Formularios ocultos para los POST #}
+<form id="delete-form" method="post" class="hidden">{% csrf_token %}</form>
+<form id="choose-form" method="post" class="hidden">{% csrf_token %}</form>
+
+<script>
+(function(){
+  // ---------- ELIMINAR ----------
+  const modalDel = document.getElementById('modal-delete');
+  const delName  = document.getElementById('del-name');
+  const btnCancelDel  = document.getElementById('btn-cancel-del');
+  const btnConfirmDel = document.getElementById('btn-confirm-del');
+  const formDel       = document.getElementById('delete-form');
+  let urlDel = null;
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-delete]');
+    if(!btn) return;
+    e.preventDefault();
+    urlDel = btn.getAttribute('data-url');
+    delName.textContent = `“${btn.getAttribute('data-name') || 'este medio'}”`;
+    modalDel.classList.remove('modal-hidden');
+  });
+
+  btnCancelDel && btnCancelDel.addEventListener('click', function(){
+    modalDel.classList.add('modal-hidden'); urlDel=null;
+  });
+
+  btnConfirmDel && btnConfirmDel.addEventListener('click', function(){
+    if(!urlDel) return;
+    btnConfirmDel.disabled = true;
+    formDel.setAttribute('action', urlDel);
+    formDel.submit();
+  });
+
+  modalDel && modalDel.addEventListener('click', function(e){
+    if(e.target === modalDel) { modalDel.classList.add('modal-hidden'); urlDel=null; }
+  });
+
+  // ---------- ELEGIR (predeterminar) ----------
+  const modalChoose = document.getElementById('modal-choose');
+  const chooseName  = document.getElementById('choose-name');
+  const btnCancelChoose  = document.getElementById('btn-cancel-choose');
+  const btnConfirmChoose = document.getElementById('btn-confirm-choose');
+  const formChoose       = document.getElementById('choose-form');
+  let urlChoose = null;
+
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-choose]');
+    if(!btn) return;
+    if(btn.hasAttribute('disabled')) return;
+    e.preventDefault();
+    urlChoose = btn.getAttribute('data-url');
+    chooseName.textContent = `“${btn.getAttribute('data-name') || 'este medio'}”`;
+    modalChoose.classList.remove('modal-hidden');
+  });
+
+  btnCancelChoose && btnCancelChoose.addEventListener('click', function(){
+    modalChoose.classList.add('modal-hidden'); urlChoose=null;
+  });
+
+  btnConfirmChoose && btnConfirmChoose.addEventListener('click', function(){
+    if(!urlChoose) return;
+    btnConfirmChoose.disabled = true;
+    formChoose.setAttribute('action', urlChoose);
+    formChoose.submit();  // POST a la vista de predeterminar
+  });
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Escape') return;
+    if(!modalDel.classList.contains('modal-hidden')) modalDel.classList.add('modal-hidden');
+    if(!modalChoose.classList.contains('modal-hidden')) modalChoose.classList.add('modal-hidden');
+  });
+})();
+</script>
+{% endblock %}

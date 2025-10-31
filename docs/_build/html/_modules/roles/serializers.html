@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -70,12 +70,34 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para roles.serializers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Serializadores para la aplicación **Roles**.</span>
+
+<span class="sd">Incluye:</span>
+<span class="sd">    - RoleSerializer: serializa roles y sus permisos para APIs REST.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
 
 <div class="viewcode-block" id="RoleSerializer">
 <a class="viewcode-back" href="../../roles.html#roles.serializers.RoleSerializer">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RoleSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Serializador de roles para APIs REST.</span>
+
+<span class="sd">    Permite listar y obtener detalles de un rol incluyendo sus permisos.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id : int</span>
+<span class="sd">        Identificador del rol.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Nombre del rol.</span>
+<span class="sd">    description : str</span>
+<span class="sd">        Descripción opcional.</span>
+<span class="sd">    permissions : list</span>
+<span class="sd">        Lista de permisos asociados.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RoleSerializer.Meta">
 <a class="viewcode-back" href="../../roles.html#roles.serializers.RoleSerializer.Meta">[documentos]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>

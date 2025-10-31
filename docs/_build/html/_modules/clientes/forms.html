@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -76,13 +76,6 @@
 <div class="viewcode-block" id="ClienteForm">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.ClienteForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ClienteForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Formulario para la creación y edición de clientes.</span>
-
-<span class="sd">    Incluye campos para nombre, categoría, estado activo, y campos de solo lectura</span>
-<span class="sd">    para mostrar la bonificación y el límite de compra en USD, calculados</span>
-<span class="sd">    basados en la categoría seleccionada.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Campos de solo lectura para mostrar información calculada</span>
     <span class="n">bonificacion_display</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -140,11 +133,6 @@
 <div class="viewcode-block" id="ClienteSearchForm">
 <a class="viewcode-back" href="../../clientes.html#clientes.forms.ClienteSearchForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ClienteSearchForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Formulario de búsqueda para clientes.</span>
-
-<span class="sd">    Permite buscar clientes por nombre, filtrar por categoría y estado (activo/inactivo).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Buscar&#39;</span><span class="p">,</span>

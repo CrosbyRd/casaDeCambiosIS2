@@ -1,4 +1,21 @@
 # ted/services.py
+
+"""
+Servicios relacionados con cotizaciones y gestión de divisas del Tauser.
+
+Este módulo define funciones utilitarias para consultar cotizaciones vigentes
+de monedas y determinar si una cotización puede ser usada para operaciones de
+compra o venta en el sistema. Incluye lógica de vigencia basada en tiempo y
+configuraciones del sistema.
+
+Constantes:
+    BASE_CODIGO (str): Código de la moneda base del sistema (PYG).
+
+Funciones:
+    get_cotizacion_vigente(moneda_obj): Devuelve la cotización más reciente para
+        una moneda destino, indicando si está vigente y si puede ser usada.
+"""
+
 from datetime import timedelta
 from decimal import Decimal
 from django.apps import apps
@@ -9,13 +26,30 @@ BASE_CODIGO = "PYG"  # moneda base del sistema
 
 def get_cotizacion_vigente(moneda_obj):
     """
-    Devuelve:
-      {
-        'compra': Decimal, 'venta': Decimal,
-        'created_at': datetime, 'vigente': bool,
-        'usable': bool,  # True si vigente o si TED_ALLOW_STALE_RATES está activo
-      }
-    La vigencia se controla con settings.TED_COTIZACION_VIGENCIA_MINUTES (default 15).
+    Obtiene la cotización más reciente para una moneda destino respecto a la moneda base.
+
+    La función devuelve un diccionario con los valores de compra y venta, la fecha de
+    actualización y flags de vigencia y uso, considerando la configuración de vigencia
+    definida en `settings.TED_COTIZACION_VIGENCIA_MINUTES` y la opción de permitir
+    cotizaciones expiradas con `TED_ALLOW_STALE_RATES`.
+
+    :param moneda_obj: Instancia del modelo Moneda para la cual se desea la cotización.
+    :type moneda_obj: monedas.models.Moneda
+
+    :returns: Diccionario con la cotización y estados, o None si no hay cotización.
+    :rtype: dict | None
+
+    Diccionario retornado:
+        - 'compra' (Decimal): Valor de compra de la moneda destino.
+        - 'venta' (Decimal): Valor de venta de la moneda destino.
+        - 'created_at' (datetime): Fecha y hora de la última actualización.
+        - 'vigente' (bool): True si la cotización está dentro del tiempo de vigencia configurado.
+        - 'usable' (bool): True si la cotización puede ser usada (vigente o permitido usar caducada).
+
+    :notes:
+        - La vigencia por defecto es de 15 minutos si `TED_COTIZACION_VIGENCIA_MINUTES` no está definido.
+        - La función retorna None si no se encuentra la moneda, el modelo o la cotización.
+        - Utiliza `apps.get_model` para obtener el modelo `Cotizacion` de manera dinámica.
     """
     if not moneda_obj:
         return None

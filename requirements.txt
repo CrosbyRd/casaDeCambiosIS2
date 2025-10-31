@@ -20,3 +20,5 @@ typing_extensions==4.14.1
 whitenoise==6.9.0
 stripe
 python-dotenv
+celery
+django-widget-tweaks

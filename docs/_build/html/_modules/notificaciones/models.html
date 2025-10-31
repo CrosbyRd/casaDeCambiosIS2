@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>notificaciones.models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">notificaciones.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para notificaciones.models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># notificaciones/models.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de modelos para la aplicación de notificaciones.</span>
+
+<span class="sd">Define las entidades relacionadas con la configuración de preferencias de notificación</span>
+<span class="sd">de los usuarios y las notificaciones individuales que el sistema genera y envía.</span>
+
+<span class="sd">:author: Equipo de desarrollo Global Exchange</span>
+<span class="sd">:since: 2025-10-16</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+
+<div class="viewcode-block" id="PreferenciasNotificacion">
+<a class="viewcode-back" href="../../notificaciones.html#notificaciones.forms.PreferenciasNotificacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PreferenciasNotificacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que almacena las **preferencias de notificación** asociadas a un usuario.</span>
+
+<span class="sd">    Permite definir si el usuario desea recibir notificaciones por correo electrónico</span>
+<span class="sd">    cuando cambian las tasas de cambio y qué monedas desea seguir.</span>
+
+<span class="sd">    :cvar usuario: Relación uno a uno con el usuario propietario de las preferencias.</span>
+<span class="sd">    :type usuario: django.db.models.OneToOneField</span>
+
+<span class="sd">    :cvar recibir_email_tasa_cambio: Indica si el usuario desea recibir correos cuando</span>
+<span class="sd">        se actualizan las tasas de cambio.</span>
+<span class="sd">    :type recibir_email_tasa_cambio: bool</span>
+
+<span class="sd">    :cvar monedas_seguidas: Conjunto de monedas que el usuario desea seguir para</span>
+<span class="sd">        recibir notificaciones.</span>
+<span class="sd">    :type monedas_seguidas: django.db.models.ManyToManyField</span>
+
+<span class="sd">    :ivar id: Identificador primario (automático).</span>
+<span class="sd">    :ivar usuario: Usuario vinculado a las preferencias.</span>
+<span class="sd">    :ivar recibir_email_tasa_cambio: Preferencia sobre el canal de notificación.</span>
+<span class="sd">    :ivar monedas_seguidas: Lista de monedas seguidas por el usuario.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">usuario</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">OneToOneField</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;preferencias_notificacion&#39;</span>
+    <span class="p">)</span>
+    <span class="c1"># Preferencias de canal</span>
+    <span class="n">recibir_email_tasa_cambio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Recibir notificaciones por correo cuando una tasa de interés cambia.&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># Preferencias de contenido</span>
+    <span class="n">monedas_seguidas</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Moneda</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;seguidores&#39;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;El usuario recibirá notificaciones sobre estas monedas.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Preferencias de </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">usuario</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Preferencias de Notificación&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Preferencias de Notificaciones&quot;</span></div>
+
+
+<div class="viewcode-block" id="Notificacion">
+<a class="viewcode-back" href="../../notificaciones.html#notificaciones.forms.Notificacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Notificacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que representa una **notificación individual** generada por el sistema.</span>
+
+<span class="sd">    Cada notificación está asociada a un usuario destinatario, contiene un mensaje,</span>
+<span class="sd">    una marca de lectura y puede estar silenciada si el usuario no desea verla</span>
+<span class="sd">    en el tablón principal.</span>
+
+<span class="sd">    :cvar id: Identificador único de la notificación (UUID).</span>
+<span class="sd">    :type id: uuid.UUID</span>
+<span class="sd">    :cvar destinatario: Usuario que recibe la notificación.</span>
+<span class="sd">    :type destinatario: django.db.models.ForeignKey</span>
+<span class="sd">    :cvar mensaje: Texto con el contenido de la notificación.</span>
+<span class="sd">    :type mensaje: str</span>
+<span class="sd">    :cvar leida: Indica si la notificación ya fue leída por el usuario.</span>
+<span class="sd">    :type leida: bool</span>
+<span class="sd">    :cvar silenciada: Indica si la notificación está silenciada (oculta en el tablón).</span>
+<span class="sd">    :type silenciada: bool</span>
+<span class="sd">    :cvar fecha_creacion: Fecha y hora en que se generó la notificación.</span>
+<span class="sd">    :type fecha_creacion: datetime</span>
+<span class="sd">    :cvar url_destino: Enlace opcional que permite al usuario navegar al origen</span>
+<span class="sd">        de la notificación.</span>
+<span class="sd">    :type url_destino: str | None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">destinatario</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;notificaciones&#39;</span>
+    <span class="p">)</span>
+    <span class="n">TIPO_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;tasa&#39;</span><span class="p">,</span> <span class="s1">&#39;Cambio de Tasa&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;transaccion&#39;</span><span class="p">,</span> <span class="s1">&#39;Actualización de Transacción&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;general&#39;</span><span class="p">,</span> <span class="s1">&#39;General&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">TIPO_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;general&#39;</span><span class="p">)</span>
+    <span class="n">mensaje</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">()</span>
+    <span class="n">leida</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">silenciada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Si es True, no se muestra en el tablón principal.&quot;</span><span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Opcional: para poder hacer click y navegar a un lugar relevante</span>
+    <span class="n">url_destino</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Notificación para </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destinatario</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mensaje</span><span class="p">[:</span><span class="mi">30</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadatos del modelo.</span>
+
+<span class="sd">        :cvar ordering: Orden de las notificaciones (más recientes primero).</span>
+<span class="sd">        :type ordering: list[str]</span>
+<span class="sd">        :cvar verbose_name: Nombre legible en singular.</span>
+<span class="sd">        :type verbose_name: str</span>
+<span class="sd">        :cvar verbose_name_plural: Nombre legible en plural.</span>
+<span class="sd">        :type verbose_name_plural: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-fecha_creacion&#39;</span><span class="p">]</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Notificación&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Notificaciones&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

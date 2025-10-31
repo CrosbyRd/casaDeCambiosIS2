@@ -68,6 +68,8 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         return redirect('home')  # 🚀 tu menú principal
     
     def get_object(self, queryset=None):
+        cliente = super().get_object(queryset)
+        cliente.limite_diario, cliente.limite_mensual = cliente.obtener_limite_global  # Aplica el límite global
         return get_object_or_404(Cliente, id_cliente=self.kwargs['pk'])
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):

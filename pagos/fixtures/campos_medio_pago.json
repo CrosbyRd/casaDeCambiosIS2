@@ -1,0 +1,134 @@
+[
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c1",
+    "fields": {
+      "tipo": "p1",
+      "nombre_campo": "Número de cuenta SIPAP",
+      "tipo_dato": "numero",
+      "obligatorio": true,
+      "regex_opcional": "^\\d{9,12}$",
+      "activo": true
+    }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c2",
+    "fields": {
+      "tipo": "p1",
+      "nombre_campo": "Nombre del titular",
+      "tipo_dato": "texto",
+      "obligatorio": true,
+      "regex_opcional": "^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\\s]+$",
+      "activo": true
+    }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c3",
+      "fields": {
+        "tipo": "p2",
+        "nombre_campo": "Número de tarjeta",
+        "tipo_dato": "numero",
+        "obligatorio": true,
+        "regex_opcional": "^\\d{16}$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c4",
+      "fields": {
+        "tipo": "p2",
+        "nombre_campo": "Nombre del titular",
+        "tipo_dato": "texto",
+        "obligatorio": true,
+        "regex_opcional": "^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\\s]+$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c5",
+      "fields": {
+        "tipo": "p2",
+        "nombre_campo": "Fecha de vencimiento (MM/AA)",
+        "tipo_dato": "texto",
+        "obligatorio": true,
+        "regex_opcional": "^(0[1-9]|1[0-2])\\/(\\d{2})$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c6",
+      "fields": {
+        "tipo": "p3",
+        "nombre_campo": "Alias de billetera",
+        "tipo_dato": "texto",
+        "obligatorio": true,
+        "regex_opcional": "^[A-Za-z0-9_]{4,20}$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c7",
+      "fields": {
+        "tipo": "p3",
+        "nombre_campo": "Teléfono asociado",
+        "tipo_dato": "telefono",
+        "obligatorio": true,
+        "regex_opcional": "^09\\d{8}$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c8",
+      "fields": {
+        "tipo": "p4",
+        "nombre_campo": "Número de tarjeta de débito",
+        "tipo_dato": "numero",
+        "obligatorio": true,
+        "regex_opcional": "^\\d{16}$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c9",
+      "fields": {
+        "tipo": "p4",
+        "nombre_campo": "Nombre del titular",
+        "tipo_dato": "texto",
+        "obligatorio": true,
+        "regex_opcional": "^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\\s]+$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c10",
+      "fields": {
+        "tipo": "p5",
+        "nombre_campo": "Correo Stripe",
+        "tipo_dato": "email",
+        "obligatorio": true,
+        "regex_opcional": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+        "activo": true
+      }
+  },
+  {
+    "model": "pagos.campomediopago",
+    "pk": "c11",
+      "fields": {
+        "tipo": "p5",
+        "nombre_campo": "Cuenta Stripe ID",
+        "tipo_dato": "texto",
+        "obligatorio": true,
+        "regex_opcional": "^acct_[A-Za-z0-9]{8,}$",
+        "activo": true
+      }
+  }
+]

@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -79,18 +79,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">CotizacionForm</span>
 
+
+
 <div class="viewcode-block" id="cotizacion_list">
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.cotizacion_list">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cotizacion_list</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Muestra la lista de cotizaciones.</span>
-
-<span class="sd">    :param request: La petición HTTP.</span>
-<span class="sd">    :type request: HttpRequest</span>
-<span class="sd">    :return: Una respuesta HTTP que renderiza la plantilla &#39;cotizacion_list.html&#39; con la lista de cotizaciones.</span>
-<span class="sd">    :rtype: HttpResponse</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;cotizaciones.access_cotizaciones&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span> 
 
@@ -103,14 +97,6 @@
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.cotizacion_create">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cotizacion_create</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Crea una nueva cotización.</span>
-
-<span class="sd">    :param request: La petición HTTP.</span>
-<span class="sd">    :type request: HttpRequest</span>
-<span class="sd">    :return: Una respuesta HTTP que renderiza la plantilla &#39;cotizacion_form.html&#39; o redirige a la lista de cotizaciones.</span>
-<span class="sd">    :rtype: HttpResponse o HttpResponseRedirect</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;cotizaciones.access_cotizaciones&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
@@ -141,16 +127,6 @@
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.cotizacion_update">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cotizacion_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Actualiza una cotización existente.</span>
-
-<span class="sd">    :param request: La petición HTTP.</span>
-<span class="sd">    :type request: HttpRequest</span>
-<span class="sd">    :param pk: La clave primaria de la cotización a actualizar.</span>
-<span class="sd">    :type pk: int</span>
-<span class="sd">    :return: Una respuesta HTTP que renderiza la plantilla &#39;cotizacion_form.html&#39; o redirige a la lista de cotizaciones.</span>
-<span class="sd">    :rtype: HttpResponse o HttpResponseRedirect</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;cotizaciones.access_cotizaciones&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
     
@@ -172,16 +148,6 @@
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.cotizacion_delete">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cotizacion_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Elimina una cotización existente.</span>
-
-<span class="sd">    :param request: La petición HTTP.</span>
-<span class="sd">    :type request: HttpRequest</span>
-<span class="sd">    :param pk: La clave primaria de la cotización a eliminar.</span>
-<span class="sd">    :type pk: int</span>
-<span class="sd">    :return: Una respuesta HTTP que renderiza la plantilla &#39;cotizacion_confirm_delete.html&#39; o redirige a la lista de cotizaciones.</span>
-<span class="sd">    :rtype: HttpResponse o HttpResponseRedirect</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;cotizaciones.access_cotizaciones&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
     
@@ -199,14 +165,6 @@
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.obtener_valores_api">[documentos]</a>
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">obtener_valores_api</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Obtiene valores de cotización desde una API externa.</span>
-
-<span class="sd">    :param request: La petición HTTP.</span>
-<span class="sd">    :type request: HttpRequest</span>
-<span class="sd">    :return: Una respuesta JSON con los valores de la cotización o un error.</span>
-<span class="sd">    :rtype: JsonResponse</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
         <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No tienes permiso para acceder a esta página.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
@@ -241,13 +199,11 @@
 <div class="viewcode-block" id="obtener_cotizacion_api">
 <a class="viewcode-back" href="../../cotizaciones.html#cotizaciones.views.obtener_cotizacion_api">[documentos]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">obtener_cotizacion_api</span><span class="p">(</span><span class="n">moneda_destino_codigo</span><span class="p">):</span>
+
+<span class="w">    </span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtiene valor de compra y venta desde currency-api (sin necesidad de clave)</span>
-
-<span class="sd">    :param moneda_destino_codigo: Código de la moneda destino (ej. &quot;USD&quot;).</span>
-<span class="sd">    :type moneda_destino_codigo: str</span>
-<span class="sd">    :return: Un diccionario: {&#39;valor_compra&#39;: float, &#39;valor_venta&#39;: float} o None si falla.</span>
-<span class="sd">    :rtype: dict or None</span>
+<span class="sd">    Devuelve un diccionario: {&#39;valor_compra&#39;: float, &#39;valor_venta&#39;: float} o None si falla.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/pyg/</span><span class="si">{</span><span class="n">moneda_destino_codigo</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.json&quot;</span>
     

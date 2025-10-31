@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>medios_acreditacion.models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">medios_acreditacion.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para medios_acreditacion.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Modelos de la aplicación **medios_acreditacion**.</span>
+
+<span class="sd">.. module:: medios_acreditacion.models</span>
+<span class="sd">   :synopsis: Definición de modelos para tipos de medios de acreditación, sus campos y la relación con clientes.</span>
+
+<span class="sd">Este módulo implementa los modelos que representan:</span>
+
+<span class="sd">- **TipoMedioAcreditacion**: categoría o clase de medio de acreditación (ej. tarjeta, cuenta bancaria).</span>
+<span class="sd">- **CampoMedioAcreditacion**: campos dinámicos configurables por cada tipo (ej. número, alias, email).</span>
+<span class="sd">- **MedioAcreditacionCliente**: instancia concreta de un medio asociado a un cliente, con validaciones,</span>
+<span class="sd">  alias, y posibilidad de marcar uno como predeterminado.</span>
+
+<span class="sd">Incluye validaciones personalizadas, restricciones únicas condicionales y lógica para manejo de estados</span>
+<span class="sd">(activo/inactivo, predeterminado).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.text</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span><span class="p">,</span> <span class="n">UniqueConstraint</span>
+
+<div class="viewcode-block" id="TipoMedioAcreditacion">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.TipoMedioAcreditacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioAcreditacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que representa un **tipo de medio de acreditación**.</span>
+
+<span class="sd">    Ejemplos: &quot;Tarjeta de crédito&quot;, &quot;Cuenta bancaria&quot;, &quot;Billetera virtual&quot;.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_tipo : UUIDField</span>
+<span class="sd">        Identificador único del tipo (clave primaria).</span>
+<span class="sd">    nombre : CharField</span>
+<span class="sd">        Nombre del tipo (único).</span>
+<span class="sd">    descripcion : TextField</span>
+<span class="sd">        Descripción opcional.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Indica si el tipo está habilitado.</span>
+
+<span class="sd">    **Meta**</span>
+<span class="sd">    --------</span>
+<span class="sd">    - Permisos personalizados:</span>
+<span class="sd">      - ``access_medios_acreditacion`` → acceso a la sección administrativa.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna el nombre del tipo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">id_tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nombre&quot;</span><span class="p">))</span>
+    <span class="n">descripcion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># 👉 Permiso “de acceso” para la sección admin de Tipos/ Campos</span>
+            <span class="p">(</span><span class="s2">&quot;access_medios_acreditacion&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede gestionar métodos de pago (Tipos de Medio y Campos)&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span></div>
+
+
+
+<div class="viewcode-block" id="CampoMedioAcreditacion">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioAcreditacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CampoMedioAcreditacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que define los **campos configurables** para un tipo de medio de acreditación.</span>
+
+<span class="sd">    Ejemplo: para &quot;Tarjeta de crédito&quot; se podrían definir los campos &quot;Número&quot; (número),</span>
+<span class="sd">    &quot;Titular&quot; (texto), &quot;Fecha vencimiento&quot; (texto).</span>
+
+<span class="sd">    **Enums internos**</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    - TipoDato: tipos de datos soportados (texto, número, teléfono, email, RUC).</span>
+<span class="sd">    - RegexOpciones: expresiones regulares predefinidas para validaciones adicionales.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_campo : UUIDField</span>
+<span class="sd">        Identificador único del campo.</span>
+<span class="sd">    tipo_medio : ForeignKey</span>
+<span class="sd">        Relación con :class:`TipoMedioAcreditacion`.</span>
+<span class="sd">    nombre : CharField</span>
+<span class="sd">        Nombre del campo (ej. &quot;Número de tarjeta&quot;).</span>
+<span class="sd">    tipo_dato : CharField</span>
+<span class="sd">        Tipo de dato (controlado por TipoDato).</span>
+<span class="sd">    obligatorio : BooleanField</span>
+<span class="sd">        Si el campo es requerido.</span>
+<span class="sd">    regex : CharField</span>
+<span class="sd">        Expresión regular opcional para validación extra.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Estado activo/inactivo.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna el nombre, tipo y estado del campo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CampoMedioAcreditacion.TipoDato">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioAcreditacion.TipoDato">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">TipoDato</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
+        <span class="n">TEXTO</span> <span class="o">=</span> <span class="s2">&quot;texto&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Texto&quot;</span><span class="p">)</span>
+        <span class="n">NUMERO</span> <span class="o">=</span> <span class="s2">&quot;numero&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Número&quot;</span><span class="p">)</span>
+        <span class="n">TELEFONO</span> <span class="o">=</span> <span class="s2">&quot;telefono&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Teléfono&quot;</span><span class="p">)</span>
+        <span class="n">EMAIL</span> <span class="o">=</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Email&quot;</span><span class="p">)</span>
+        <span class="n">RUC</span> <span class="o">=</span> <span class="s2">&quot;ruc&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;RUC&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CampoMedioAcreditacion.RegexOpciones">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.CampoMedioAcreditacion.RegexOpciones">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">RegexOpciones</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
+        <span class="n">NINGUNO</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Sin validación extra&quot;</span><span class="p">)</span>
+        <span class="n">SOLO_NUMEROS</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[0-9]+$&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solo números&quot;</span><span class="p">)</span>
+        <span class="n">SOLO_LETRAS</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Solo letras&quot;</span><span class="p">)</span>
+        <span class="n">EMAIL</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[^@]+@[^@]+\.[^@]+$&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Correo electrónico válido&quot;</span><span class="p">)</span>
+        <span class="n">TELEFONO</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^\d{9,15}$&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Teléfono (9 a 15 dígitos)&quot;</span><span class="p">)</span>
+        <span class="n">RUC</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;RUC (########-#)&quot;</span><span class="p">)</span></div>
+
+
+
+    <span class="n">id_campo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tipo_medio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">TipoMedioAcreditacion</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;campos&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Nombre del campo&quot;</span><span class="p">))</span>
+    <span class="n">tipo_dato</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TEXTO</span><span class="p">)</span>
+    <span class="n">obligatorio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="n">RegexOpciones</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Validación extra&quot;</span><span class="p">),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Regla de validación que se aplicará automáticamente&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 👈 ahora cada campo puede desactivarse</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">estado</span> <span class="o">=</span> <span class="s2">&quot;Activo&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activo</span> <span class="k">else</span> <span class="s2">&quot;Inactivo&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo_dato</span><span class="si">}</span><span class="s2">) - </span><span class="si">{</span><span class="n">estado</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="MedioAcreditacionCliente">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.MedioAcreditacionCliente">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioAcreditacionCliente</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modelo que representa un **medio de acreditación asociado a un cliente**.</span>
+
+<span class="sd">    Contiene la información concreta de un cliente para un tipo de medio</span>
+<span class="sd">    (ej. tarjeta, cuenta, billetera), con campos dinámicos validados según</span>
+<span class="sd">    el tipo.</span>
+
+<span class="sd">    **Campos**</span>
+<span class="sd">    ----------</span>
+<span class="sd">    id_medio : UUIDField</span>
+<span class="sd">        Identificador único del medio.</span>
+<span class="sd">    cliente : ForeignKey</span>
+<span class="sd">        Relación con el modelo ``clientes.Cliente``.</span>
+<span class="sd">    tipo : ForeignKey</span>
+<span class="sd">        Tipo de medio (relación con :class:`TipoMedioAcreditacion`).</span>
+<span class="sd">    alias : CharField</span>
+<span class="sd">        Alias personalizado del cliente (ej. &quot;Mi Visa personal&quot;).</span>
+<span class="sd">    datos : JSONField</span>
+<span class="sd">        Diccionario con pares campo-valor según lo definido en el tipo.</span>
+<span class="sd">    activo : BooleanField</span>
+<span class="sd">        Estado activo/inactivo del medio.</span>
+<span class="sd">    creado_en : DateTimeField</span>
+<span class="sd">        Fecha de creación.</span>
+<span class="sd">    actualizado_en : DateTimeField</span>
+<span class="sd">        Fecha de última modificación.</span>
+<span class="sd">    predeterminado : BooleanField</span>
+<span class="sd">        Marca si es el medio principal del cliente.</span>
+
+<span class="sd">    **Meta**</span>
+<span class="sd">    --------</span>
+<span class="sd">    - Restricción única condicional: solo un medio predeterminado por cliente.</span>
+
+<span class="sd">    **Métodos**</span>
+<span class="sd">    -----------</span>
+<span class="sd">    __str__() -&gt; str</span>
+<span class="sd">        Retorna una representación &quot;&lt;tipo&gt; - &lt;cliente&gt;&quot;.</span>
+<span class="sd">    clean() -&gt; None</span>
+<span class="sd">        Valida que los datos coincidan con los campos definidos por el tipo.</span>
+<span class="sd">    save(*args, **kwargs) -&gt; None</span>
+<span class="sd">        Garantiza unicidad del predeterminado y desactiva si corresponde.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">id_medio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="s2">&quot;clientes.Cliente&quot;</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;medios_acreditacion&quot;</span>
+    <span class="p">)</span>
+    <span class="n">tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">TipoMedioAcreditacion</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;medios_cliente&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 👇 nuevo campo</span>
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">datos</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Datos del medio&quot;</span><span class="p">))</span>
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">creado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">actualizado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">predeterminado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">UniqueConstraint</span><span class="p">(</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cliente&quot;</span><span class="p">],</span>
+                <span class="n">condition</span><span class="o">=</span><span class="n">Q</span><span class="p">(</span><span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uniq_default_medio_por_cliente&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ← evita disparar el descriptor de FK cuando todavía no hay tipo/cliente</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="o">.</span><span class="n">nombre</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;tipo_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="o">.</span><span class="n">nombre</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;cliente_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;—&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<div class="viewcode-block" id="MedioAcreditacionCliente.clean">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.MedioAcreditacionCliente.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Valida que los datos cargados coincidan con lo definido por el admin.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tipo_id</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">errores</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">datos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">campo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="o">.</span><span class="n">campos</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">key_form</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;campo_</span><span class="si">{</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span>   <span class="c1"># &lt;-- nombre que SÍ existe en el form</span>
+            <span class="n">valor</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre</span><span class="p">)</span>
+
+            <span class="c1"># Obligatorio</span>
+            <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">obligatorio</span> <span class="ow">and</span> <span class="p">(</span><span class="n">valor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Este campo es obligatorio.&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">valor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># opcional vacío, nada más que validar</span>
+
+            <span class="n">svalor</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)</span>
+
+            <span class="c1"># Validaciones por tipo</span>
+            <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioAcreditacion</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">NUMERO</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">svalor</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe ser un número válido.&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioAcreditacion</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TELEFONO</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">svalor</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">svalor</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">9</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">svalor</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">15</span><span class="p">:</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe ser un teléfono válido (9 a 15 dígitos).&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioAcreditacion</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">EMAIL</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">svalor</span> <span class="ow">or</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">svalor</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe ser un correo electrónico válido.&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioAcreditacion</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">RUC</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">svalor</span><span class="p">):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;El RUC debe tener el formato ########-#.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Regex extra (si el admin lo definió)</span>
+            <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">regex</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="n">svalor</span><span class="p">):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">key_form</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;No cumple el formato requerido.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># 👇 reglas del predeterminado</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">activo</span><span class="p">:</span>
+            <span class="n">errores</span><span class="p">[</span><span class="s2">&quot;predeterminado&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;No puede ser predeterminado si está inactivo.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errores</span><span class="p">:</span>
+            <span class="c1"># 👈 devolvemos dict con keys que existen en el form → no explota</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">errores</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MedioAcreditacionCliente.save">
+<a class="viewcode-back" href="../../medios_acreditacion.html#medios_acreditacion.forms.MedioAcreditacionCliente.save">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="c1"># Si marco este como predeterminado, desmarco los demás del mismo cliente</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cliente_id</span><span class="p">:</span>
+                <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">cliente_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente_id</span><span class="p">,</span>
+                    <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">predeterminado</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># Si se desactiva, no puede quedar como predeterminado</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">activo</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+        
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

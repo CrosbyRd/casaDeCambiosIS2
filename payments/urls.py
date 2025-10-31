@@ -1,7 +1,10 @@
 # payments/urls.py
-
 from django.urls import path
 from . import views
+
+# --- AÑADIDO: Asegúrate de tener el app_name ---
+app_name = 'payments'
+# ---------------------------------------------
 
 urlpatterns = [
     # URL para la página de previsualización
@@ -13,6 +16,8 @@ urlpatterns = [
     # URL para la página de éxito
     path('payment-success/', views.payment_success_view, name='payment_success'),
 
-    # URL del endpoint de la API para crear el Payment Intent
-    path('api/create-payment-intent/', views.create_payment_intent_view, name='create_payment_intent'),
+    # URL para la página de pago de Stripe (esta es la que usamos)
+    path('stripe-payment/', views.stripe_payment_page, name='stripe_payment_page'),
+    # Nuevo endpoint para webhooks de Stripe
+    path('webhook/', views.stripe_webhook_view, name='stripe_webhook'),
 ]

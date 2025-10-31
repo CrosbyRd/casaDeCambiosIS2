@@ -1,0 +1,10 @@
+Hola {{ usuario.first_name|default:usuario.email }},
+
+{{ titulo }}
+
+{{ mensaje }}
+
+Ver detalles en tu panel de notificaciones.
+
+Atte.
+Global Exchange

@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>facturacion_electronica.services &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">facturacion_electronica.services</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para facturacion_electronica.services</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Servicios de la app Facturación Electrónica.</span>
+
+<span class="sd">.. module:: facturacion_electronica.services</span>
+<span class="sd">   :synopsis: Servicios para interactuar con la API de Factura Segura.</span>
+
+<span class="sd">Este módulo contiene el cliente para la API de Factura Segura,</span>
+<span class="sd">facilitando la autenticación, generación, consulta de estado,</span>
+<span class="sd">cancelación, inutilización y descarga de documentos electrónicos.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decimal</span> <span class="c1"># Importar el módulo decimal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="n">ItemDocumentoElectronico</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>  <span class="c1"># noqa  # Asumiendo que Transaccion está en la app transacciones</span>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FacturaSeguraAPIClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cliente para interactuar con la API de Factura Segura.</span>
+
+<span class="sd">    Proporciona métodos para autenticación, simulación de respuestas,</span>
+<span class="sd">    realización de solicitudes a la API, y operaciones específicas</span>
+<span class="sd">    para documentos electrónicos como calcular, generar, consultar estado,</span>
+<span class="sd">    cancelar, inutilizar y descargar KuDE/XML.</span>
+
+<span class="sd">    :param emisor_id: ID del emisor de factura electrónica asociado a este cliente.</span>
+<span class="sd">    :type emisor_id: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emisor_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">emisor_id</span><span class="p">)</span>
+
+        <span class="n">cfg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;FACTURASEGURA&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># BASE apuntando ya a /misife00/v1/esi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span> <span class="o">=</span> <span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;BASE_URL&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">login_url</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LOGIN_URL&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TIMEOUT&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RETRIES&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SIMULATION_MODE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Permite forzar el modo estricto del contrato del API</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strict_contract</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;STRICT_CONTRACT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+    <span class="c1"># ---------------------------</span>
+    <span class="c1"># Autenticación</span>
+    <span class="c1"># ---------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_auth_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtiene el token de autenticación.</span>
+
+<span class="sd">        Si el emisor ya tiene un token guardado, lo devuelve. De lo contrario,</span>
+<span class="sd">        genera un nuevo token y lo persiste.</span>
+
+<span class="sd">        :return: El token de autenticación.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Usa el token guardado; si no hay, genera uno y lo persiste</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">auth_token</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">auth_token</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_auth_token</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_auth_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Genera un nuevo token de autenticación para el ESI (Electronic System Interface)</span>
+<span class="sd">        y lo persiste en el modelo :class:`EmisorFacturaElectronica`.</span>
+
+<span class="sd">        En modo simulación, devuelve un token falso.</span>
+
+<span class="sd">        :raises ValueError: Si las credenciales o la URL de login no están configuradas.</span>
+<span class="sd">        :raises requests.HTTPError: Si la solicitud de login a la API falla.</span>
+<span class="sd">        :return: El token de autenticación generado.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span><span class="p">:</span>
+            <span class="n">fake_token</span> <span class="o">=</span> <span class="s2">&quot;SIMULATED_AUTH_TOKEN_&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="n">fake_token</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">token_generado_at</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;auth_token&quot;</span><span class="p">,</span> <span class="s2">&quot;token_generado_at&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">fake_token</span>
+
+        <span class="n">email</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FACTURASEGURA_ESI_EMAIL&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;FACTURASEGURA&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EMAIL&quot;</span><span class="p">)</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;FACTURASEGURA_ESI_PASSWORD&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;FACTURASEGURA&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PASSWORD&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">password</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Credenciales del usuario ESI no configuradas (FACTURASEGURA_ESI_EMAIL/_PASSWORD o settings.FACTURASEGURA).&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">login_url</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;URL de login de FacturaSegura no configurada (FACTURASEGURA_LOGIN_URL_* o settings.FACTURASEGURA[&#39;LOGIN_URL&#39;]).&quot;</span><span class="p">)</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span> <span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">}</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">login_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">][</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;authentication_token&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">token_generado_at</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;auth_token&quot;</span><span class="p">,</span> <span class="s2">&quot;token_generado_at&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">token</span>
+
+    <span class="c1"># ---------------------------</span>
+    <span class="c1"># Core request (con simulación y refresh de token)</span>
+    <span class="c1"># ---------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_simulate_api_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">is_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simula las respuestas de la API de Factura Segura para pruebas y desarrollo.</span>
+
+<span class="sd">        Dependiendo de la operación, devuelve respuestas predefinidas o simuladas:</span>
+<span class="sd">        - &#39;dwn_kude&#39;: Retorna bytes de un PDF simulado.</span>
+<span class="sd">        - &#39;dwn_xml&#39;: Retorna bytes de un XML simulado.</span>
+<span class="sd">        - &#39;generar_de&#39;: Retorna un CDC simulado y un estado &#39;pendiente_aprobacion&#39;.</span>
+<span class="sd">        - &#39;get_estado_sifen&#39;: Retorna un estado &#39;Aprobado&#39; simulado.</span>
+<span class="sd">        - &#39;calcular_de&#39;: Intenta simular cálculos básicos de totales e IVA basados en los ítems.</span>
+<span class="sd">        - &#39;sol_cancelacion&#39;, &#39;sol_inutilizacion&#39;: Retorna una respuesta de éxito simulada.</span>
+
+<span class="sd">        :param operation: Nombre de la operación de la API a simular.</span>
+<span class="sd">        :type operation: str</span>
+<span class="sd">        :param params: Parámetros de la solicitud a la API.</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        :param is_file: Indica si la respuesta esperada es un archivo binario.</span>
+<span class="sd">        :type is_file: bool</span>
+<span class="sd">        :return: Una respuesta simulada de la API (dict o bytes).</span>
+<span class="sd">        :rtype: dict or bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;dwn_kude&quot;</span> <span class="ow">and</span> <span class="n">is_file</span><span class="p">:</span>
+            <span class="c1"># PDF mínimo simulado</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;%PDF-1.4</span><span class="se">\n</span><span class="s2">% Simulado KuDE</span><span class="se">\n</span><span class="s2">1 0 obj &lt;&lt;&gt;&gt; endobj</span><span class="se">\n</span><span class="s2">trailer &lt;&lt;&gt;&gt;</span><span class="se">\n</span><span class="si">%%</span><span class="s2">EOF</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;dwn_xml&quot;</span> <span class="ow">and</span> <span class="n">is_file</span><span class="p">:</span>
+            <span class="c1"># XML mínimo simulado</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DE Simulado=&quot;true&quot;&gt;&lt;/DE&gt;&#39;</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: [FacturaSeguraAPI - SIMULACION] JSON de entrada para &#39;</span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;generar_de&quot;</span><span class="p">:</span>
+            <span class="n">fake_cdc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SIMULATED</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">34</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;OK (Simulado)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;operation_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())},</span>
+                <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;CDC&quot;</span><span class="p">:</span> <span class="n">fake_cdc</span><span class="p">}],</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;get_estado_sifen&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;OK (Simulado)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;operation_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())},</span>
+                <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[{</span>
+                    <span class="s2">&quot;estado_sifen&quot;</span><span class="p">:</span> <span class="s2">&quot;Aprobado&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;desc_sifen&quot;</span><span class="p">:</span> <span class="s2">&quot;0260 - Aprobado (Simulado)&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;error_sifen&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;fch_sifen&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;estado_can&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;desc_can&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;error_can&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;fch_can&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;estado_inu&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;desc_inu&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;error_inu&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;fch_inu&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="p">}],</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="o">==</span> <span class="s2">&quot;calcular_de&quot;</span><span class="p">:</span>
+            <span class="n">de_resumido</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DE&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="c1"># Aquí simulamos los cálculos que haría la API real</span>
+            <span class="c1"># Para esto, podemos usar una versión simplificada de _build_de_resumido_desde_transaccion</span>
+            <span class="c1"># o simplemente devolver un JSON con algunos campos calculados de ejemplo.</span>
+            <span class="c1"># Para una simulación más útil, intentaremos replicar algunos cálculos básicos.</span>
+            
+            <span class="c1"># Nota: Para una simulación completa y precisa, necesitaríamos replicar toda la lógica</span>
+            <span class="c1"># de cálculo de SIFEN, lo cual es complejo. Aquí haremos una aproximación.</span>
+            
+            <span class="c1"># Copiamos el DE resumido y añadimos algunos campos calculados</span>
+            <span class="n">simulated_de_completo</span> <span class="o">=</span> <span class="n">de_resumido</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            
+            <span class="c1"># Ejemplo de cómo podrías simular algunos cálculos si tuvieras la lógica aquí</span>
+            <span class="c1"># Para este caso, simplemente devolveremos el mismo JSON de entrada, pero</span>
+            <span class="c1"># en un escenario real, aquí se aplicarían las reglas de cálculo de SIFEN.</span>
+            <span class="c1"># Dado que el objetivo es &quot;ver el JSON&quot;, devolver el input es un buen primer paso.</span>
+            
+            <span class="c1"># Sin embargo, para que sea más útil, podemos intentar simular los totales</span>
+            <span class="c1"># basándonos en los ítems si están presentes.</span>
+            
+            <span class="n">total_ope_items</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">total_iva_items</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gCamItem&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">cant</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dCantProSer&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                    <span class="n">precio</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dPUniProSer&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                    <span class="n">desc</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dDescItem&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">))</span>
+                    
+                    <span class="n">item_total</span> <span class="o">=</span> <span class="p">(</span><span class="n">precio</span> <span class="o">-</span> <span class="n">desc</span><span class="p">)</span> <span class="o">*</span> <span class="n">cant</span>
+                    <span class="n">total_ope_items</span> <span class="o">+=</span> <span class="n">item_total</span>
+                    
+                    <span class="c1"># Simulación básica de IVA (asumiendo 10% para gravados)</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iAfecIVA&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dTasaIVA&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;10&quot;</span><span class="p">:</span>
+                        <span class="n">total_iva_items</span> <span class="o">+=</span> <span class="n">item_total</span> <span class="o">/</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;11&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="c1"># 10% IVA</span>
+                    <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iAfecIVA&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dTasaIVA&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;5&quot;</span><span class="p">:</span>
+                        <span class="n">total_iva_items</span> <span class="o">+=</span> <span class="n">item_total</span> <span class="o">/</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;21&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="c1"># 5% IVA</span>
+                        
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span> <span class="c1"># Ignorar errores en ítems simulados</span>
+            
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dTotOpe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_ope_items</span><span class="o">.</span><span class="n">normalize</span><span class="p">())</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dTotGralOpe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_ope_items</span><span class="o">.</span><span class="n">normalize</span><span class="p">())</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dTotIVA&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_iva_items</span><span class="o">.</span><span class="n">normalize</span><span class="p">())</span>
+            
+            <span class="c1"># Añadir otros campos calculados que la API de Factura Segura devolvería</span>
+            <span class="c1"># Estos son solo ejemplos, la lista completa está en la documentación</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dSubExe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dSubExe&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dSubExo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dSubExo&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dSub5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dSub5&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dSub10&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dSub10&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dTotDesc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dTotDesc&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dIVA5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dIVA5&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dIVA10&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dIVA10&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dBaseGrav5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dBaseGrav5&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dBaseGrav10&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dBaseGrav10&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            <span class="n">simulated_de_completo</span><span class="p">[</span><span class="s2">&quot;dTBasGraIVA&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simulated_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dTBasGraIVA&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;OK (Simulado)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;operation_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())},</span>
+                <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">simulated_de_completo</span><span class="p">}],</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">operation</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sol_cancelacion&quot;</span><span class="p">,</span> <span class="s2">&quot;sol_inutilizacion&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;OK (Simulado)&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;operation_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())},</span>
+                <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">9999</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Operación &#39;</span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">&#39; no simulada.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operation_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())},</span>
+            <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">is_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza una solicitud a la API de Factura Segura.</span>
+
+<span class="sd">        Gestiona el modo de simulación, la autenticación con token (incluyendo</span>
+<span class="sd">        regeneración automática en caso de 401 Unauthorized) y el manejo de errores HTTP.</span>
+
+<span class="sd">        :param operation: Nombre de la operación de la API a ejecutar.</span>
+<span class="sd">        :type operation: str</span>
+<span class="sd">        :param params: Parámetros de la solicitud a la API.</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        :param is_file: Indica si la respuesta esperada es un archivo binario.</span>
+<span class="sd">        :type is_file: bool</span>
+<span class="sd">        :raises requests.HTTPError: Si la solicitud HTTP falla después de reintentos.</span>
+<span class="sd">        :return: La respuesta de la API (dict para JSON, bytes para archivos).</span>
+<span class="sd">        :rtype: dict or bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulate_api_response</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">is_file</span><span class="o">=</span><span class="n">is_file</span><span class="p">)</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_token</span><span class="p">()</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span> <span class="ow">or</span> <span class="p">{}}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Authentication-Token&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">,</span>
+            <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: [FacturaSeguraAPI] Enviando a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2"> (Operación: </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: [FacturaSeguraAPI] Respuesta de </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2"> (Operación: </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">) - Status: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, Contenido: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="c1"># Token inválido/expirado -&gt; refrescar y reintentar 1 vez</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;auth_token&quot;</span><span class="p">])</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_auth_token</span><span class="p">()</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Authentication-Token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: [FacturaSeguraAPI] Reintentando con nuevo token. Enviando a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2"> (Operación: </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: [FacturaSeguraAPI] Respuesta de reintento de </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2"> (Operación: </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">) - Status: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, Contenido: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">detail_text</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">detail_json</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">detail_json</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Puedes agregar logging aquí si lo deseas</span>
+            <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> en </span><span class="si">{</span><span class="n">operation</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">detail_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="c1"># ---------------------------</span>
+    <span class="c1"># Operaciones DE</span>
+    <span class="c1"># ---------------------------</span>
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.calcular_de">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcular_de</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_resumido_de</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Llama a la operación &#39;calcular_de&#39; de la API.</span>
+
+<span class="sd">        Recibe un JSON resumido del Documento Electrónico (DE) y devuelve</span>
+<span class="sd">        el DE con los cálculos realizados por la API.</span>
+
+<span class="sd">        :param json_resumido_de: JSON resumido del Documento Electrónico.</span>
+<span class="sd">        :type json_resumido_de: dict</span>
+<span class="sd">        :return: El JSON del Documento Electrónico con los cálculos.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">json_resumido_de</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;calcular_de&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.generar_de">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de">[documentos]</a>
+    <span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generar_de</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_de_completo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Llama a la operación &#39;generar_de&#39; para crear un Documento Electrónico en FacturaSegura.</span>
+
+<span class="sd">        Este método:</span>
+<span class="sd">        - Asigna un número de documento (`dNumDoc`) dentro del rango configurado del emisor,</span>
+<span class="sd">          asegurando la concurrencia con un bloqueo de fila.</span>
+<span class="sd">        - Inyecta datos del emisor (RUC, DV, establecimiento, punto de expedición, timbrado)</span>
+<span class="sd">          en el JSON del DE si no están presentes.</span>
+<span class="sd">        - Crea una instancia local de :class:`DocumentoElectronico` con la respuesta de la API (CDC, estado).</span>
+<span class="sd">        - Avanza el correlativo del emisor solo si la generación es exitosa.</span>
+
+<span class="sd">        :param json_de_completo: JSON completo del Documento Electrónico a generar.</span>
+<span class="sd">        :type json_de_completo: dict</span>
+<span class="sd">        :param transaccion_id: ID de la transacción asociada, si existe.</span>
+<span class="sd">        :type transaccion_id: uuid.UUID or None</span>
+<span class="sd">        :raises ValueError: Si el rango de numeración del emisor está agotado o es inválido.</span>
+<span class="sd">        :raises Exception: Si la API de Factura Segura devuelve un error al generar el DE.</span>
+<span class="sd">        :return: La instancia del DocumentoElectronico creado localmente.</span>
+<span class="sd">        :rtype: :class:`DocumentoElectronico`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">emisor_instance</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_for_update</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># Validar/normalizar correlativo</span>
+        <span class="k">if</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">=</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">emisor_instance</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span> <span class="o">&lt;=</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">&lt;=</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rango agotado o inválido para emisión de factura.&quot;</span><span class="p">)</span>
+
+        <span class="n">numero_doc_int</span> <span class="o">=</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span>
+        <span class="n">numero_doc_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">numero_doc_int</span><span class="si">:</span><span class="s2">07d</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Inyectar numeración y datos del emisor (respetando claves del XML)</span>
+        <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dNumDoc&quot;</span><span class="p">,</span> <span class="n">numero_doc_str</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dRucEm&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">ruc</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dDVEmi&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">dv_ruc</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dEst&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">establecimiento</span> <span class="ow">or</span> <span class="s2">&quot;001&quot;</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dPunExp&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">punto_expedicion</span> <span class="ow">or</span> <span class="s2">&quot;003&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">numero_timbrado_actual</span><span class="p">:</span>
+            <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dNumTim&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">numero_timbrado_actual</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">fecha_inicio_timbrado</span><span class="p">:</span>
+            <span class="n">json_de_completo</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dFeIniT&quot;</span><span class="p">,</span> <span class="n">emisor_instance</span><span class="o">.</span><span class="n">fecha_inicio_timbrado</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">))</span>
+
+        <span class="c1"># ------ CONTRATO ESTRICTO (por defecto) ------</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">json_de_completo</span><span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;generar_de&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Éxito</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">cdc</span> <span class="o">=</span> <span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CDC&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">results</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cdc&quot;</span><span class="p">)</span>
+
+            <span class="n">estado_sifen</span> <span class="o">=</span> <span class="s2">&quot;pendiente_aprobacion&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span> <span class="k">else</span> <span class="s2">&quot;simulado&quot;</span>
+            <span class="n">descripcion_estado</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">doc_electronico</span> <span class="o">=</span> <span class="n">DocumentoElectronico</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">emisor</span><span class="o">=</span><span class="n">emisor_instance</span><span class="p">,</span>
+                <span class="n">tipo_de</span><span class="o">=</span><span class="s2">&quot;factura&quot;</span><span class="p">,</span>
+                <span class="n">numero_documento</span><span class="o">=</span><span class="n">numero_doc_str</span><span class="p">,</span>
+                <span class="n">numero_timbrado</span><span class="o">=</span><span class="n">json_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dNumTim&quot;</span><span class="p">),</span>
+                <span class="n">cdc</span><span class="o">=</span><span class="n">cdc</span><span class="p">,</span>
+                <span class="n">estado_sifen</span><span class="o">=</span><span class="n">estado_sifen</span><span class="p">,</span>
+                <span class="n">descripcion_estado</span><span class="o">=</span><span class="n">descripcion_estado</span><span class="p">,</span>
+                <span class="n">json_enviado_api</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;generar_de&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">},</span>
+                <span class="n">json_respuesta_api</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+                <span class="n">transaccion_asociada_id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Avanzar correlativo SOLO luego de éxito</span>
+            <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">=</span> <span class="n">numero_doc_int</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">emisor_instance</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">])</span>
+
+            <span class="k">return</span> <span class="n">doc_electronico</span>
+
+        <span class="c1"># Error API: registrar documento en estado error para auditoría</span>
+        <span class="n">DocumentoElectronico</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">emisor</span><span class="o">=</span><span class="n">emisor_instance</span><span class="p">,</span>
+            <span class="n">tipo_de</span><span class="o">=</span><span class="s2">&quot;factura&quot;</span><span class="p">,</span>
+            <span class="n">numero_documento</span><span class="o">=</span><span class="n">numero_doc_str</span><span class="p">,</span>
+            <span class="n">numero_timbrado</span><span class="o">=</span><span class="n">json_de_completo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dNumTim&quot;</span><span class="p">),</span>
+            <span class="n">estado_sifen</span><span class="o">=</span><span class="s2">&quot;error_api&quot;</span><span class="p">,</span>
+            <span class="n">descripcion_estado</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;Error desconocido de la API&quot;</span><span class="p">),</span>
+            <span class="n">json_enviado_api</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="s2">&quot;generar_de&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">},</span>
+            <span class="n">json_respuesta_api</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">transaccion_asociada_id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error de API al generar DE: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.get_estado_sifen">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.get_estado_sifen">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_estado_sifen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ruc_emisor</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Consulta el estado de un Documento Electrónico (DE) en el sistema SIFEN.</span>
+
+<span class="sd">        :param cdc: Código de Control del documento.</span>
+<span class="sd">        :type cdc: str</span>
+<span class="sd">        :param ruc_emisor: RUC del emisor del documento.</span>
+<span class="sd">        :type ruc_emisor: str</span>
+<span class="sd">        :return: La respuesta de la API con el estado SIFEN.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CDC&quot;</span><span class="p">:</span> <span class="n">cdc</span><span class="p">,</span> <span class="s2">&quot;dRucEm&quot;</span><span class="p">:</span> <span class="n">ruc_emisor</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;get_estado_sifen&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.solicitar_cancelacion">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_cancelacion">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solicitar_cancelacion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ruc_emisor</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solicita la cancelación de un Documento Electrónico (DE) en SIFEN.</span>
+
+<span class="sd">        :param cdc: Código de Control del documento a cancelar.</span>
+<span class="sd">        :type cdc: str</span>
+<span class="sd">        :param ruc_emisor: RUC del emisor del documento.</span>
+<span class="sd">        :type ruc_emisor: str</span>
+<span class="sd">        :return: La respuesta de la API a la solicitud de cancelación.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CDC&quot;</span><span class="p">:</span> <span class="n">cdc</span><span class="p">,</span> <span class="s2">&quot;dRucEm&quot;</span><span class="p">:</span> <span class="n">ruc_emisor</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;sol_cancelacion&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.solicitar_inutilizacion">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_inutilizacion">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solicitar_inutilizacion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ruc_emisor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tipo_de</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_timbrado</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">establecimiento</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">punto_exp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_doc</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solicita la inutilización de un rango de números de Documentos Electrónicos.</span>
+
+<span class="sd">        Se utiliza para declarar números de documentos que no serán utilizados.</span>
+
+<span class="sd">        :param ruc_emisor: RUC del emisor.</span>
+<span class="sd">        :type ruc_emisor: str</span>
+<span class="sd">        :param tipo_de: Tipo de documento electrónico (&#39;1&#39; para Factura, &#39;5&#39; para Nota de Crédito).</span>
+<span class="sd">        :type tipo_de: str</span>
+<span class="sd">        :param num_timbrado: Número de timbrado.</span>
+<span class="sd">        :type num_timbrado: str</span>
+<span class="sd">        :param establecimiento: Número de establecimiento.</span>
+<span class="sd">        :type establecimiento: str</span>
+<span class="sd">        :param punto_exp: Número de punto de expedición.</span>
+<span class="sd">        :type punto_exp: str</span>
+<span class="sd">        :param num_doc: Número de documento a inutilizar.</span>
+<span class="sd">        :type num_doc: str</span>
+<span class="sd">        :return: La respuesta de la API a la solicitud de inutilización.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dRucEm&quot;</span><span class="p">:</span> <span class="n">ruc_emisor</span><span class="p">,</span>
+            <span class="s2">&quot;iTiDE&quot;</span><span class="p">:</span> <span class="n">tipo_de</span><span class="p">,</span>  <span class="c1"># &#39;1&#39; Factura, &#39;5&#39; Nota de Crédito (ajusta si tu API usa otro código)</span>
+            <span class="s2">&quot;dNumTim&quot;</span><span class="p">:</span> <span class="n">num_timbrado</span><span class="p">,</span>
+            <span class="s2">&quot;dEst&quot;</span><span class="p">:</span> <span class="n">establecimiento</span><span class="p">,</span>
+            <span class="s2">&quot;dPunExp&quot;</span><span class="p">:</span> <span class="n">punto_exp</span><span class="p">,</span>
+            <span class="s2">&quot;dNumDoc&quot;</span><span class="p">:</span> <span class="n">num_doc</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;sol_inutilizacion&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------------------</span>
+    <span class="c1"># Descargas</span>
+    <span class="c1"># ---------------------------</span>
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.descargar_kude">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_kude">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">descargar_kude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ruc_emisor</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Descarga el KuDE (Representación Gráfica del Documento Electrónico) en formato PDF.</span>
+
+<span class="sd">        Realiza una solicitud GET al endpoint específico de descarga de KuDE.</span>
+
+<span class="sd">        :param cdc: Código de Control del documento.</span>
+<span class="sd">        :type cdc: str</span>
+<span class="sd">        :param ruc_emisor: RUC del emisor del documento.</span>
+<span class="sd">        :type ruc_emisor: str</span>
+<span class="sd">        :raises requests.HTTPError: Si la descarga falla.</span>
+<span class="sd">        :return: El contenido binario del archivo PDF del KuDE.</span>
+<span class="sd">        :rtype: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;%PDF-1.4</span><span class="se">\n</span><span class="s2">% Simulado KuDE</span><span class="se">\n</span><span class="s2">1 0 obj &lt;&lt;&gt;&gt; endobj</span><span class="se">\n</span><span class="s2">trailer &lt;&lt;&gt;&gt;</span><span class="se">\n</span><span class="si">%%</span><span class="s2">EOF</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_token</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2">/dwn_kude/</span><span class="si">{</span><span class="n">ruc_emisor</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">cdc</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authentication-Token&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.descargar_xml">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_xml">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">descargar_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ruc_emisor</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Descarga el archivo XML firmado de un Documento Electrónico.</span>
+
+<span class="sd">        Realiza una solicitud GET al endpoint específico de descarga de XML.</span>
+
+<span class="sd">        :param cdc: Código de Control del documento.</span>
+<span class="sd">        :type cdc: str</span>
+<span class="sd">        :param ruc_emisor: RUC del emisor del documento.</span>
+<span class="sd">        :type ruc_emisor: str</span>
+<span class="sd">        :raises requests.HTTPError: Si la descarga falla.</span>
+<span class="sd">        :return: El contenido binario del archivo XML.</span>
+<span class="sd">        :rtype: bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DE Simulado=&quot;true&quot;&gt;&lt;/DE&gt;&#39;</span>
+
+        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_auth_token</span><span class="p">()</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url_esi</span><span class="si">}</span><span class="s2">/dwn_xml/</span><span class="si">{</span><span class="n">ruc_emisor</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">cdc</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authentication-Token&quot;</span><span class="p">:</span> <span class="n">token</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span></div>
+
+
+    <span class="c1"># --- INICIO: flujo contrato estricto utilitario ---</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcular_de_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_resumido</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Llama a la operación &#39;calcular_de&#39; de la API de Factura Segura,</span>
+<span class="sd">        cumpliendo con el contrato estricto de la API (params={&quot;DE&quot;: ...}).</span>
+
+<span class="sd">        :param de_resumido: JSON resumido del Documento Electrónico.</span>
+<span class="sd">        :type de_resumido: dict</span>
+<span class="sd">        :raises RuntimeError: Si la API devuelve un error o la respuesta no contiene el DE.</span>
+<span class="sd">        :return: El JSON completo del Documento Electrónico con los cálculos.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">de_resumido</span><span class="p">}</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;calcular_de&quot;</span><span class="p">,</span> <span class="n">payload_params</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calcular_de: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">or</span> <span class="s2">&quot;DE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Respuesta calcular_de sin DE: </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;DE&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generar_de_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_completo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Llama a la operación &#39;generar_de&#39; de la API de Factura Segura,</span>
+<span class="sd">        cumpliendo con el contrato estricto de la API (params={&quot;DE&quot;: ...}).</span>
+
+<span class="sd">        :param de_completo: JSON completo del Documento Electrónico a generar.</span>
+<span class="sd">        :type de_completo: dict</span>
+<span class="sd">        :raises RuntimeError: Si la API devuelve un error o la respuesta no contiene el CDC.</span>
+<span class="sd">        :return: El Código de Control (CDC) del documento generado.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">payload_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">de_completo</span><span class="p">}</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;generar_de&quot;</span><span class="p">,</span> <span class="n">payload_params</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Propaga la descripción exacta (p.ej. -80001 ESI sin permiso)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generar_de: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">or</span> <span class="s2">&quot;CDC&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Respuesta generar_de sin CDC: </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;CDC&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">emitir_end_to_end_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_resumido</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ejecuta el pipeline completo de emisión de un Documento Electrónico</span>
+<span class="sd">        siguiendo el contrato estricto de la API:</span>
+
+<span class="sd">        1. Llama a :meth:`calcular_de_contrato_estricto` para obtener el DE completo con cálculos.</span>
+<span class="sd">        2. Llama a :meth:`generar_de_contrato_estricto` para generar el DE y obtener el CDC.</span>
+
+<span class="sd">        :param de_resumido: JSON resumido del Documento Electrónico.</span>
+<span class="sd">        :type de_resumido: dict</span>
+<span class="sd">        :raises RuntimeError: Si alguna de las operaciones de la API falla.</span>
+<span class="sd">        :return: Un diccionario con el CDC y el JSON completo del DE.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">de_completo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcular_de_contrato_estricto</span><span class="p">(</span><span class="n">de_resumido</span><span class="p">)</span>
+        <span class="n">cdc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generar_de_contrato_estricto</span><span class="p">(</span><span class="n">de_completo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cdc&quot;</span><span class="p">:</span> <span class="n">cdc</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="n">de_completo</span><span class="p">}</span>
+
+    <span class="c1"># --- FIN: flujo contrato estricto utilitario ---</span>
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.calcular_de_contrato_estricto">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de_contrato_estricto">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcular_de_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_resumido</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">payload_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">de_resumido</span><span class="p">}</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;calcular_de&quot;</span><span class="p">,</span> <span class="n">payload_params</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calcular_de: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">or</span> <span class="s2">&quot;DE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Respuesta calcular_de sin DE: </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;DE&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.generar_de_contrato_estricto">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de_contrato_estricto">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generar_de_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_completo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">payload_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DE&quot;</span><span class="p">:</span> <span class="n">de_completo</span><span class="p">}</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span><span class="s2">&quot;generar_de&quot;</span><span class="p">,</span> <span class="n">payload_params</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error generar_de: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span> <span class="ow">or</span> <span class="s2">&quot;CDC&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Respuesta generar_de sin CDC: </span><span class="si">{</span><span class="n">resp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;CDC&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.services.FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">emitir_end_to_end_contrato_estricto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">de_resumido</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">de_completo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcular_de_contrato_estricto</span><span class="p">(</span><span class="n">de_resumido</span><span class="p">)</span>
+        <span class="n">cdc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generar_de_contrato_estricto</span><span class="p">(</span><span class="n">de_completo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;cdc&quot;</span><span class="p">:</span> <span class="n">cdc</span><span class="p">,</span> <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="n">de_completo</span><span class="p">}</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
