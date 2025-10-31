@@ -9,7 +9,7 @@ from cotizaciones.models import Cotizacion
 # --- ### NUEVO ### ---
 # Importamos la señal y el receptor (función) que la escucha
 # Los nombres vienen del traceback que me mostraste
-from cotizaciones.models import cotizacion_actualizada 
+from cotizaciones.signals import cotizacion_actualizada # <--- ESTA ES LA LÍNEA CORRECTA
 from notificaciones.signals import crear_notificacion_por_cambio_tasa
 # ---------------------
 
