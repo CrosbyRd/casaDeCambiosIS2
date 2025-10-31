@@ -18,15 +18,21 @@
       </thead>
       <tbody>
         {% for c in cotizaciones %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)"
+              data-code="{{ c.moneda_destino.codigo }}"
+              data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+              data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
             <td class="px-4 py-3">
               <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
               {{ c.moneda_destino.codigo }}
             </td>
 
-            {# sin decimales #}
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</td>
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</td>
+            <td class="px-4 py-3 text-right font-semibold">
+              <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+            </td>
+            <td class="px-4 py-3 text-right font-semibold">
+              <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+            </td>
 
             <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
           </tr>
@@ -46,6 +52,55 @@
   document.querySelectorAll('.currency-emoji').forEach(el=>{
     const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
+  });
+      // Indicadores de variación con persistencia de 12h
+  const TTL = 12 * 60 * 60 * 1000; // 12 horas en ms
+  const rows = document.querySelectorAll('tbody tr[data-code]');
+
+  rows.forEach(row => {
+    const code = String(row.dataset.code || '').toUpperCase();
+
+    ['compra', 'venta'].forEach(field => {
+      const el = row.querySelector(`.rate[data-field="${field}"]`);
+      if (!el) return;
+
+      const textNum = (el.textContent || '').replace(/\D+/g, '');
+      const nowVal = Number(row.dataset[field] || textNum);
+      const key = `rates:${code}:${field}`;
+      const nowTs = Date.now();
+
+      let data = null;
+      try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) {}
+
+      const prevVal = (data && typeof data.value === 'number') ? data.value : null;
+      let lastChange = data && data.lastChange ? data.lastChange : null; // {time, dir:'up'|'down'}
+
+      // ¿Qué mostrar?
+      let showDir = null;
+      if (prevVal !== null && nowVal !== prevVal) {
+        // Cambió: mostrar y actualizar "lastChange"
+        showDir = nowVal > prevVal ? 'up' : 'down';
+        lastChange = { time: nowTs, dir: showDir };
+      } else if (lastChange && (nowTs - lastChange.time) < TTL) {
+        // No cambió ahora, pero hubo un cambio reciente (<12h)
+        showDir = lastChange.dir;
+      }
+
+      if (showDir) {
+        const badge = document.createElement('span');
+        badge.textContent = showDir === 'up' ? '▲' : '▼';
+        badge.className = 'ml-1 text-xs opacity-70 align-middle';
+        badge.classList.add(showDir === 'up' ? 'text-emerald-600' : 'text-red-600');
+        // microajuste vertical
+        badge.style.position = 'relative';
+        badge.style.top = '-1px';
+        el.after(badge);
+      }
+
+      // Guardar valor actual y limpiar lastChange si ya expiró
+      const persisted = lastChange && (nowTs - lastChange.time) < TTL ? lastChange : null;
+      localStorage.setItem(key, JSON.stringify({ value: nowVal, lastChange: persisted }));
+    });
   });
 })();
 </script>
