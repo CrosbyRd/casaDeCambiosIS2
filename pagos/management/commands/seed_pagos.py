@@ -19,13 +19,16 @@ class Command(BaseCommand):
 
         for item in data:
             fields = item["fields"]
+            # Limpiamos el nombre para que sea la clave de búsqueda fiable
+            nombre_limpio = fields["nombre"].strip()
+
             medio, created = TipoMedioPago.objects.update_or_create(
-                nombre=fields["nombre"],
+                nombre=nombre_limpio,
                 defaults={
                     "activo": fields.get("activo", True),
                     "comision_porcentaje": fields.get("comision_porcentaje", 0),
-                    "descripcion": fields.get("descripcion", ""),
-                    "engine": fields.get("engine", "manual"),
+                    "descripcion": fields.get("descripcion", "").strip(),
+                    "engine": fields.get("engine", "manual").strip(), # Limpiamos el engine también
                     "engine_config": fields.get("engine_config", {}),
                 }
             )
