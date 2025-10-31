@@ -52,6 +52,17 @@ class TipoMedioPago(models.Model):
         help_text="Porcentaje de comisión que aplica este medio (0–100).",
     )
 
+    # --- ### AÑADE ESTE BLOQUE DE CÓDIGO ### ---
+    # Este es el campo que existe en tu BD pero falta en tu modelo
+    bonificacion_porcentaje = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("100"))],
+        help_text="Porcentaje de bonificación que aplica este medio (0–100).",
+    )
+    # --- ### FIN DEL BLOQUE ### ---
+    
     descripcion = models.TextField(blank=True)
     activo = models.BooleanField(default=True)
     creado_en = models.DateTimeField(default=timezone.now, editable=False)
