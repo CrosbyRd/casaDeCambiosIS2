@@ -71,6 +71,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-payments.models">módulo payments.models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-payments.stripe_service">módulo payments.stripe_service</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#payments.stripe_service.create_payment_intent"><code class="docutils literal notranslate"><span class="pre">create_payment_intent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payments.stripe_service.handle_webhook"><code class="docutils literal notranslate"><span class="pre">handle_webhook()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-payments.tests">módulo payments.tests</a></li>
@@ -80,6 +81,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.dynamic_payment_page_view"><code class="docutils literal notranslate"><span class="pre">dynamic_payment_page_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.payment_success_view"><code class="docutils literal notranslate"><span class="pre">payment_success_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#payments.views.stripe_payment_page"><code class="docutils literal notranslate"><span class="pre">stripe_payment_page()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#payments.views.stripe_webhook_view"><code class="docutils literal notranslate"><span class="pre">stripe_webhook_view()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
@@ -87,10 +89,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -152,11 +155,19 @@
 <span id="modulo-payments-stripe-service"></span><h2>módulo payments.stripe_service<a class="headerlink" href="#module-payments.stripe_service" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="payments.stripe_service.create_payment_intent">
-<span class="sig-prename descclassname"><span class="pre">payments.stripe_service.</span></span><span class="sig-name descname"><span class="pre">create_payment_intent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount_in_cents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/stripe_service.html#create_payment_intent"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.stripe_service.create_payment_intent" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">payments.stripe_service.</span></span><span class="sig-name descname"><span class="pre">create_payment_intent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount_in_cents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customer_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaction_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/stripe_service.html#create_payment_intent"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.stripe_service.create_payment_intent" title="Link to this definition"></a></dt>
 <dd><p>Crea un PaymentIntent en Stripe.
 - amount_in_cents: El monto a cobrar, en centavos (ej: 1000 para $10.00).
 - currency: La moneda (por defecto “usd”).
-- customer_email: Opcional, para asociar el pago a un cliente.</p>
+- customer_email: Opcional, para asociar el pago a un cliente.
+- transaction_id: Opcional, ID de la transacción interna para metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payments.stripe_service.handle_webhook">
+<span class="sig-prename descclassname"><span class="pre">payments.stripe_service.</span></span><span class="sig-name descname"><span class="pre">handle_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/stripe_service.html#handle_webhook"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.stripe_service.handle_webhook" title="Link to this definition"></a></dt>
+<dd><p>Maneja los eventos de webhook de Stripe.
+Actualiza el estado de la transacción en la base de datos.</p>
 </dd></dl>
 
 </section>
@@ -191,6 +202,18 @@
 <span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">stripe_payment_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#stripe_payment_page"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.stripe_payment_page" title="Link to this definition"></a></dt>
 <dd><p>Renderiza una página para que el cliente complete el pago con Stripe
 usando el client_secret.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="payments.views.stripe_webhook_view">
+<span class="sig-prename descclassname"><span class="pre">payments.views.</span></span><span class="sig-name descname"><span class="pre">stripe_webhook_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/payments/views.html#stripe_webhook_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#payments.views.stripe_webhook_view" title="Link to this definition"></a></dt>
+<dd><p>Vista que escucha las notificaciones asíncronas de Stripe (webhooks).</p>
+<p>Esta vista es llamada directamente por el SERVIDOR de Stripe, no por el
+navegador del cliente.</p>
+<p>La seguridad de esta vista depende 100% de la variable de entorno
+“STRIPE_WEBHOOK_SECRET”. Asegúrate de que esté configurada correctamente
+tanto en local (con Stripe CLI) como en producción (con Heroku).</p>
+<p>Ver las instrucciones en settings.py para más detalles.</p>
 </dd></dl>
 
 </section>

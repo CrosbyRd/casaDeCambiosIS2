@@ -8,55 +8,55 @@ Submódulos
 módulo casaDeCambiosIS2.transacciones.admin
 -------------------------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.admin
+.. automodule:: transacciones.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.transacciones.apps
-------------------------------------------
+módulo transacciones.apps
+-------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.apps
+.. automodule:: transacciones.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.transacciones.models
---------------------------------------------
+módulo transacciones.models
+---------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.models
+.. automodule:: transacciones.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.transacciones.tests
--------------------------------------------
+módulo transacciones.tests
+--------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.tests
+.. automodule:: transacciones.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.transacciones.urls
-------------------------------------------
+módulo transacciones.urls
+-------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.urls
+.. automodule:: transacciones.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.transacciones.views
--------------------------------------------
+módulo transacciones.views
+--------------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones.views
+.. automodule:: transacciones.views
    :members:
    :undoc-members:
    :show-inheritance:
 
 Contenido del módulo
----------------
+--------------------
 
-.. automodule:: casaDeCambiosIS2.transacciones
+.. automodule:: transacciones
    :members:
    :undoc-members:
    :show-inheritance:

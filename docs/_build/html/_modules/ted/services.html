@@ -43,8 +43,6 @@
               <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -73,6 +71,23 @@
              
   <h1>Código fuente para ted.services</h1><div class="highlight"><pre>
 <span></span><span class="c1"># ted/services.py</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Servicios relacionados con cotizaciones y gestión de divisas del Tauser.</span>
+
+<span class="sd">Este módulo define funciones utilitarias para consultar cotizaciones vigentes</span>
+<span class="sd">de monedas y determinar si una cotización puede ser usada para operaciones de</span>
+<span class="sd">compra o venta en el sistema. Incluye lógica de vigencia basada en tiempo y</span>
+<span class="sd">configuraciones del sistema.</span>
+
+<span class="sd">Constantes:</span>
+<span class="sd">    BASE_CODIGO (str): Código de la moneda base del sistema (PYG).</span>
+
+<span class="sd">Funciones:</span>
+<span class="sd">    get_cotizacion_vigente(moneda_obj): Devuelve la cotización más reciente para</span>
+<span class="sd">        una moneda destino, indicando si está vigente y si puede ser usada.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span>
@@ -85,13 +100,30 @@
 <a class="viewcode-back" href="../../ted.html#ted.services.get_cotizacion_vigente">[documentos]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_cotizacion_vigente</span><span class="p">(</span><span class="n">moneda_obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Devuelve:</span>
-<span class="sd">      {</span>
-<span class="sd">        &#39;compra&#39;: Decimal, &#39;venta&#39;: Decimal,</span>
-<span class="sd">        &#39;created_at&#39;: datetime, &#39;vigente&#39;: bool,</span>
-<span class="sd">        &#39;usable&#39;: bool,  # True si vigente o si TED_ALLOW_STALE_RATES está activo</span>
-<span class="sd">      }</span>
-<span class="sd">    La vigencia se controla con settings.TED_COTIZACION_VIGENCIA_MINUTES (default 15).</span>
+<span class="sd">    Obtiene la cotización más reciente para una moneda destino respecto a la moneda base.</span>
+
+<span class="sd">    La función devuelve un diccionario con los valores de compra y venta, la fecha de</span>
+<span class="sd">    actualización y flags de vigencia y uso, considerando la configuración de vigencia</span>
+<span class="sd">    definida en `settings.TED_COTIZACION_VIGENCIA_MINUTES` y la opción de permitir</span>
+<span class="sd">    cotizaciones expiradas con `TED_ALLOW_STALE_RATES`.</span>
+
+<span class="sd">    :param moneda_obj: Instancia del modelo Moneda para la cual se desea la cotización.</span>
+<span class="sd">    :type moneda_obj: monedas.models.Moneda</span>
+
+<span class="sd">    :returns: Diccionario con la cotización y estados, o None si no hay cotización.</span>
+<span class="sd">    :rtype: dict | None</span>
+
+<span class="sd">    Diccionario retornado:</span>
+<span class="sd">        - &#39;compra&#39; (Decimal): Valor de compra de la moneda destino.</span>
+<span class="sd">        - &#39;venta&#39; (Decimal): Valor de venta de la moneda destino.</span>
+<span class="sd">        - &#39;created_at&#39; (datetime): Fecha y hora de la última actualización.</span>
+<span class="sd">        - &#39;vigente&#39; (bool): True si la cotización está dentro del tiempo de vigencia configurado.</span>
+<span class="sd">        - &#39;usable&#39; (bool): True si la cotización puede ser usada (vigente o permitido usar caducada).</span>
+
+<span class="sd">    :notes:</span>
+<span class="sd">        - La vigencia por defecto es de 15 minutos si `TED_COTIZACION_VIGENCIA_MINUTES` no está definido.</span>
+<span class="sd">        - La función retorna None si no se encuentra la moneda, el modelo o la cotización.</span>
+<span class="sd">        - Utiliza `apps.get_model` para obtener el modelo `Cotizacion` de manera dinámica.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">moneda_obj</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>

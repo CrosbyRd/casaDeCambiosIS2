@@ -1,3 +1,13 @@
+"""
+Tareas asíncronas (Celery) de la app Facturación Electrónica.
+
+.. module:: facturacion_electronica.tasks
+   :synopsis: Tareas Celery para la gestión asíncrona de documentos electrónicos.
+
+Este módulo define tareas Celery para la generación, consulta de estado,
+cancelación e inutilización de documentos electrónicos, interactuando
+con la API de Factura Segura y el sistema SIFEN.
+"""
 from celery import shared_task
 from django.utils import timezone
 from .services import FacturaSeguraAPIClient
@@ -19,18 +29,43 @@ ACTIVIDADES_ECONOMICAS_MAP = {
 # ----------------------------
 
 def _is_simulated_cdc(cdc):
+    """
+    Verifica si un CDC (Código de Control) es un valor simulado.
+
+    :param cdc: El CDC a verificar.
+    :type cdc: str
+    :return: True si el CDC es simulado, False en caso contrario.
+    :rtype: bool
+    """
     return (not cdc) or str(cdc).upper().startswith("SIMULATED")
 
 
 import decimal
 
 def _to_int(value):
+    """
+    Convierte un valor a entero, manejando posibles errores de conversión.
+
+    :param value: El valor a convertir.
+    :return: El valor convertido a entero o 0 si falla la conversión.
+    :rtype: int
+    """
     try:
         return int(value)
     except Exception:
         return 0
 
 def _to_decimal(value, decimal_places=8):
+    """
+    Convierte un valor a un objeto Decimal, con una precisión específica.
+
+    :param value: El valor a convertir.
+    :type value: int, float, str
+    :param decimal_places: Número de lugares decimales para la cuantificación.
+    :type decimal_places: int
+    :return: El valor convertido a Decimal o Decimal("0.00") si falla la conversión.
+    :rtype: decimal.Decimal
+    """
     try:
         return decimal.Decimal(str(value)).quantize(decimal.Decimal(f"1e-{decimal_places}")).normalize()
     except Exception:
@@ -38,8 +73,16 @@ def _to_decimal(value, decimal_places=8):
 
 def _format_decimal_to_str(value, decimal_places=8):
     """
-    Formatea un Decimal a string, eliminando ceros finales y el punto decimal
-    si el valor es un entero.
+    Formatea un valor (int, float, str o Decimal) a su representación en string,
+    asegurando que sea un Decimal y eliminando ceros finales y el punto decimal
+    si el valor resultante es un entero.
+
+    :param value: El valor a formatear.
+    :type value: int, float, str, decimal.Decimal
+    :param decimal_places: Número de lugares decimales para la cuantificación inicial.
+    :type decimal_places: int
+    :return: La representación en string del valor formateado.
+    :rtype: str
     """
     if isinstance(value, (int, float)):
         value = _to_decimal(value, decimal_places)
@@ -56,6 +99,20 @@ def _format_decimal_to_str(value, decimal_places=8):
     return str(normalized_value)
 
 def _calcular_bas_grav_iva(iAfecIVA, dTotOpeItem, dPropIVA, dTasaIVA):
+    """
+    Calcula la base gravada del IVA para un ítem.
+
+    :param iAfecIVA: Código de afectación del IVA.
+    :type iAfecIVA: str
+    :param dTotOpeItem: Total de la operación del ítem.
+    :type dTotOpeItem: decimal.Decimal o convertible
+    :param dPropIVA: Proporción gravada del IVA.
+    :type dPropIVA: decimal.Decimal o convertible
+    :param dTasaIVA: Tasa de IVA.
+    :type dTasaIVA: decimal.Decimal o convertible
+    :return: La base gravada del IVA.
+    :rtype: decimal.Decimal
+    """
     dTotOpeItem = _to_decimal(dTotOpeItem)
     dPropIVA = _to_decimal(dPropIVA)
     dTasaIVA = _to_decimal(dTasaIVA)
@@ -67,11 +124,35 @@ def _calcular_bas_grav_iva(iAfecIVA, dTotOpeItem, dPropIVA, dTasaIVA):
     return decimal.Decimal("0")
 
 def _calcular_liq_iva_item(dBasGravIVA, dTasaIVA):
+    """
+    Calcula la liquidación del IVA para un ítem.
+
+    :param dBasGravIVA: Base gravada del IVA.
+    :type dBasGravIVA: decimal.Decimal o convertible
+    :param dTasaIVA: Tasa de IVA.
+    :type dTasaIVA: decimal.Decimal o convertible
+    :return: La liquidación del IVA.
+    :rtype: decimal.Decimal
+    """
     dBasGravIVA = _to_decimal(dBasGravIVA)
     dTasaIVA = _to_decimal(dTasaIVA)
     return dBasGravIVA * (dTasaIVA / decimal.Decimal("100"))
 
 def _calcular_bas_exe(iAfecIVA, dTotOpeItem, dPropIVA, dTasaIVA):
+    """
+    Calcula la base exenta para un ítem.
+
+    :param iAfecIVA: Código de afectación del IVA.
+    :type iAfecIVA: str
+    :param dTotOpeItem: Total de la operación del ítem.
+    :type dTotOpeItem: decimal.Decimal o convertible
+    :param dPropIVA: Proporción gravada del IVA.
+    :type dPropIVA: decimal.Decimal o convertible
+    :param dTasaIVA: Tasa de IVA.
+    :type dTasaIVA: decimal.Decimal o convertible
+    :return: La base exenta.
+    :rtype: decimal.Decimal
+    """
     dTotOpeItem = _to_decimal(dTotOpeItem)
     dPropIVA = _to_decimal(dPropIVA)
     dTasaIVA = _to_decimal(dTasaIVA)
@@ -85,10 +166,22 @@ def _calcular_bas_exe(iAfecIVA, dTotOpeItem, dPropIVA, dTasaIVA):
 
 def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_str, email_receptor="receptor@test.com"):
     """
-    DE 'resumido' con nomenclatura alineada al XML del profe / SIFEN:
-      - Bloque Emisor con sufijo Emi (dNomEmi, dDirEmi, dTelEmi, dEmailE, cDepEmi, dDesDepEmi, cCiuEmi, dDesCiuEmi)
-      - Mínimos globales: iTipTra, iTImp, cMoneOpe, dCondTiCam, dTiCam, iCondOpe
-      - Receptor básico y 1..N ítems exentos (ajusta si tu caso requiere IVA)
+    Construye un JSON de Documento Electrónico (DE) "resumido" a partir de una transacción.
+
+    Este JSON sigue la nomenclatura alineada con el XML del profesor y el sistema SIFEN,
+    incluyendo bloques para el emisor, mínimos globales, receptor e ítems.
+    Se asume un "no contribuyente innominado" para el receptor en entornos de prueba.
+
+    :param transaccion: La instancia de la transacción de la cual se extraen los datos.
+    :type transaccion: :class:`transacciones.models.Transaccion`
+    :param emisor: La instancia del emisor de factura electrónica.
+    :type emisor: :class:`facturacion_electronica.models.EmisorFacturaElectronica`
+    :param numero_documento_str: El número de documento formateado como string.
+    :type numero_documento_str: str
+    :param email_receptor: Email del receptor para el documento electrónico.
+    :type email_receptor: str
+    :return: Un diccionario que representa el JSON resumido del Documento Electrónico.
+    :rtype: dict
     """
     # === Monedas / montos ===
     m_dest = getattr(transaccion, "moneda_destino", None)
@@ -343,11 +436,28 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_completo=None, email_receptor="globalexchangea2@gmail.com"):
     """
-    Flujo recomendado por la doc de ESI:
-    1) construir DE 'resumido' (si no fue provisto)
-    2) calcular_de (contrato estricto: params={"DE":...}) -> devuelve DE con campos calculados
-    3) generar_de (solo DE) -> CDC y persistencia (vía services)
-    4) (si no es simulación) agendar consulta de estado
+    Tarea Celery para generar una factura electrónica.
+
+    Implementa el flujo recomendado por la documentación de ESI:
+    1. Construye un JSON de DE "resumido" si no se proporciona uno completo.
+    2. Llama a la operación `calcular_de` de la API para obtener el DE con campos calculados.
+    3. Llama a la operación `generar_de` de la API para crear el DE y persistir el :class:`DocumentoElectronico` localmente.
+    4. Si no es una simulación, agenda una tarea para consultar el estado SIFEN del documento.
+
+    Gestiona reintentos en caso de fallos recuperables y registra errores persistentes.
+
+    :param self: Instancia de la tarea Celery (para `retry`).
+    :param emisor_id: ID del emisor de factura electrónica.
+    :type emisor_id: int or None
+    :param transaccion_id: ID de la transacción asociada.
+    :type transaccion_id: uuid.UUID
+    :param json_de_completo: JSON completo del DE si ya está pre-construido.
+    :type json_de_completo: dict or None
+    :param email_receptor: Email del receptor para el documento electrónico.
+    :type email_receptor: str
+    :raises Exception: Si ocurre un error no recuperable o se exceden los reintentos.
+    :return: Un diccionario con el estado de la tarea y el CDC si fue exitosa.
+    :rtype: dict
     """
     try:
         # Si emisor_id es None, buscar un emisor por defecto
@@ -422,11 +532,23 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
 @shared_task(bind=True, max_retries=10, default_retry_delay=300)
 def get_estado_sifen_task(self, documento_electronico_id):
     """
-    Consulta de estado SIFEN con reintentos solo en estados/errores recuperables.
-    No consulta ni reintenta si:
-      - el documento es simulado
-      - el CDC es simulado
-      - SIFEN responde que el RUC del CDC no coincide con dRucEm (error no recuperable)
+    Tarea Celery para consultar el estado de un Documento Electrónico en SIFEN.
+
+    Esta tarea consulta el estado de un documento electrónico y actualiza su estado
+    localmente. Implementa una lógica de reintentos para errores recuperables
+    y maneja casos específicos como documentos simulados o errores no recuperables
+    (ej. RUC del CDC no coincide).
+
+    También actualiza el estado de la transacción asociada a 'completada' si el
+    documento es aprobado y envía la factura por email.
+
+    :param self: Instancia de la tarea Celery (para `retry`).
+    :param documento_electronico_id: ID del documento electrónico a consultar.
+    :type documento_electronico_id: uuid.UUID
+    :raises DocumentoElectronico.DoesNotExist: Si el documento no se encuentra.
+    :raises Exception: Si ocurre un error no recuperable o se exceden los reintentos.
+    :return: Un diccionario con el estado de la tarea y el estado SIFEN.
+    :rtype: dict
     """
     try:
         doc_electronico = DocumentoElectronico.objects.get(id=documento_electronico_id)
@@ -573,7 +695,21 @@ def get_estado_sifen_task(self, documento_electronico_id):
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def solicitar_cancelacion_task(self, documento_electronico_id):
     """
-    Solicita cancelación y reconsulta estado.
+    Tarea Celery para solicitar la cancelación de un Documento Electrónico.
+
+    Envía una solicitud de cancelación a la API de Factura Segura y, si es exitosa,
+    actualiza el estado local del documento a 'pendiente_cancelacion' y agenda
+    una tarea para reconsultar su estado en SIFEN.
+
+    Gestiona reintentos en caso de fallos recuperables.
+
+    :param self: Instancia de la tarea Celery (para `retry`).
+    :param documento_electronico_id: ID del documento electrónico a cancelar.
+    :type documento_electronico_id: uuid.UUID
+    :raises DocumentoElectronico.DoesNotExist: Si el documento no se encuentra.
+    :raises Exception: Si ocurre un error no recuperable o se exceden los reintentos.
+    :return: Un diccionario con el estado de la tarea y el estado de la solicitud.
+    :rtype: dict
     """
     try:
         doc = DocumentoElectronico.objects.get(id=documento_electronico_id)
@@ -618,7 +754,21 @@ def solicitar_cancelacion_task(self, documento_electronico_id):
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def solicitar_inutilizacion_task(self, documento_electronico_id):
     """
-    Solicita inutilización y reconsulta estado.
+    Tarea Celery para solicitar la inutilización de un Documento Electrónico.
+
+    Envía una solicitud de inutilización a la API de Factura Segura y, si es exitosa,
+    actualiza el estado local del documento a 'pendiente_inutilizacion' y agenda
+    una tarea para reconsultar su estado en SIFEN.
+
+    Gestiona reintentos en caso de fallos recuperables.
+
+    :param self: Instancia de la tarea Celery (para `retry`).
+    :param documento_electronico_id: ID del documento electrónico a inutilizar.
+    :type documento_electronico_id: uuid.UUID
+    :raises DocumentoElectronico.DoesNotExist: Si el documento no se encuentra.
+    :raises Exception: Si ocurre un error no recuperable o se exceden los reintentos.
+    :return: Un diccionario con el estado de la tarea y el estado de la solicitud.
+    :rtype: dict
     """
     try:
         doc = DocumentoElectronico.objects.get(id=documento_electronico_id)
@@ -671,7 +821,11 @@ def solicitar_inutilizacion_task(self, documento_electronico_id):
 @shared_task
 def consultar_estado_pendientes():
     """
-    Reconsulta documentos en proceso.
+    Tarea Celery para reconsultar periódicamente el estado de documentos electrónicos
+    que se encuentran en estado 'pendiente_aprobacion'.
+
+    Itera sobre los documentos pendientes y agenda una tarea `get_estado_sifen_task`
+    para cada uno.
     """
     for de in DocumentoElectronico.objects.filter(
         estado_sifen__in=["pendiente_aprobacion"]

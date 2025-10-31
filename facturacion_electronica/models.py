@@ -1,3 +1,14 @@
+"""
+Modelos de la app Facturación Electrónica.
+
+.. module:: facturacion_electronica.models
+   :synopsis: Modelos propios del módulo de Facturación Electrónica.
+
+Incluye:
+- :class:`EmisorFacturaElectronica`: Representa la información de un emisor de facturas electrónicas.
+- :class:`DocumentoElectronico`: Representa una factura o nota de crédito electrónica generada.
+- :class:`ItemDocumentoElectronico`: Representa un ítem dentro de un Documento Electrónico.
+"""
 from django.db import models
 from django.conf import settings
 import uuid
@@ -9,6 +20,36 @@ from django.db import models
 from django.utils import timezone
 
 class EmisorFacturaElectronica(models.Model):
+    """
+    Representa la información de un emisor de facturas electrónicas.
+
+    Este modelo almacena todos los datos necesarios para identificar a un emisor
+    ante el sistema de facturación electrónica, incluyendo su RUC, dirección,
+    numeración de timbrado y rangos de facturación.
+
+    :param nombre: Razón social o nombre del emisor.
+    :param ruc: Número de Identificación Tributaria (RUC) del emisor (sin DV).
+    :param dv_ruc: Dígito Verificador del RUC.
+    :param email_emisor: Email de contacto del emisor.
+    :param telefono: Teléfono de contacto del emisor.
+    :param codigo_departamento: Código del departamento de la dirección del emisor.
+    :param descripcion_departamento: Descripción del departamento.
+    :param codigo_ciudad: Código de la ciudad de la dirección del emisor.
+    :param descripcion_ciudad: Descripción de la ciudad.
+    :param direccion: Dirección física del emisor.
+    :param numero_casa: Número de casa de la dirección.
+    :param pais: Código de país (por defecto "PY").
+    :param establecimiento: Número de establecimiento (3 dígitos).
+    :param punto_expedicion: Número de punto de expedición (3 dígitos).
+    :param numero_timbrado_actual: Número de timbrado actual (8 dígitos).
+    :param fecha_inicio_timbrado: Fecha de inicio de vigencia del timbrado.
+    :param auth_token: Token de autenticación para la API de FacturaSegura.
+    :param token_generado_at: Fecha y hora de generación del token.
+    :param activo: Indica si el emisor está activo en el sistema.
+    :param rango_numeracion_inicio: Número inicial del rango de numeración de facturas.
+    :param rango_numeracion_fin: Número final del rango de numeración de facturas.
+    :param siguiente_numero_factura: Próximo número de factura a emitir.
+    """
     # Identificación del emisor (coincidir con XML)
     nombre = models.CharField(max_length=255, verbose_name="Razón social / Nombre")
     ruc = models.CharField(
@@ -84,6 +125,13 @@ class EmisorFacturaElectronica(models.Model):
         return f"{self.nombre} ({self.ruc}-{self.dv_ruc})"
 
     def clean(self):
+        """
+        Realiza validaciones personalizadas para los campos del emisor.
+
+        Verifica la validez del RUC, DV, establecimiento, punto de expedición,
+        número de timbrado, fecha de inicio de timbrado, y la coherencia
+        de los rangos de numeración.
+        """
         # RUC / DV
         if not (self.ruc and self.ruc.isdigit() and 7 <= len(self.ruc) <= 8):
             raise ValidationError(_("El RUC debe ser numérico de 7 u 8 dígitos."))
@@ -122,8 +170,15 @@ class EmisorFacturaElectronica(models.Model):
 
     def reservar_numero_y_avanzar(self):
         """
-        Devuelve (numero_int, numero_str_7dig) y avanza 'siguiente_numero_factura' en forma concurrencia-segura.
-        Úsalo al crear un DocumentoElectronico propio (emisión).
+        Reserva el siguiente número de factura disponible y avanza el contador.
+
+        Este método asegura la concurrencia segura al reservar un número
+        dentro del rango definido y actualizar el `siguiente_numero_factura`.
+        Debe usarse al crear un `DocumentoElectronico` propio (emisión).
+
+        :raises ValidationError: Si no hay numeración disponible en el rango.
+        :return: Una tupla con el número de factura como entero y como string de 7 dígitos.
+        :rtype: tuple[int, str]
         """
         self.refresh_from_db()  # bloquea la fila del emisor
         n = self.siguiente_numero_factura
@@ -136,13 +191,42 @@ class EmisorFacturaElectronica(models.Model):
         return n, f"{n:07d}"
 
     def etiqueta_con(self, numero_int: int) -> str:
-        """Devuelve '001-003-0000401' según estab/punto y el número dado."""
+        """
+        Genera la etiqueta completa del documento electrónico (ej. '001-003-0000401').
+
+        Combina el establecimiento, punto de expedición y el número de documento
+        dado para formar la etiqueta completa.
+
+        :param numero_int: El número de documento como entero.
+        :type numero_int: int
+        :return: La etiqueta formateada del documento.
+        :rtype: str
+        """
         return f"{self.establecimiento}-{self.punto_expedicion}-{numero_int:07d}"
         
         
 class DocumentoElectronico(models.Model):
     """
     Representa una factura o nota de crédito electrónica generada.
+
+    Este modelo almacena la información detallada de un documento electrónico,
+    incluyendo su tipo, numeración, estado SIFEN, fechas, y referencias a
+    JSONs de la API y URLs de descarga.
+
+    :param id: Identificador único universal del documento.
+    :param emisor: Referencia al emisor que generó el documento.
+    :param tipo_de: Tipo de documento electrónico (factura o nota de crédito).
+    :param numero_documento: Número correlativo del documento (7 dígitos).
+    :param numero_timbrado: Número de timbrado asociado al documento.
+    :param cdc: Código de Control del documento (44 caracteres).
+    :param estado_sifen: Estado actual del documento en el sistema SIFEN.
+    :param descripcion_estado: Descripción adicional del estado.
+    :param fecha_emision: Fecha y hora de emisión del documento.
+    :param json_enviado_api: JSON enviado a la API de FacturaSegura.
+    :param json_respuesta_api: JSON recibido como respuesta de la API.
+    :param transaccion_asociada: Transacción de la casa de cambio asociada a este documento.
+    :param url_kude: URL para descargar el KuDE (Representación Gráfica del Documento Electrónico).
+    :param url_xml: URL para descargar el archivo XML del documento.
     """
     TIPO_DE_CHOICES = [
         ('factura', 'Factura Electrónica'),
@@ -205,6 +289,11 @@ class DocumentoElectronico(models.Model):
         unique_together = ('emisor', 'numero_documento')
 
     def clean(self):
+        """
+        Realiza validaciones personalizadas para los campos del documento electrónico.
+
+        Verifica que el número de documento tenga exactamente 7 dígitos numéricos.
+        """
         # Validación suave: exactamente 7 dígitos (permitimos cualquier rango para poder importar/verificar XML ajenos)
         if self.numero_documento and (len(self.numero_documento) != 7 or not self.numero_documento.isdigit()):
             raise ValidationError("El número de documento debe tener exactamente 7 dígitos (con ceros a la izquierda).")
@@ -216,6 +305,21 @@ class DocumentoElectronico(models.Model):
 class ItemDocumentoElectronico(models.Model):
     """
     Representa un ítem dentro de un Documento Electrónico.
+
+    Este modelo detalla cada producto o servicio incluido en un documento
+    electrónico, con información como código, descripción, cantidad, precio,
+    descuentos y detalles de afectación de IVA.
+
+    :param documento_electronico: Referencia al documento electrónico al que pertenece el ítem.
+    :param codigo_interno: Código interno del producto o servicio.
+    :param descripcion_producto_servicio: Descripción del producto o servicio.
+    :param unidad_medida: Código de la unidad de medida.
+    :param cantidad: Cantidad del producto o servicio.
+    :param precio_unitario: Precio unitario del producto o servicio.
+    :param descuento_item: Monto de descuento aplicado a este ítem.
+    :param afectacion_iva: Código de afectación del IVA.
+    :param proporcion_iva: Proporción gravada del IVA.
+    :param tasa_iva: Tasa de IVA aplicada.
     """
     documento_electronico = models.ForeignKey(DocumentoElectronico, on_delete=models.CASCADE, related_name='items')
 

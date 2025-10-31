@@ -22,3 +22,6 @@ casaDeCambiosIS2
    payments
    transacciones
    ted
+   facturacion_electronica
+   notificaciones
+   simuladores

@@ -4,106 +4,106 @@ paquete pagos
 Submódulos
 ----------
 
-módulo casaDeCambiosIS2.pagos.admin
+módulo pagos.admin
+------------------
+
+.. automodule:: pagos.admin
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.apps
+-----------------
+
+.. automodule:: pagos.apps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.forms
+------------------
+
+.. automodule:: pagos.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.models
+-------------------
+
+.. automodule:: pagos.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.services
+---------------------
+
+.. automodule:: pagos.services
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.urls
+-----------------
+
+.. automodule:: pagos.urls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.views
+------------------
+
+.. automodule:: pagos.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.gateways.base
+--------------------------
+
+.. automodule:: pagos.gateways.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo pagos.gateways.local_gateway
 -----------------------------------
 
-.. automodule:: casaDeCambiosIS2.pagos.admin
+.. automodule:: pagos.gateways.local_gateway
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.pagos.apps
-----------------------------------
+módulo pagos.gateways.simulador_gateway
+---------------------------------------
 
-.. automodule:: casaDeCambiosIS2.pagos.apps
+.. automodule:: pagos.gateways.simulador_gateway
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.pagos.forms
------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.forms
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.models
+módulo pagos.gateways.stripe_gateway
 ------------------------------------
 
-.. automodule:: casaDeCambiosIS2.pagos.models
+.. automodule:: pagos.gateways.stripe_gateway
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.pagos.services
---------------------------------------
+módulo pagos.integrations.router
+--------------------------------
 
-.. automodule:: casaDeCambiosIS2.pagos.services
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.urls
-----------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.urls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.views
------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.views
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.gateways.base
--------------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.gateways.base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.gateways.local_gateway
-----------------------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.gateways.local_gateway
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.gateways.simulador_gateway
---------------------------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.gateways.simulador_gateway
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.gateways.stripe_gateway
------------------------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.gateways.stripe_gateway
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo casaDeCambiosIS2.pagos.integrations.router
--------------------------------------------------
-
-.. automodule:: casaDeCambiosIS2.pagos.integrations.router
+.. automodule:: pagos.integrations.router
    :members:
    :undoc-members:
    :show-inheritance:
 
 Contenido del módulo
----------------
+--------------------
 
-.. automodule:: casaDeCambiosIS2.pagos
+.. automodule:: pagos
    :members:
    :undoc-members:
    :show-inheritance:

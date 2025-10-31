@@ -4,74 +4,74 @@ paquete notificaciones
 Submódulos
 ----------
 
-módulo casaDeCambiosIS2.notificaciones.apps
--------------------------------------------
+módulo notificaciones.apps
+--------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.apps
+.. automodule:: notificaciones.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.emails
----------------------------------------------
+módulo notificaciones.emails
+----------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.emails
+.. automodule:: notificaciones.emails
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.forms
---------------------------------------------
+módulo notificaciones.forms
+---------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.forms
+.. automodule:: notificaciones.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.models
-----------------------------------------------
+módulo notificaciones.models
+----------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.models
+.. automodule:: notificaciones.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.signals
------------------------------------------------
+módulo notificaciones.signals
+-----------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.signals
+.. automodule:: notificaciones.signals
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.tasks
----------------------------------------------
+módulo notificaciones.tasks
+---------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.tasks
+.. automodule:: notificaciones.tasks
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.urls
---------------------------------------------
+módulo notificaciones.urls
+--------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.urls
+.. automodule:: notificaciones.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.utils
----------------------------------------------
+módulo notificaciones.utils
+---------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.utils
+.. automodule:: notificaciones.utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.notificaciones.views
----------------------------------------------
+módulo notificaciones.views
+---------------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones.views
+.. automodule:: notificaciones.views
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,7 @@ módulo casaDeCambiosIS2.notificaciones.views
 Contenido del módulo
 --------------------
 
-.. automodule:: casaDeCambiosIS2.notificaciones
+.. automodule:: notificaciones
    :members:
    :undoc-members:
    :show-inheritance:

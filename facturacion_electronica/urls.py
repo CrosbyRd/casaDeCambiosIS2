@@ -1,3 +1,13 @@
+"""
+Definiciones de URL para la app Facturación Electrónica.
+
+.. module:: facturacion_electronica.urls
+   :synopsis: Rutas URL para la gestión de emisores y documentos electrónicos.
+
+Este módulo define las rutas URL para las vistas relacionadas con la gestión
+de emisores de facturas electrónicas y documentos electrónicos, incluyendo
+operaciones CRUD y acciones específicas de la API.
+"""
 from django.urls import path
 from . import views
 

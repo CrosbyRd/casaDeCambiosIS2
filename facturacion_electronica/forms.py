@@ -1,3 +1,12 @@
+"""
+Formularios de la app Facturación Electrónica.
+
+.. module:: facturacion_electronica.forms
+   :synopsis: Formularios propios del módulo de Facturación Electrónica.
+
+Este módulo contiene los formularios para la creación y edición de emisores
+de facturas electrónicas, incluyendo validaciones personalizadas.
+"""
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -6,11 +15,14 @@ from .models import EmisorFacturaElectronica
 
 class EmisorFacturaElectronicaForm(forms.ModelForm):
     """
-    Form para crear/editar EmisorFacturaElectronica alineado al XML:
-    - Contacto: usa email_emisor / telefono (nombres del modelo)
-    - Actividades: permite CSV -> lista, validando 5 o 6 dígitos (cActEco)
-    - Muestra numeración 401–450 y siguiente número (con min/max)
-    - Token visible (solo lectura) para diagnóstico
+    Formulario para crear o editar un :class:`EmisorFacturaElectronica`.
+
+    Este formulario está diseñado para alinear la entrada de datos con la estructura
+    requerida para la facturación electrónica. Incluye campos para la identificación,
+    contacto, dirección, numeración fija (establecimiento y punto de expedición),
+    timbrado, estado, y el rango de numeración de facturas.
+
+    También hace que el token de autenticación sea de solo lectura para fines de diagnóstico.
     """
 
 
@@ -67,6 +79,11 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
 
     # === Inicialización: poblar el textarea de actividades desde la lista JSON ===
     def __init__(self, *args, **kwargs):
+        """
+        Inicializa el formulario.
+
+        Configura los campos `auth_token` y `token_generado_at` como de solo lectura.
+        """
         super().__init__(*args, **kwargs)
 
 
@@ -76,6 +93,16 @@ class EmisorFacturaElectronicaForm(forms.ModelForm):
 
 
     def clean(self):
+        """
+        Realiza validaciones personalizadas para los campos del formulario.
+
+        Verifica el formato de RUC, DV, establecimiento, punto de expedición,
+        número de timbrado y la coherencia del rango de numeración de facturas.
+
+        :raises ValidationError: Si alguna validación falla.
+        :return: Los datos limpios y validados del formulario.
+        :rtype: dict
+        """
         cleaned = super().clean()
 
         # Estab/Punto/Timbrado en formato fijo
