@@ -140,7 +140,6 @@ class CampoMedioPago(models.Model):
     activo = models.BooleanField(default=True)
 
     class Meta:
-        db_table = "pagos_campo_medio"
         verbose_name = "Campo de medio de pago"
         verbose_name_plural = "Campos de medios de pago"
         unique_together = ("tipo", "nombre_campo")
@@ -190,7 +189,6 @@ class MedioPagoCliente(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = "pagos_medio_cliente"
         constraints = [
             # ✅ a lo sumo un predeterminado por CLIENTE
             models.UniqueConstraint(
