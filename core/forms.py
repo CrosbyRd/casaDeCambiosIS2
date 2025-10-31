@@ -109,13 +109,15 @@ class OperacionForm(SimulacionForm):
                 cliente=self.cliente, activo=True
             ).select_related('tipo') # Optimizar consulta
 
-            # Configurar opciones para medio_acreditacion
-            acreditacion_choices = [('efectivo', 'Efectivo (Retiro en Tauser)')]
+            # Configurar opciones para medio_acreditacion (sin 'Efectivo' hardcodeado)
+            acreditacion_choices = []
             medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(
                 cliente=self.cliente, activo=True
             ).select_related('tipo')
             acreditacion_choices.extend([(str(m.id_medio), f"{m.alias} ({m.tipo.nombre})") for m in medios_acreditacion_cliente])
             self.fields['medio_acreditacion'].choices = acreditacion_choices
+            # Si no hay medios de acreditación, el campo debería ser requerido y el usuario redirigido a crear uno.
+            # Esto ya se maneja en core/views.py
 
     def clean(self):
         cleaned_data = super().clean()

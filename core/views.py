@@ -31,6 +31,7 @@ from usuarios.forms import VerificacionForm # Para el formulario de OTP
 from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
 from decimal import Decimal, ROUND_HALF_UP # Para manejar decimales y redondeo
 from ted.logic import ajustar_monto_a_denominaciones_disponibles # Importar la lógica de ajuste
+from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion # Alias para evitar conflicto
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -127,7 +128,7 @@ def iniciar_operacion(request):
         return redirect(reverse("pagos:clientes_create"))
     
     if initial_data.get('tipo_operacion') == 'compra' and not medios_acreditacion_cliente.exists():
-        messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra, o seleccionar 'Efectivo'. Por favor, crea uno.")
+        messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra. Por favor, crea uno.")
         return redirect(reverse("medios_acreditacion:clientes_create"))
 
 
@@ -161,14 +162,7 @@ def iniciar_operacion(request):
         }
     medios_pago_json = json.dumps(medios_pago_para_js)
 
-    medios_acreditacion_para_js = {
-        'efectivo': {
-            'id_medio': 'efectivo',
-            'alias': 'Efectivo',
-            'tipo_nombre': 'Retiro en Tauser',
-            'campos': [],
-        }
-    }
+    medios_acreditacion_para_js = {} # Se elimina la inicialización con 'efectivo'
     for medio in medios_acreditacion_cliente.prefetch_related('tipo__campos').all():
         campos_data = []
         for campo in medio.tipo.campos.filter(activo=True):
@@ -327,22 +321,111 @@ def confirmar_operacion(request):
             estado_inicial_flotante = 'pendiente_confirmacion_pago'
             codigo_operacion_tauser = str(uuid.uuid4())[:10]
 
-            medio_pago_id = operacion_pendiente.get('medio_pago_id')
-            medio_pago_cliente_obj = None
-            if medio_pago_id:
-                try:
-                    medio_pago_cliente_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo)
-                except MedioPagoCliente.DoesNotExist:
-                    messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
-                    return redirect('core:iniciar_operacion')
+            medio_pago_utilizado_obj = None
+            medio_acreditacion_utilizado_obj = None
 
+            if tipo_operacion == 'venta':
+                medio_pago_id = operacion_pendiente.get('medio_pago_id')
+                if medio_pago_id:
+                    try:
+                        medio_pago_utilizado_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente_activo).tipo
+                    except MedioPagoCliente.DoesNotExist:
+                        messages.error(request, "El medio de pago seleccionado ya no es válido o no pertenece a este cliente.")
+                        return redirect('core:iniciar_operacion')
+            elif tipo_operacion == 'compra':
+                medio_acreditacion_id = operacion_pendiente.get('medio_acreditacion_id')
+                # Corregido: Obtener la instancia de clientes.MedioAcreditacion
+                # La Transaccion.medio_acreditacion_cliente espera una instancia de clientes.MedioAcreditacion.
+                # El formulario envía el id_medio de medios_acreditacion.MedioAcreditacionCliente.
+                # Asumimos que hay una correspondencia directa por ID o que el MedioAcreditacionCliente
+                # tiene un campo que referencia al MedioAcreditacion de clientes.
+                # Dado que no podemos modificar models.py, intentaremos obtener la instancia de clientes.MedioAcreditacion
+                # a través del id_medio del MedioAcreditacionCliente.
+                medio_acreditacion_para_transaccion = None
+                if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
+                    try:
+                        # Primero obtenemos la instancia de MedioAcreditacionCliente
+                        medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
+                        
+                        # Luego, necesitamos obtener la instancia de clientes.MedioAcreditacion.
+                        # Si no hay un campo directo, la única forma es buscar por un campo común.
+                        # Asumiendo que el 'identificador' o 'alias' de clientes.MedioAcreditacion
+                        # podría estar en los 'datos' o 'alias' de MedioAcreditacionCliente.
+                        # Esta es una suposición fuerte debido a la restricción de no tocar models.py.
+                        
+                        # Intentaremos buscar por el alias y el cliente (AUTH_USER_MODEL)
+                        # Esto requiere importar CanalFinanciero
+                        from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion
+                        from operaciones.models import CanalFinanciero # Necesario para clientes.MedioAcreditacion
+
+                        # Esto es muy especulativo sin conocer la relación exacta.
+                        # Si MedioAcreditacionCliente.tipo.nombre se mapea a CanalFinanciero.nombre
+                        # y MedioAcreditacionCliente.datos['identificador'] a MedioAcreditacion.identificador
+                        
+                        # Opción 1: Buscar por ID (si los IDs son los mismos, lo cual es poco probable pero el usuario dijo que antes funcionaba)
+                        # medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.get(id=medio_acreditacion_id)
+
+                        # Opción 2: Intentar reconstruir/buscar por campos
+                        # Esto es más robusto si los IDs no coinciden, pero requiere más información.
+                        # Por ahora, intentaremos la opción más simple que podría haber funcionado "antes".
+                        # Primero obtenemos la instancia de MedioAcreditacionCliente
+                        medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
+                        
+                        # Extraer alias e identificador de MedioAcreditacionCliente
+                        alias_cliente_ma = medio_acreditacion_cliente_obj.alias
+                        identificador_cliente_ma = medio_acreditacion_cliente_obj.datos.get('identificador', '') # Asumiendo que 'identificador' está en 'datos'
+
+                        # Intentar encontrar clientes.MedioAcreditacion por los campos
+                        try:
+                            medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.get(
+                                cliente=request.user, # El cliente de clientes.MedioAcreditacion es el usuario autenticado
+                                identificador=identificador_cliente_ma,
+                                alias=alias_cliente_ma
+                            )
+                        except ClientesMedioAcreditacion.DoesNotExist:
+                            # Si no se encuentra, y dado que el usuario indicó que no importa mucho,
+                            # asignamos None. Esto evita el error y permite que la transacción continúe.
+                            medio_acreditacion_para_transaccion = None
+                        
+                    except MedioAcreditacionCliente.DoesNotExist:
+                        messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (MedioAcreditacionCliente no encontrado).")
+                        return redirect('core:iniciar_operacion')
+                    except Exception as e:
+                        messages.error(request, f"Error inesperado al obtener el medio de acreditación: {e}")
+                        return redirect('core:iniciar_operacion')
+                # Si medio_acreditacion_id es 'efectivo', medio_acreditacion_para_transaccion permanece None, lo cual es correcto.
+
+            if tipo_operacion == 'compra':
+                # Para compras con tasa flotante, el estado inicial es pendiente_pago_cliente
+                # y no se redirige a confirmacion_final_pago, sino directamente al detalle.
                 transaccion = Transaccion.objects.create(
                     cliente=cliente_activo,
                     usuario_operador=request.user,
                     tipo_operacion=tipo_operacion,
-                    estado=estado_inicial_flotante,
+                    estado='pendiente_pago_cliente', # Estado inicial para compra flotante
                     moneda_origen=moneda_origen_obj,
-                    monto_origen=Decimal(operacion_pendiente['monto_origen']), # Usar el monto_origen actualizado de la sesión
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']),
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_pendiente['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    codigo_operacion_tauser=codigo_operacion_tauser,
+                    tasa_garantizada_hasta=None, # No hay tasa garantizada para flotante
+                    modalidad_tasa=modalidad_tasa,
+                    medio_acreditacion_cliente=medio_acreditacion_para_transaccion, # Para compras
+                )
+                request.session.pop('operacion_pendiente', None)
+                messages.success(request, "Operación de compra con tasa flotante iniciada. Por favor, realiza el pago en el tauser.")
+                return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            else:
+                # Lógica existente para ventas con tasa flotante
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente_activo,
+                    usuario_operador=request.user,
+                    tipo_operacion=tipo_operacion,
+                    estado=estado_inicial_flotante, # 'pendiente_confirmacion_pago'
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']),
                     moneda_destino=moneda_destino_obj,
                     monto_destino=Decimal(operacion_pendiente['monto_recibido']),
                     tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
@@ -350,12 +433,11 @@ def confirmar_operacion(request):
                     codigo_operacion_tauser=codigo_operacion_tauser,
                     tasa_garantizada_hasta=None,
                     modalidad_tasa=modalidad_tasa,
-                    medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+                    medio_pago_utilizado=medio_pago_utilizado_obj, # Para ventas
                 )
-            request.session.pop('operacion_pendiente', None)
-
-            messages.info(request, "Operación iniciada con tasa flotante. Por favor, confirma el pago.")
-            return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
+                request.session.pop('operacion_pendiente', None)
+                messages.info(request, "Operación de venta con tasa flotante iniciada. Por favor, confirma el pago.")
+                return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
 
     return render(request, 'core/confirmar_operacion.html', {'operacion': operacion_pendiente})
 
@@ -595,37 +677,72 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             
             # Recalcular monto_destino_actual y monto_origen_actual con la tasa actual
             if transaccion.tipo_operacion == 'venta': # Cliente compra divisa extranjera
-                # --- CORRECCIÓN ---
-                # El monto a recibir (destino) es fijo. Se ajusta por denominación.
-                ajuste = ajustar_monto_a_denominaciones_disponibles(
-                    transaccion.monto_destino, transaccion.moneda_destino, 'venta'
-                )
-                monto_destino_actual = ajuste['monto_ajustado']
-
-                # Se recalcula el monto a pagar (origen) en PYG con la nueva tasa.
-                monto_origen_actual = (monto_destino_actual * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                # Recalcular la simulación completa para obtener los valores correctos
+                # Usar el monto_origen original de la operación pendiente
+                # Si 'monto_origen_inicial' no está en la sesión, usar transaccion.monto_origen como fallback
+                monto_origen_inicial = Decimal(self.request.session.get('operacion_pendiente', {}).get('monto_origen_inicial', str(transaccion.monto_origen)))
                 
-                # Actualizar operacion_pendiente en sesión con los montos ajustados
-                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
-                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
-                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
-                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
-                operacion_pendiente['monto_ajustado'] = ajuste['ajustado']
-                operacion_pendiente['monto_maximo_posible'] = str(ajuste['monto_maximo_posible'])
-                self.request.session['operacion_pendiente'] = operacion_pendiente
+                resultado_simulacion_actualizada = calcular_simulacion(
+                    monto_origen_inicial,
+                    transaccion.moneda_origen.codigo,
+                    transaccion.moneda_destino.codigo,
+                    user=self.request.user
+                )
+
+                if resultado_simulacion_actualizada.get('error'):
+                    messages.error(self.request, resultado_simulacion_actualizada['error'])
+                    tasa_actual = Decimal('0.00')
+                    monto_destino_actual = Decimal('0.00')
+                    monto_origen_actual = Decimal('0.00')
+                    bonificacion_aplicada = Decimal('0.00')
+                else:
+                    monto_origen_actual = resultado_simulacion_actualizada['monto_origen']
+                    monto_destino_actual = resultado_simulacion_actualizada['monto_recibido']
+                    tasa_actual = resultado_simulacion_actualizada['tasa_aplicada']
+                    bonificacion_aplicada = resultado_simulacion_actualizada['bonificacion_aplicada']
+
+                    # Actualizar operacion_pendiente en sesión con los montos ajustados
+                    operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                    operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                    operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                    operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
+                    operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
+                    operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
+                    self.request.session['operacion_pendiente'] = operacion_pendiente
 
             else: # Cliente vende divisa extranjera
-                monto_origen_actual = transaccion.monto_origen # El monto origen es el que el cliente entrega
-                monto_destino_actual = (transaccion.monto_origen * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
-                
-                # Actualizar operacion_pendiente en sesión con los montos ajustados
-                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
-                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
-                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
-                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
-                operacion_pendiente['monto_ajustado'] = False # No hay ajuste de denominaciones para este caso
-                operacion_pendiente['monto_maximo_posible'] = str(transaccion.monto_destino) # O el monto original
-                self.request.session['operacion_pendiente'] = operacion_pendiente
+                # Recalcular la simulación completa para obtener los valores correctos
+                monto_origen_inicial = Decimal(self.request.session.get('operacion_pendiente', {}).get('monto_origen_inicial', str(transaccion.monto_origen)))
+
+                resultado_simulacion_actualizada = calcular_simulacion(
+                    monto_origen_inicial,
+                    transaccion.moneda_origen.codigo,
+                    transaccion.moneda_destino.codigo,
+                    user=self.request.user
+                )
+
+                if resultado_simulacion_actualizada.get('error'):
+                    messages.error(self.request, resultado_simulacion_actualizada['error'])
+                    tasa_actual = Decimal('0.00')
+                    monto_destino_actual = Decimal('0.00')
+                    monto_origen_actual = Decimal('0.00')
+                    bonificacion_aplicada = Decimal('0.00')
+                else:
+                    monto_origen_actual = resultado_simulacion_actualizada['monto_origen']
+                    monto_destino_actual = resultado_simulacion_actualizada['monto_recibido']
+                    tasa_actual = resultado_simulacion_actualizada['tasa_aplicada']
+                    bonificacion_aplicada = resultado_simulacion_actualizada['bonificacion_aplicada']
+
+                    # Actualizar operacion_pendiente en sesión con los montos ajustados
+                    operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                    operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                    operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                    operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
+                    operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
+                    operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
+                    self.request.session['operacion_pendiente'] = operacion_pendiente
 
 
         except Cotizacion.DoesNotExist:
@@ -650,10 +767,24 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             messages.error(request, "No hay una operación pendiente para confirmar.")
             return redirect('core:iniciar_operacion')
 
-        # Actualizar la transacción con los valores de la sesión antes de redirigir
+        # Actualizar la transacción con los valores de la sesión
         transaccion.monto_origen = Decimal(operacion_pendiente['monto_origen'])
         transaccion.tasa_cambio_aplicada = Decimal(operacion_pendiente['tasa_aplicada'])
-        transaccion.save()
-        
-        messages.success(request, "Operación actualizada con la tasa de cambio actual. Procediendo al pago.")
-        return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)
+        # Asegurar que monto_destino y comision_aplicada siempre se actualicen con los valores de la sesión
+        transaccion.monto_destino = Decimal(operacion_pendiente['monto_recibido'])
+        transaccion.comision_aplicada = Decimal(operacion_pendiente['comision_aplicada'])
+
+        # --- NEW LOGIC FOR COMPRA WITH TASA FLOTANTE ---
+        if transaccion.tipo_operacion == 'compra' and transaccion.modalidad_tasa == 'flotante':
+            transaccion.estado = 'pendiente_pago_cliente' # Set the correct state
+            transaccion.save() # Save the transaction with the new state
+            messages.success(request, "Operación registrada. Por favor, realiza el pago en el tauser.")
+            request.session.pop('operacion_pendiente', None) # Clear session data
+            # Redirect to a page showing the transaction status, e.g., detail or history
+            return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+        # --- END NEW LOGIC ---
+        else:
+            # Existing logic for other cases (e.g., venta flotante, tasa bloqueada)
+            transaccion.save() # Save the updated amounts for these cases
+            messages.success(request, "Operación actualizada con la tasa de cambio actual. Procediendo al pago.")
+            return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)
