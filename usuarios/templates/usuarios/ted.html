@@ -483,7 +483,14 @@
   function showError(stage, err){
     let userMsg = 'Ocurrió un error inesperado.';
     let code = `E${err.status||'000'}-DESCONOCIDO`;
-    const raw = (err && (err.message||'')).toLowerCase();
+    
+    // Obtener el mensaje del error de múltiples fuentes posibles
+    const rawMsg = (err && (err.message || '')) || 
+                   (err && err.payload && (err.payload.error || err.payload.detail || err.payload.message)) || '';
+    const raw = String(rawMsg).toLowerCase();
+    
+    // Debug: ver qué mensaje viene realmente
+    console.log('showError debug:', {stage, status: err.status, raw, payload: err.payload});
 
     switch(err.status){
       case 404: {
@@ -498,7 +505,38 @@
         }
       break; }
 
-      case 409: userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.'; code = 'E409-STOCK'; break;
+      case 409: {
+        // Imprimir el mensaje raw para debug (puedes comentar después)
+        console.log('Error 409 mensaje:', raw, 'Stage:', stage);
+        
+        // Detectar código ya usado/completado
+        if (raw.includes('ya completad') || raw.includes('ya utiliz') || raw.includes('ya proces') || 
+            raw.includes('completada') || raw.includes('utilizado') || raw.includes('procesado') ||
+            raw.includes('already') || raw.includes('completed') || raw.includes('used') ||
+            raw.includes('transaction') && raw.includes('complete')) {
+          userMsg = 'Este código ya fue utilizado en una transacción completada anteriormente.';
+          code = 'E409-COMPLETADO';
+        }
+        // Detectar tipo de operación incorrecto
+        else if (raw.includes('tipo') || raw.includes('retiro') || raw.includes('depósito') || 
+                 raw.includes('deposito') || raw.includes('withdraw') || raw.includes('deposit') ||
+                 raw.includes('operación') || raw.includes('operacion')) {
+          userMsg = 'Este código no corresponde al tipo de operación seleccionada. Verificá si es para Retiro o Depósito.';
+          code = 'E409-TIPO';
+        }
+        // Si es en la etapa de validar y no es ninguno de los anteriores, asumir código completado
+        else if (stage === 'validar') {
+          userMsg = 'Este código ya fue utilizado en una transacción completada anteriormente.';
+          code = 'E409-COMPLETADO';
+        }
+        // Por defecto: problema de stock (solo en precontar/confirmar)
+        else {
+          userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.';
+          code = 'E409-STOCK';
+        }
+        break;
+      }
+
       case 403:
         if(raw.includes('csrf')){ userMsg = 'No autorizado: Protección CSRF. Refrescá la página e intentá de nuevo.'; code = 'E403-AUT-CSRF'; }
         else if(raw.includes('cliente activo')){ userMsg = 'Debés seleccionar un cliente activo en tu cuenta antes de usar el TED.'; code = 'E403-CLIENTE'; }
@@ -540,8 +578,25 @@
   async function cargarTerminal(){
     try{
       const data = await api(URLS.terminal);
-      qs('#info-serie').textContent = (data && data.serial) || '—';
-    }catch(_e){ qs('#info-serie').textContent = '—'; }
+      let serial = (data && data.serial) || null;
+      
+      // Si el backend devuelve LOCAL-DEV o está vacío, generar uno basado en ubicación
+      if (!serial || serial === 'LOCAL-DEV' || serial === '—') {
+        const ubicacion = ctx.ubicacion || ubicSel?.value || '';
+        if (ubicacion) {
+          // Generar código basado en las primeras 3 letras de la ubicación + hash
+          const code = ubicacion.substring(0, 3).toUpperCase();
+          const hash = ubicacion.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000;
+          serial = `TED-${code}${String(hash).padStart(3, '0')}`;
+        } else {
+          serial = 'TED-001';
+        }
+      }
+      
+      qs('#info-serie').textContent = serial;
+    }catch(_e){ 
+      qs('#info-serie').textContent = 'TED-001'; 
+    }
   }
   async function cargarUbicaciones(){
     try{
@@ -564,6 +619,14 @@
     ctx.ubicacion = ubicSel.value || null;
     btnLogin.disabled = !ctx.ubicacion;
     qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
+    
+    // Actualizar el número de serie cuando cambia la ubicación
+    if (ctx.ubicacion) {
+      const code = ctx.ubicacion.substring(0, 3).toUpperCase();
+      const hash = ctx.ubicacion.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000;
+      qs('#info-serie').textContent = `TED-${code}${String(hash).padStart(3, '0')}`;
+    }
+    
     try { loadRetiroCurrencies(); } catch(_){}
   });
 
@@ -613,6 +676,12 @@
     try{
       if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
       const info = await api(URLS.validar, { codigo: (ctx.code||'').trim(), modo: ctx.modo });
+      // Validar que el tipo de transacción coincida con el modo seleccionado
+      if (info.tipo_operacion && info.tipo_operacion !== ctx.modo) {
+        const tipoReal = info.tipo_operacion === 'retiro' ? 'Retiro' : 'Depósito';
+        const tipoEsperado = ctx.modo === 'retiro' ? 'Retiro' : 'Depósito';
+        throw Object.assign(new Error(`Este código es para ${tipoReal}, pero seleccionaste ${tipoEsperado}. Volvé al menú y elegí la operación correcta.`), {status: 400});
+      }
       ctx.raw  = info;
       ctx.code = (info && info.codigo) ? String(info.codigo).trim() : (ctx.code||'').trim();
       ctx.tx_id = info && info.tx_id ? String(info.tx_id) : null;
@@ -667,8 +736,18 @@
 
       const list = qs('#otp-summary');
       if(list){
-        const rows = (data.breakdown||[]).map(b=>`<li>${b.unidades} x ${b.valor} ${data.moneda}</li>`).join('') || '<li>Depósito: ingrese billetes en la terminal</li>';
-        list.innerHTML = `<ul>${rows}</ul><div class="text-[var(--muted)]">Redondeo: ${formatAmount(data.diff, data.moneda)} (a favor de la casa)</div>`;
+        if (ctx.modo === 'retiro' && data.breakdown && data.breakdown.length > 0) {
+          const billsHTML = data.breakdown.map(b => 
+            `<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;margin:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:14px;font-weight:600;">
+              <span style="opacity:.85;">${b.unidades}×</span>
+              <span style="color:#10b981;font-weight:800;">${b.valor}</span>
+              <span style="font-size:18px;">💵</span>
+            </div>`
+          ).join('');
+          list.innerHTML = `<div style="display:flex;flex-wrap:wrap;justify-content:center;margin:8px 0;">${billsHTML}</div>${data.diff ? `<div style="font-size:13px;opacity:.75;margin-top:6px;">Redondeo: ${formatAmount(data.diff, data.moneda)}</div>` : ''}`;
+        } else {
+          list.innerHTML = '<div style="padding:10px;opacity:.85;font-size:14px;">💰 Ingresá los billetes en la ranura</div>';
+        }
       }
 
       await api(URLS.otp_enviar, {reserva_id: ctx.reserva_id});
