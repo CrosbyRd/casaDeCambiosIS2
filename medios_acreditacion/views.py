@@ -1,3 +1,15 @@
+"""
+Vistas de la aplicación **medios_acreditacion**.
+
+.. module:: medios_acreditacion.views
+   :synopsis: Gestión de tipos de medios de acreditación y medios asociados a clientes.
+
+Este módulo implementa las vistas basadas en clases para administrar
+los **tipos de medios de acreditación** (sección administrativa) y los
+**medios de acreditación de clientes** (sección cliente).
+Incluye control de permisos, manejo de formsets y operaciones CRUD
+con notificaciones al usuario.
+"""
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -27,6 +39,24 @@ from .forms import (
 
 # ===== Mixin de acceso solo admin de esta sección =====
 class AccessMediosAcreditacionMixin:
+    """
+        Mixin de control de acceso para la sección administrativa de medios de acreditación.
+
+        Requiere que el usuario esté autenticado y posea el permiso
+        ``medios_acreditacion.access_medios_acreditacion``.
+
+        **Atributos**
+        -------------
+        required_permission : str
+            El permiso necesario para permitir el acceso.
+
+        **Métodos**
+        -----------
+        dispatch(request, *args, **kwargs) -> HttpResponse or HttpResponseRedirect
+            Verifica que el usuario esté autenticado (por medio de @login_required)
+            y posea el permiso `required_permission`. Si no lo tiene, redirige a la vista "home".
+            En caso contrario, delega al método dispatch de la clase base.
+    """
     required_permission = "medios_acreditacion.access_medios_acreditacion"
 
     @method_decorator(login_required)
@@ -51,13 +81,67 @@ CampoFormSet = inlineformset_factory(
 # =====================================================
 # VISTAS PARA TIPOS DE MEDIO (admin)
 # =====================================================
+"""
+    Formset inline para administrar instancias de :class:`CampoMedioAcreditacion`
+    relacionadas con un :class:`TipoMedioAcreditacion`.
+
+    Se utiliza en las vistas de creación y edición de tipos de medio.
+
+    **Opciones principales**
+    ------------------------
+    - ``extra = 0``: no genera filas vacías automáticamente.
+    - ``can_delete = True``: permite marcar instancias para borrado.
+"""
 class TipoMedioListView(AccessMediosAcreditacionMixin, ListView):
+    """
+        Vista para listar los tipos de medios de acreditación (administración).
+
+        Requiere permiso administrativo (hereda AccessMediosAcreditacionMixin).
+
+        **Atributos**
+        -------------
+        model : Modelo
+            Modelo asociado: :class:`TipoMedioAcreditacion`.
+        template_name : str
+            Ruta del template: "medios_acreditacion/tipos_list.html".
+        context_object_name : str
+            Nombre del objeto en el contexto de plantilla: "tipos".
+    """
     model = TipoMedioAcreditacion
     template_name = "medios_acreditacion/tipos_list.html"
     context_object_name = "tipos"
 
 
 class TipoMedioCreateView(AccessMediosAcreditacionMixin, CreateView):
+    """
+        Vista para crear un nuevo tipo de medio de acreditación, junto con sus campos asociados.
+
+        Se apoya en un formset inline (CampoFormSet) para definir múltiples campos en el mismo formulario.
+
+        **Atributos**
+        -------------
+        model : Modelo
+            Modelo asociado: :class:`TipoMedioAcreditacion`.
+        form_class : Formulario
+            Formulario principal: :class:`TipoMedioForm`.
+        template_name : str
+            Template: "medios_acreditacion/tipos_form.html".
+        success_url : str
+            URL a la que redirigir tras exitoso guardado: reverse_lazy("medios_acreditacion:tipos_list").
+
+        **Métodos**
+        -----------
+        get_context_data(**kwargs) -> dict
+            Agrega el formset al contexto y una clave "accion" con valor "crear".
+
+        form_valid(form) -> HttpResponseRedirect or HttpResponse
+            - Guarda el objeto padre (tipo de medio).
+            - Reconstruye el formset con esa instancia.
+            - Valida el formset.
+            - Si hay errores: muestra mensajes de error y re-renderiza con el formset con errores.
+            - Si es válido: guarda los objetos, marca `activo = True`, borra los eliminados, muestra mensaje éxito,
+            y redirige a `success_url`.
+    """
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -102,6 +186,38 @@ class TipoMedioCreateView(AccessMediosAcreditacionMixin, CreateView):
     
 
 class TipoMedioUpdateView(AccessMediosAcreditacionMixin, UpdateView):
+    """
+        Vista para editar un tipo de medio de acreditación existente, junto con sus campos asociados.
+
+        Mantiene los campos existentes, permite borrado lógico y reactivación.
+
+        **Atributos**
+        -------------
+        model : Modelo
+            :class:`TipoMedioAcreditacion`
+        form_class : Formulario
+            :class:`TipoMedioForm`
+        template_name : str
+            Template: "medios_acreditacion/tipos_form.html"
+        success_url : str
+            URL de redirección tras éxito.
+
+        **Métodos**
+        -----------
+        get_context_data(**kwargs) -> dict
+            Crea el formset ya sea con datos POST o con la instancia existente para edición,
+            agrega clave "accion" = "editar".
+
+        form_valid(form) -> HttpResponseRedirect or HttpResponse
+            - Valida el formset; si hay errores, construye mensajes con el índice de fila.
+            - Guarda primero el tipo de medio.
+            - Obtiene instancias del formset (commit=False) y las guarda, asignando tipo_medio.
+            - Marca los objetos “eliminados” como `activo = False` en vez de borrarlos.
+            - Reactiva las instancias que estaban inactivas y no fueron marcadas como DELETE.
+            - Muestra mensaje éxito y redirige.
+    """
+
+
     model = TipoMedioAcreditacion
     form_class = TipoMedioForm
     template_name = "medios_acreditacion/tipos_form.html"
@@ -161,6 +277,26 @@ class TipoMedioUpdateView(AccessMediosAcreditacionMixin, UpdateView):
 
 
 class TipoMedioDeleteView(AccessMediosAcreditacionMixin, DeleteView):
+    """
+    Vista para eliminar un tipo de medio de acreditación.
+
+    Presenta una confirmación y luego ejecuta el borrado.
+
+    **Atributos**
+    -------------
+    model : Modelo
+        :class:`TipoMedioAcreditacion`
+    template_name : str
+        Template de confirmación: "medios_acreditacion/tipos_confirm_delete.html"
+    success_url : str
+        URL de redirección tras la eliminación: lista de tipos.
+
+    **Métodos**
+    -----------
+    delete(request, *args, **kwargs) -> HttpResponseRedirect
+        Al borrar, muestra mensaje de éxito, luego delega al método `delete`
+        de la clase base.
+    """
     model = TipoMedioAcreditacion
     template_name = "medios_acreditacion/tipos_confirm_delete.html"
     success_url = reverse_lazy("medios_acreditacion:tipos_list")
@@ -173,6 +309,25 @@ class TipoMedioDeleteView(AccessMediosAcreditacionMixin, DeleteView):
 # VISTAS PARA MEDIOS DE CLIENTES (lado cliente)
 # =====================================================
 class MedioClienteListView(RequireClienteMixin, ListView):
+    """
+    Vista para listar los medios de acreditación asociados a un cliente logueado.
+
+    Requiere que el usuario corresponda a un cliente (RequireClienteMixin).
+
+    **Atributos**
+    -------------
+    model : Modelo
+        :class:`MedioAcreditacionCliente`
+    template_name : str
+        Template: "medios_acreditacion/clientes_list.html"
+    context_object_name : str
+        Nombre del objeto en contexto: "medios"
+
+    **Métodos**
+    -----------
+    get_queryset() -> QuerySet
+        Retorna solo los medios del cliente actual, usando `select_related("tipo")`.
+    """
     model = MedioAcreditacionCliente
     template_name = "medios_acreditacion/clientes_list.html"
     context_object_name = "medios"
@@ -183,6 +338,36 @@ class MedioClienteListView(RequireClienteMixin, ListView):
                 .select_related("tipo"))
 
 class MedioClienteCreateView(RequireClienteMixin, CreateView):
+    """
+    Vista para que un cliente cree un nuevo medio de acreditación.
+
+    **Atributos**
+    -------------
+    model : Modelo
+        :class:`MedioAcreditacionCliente`
+    form_class : Formulario
+        :class:`MedioAcreditacionClienteForm`
+    template_name : str
+        Template: "medios_acreditacion/clientes_form.html"
+    success_url : str
+        URL de redirección tras guardado exitoso.
+
+    **Métodos**
+    -----------
+    get_initial() -> dict
+        Si se pasa un parámetro GET `tipo`, lo preasigna en los valores iniciales del formulario.
+
+    form_valid(form) -> HttpResponseRedirect
+        Asigna `cliente` al formulario antes de guardar.
+
+    get_form_kwargs() -> dict
+        Agrega `user` al contexto del formulario para validaciones internas.
+        Si hay parámetro GET `tipo`, preasigna ese tipo si existe.
+
+    get_context_data(**kwargs) -> dict
+        Agrega `"accion": "crear"` al contexto.
+    """
+
     model = MedioAcreditacionCliente
     form_class = MedioAcreditacionClienteForm
     template_name = "medios_acreditacion/clientes_form.html"
@@ -221,6 +406,34 @@ class MedioClienteCreateView(RequireClienteMixin, CreateView):
 
 
 class MedioClienteUpdateView(RequireClienteMixin, UpdateView):
+    """
+    Vista para que un cliente edite un medio de acreditación suyo.
+
+    **Atributos**
+    -------------
+    model : Modelo
+        :class:`MedioAcreditacionCliente`
+    form_class : Formulario
+        :class:`MedioAcreditacionClienteForm`
+    template_name : str
+        Template: "medios_acreditacion/clientes_form.html"
+    success_url : str
+        URL de redirección tras edición.
+
+    **Métodos**
+    -----------
+    get_queryset() -> QuerySet
+        Restringe para que el cliente solo pueda editar sus propios medios.
+
+    get_form_kwargs() -> dict
+        Agrega `user` al contexto del formulario.
+
+    get_context_data(**kwargs) -> dict
+        Agrega `"accion": "editar"` al contexto.
+
+    form_valid(form) -> HttpResponseRedirect
+        Asegura que `cliente` esté asignado antes de guardar, y añade mensaje de éxito.
+    """
     model = MedioAcreditacionCliente
     form_class = MedioAcreditacionClienteForm
     template_name = "medios_acreditacion/clientes_form.html"
@@ -245,6 +458,26 @@ class MedioClienteUpdateView(RequireClienteMixin, UpdateView):
         return super().form_valid(form)
 
 class MedioClienteDeleteView(RequireClienteMixin, DeleteView):
+    """
+    Vista para que un cliente elimine uno de sus medios de acreditación.
+
+    **Atributos**
+    -------------
+    model : Modelo
+        :class:`MedioAcreditacionCliente`
+    template_name : str
+        Template: "medios_acreditacion/clientes_confirm_delete.html"
+    success_url : str
+        URL de redirección tras eliminar.
+
+    **Métodos**
+    -----------
+    get_queryset() -> QuerySet
+        Restringe el queryset al cliente logueado.
+
+    delete(request, *args, **kwargs) -> HttpResponseRedirect
+        Muestra mensaje de éxito y delega al método base.
+    """
     model = MedioAcreditacionCliente
     template_name = "medios_acreditacion/clientes_confirm_delete.html"
     success_url = reverse_lazy("medios_acreditacion:clientes_list")
@@ -259,6 +492,23 @@ class MedioClienteDeleteView(RequireClienteMixin, DeleteView):
 
 
 class MedioClientePredeterminarView(RequireClienteMixin, View):
+    """
+    Vista para que un cliente marque como predeterminado uno de sus medios de acreditación.
+
+    Esta vista responde solo a solicitudes POST; no permite GET.
+
+    **Métodos**
+    -----------
+    post(request, pk) -> HttpResponse or HttpResponseBadRequest
+        - Busca el medio con pk y cliente correspondiente.
+        - Verifica que esté activo; si no, retorna Bad Request (400).
+        - Marca `predeterminado = True` en el objeto (el modelo debería encargarse
+          de desmarcar otros si es necesario) y lo guarda.
+        - Responde con estado 204 (sin contenido) dado que usualmente se usa vía JS/AJAX.
+
+    get(request, pk) -> HttpResponseForbidden
+        No está permitido acceder por GET: devuelve 403.
+    """
     def post(self, request, pk):
         # obtener el medio del cliente logueado
         medio = get_object_or_404(

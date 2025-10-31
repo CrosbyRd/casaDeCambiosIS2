@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>facturacion_electronica.forms &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">facturacion_electronica.forms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para facturacion_electronica.forms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Formularios de la app Facturación Electrónica.</span>
+
+<span class="sd">.. module:: facturacion_electronica.forms</span>
+<span class="sd">   :synopsis: Formularios propios del módulo de Facturación Electrónica.</span>
+
+<span class="sd">Este módulo contiene los formularios para la creación y edición de emisores</span>
+<span class="sd">de facturas electrónicas, incluyendo validaciones personalizadas.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmisorFacturaElectronica</span>
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaForm">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronicaForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario para crear o editar un :class:`EmisorFacturaElectronica`.</span>
+
+<span class="sd">    Este formulario está diseñado para alinear la entrada de datos con la estructura</span>
+<span class="sd">    requerida para la facturación electrónica. Incluye campos para la identificación,</span>
+<span class="sd">    contacto, dirección, numeración fija (establecimiento y punto de expedición),</span>
+<span class="sd">    timbrado, estado, y el rango de numeración de facturas.</span>
+
+<span class="sd">    También hace que el token de autenticación sea de solo lectura para fines de diagnóstico.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="c1"># Token: solo lectura para no tocar desde el form (útil para ver si hay sesión)</span>
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Token de autenticación (FacturaSegura)&quot;</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;readonly&quot;</span><span class="p">:</span> <span class="s2">&quot;readonly&quot;</span><span class="p">})</span>
+    <span class="p">)</span>
+    <span class="n">token_generado_at</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Token generado el&quot;</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">DateTimeInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;readonly&quot;</span><span class="p">:</span> <span class="s2">&quot;readonly&quot;</span><span class="p">})</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaForm.Meta">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># Identificación</span>
+            <span class="s2">&quot;nombre&quot;</span><span class="p">,</span> <span class="s2">&quot;ruc&quot;</span><span class="p">,</span> <span class="s2">&quot;dv_ruc&quot;</span><span class="p">,</span>
+            <span class="c1"># Contacto (nombres REALES del modelo)</span>
+            <span class="s2">&quot;email_emisor&quot;</span><span class="p">,</span> <span class="s2">&quot;telefono&quot;</span><span class="p">,</span>
+            <span class="c1"># Dirección</span>
+            <span class="s2">&quot;codigo_departamento&quot;</span><span class="p">,</span> <span class="s2">&quot;descripcion_departamento&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;codigo_ciudad&quot;</span><span class="p">,</span> <span class="s2">&quot;descripcion_ciudad&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;direccion&quot;</span><span class="p">,</span> <span class="s2">&quot;numero_casa&quot;</span><span class="p">,</span> <span class="s2">&quot;pais&quot;</span><span class="p">,</span>
+            <span class="c1"># Numeración fija (Estab/Punto)</span>
+            <span class="s2">&quot;establecimiento&quot;</span><span class="p">,</span> <span class="s2">&quot;punto_expedicion&quot;</span><span class="p">,</span>
+            <span class="c1"># Timbrado</span>
+            <span class="s2">&quot;numero_timbrado_actual&quot;</span><span class="p">,</span> <span class="s2">&quot;fecha_inicio_timbrado&quot;</span><span class="p">,</span>
+            <span class="c1"># Estado</span>
+            <span class="s2">&quot;activo&quot;</span><span class="p">,</span>
+            <span class="c1"># Campos de descripción de actividad económica principal eliminados del modelo</span>
+            <span class="c1"># &quot;descripcion_actividad_economica_principal&quot;,</span>
+            <span class="c1"># Rango y correlativo</span>
+            <span class="s2">&quot;rango_numeracion_inicio&quot;</span><span class="p">,</span> <span class="s2">&quot;rango_numeracion_fin&quot;</span><span class="p">,</span> <span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">,</span>
+            <span class="c1"># Token FS (solo lectura)</span>
+            <span class="s2">&quot;auth_token&quot;</span><span class="p">,</span> <span class="s2">&quot;token_generado_at&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fecha_inicio_timbrado&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">DateInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;rango_numeracion_inicio&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">NumberInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">450</span><span class="p">}),</span>
+            <span class="s2">&quot;rango_numeracion_fin&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">NumberInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">450</span><span class="p">}),</span>
+            <span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">NumberInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">401</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">450</span><span class="p">}),</span>
+        <span class="p">}</span>
+        <span class="n">help_texts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;numero_timbrado_actual&quot;</span><span class="p">:</span> <span class="s2">&quot;8 dígitos. Ej.: 02595733&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;establecimiento&quot;</span><span class="p">:</span> <span class="s2">&quot;3 dígitos. Ej.: 001&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;punto_expedicion&quot;</span><span class="p">:</span> <span class="s2">&quot;3 dígitos. Ej.: 003&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rango_numeracion_inicio&quot;</span><span class="p">:</span> <span class="s2">&quot;Inicio del rango del equipo (por ej., 401).&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rango_numeracion_fin&quot;</span><span class="p">:</span> <span class="s2">&quot;Fin del rango del equipo (por ej., 450).&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">:</span> <span class="s2">&quot;Correlativo a emitir (se sugiere no modificar manualmente).&quot;</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+    <span class="c1"># === Inicialización: poblar el textarea de actividades desde la lista JSON ===</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa el formulario.</span>
+
+<span class="sd">        Configura los campos `auth_token` y `token_generado_at` como de solo lectura.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+        <span class="c1"># Estética: opcional, marcar &#39;auth_token&#39; y &#39;token_generado_at&#39; como deshabilitados</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;auth_token&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;readonly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;readonly&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;token_generado_at&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;readonly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;readonly&quot;</span>
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaForm.clean">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronicaForm.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza validaciones personalizadas para los campos del formulario.</span>
+
+<span class="sd">        Verifica el formato de RUC, DV, establecimiento, punto de expedición,</span>
+<span class="sd">        número de timbrado y la coherencia del rango de numeración de facturas.</span>
+
+<span class="sd">        :raises ValidationError: Si alguna validación falla.</span>
+<span class="sd">        :return: Los datos limpios y validados del formulario.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+
+        <span class="c1"># Estab/Punto/Timbrado en formato fijo</span>
+        <span class="n">est</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;establecimiento&quot;</span><span class="p">)</span>
+        <span class="n">pto</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;punto_expedicion&quot;</span><span class="p">)</span>
+        <span class="n">tim</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numero_timbrado_actual&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">est</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">est</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">est</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;establecimiento&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe tener 3 dígitos.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">pto</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pto</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">pto</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;punto_expedicion&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe tener 3 dígitos.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tim</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">tim</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;numero_timbrado_actual&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe tener exactamente 8 dígitos.&quot;</span><span class="p">))</span>
+
+        <span class="c1"># RUC/DV</span>
+        <span class="n">ruc</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ruc&quot;</span><span class="p">)</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dv_ruc&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ruc</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ruc</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">7</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ruc</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;ruc&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;El RUC debe ser numérico de 7 u 8 dígitos.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">dv</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">dv</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">dv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;dv_ruc&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;El DV debe ser un único dígito.&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Rango 401–450 y siguiente</span>
+        <span class="n">r_ini</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rango_numeracion_inicio&quot;</span><span class="p">)</span>
+        <span class="n">r_fin</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rango_numeracion_fin&quot;</span><span class="p">)</span>
+        <span class="n">nxt</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r_ini</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_fin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_ini</span> <span class="o">&gt;</span> <span class="n">r_fin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;rango_numeracion_inicio&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;El inicio no puede ser mayor que el fin.&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;rango_numeracion_fin&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;El fin no puede ser menor que el inicio.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">nxt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_ini</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_fin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">r_ini</span> <span class="o">&lt;=</span> <span class="n">nxt</span> <span class="o">&lt;=</span> <span class="n">r_fin</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe estar dentro del rango definido.&quot;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">cleaned</span></div>
+</div>
+
+
+    <span class="c1"># Guardar: el ModelForm ya setea el campo JSON, pero si quisieras</span>
+    <span class="c1"># convertir manualmente, aquí tendrías control adicional.</span>
+    <span class="c1"># def save(self, commit=True):</span>
+    <span class="c1">#     obj = super().save(commit=False)</span>
+    <span class="c1">#     # obj.actividades_economicas = self.cleaned_data[&quot;actividades_economicas&quot;]  # ya lo hace el form</span>
+    <span class="c1">#     if commit:</span>
+    <span class="c1">#         obj.save()</span>
+    <span class="c1">#     return obj</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -153,24 +153,49 @@ class TedDenominacion(models.Model):
 
 class TedInventario(models.Model):
     """
-    Stock disponible por denominación para la terminal TED.
+    Stock disponible por denominación **y ubicación** para la terminal TED.
 
-    Se usa ``OneToOneField`` para asegurar un único registro por denominación.
+    .. important::
+       Desde esta versión, el inventario se particiona por ``ubicacion``. Esto
+       permite tener múltiples terminales (o sucursales) con stock independiente.
+
+    **Restricción de unicidad**
+    ---------------------------
+    Se garantiza un único registro por combinación ``(denominacion, ubicacion)``.
+
+    **Compatibilidad**
+    ------------------
+    El ``related_name`` de la relación inversa se mantiene en ``stock`` para
+    conservar compatibilidad con código existente, pero ahora referirá a un
+    *manager* (conjunto de stocks) en lugar de una única instancia.
     """
-    denominacion = models.OneToOneField(
+    denominacion = models.ForeignKey(
         TedDenominacion,
         on_delete=models.PROTECT,
-        related_name="stock",
+        related_name="stock",  # se mantiene el nombre histórico
         help_text="Denominación cuyo stock se registra."
+    )
+    ubicacion = models.CharField(
+        max_length=180,
+        help_text="Ubicación física/lógica del TED (ej.: 'Campus, San Lorenzo – Paraguay')."
     )
     cantidad = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["denominacion__moneda__codigo", "denominacion__valor"]
+        ordering = ["denominacion__moneda__codigo", "denominacion__valor", "ubicacion"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["denominacion", "ubicacion"],
+                name="uniq_tedinventario_den_ubicacion",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["ubicacion"], name="idx_tedinv_ubicacion"),
+        ]
 
     def __str__(self) -> str:
-        return f"Stock {self.denominacion} = {self.cantidad}"
+        return f"Stock {self.denominacion} @ {self.ubicacion} = {self.cantidad}"
 
 
 class TedMovimiento(models.Model):

@@ -1,0 +1,1657 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>facturacion_electronica &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete notificaciones" href="notificaciones.html" />
+    <link rel="prev" title="paquete ted" href="ted.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">facturacion_electronica</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-facturacion_electronica.apps">módulo facturacion_electronica.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.apps.FacturacionElectronicaConfig"><code class="docutils literal notranslate"><span class="pre">FacturacionElectronicaConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo facturacion_electronica.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-1">módulo facturacion_electronica.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-2">módulo facturacion_electronica.services</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-3">módulo facturacion_electronica.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-4">módulo facturacion_electronica.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDetailView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.consultar_estado"><code class="docutils literal notranslate"><span class="pre">consultar_estado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.consultar_estado_de_view"><code class="docutils literal notranslate"><span class="pre">consultar_estado_de_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.descargar_kude_view"><code class="docutils literal notranslate"><span class="pre">descargar_kude_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.descargar_xml_view"><code class="docutils literal notranslate"><span class="pre">descargar_xml_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.generar_token_view"><code class="docutils literal notranslate"><span class="pre">generar_token_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.solicitar_cancelacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_cancelacion_de_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.solicitar_inutilizacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_inutilizacion_de_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.toggle_emisor_activo_view"><code class="docutils literal notranslate"><span class="pre">toggle_emisor_activo_view()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-5">módulo facturacion_electronica.tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-6">módulo facturacion_electronica.mixins</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin"><code class="docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.mixins.admin_required"><code class="docutils literal notranslate"><span class="pre">admin_required()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">facturacion_electronica</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/facturacion_electronica.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-facturacion_electronica">
+<span id="facturacion-electronica"></span><h1>facturacion_electronica<a class="headerlink" href="#module-facturacion_electronica" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-facturacion_electronica.apps">
+<span id="modulo-facturacion-electronica-apps"></span><h2>módulo facturacion_electronica.apps<a class="headerlink" href="#module-facturacion_electronica.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.apps.</span></span><span class="sig-name descname"><span class="pre">FacturacionElectronicaConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/apps.html#FacturacionElectronicaConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.label">
+<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-0">
+<span id="modulo-facturacion-electronica-forms"></span><h2>módulo facturacion_electronica.forms<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Formularios de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.forms">Este módulo contiene los formularios para la creación y edición de emisores
+de facturas electrónicas, incluyendo validaciones personalizadas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.forms.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/forms.html#EmisorFacturaElectronicaForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario para crear o editar un <code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code>.</p>
+<p>Este formulario está diseñado para alinear la entrada de datos con la estructura
+requerida para la facturación electrónica. Incluye campos para la identificación,
+contacto, dirección, numeración fija (establecimiento y punto de expedición),
+timbrado, estado, y el rango de numeración de facturas.</p>
+<p>También hace que el token de autenticación sea de solo lectura para fines de diagnóstico.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/facturacion_electronica/forms.html#EmisorFacturaElectronicaForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['nombre',</span> <span class="pre">'ruc',</span> <span class="pre">'dv_ruc',</span> <span class="pre">'email_emisor',</span> <span class="pre">'telefono',</span> <span class="pre">'codigo_departamento',</span> <span class="pre">'descripcion_departamento',</span> <span class="pre">'codigo_ciudad',</span> <span class="pre">'descripcion_ciudad',</span> <span class="pre">'direccion',</span> <span class="pre">'numero_casa',</span> <span class="pre">'pais',</span> <span class="pre">'establecimiento',</span> <span class="pre">'punto_expedicion',</span> <span class="pre">'numero_timbrado_actual',</span> <span class="pre">'fecha_inicio_timbrado',</span> <span class="pre">'activo',</span> <span class="pre">'rango_numeracion_inicio',</span> <span class="pre">'rango_numeracion_fin',</span> <span class="pre">'siguiente_numero_factura',</span> <span class="pre">'auth_token',</span> <span class="pre">'token_generado_at']</span></em><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.help_texts">
+<span class="sig-name descname"><span class="pre">help_texts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'establecimiento':</span> <span class="pre">'3</span> <span class="pre">dígitos.</span> <span class="pre">Ej.:</span> <span class="pre">001',</span> <span class="pre">'numero_timbrado_actual':</span> <span class="pre">'8</span> <span class="pre">dígitos.</span> <span class="pre">Ej.:</span> <span class="pre">02595733',</span> <span class="pre">'punto_expedicion':</span> <span class="pre">'3</span> <span class="pre">dígitos.</span> <span class="pre">Ej.:</span> <span class="pre">003',</span> <span class="pre">'rango_numeracion_fin':</span> <span class="pre">'Fin</span> <span class="pre">del</span> <span class="pre">rango</span> <span class="pre">del</span> <span class="pre">equipo</span> <span class="pre">(por</span> <span class="pre">ej.,</span> <span class="pre">450).',</span> <span class="pre">'rango_numeracion_inicio':</span> <span class="pre">'Inicio</span> <span class="pre">del</span> <span class="pre">rango</span> <span class="pre">del</span> <span class="pre">equipo</span> <span class="pre">(por</span> <span class="pre">ej.,</span> <span class="pre">401).',</span> <span class="pre">'siguiente_numero_factura':</span> <span class="pre">'Correlativo</span> <span class="pre">a</span> <span class="pre">emitir</span> <span class="pre">(se</span> <span class="pre">sugiere</span> <span class="pre">no</span> <span class="pre">modificar</span> <span class="pre">manualmente).'}</span></em><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.help_texts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'fecha_inicio_timbrado':</span> <span class="pre">&lt;django.forms.widgets.DateInput</span> <span class="pre">object&gt;,</span> <span class="pre">'rango_numeracion_fin':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'rango_numeracion_inicio':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'siguiente_numero_factura':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'auth_token':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'codigo_ciudad':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'codigo_departamento':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion_ciudad':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion_departamento':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'direccion':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'dv_ruc':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'email_emisor':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'establecimiento':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'fecha_inicio_timbrado':</span> <span class="pre">&lt;django.forms.fields.DateField</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'numero_casa':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'numero_timbrado_actual':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'pais':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'punto_expedicion':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'rango_numeracion_fin':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'rango_numeracion_inicio':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'ruc':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'siguiente_numero_factura':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'telefono':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'token_generado_at':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/forms.html#EmisorFacturaElectronicaForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.clean" title="Link to this definition"></a></dt>
+<dd><p>Realiza validaciones personalizadas para los campos del formulario.</p>
+<p>Verifica el formato de RUC, DV, establecimiento, punto de expedición,
+número de timbrado y la coherencia del rango de numeración de facturas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Muestra<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValidationError</strong> – Si alguna validación falla.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Los datos limpios y validados del formulario.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'auth_token':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'token_generado_at':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="facturacion_electronica.forms.EmisorFacturaElectronicaForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-1">
+<span id="modulo-facturacion-electronica-models"></span><h2>módulo facturacion_electronica.models<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
+<p>Modelos de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.models">Incluye:
+- <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a>: Representa la información de un emisor de facturas electrónicas.
+- <a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico" title="facturacion_electronica.models.DocumentoElectronico"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a>: Representa una factura o nota de crédito electrónica generada.
+- <a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico" title="facturacion_electronica.models.ItemDocumentoElectronico"><code class="xref py py-class docutils literal notranslate"><span class="pre">ItemDocumentoElectronico</span></code></a>: Representa un ítem dentro de un Documento Electrónico.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.models.</span></span><span class="sig-name descname"><span class="pre">DocumentoElectronico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#DocumentoElectronico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una factura o nota de crédito electrónica generada.</p>
+<p>Este modelo almacena la información detallada de un documento electrónico,
+incluyendo su tipo, numeración, estado SIFEN, fechas, y referencias a
+JSONs de la API y URLs de descarga.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Identificador único universal del documento.</p></li>
+<li><p><strong>emisor</strong> – Referencia al emisor que generó el documento.</p></li>
+<li><p><strong>tipo_de</strong> – Tipo de documento electrónico (factura o nota de crédito).</p></li>
+<li><p><strong>numero_documento</strong> – Número correlativo del documento (7 dígitos).</p></li>
+<li><p><strong>numero_timbrado</strong> – Número de timbrado asociado al documento.</p></li>
+<li><p><strong>cdc</strong> – Código de Control del documento (44 caracteres).</p></li>
+<li><p><strong>estado_sifen</strong> – Estado actual del documento en el sistema SIFEN.</p></li>
+<li><p><strong>descripcion_estado</strong> – Descripción adicional del estado.</p></li>
+<li><p><strong>fecha_emision</strong> – Fecha y hora de emisión del documento.</p></li>
+<li><p><strong>json_enviado_api</strong> – JSON enviado a la API de FacturaSegura.</p></li>
+<li><p><strong>json_respuesta_api</strong> – JSON recibido como respuesta de la API.</p></li>
+<li><p><strong>transaccion_asociada</strong> – Transacción de la casa de cambio asociada a este documento.</p></li>
+<li><p><strong>url_kude</strong> – URL para descargar el KuDE (Representación Gráfica del Documento Electrónico).</p></li>
+<li><p><strong>url_xml</strong> – URL para descargar el archivo XML del documento.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.ESTADO_SIFEN_CHOICES">
+<span class="sig-name descname"><span class="pre">ESTADO_SIFEN_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('pendiente_envio',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">envío'),</span> <span class="pre">('pendiente_aprobacion',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Aprobación</span> <span class="pre">SIFEN'),</span> <span class="pre">('pendiente_cancelacion',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">cancelación'),</span> <span class="pre">('pendiente_inutilizacion',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">inutilización'),</span> <span class="pre">('aprobado',</span> <span class="pre">'Aprobado'),</span> <span class="pre">('aprobado_obs',</span> <span class="pre">'Aprobado</span> <span class="pre">con</span> <span class="pre">Observación'),</span> <span class="pre">('rechazado',</span> <span class="pre">'Rechazado'),</span> <span class="pre">('cancelado',</span> <span class="pre">'Cancelado'),</span> <span class="pre">('inutilizado',</span> <span class="pre">'Inutilizado'),</span> <span class="pre">('error_api',</span> <span class="pre">'Error</span> <span class="pre">en</span> <span class="pre">API</span> <span class="pre">Factura</span> <span class="pre">Segura'),</span> <span class="pre">('error_sifen',</span> <span class="pre">'Error</span> <span class="pre">en</span> <span class="pre">SIFEN'),</span> <span class="pre">('simulado',</span> <span class="pre">'Simulado</span> <span class="pre">(Modo</span> <span class="pre">Desarrollo)')]</span></em><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.ESTADO_SIFEN_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.TIPO_DE_CHOICES">
+<span class="sig-name descname"><span class="pre">TIPO_DE_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('factura',</span> <span class="pre">'Factura</span> <span class="pre">Electrónica'),</span> <span class="pre">('nota_credito',</span> <span class="pre">'Nota</span> <span class="pre">de</span> <span class="pre">Crédito</span> <span class="pre">Electrónica')]</span></em><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.TIPO_DE_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.cdc">
+<span class="sig-name descname"><span class="pre">cdc</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.cdc" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#DocumentoElectronico.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.clean" title="Link to this definition"></a></dt>
+<dd><p>Realiza validaciones personalizadas para los campos del documento electrónico.</p>
+<p>Verifica que el número de documento tenga exactamente 7 dígitos numéricos.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.descripcion_estado">
+<span class="sig-name descname"><span class="pre">descripcion_estado</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.descripcion_estado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.emisor">
+<span class="sig-name descname"><span class="pre">emisor</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.emisor" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.emisor_id">
+<span class="sig-name descname"><span class="pre">emisor_id</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.emisor_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.estado_sifen">
+<span class="sig-name descname"><span class="pre">estado_sifen</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.estado_sifen" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.fecha_emision">
+<span class="sig-name descname"><span class="pre">fecha_emision</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.fecha_emision" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.get_estado_sifen_display">
+<span class="sig-name descname"><span class="pre">get_estado_sifen_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">estado_sifen&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.get_estado_sifen_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.get_next_by_fecha_emision">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_emision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_emision&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.get_next_by_fecha_emision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.get_previous_by_fecha_emision">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_emision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_emision&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.get_previous_by_fecha_emision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.get_tipo_de_display">
+<span class="sig-name descname"><span class="pre">get_tipo_de_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo_de&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.get_tipo_de_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.items">
+<span class="sig-name descname"><span class="pre">items</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.items" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.json_enviado_api">
+<span class="sig-name descname"><span class="pre">json_enviado_api</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.json_enviado_api" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.json_respuesta_api">
+<span class="sig-name descname"><span class="pre">json_respuesta_api</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.json_respuesta_api" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.numero_documento">
+<span class="sig-name descname"><span class="pre">numero_documento</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.numero_documento" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.numero_timbrado">
+<span class="sig-name descname"><span class="pre">numero_timbrado</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.numero_timbrado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.tipo_de">
+<span class="sig-name descname"><span class="pre">tipo_de</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.tipo_de" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.transaccion_asociada">
+<span class="sig-name descname"><span class="pre">transaccion_asociada</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.transaccion_asociada" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.transaccion_asociada_id">
+<span class="sig-name descname"><span class="pre">transaccion_asociada_id</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.transaccion_asociada_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.url_kude">
+<span class="sig-name descname"><span class="pre">url_kude</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.url_kude" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.DocumentoElectronico.url_xml">
+<span class="sig-name descname"><span class="pre">url_xml</span></span><a class="headerlink" href="#facturacion_electronica.models.DocumentoElectronico.url_xml" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.models.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronica</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#EmisorFacturaElectronica"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa la información de un emisor de facturas electrónicas.</p>
+<p>Este modelo almacena todos los datos necesarios para identificar a un emisor
+ante el sistema de facturación electrónica, incluyendo su RUC, dirección,
+numeración de timbrado y rangos de facturación.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nombre</strong> – Razón social o nombre del emisor.</p></li>
+<li><p><strong>ruc</strong> – Número de Identificación Tributaria (RUC) del emisor (sin DV).</p></li>
+<li><p><strong>dv_ruc</strong> – Dígito Verificador del RUC.</p></li>
+<li><p><strong>email_emisor</strong> – Email de contacto del emisor.</p></li>
+<li><p><strong>telefono</strong> – Teléfono de contacto del emisor.</p></li>
+<li><p><strong>codigo_departamento</strong> – Código del departamento de la dirección del emisor.</p></li>
+<li><p><strong>descripcion_departamento</strong> – Descripción del departamento.</p></li>
+<li><p><strong>codigo_ciudad</strong> – Código de la ciudad de la dirección del emisor.</p></li>
+<li><p><strong>descripcion_ciudad</strong> – Descripción de la ciudad.</p></li>
+<li><p><strong>direccion</strong> – Dirección física del emisor.</p></li>
+<li><p><strong>numero_casa</strong> – Número de casa de la dirección.</p></li>
+<li><p><strong>pais</strong> – Código de país (por defecto «PY»).</p></li>
+<li><p><strong>establecimiento</strong> – Número de establecimiento (3 dígitos).</p></li>
+<li><p><strong>punto_expedicion</strong> – Número de punto de expedición (3 dígitos).</p></li>
+<li><p><strong>numero_timbrado_actual</strong> – Número de timbrado actual (8 dígitos).</p></li>
+<li><p><strong>fecha_inicio_timbrado</strong> – Fecha de inicio de vigencia del timbrado.</p></li>
+<li><p><strong>auth_token</strong> – Token de autenticación para la API de FacturaSegura.</p></li>
+<li><p><strong>token_generado_at</strong> – Fecha y hora de generación del token.</p></li>
+<li><p><strong>activo</strong> – Indica si el emisor está activo en el sistema.</p></li>
+<li><p><strong>rango_numeracion_inicio</strong> – Número inicial del rango de numeración de facturas.</p></li>
+<li><p><strong>rango_numeracion_fin</strong> – Número final del rango de numeración de facturas.</p></li>
+<li><p><strong>siguiente_numero_factura</strong> – Próximo número de factura a emitir.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.auth_token">
+<span class="sig-name descname"><span class="pre">auth_token</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.auth_token" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#EmisorFacturaElectronica.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.clean" title="Link to this definition"></a></dt>
+<dd><p>Realiza validaciones personalizadas para los campos del emisor.</p>
+<p>Verifica la validez del RUC, DV, establecimiento, punto de expedición,
+número de timbrado, fecha de inicio de timbrado, y la coherencia
+de los rangos de numeración.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.codigo_ciudad">
+<span class="sig-name descname"><span class="pre">codigo_ciudad</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.codigo_ciudad" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.codigo_departamento">
+<span class="sig-name descname"><span class="pre">codigo_departamento</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.codigo_departamento" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.descripcion_ciudad">
+<span class="sig-name descname"><span class="pre">descripcion_ciudad</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.descripcion_ciudad" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.descripcion_departamento">
+<span class="sig-name descname"><span class="pre">descripcion_departamento</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.descripcion_departamento" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.direccion">
+<span class="sig-name descname"><span class="pre">direccion</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.direccion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.documentos_electronicos">
+<span class="sig-name descname"><span class="pre">documentos_electronicos</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.documentos_electronicos" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.dv_ruc">
+<span class="sig-name descname"><span class="pre">dv_ruc</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.dv_ruc" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.email_emisor">
+<span class="sig-name descname"><span class="pre">email_emisor</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.email_emisor" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.establecimiento">
+<span class="sig-name descname"><span class="pre">establecimiento</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.establecimiento" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.etiqueta_con">
+<span class="sig-name descname"><span class="pre">etiqueta_con</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numero_int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#EmisorFacturaElectronica.etiqueta_con"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.etiqueta_con" title="Link to this definition"></a></dt>
+<dd><p>Genera la etiqueta completa del documento electrónico (ej. “001-003-0000401”).</p>
+<p>Combina el establecimiento, punto de expedición y el número de documento
+dado para formar la etiqueta completa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>numero_int</strong> (<em>int</em>) – El número de documento como entero.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La etiqueta formateada del documento.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.fecha_inicio_timbrado">
+<span class="sig-name descname"><span class="pre">fecha_inicio_timbrado</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.fecha_inicio_timbrado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.get_next_by_fecha_inicio_timbrado">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_inicio_timbrado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateField:</span> <span class="pre">fecha_inicio_timbrado&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.get_next_by_fecha_inicio_timbrado" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.get_previous_by_fecha_inicio_timbrado">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_inicio_timbrado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateField:</span> <span class="pre">fecha_inicio_timbrado&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.get_previous_by_fecha_inicio_timbrado" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.numero_casa">
+<span class="sig-name descname"><span class="pre">numero_casa</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.numero_casa" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.numero_timbrado_actual">
+<span class="sig-name descname"><span class="pre">numero_timbrado_actual</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.numero_timbrado_actual" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.pais">
+<span class="sig-name descname"><span class="pre">pais</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.pais" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.punto_expedicion">
+<span class="sig-name descname"><span class="pre">punto_expedicion</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.punto_expedicion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_fin">
+<span class="sig-name descname"><span class="pre">rango_numeracion_fin</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_fin" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_inicio">
+<span class="sig-name descname"><span class="pre">rango_numeracion_inicio</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_inicio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.reservar_numero_y_avanzar">
+<span class="sig-name descname"><span class="pre">reservar_numero_y_avanzar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#EmisorFacturaElectronica.reservar_numero_y_avanzar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.reservar_numero_y_avanzar" title="Link to this definition"></a></dt>
+<dd><p>Reserva el siguiente número de factura disponible y avanza el contador.</p>
+<p>Este método asegura la concurrencia segura al reservar un número
+dentro del rango definido y actualizar el <cite>siguiente_numero_factura</cite>.
+Debe usarse al crear un <cite>DocumentoElectronico</cite> propio (emisión).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Muestra<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValidationError</strong> – Si no hay numeración disponible en el rango.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Una tupla con el número de factura como entero y como string de 7 dígitos.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[int, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.ruc">
+<span class="sig-name descname"><span class="pre">ruc</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.ruc" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.siguiente_numero_factura">
+<span class="sig-name descname"><span class="pre">siguiente_numero_factura</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.siguiente_numero_factura" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.telefono">
+<span class="sig-name descname"><span class="pre">telefono</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.telefono" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.EmisorFacturaElectronica.token_generado_at">
+<span class="sig-name descname"><span class="pre">token_generado_at</span></span><a class="headerlink" href="#facturacion_electronica.models.EmisorFacturaElectronica.token_generado_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.models.</span></span><span class="sig-name descname"><span class="pre">ItemDocumentoElectronico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/models.html#ItemDocumentoElectronico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa un ítem dentro de un Documento Electrónico.</p>
+<p>Este modelo detalla cada producto o servicio incluido en un documento
+electrónico, con información como código, descripción, cantidad, precio,
+descuentos y detalles de afectación de IVA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>documento_electronico</strong> – Referencia al documento electrónico al que pertenece el ítem.</p></li>
+<li><p><strong>codigo_interno</strong> – Código interno del producto o servicio.</p></li>
+<li><p><strong>descripcion_producto_servicio</strong> – Descripción del producto o servicio.</p></li>
+<li><p><strong>unidad_medida</strong> – Código de la unidad de medida.</p></li>
+<li><p><strong>cantidad</strong> – Cantidad del producto o servicio.</p></li>
+<li><p><strong>precio_unitario</strong> – Precio unitario del producto o servicio.</p></li>
+<li><p><strong>descuento_item</strong> – Monto de descuento aplicado a este ítem.</p></li>
+<li><p><strong>afectacion_iva</strong> – Código de afectación del IVA.</p></li>
+<li><p><strong>proporcion_iva</strong> – Proporción gravada del IVA.</p></li>
+<li><p><strong>tasa_iva</strong> – Tasa de IVA aplicada.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.afectacion_iva">
+<span class="sig-name descname"><span class="pre">afectacion_iva</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.afectacion_iva" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.cantidad">
+<span class="sig-name descname"><span class="pre">cantidad</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.cantidad" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.codigo_interno">
+<span class="sig-name descname"><span class="pre">codigo_interno</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.codigo_interno" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.descripcion_producto_servicio">
+<span class="sig-name descname"><span class="pre">descripcion_producto_servicio</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.descripcion_producto_servicio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.descuento_item">
+<span class="sig-name descname"><span class="pre">descuento_item</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.descuento_item" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico">
+<span class="sig-name descname"><span class="pre">documento_electronico</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico_id">
+<span class="sig-name descname"><span class="pre">documento_electronico_id</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.precio_unitario">
+<span class="sig-name descname"><span class="pre">precio_unitario</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.precio_unitario" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.proporcion_iva">
+<span class="sig-name descname"><span class="pre">proporcion_iva</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.proporcion_iva" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.tasa_iva">
+<span class="sig-name descname"><span class="pre">tasa_iva</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.tasa_iva" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.models.ItemDocumentoElectronico.unidad_medida">
+<span class="sig-name descname"><span class="pre">unidad_medida</span></span><a class="headerlink" href="#facturacion_electronica.models.ItemDocumentoElectronico.unidad_medida" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-2">
+<span id="modulo-facturacion-electronica-services"></span><h2>módulo facturacion_electronica.services<a class="headerlink" href="#module-2" title="Link to this heading"></a></h2>
+<p>Servicios de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.services">Este módulo contiene el cliente para la API de Factura Segura,
+facilitando la autenticación, generación, consulta de estado,
+cancelación, inutilización y descarga de documentos electrónicos.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.services.</span></span><span class="sig-name descname"><span class="pre">FacturaSeguraAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emisor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Cliente para interactuar con la API de Factura Segura.</p>
+<p>Proporciona métodos para autenticación, simulación de respuestas,
+realización de solicitudes a la API, y operaciones específicas
+para documentos electrónicos como calcular, generar, consultar estado,
+cancelar, inutilizar y descargar KuDE/XML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>emisor_id</strong> (<em>int</em>) – ID del emisor de factura electrónica asociado a este cliente.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de">
+<span class="sig-name descname"><span class="pre">calcular_de</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_resumido_de</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.calcular_de"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de" title="Link to this definition"></a></dt>
+<dd><p>Llama a la operación “calcular_de” de la API.</p>
+<p>Recibe un JSON resumido del Documento Electrónico (DE) y devuelve
+el DE con los cálculos realizados por la API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json_resumido_de</strong> (<em>dict</em>) – JSON resumido del Documento Electrónico.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>El JSON del Documento Electrónico con los cálculos.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de_contrato_estricto">
+<span class="sig-name descname"><span class="pre">calcular_de_contrato_estricto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">de_resumido</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.calcular_de_contrato_estricto"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de_contrato_estricto" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.descargar_kude">
+<span class="sig-name descname"><span class="pre">descargar_kude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ruc_emisor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.descargar_kude"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_kude" title="Link to this definition"></a></dt>
+<dd><p>Descarga el KuDE (Representación Gráfica del Documento Electrónico) en formato PDF.</p>
+<p>Realiza una solicitud GET al endpoint específico de descarga de KuDE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cdc</strong> (<em>str</em>) – Código de Control del documento.</p></li>
+<li><p><strong>ruc_emisor</strong> (<em>str</em>) – RUC del emisor del documento.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Muestra<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>requests.HTTPError</strong> – Si la descarga falla.</p>
+</dd>
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>El contenido binario del archivo PDF del KuDE.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.descargar_xml">
+<span class="sig-name descname"><span class="pre">descargar_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ruc_emisor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.descargar_xml"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_xml" title="Link to this definition"></a></dt>
+<dd><p>Descarga el archivo XML firmado de un Documento Electrónico.</p>
+<p>Realiza una solicitud GET al endpoint específico de descarga de XML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cdc</strong> (<em>str</em>) – Código de Control del documento.</p></li>
+<li><p><strong>ruc_emisor</strong> (<em>str</em>) – RUC del emisor del documento.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Muestra<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>requests.HTTPError</strong> – Si la descarga falla.</p>
+</dd>
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>El contenido binario del archivo XML.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto">
+<span class="sig-name descname"><span class="pre">emitir_end_to_end_contrato_estricto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">de_resumido</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.generar_de">
+<span class="sig-name descname"><span class="pre">generar_de</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_de_completo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaccion_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.generar_de"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de" title="Link to this definition"></a></dt>
+<dd><p>Llama a la operación “generar_de” para crear un Documento Electrónico en FacturaSegura.</p>
+<p>Este método:
+- Asigna un número de documento (<cite>dNumDoc</cite>) dentro del rango configurado del emisor,</p>
+<blockquote>
+<div><p>asegurando la concurrencia con un bloqueo de fila.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Inyecta datos del emisor (RUC, DV, establecimiento, punto de expedición, timbrado)
+en el JSON del DE si no están presentes.</p></li>
+<li><p>Crea una instancia local de <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code> con la respuesta de la API (CDC, estado).</p></li>
+<li><p>Avanza el correlativo del emisor solo si la generación es exitosa.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json_de_completo</strong> (<em>dict</em>) – JSON completo del Documento Electrónico a generar.</p></li>
+<li><p><strong>transaccion_id</strong> (<em>uuid.UUID</em><em> or </em><em>None</em>) – ID de la transacción asociada, si existe.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Muestra<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Si el rango de numeración del emisor está agotado o es inválido.</p></li>
+<li><p><strong>Exception</strong> – Si la API de Factura Segura devuelve un error al generar el DE.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>La instancia del DocumentoElectronico creado localmente.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.generar_de_contrato_estricto">
+<span class="sig-name descname"><span class="pre">generar_de_contrato_estricto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">de_completo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.generar_de_contrato_estricto"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de_contrato_estricto" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.get_estado_sifen">
+<span class="sig-name descname"><span class="pre">get_estado_sifen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ruc_emisor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.get_estado_sifen"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.get_estado_sifen" title="Link to this definition"></a></dt>
+<dd><p>Consulta el estado de un Documento Electrónico (DE) en el sistema SIFEN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cdc</strong> (<em>str</em>) – Código de Control del documento.</p></li>
+<li><p><strong>ruc_emisor</strong> (<em>str</em>) – RUC del emisor del documento.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La respuesta de la API con el estado SIFEN.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_cancelacion">
+<span class="sig-name descname"><span class="pre">solicitar_cancelacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ruc_emisor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.solicitar_cancelacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_cancelacion" title="Link to this definition"></a></dt>
+<dd><p>Solicita la cancelación de un Documento Electrónico (DE) en SIFEN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cdc</strong> (<em>str</em>) – Código de Control del documento a cancelar.</p></li>
+<li><p><strong>ruc_emisor</strong> (<em>str</em>) – RUC del emisor del documento.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La respuesta de la API a la solicitud de cancelación.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_inutilizacion">
+<span class="sig-name descname"><span class="pre">solicitar_inutilizacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ruc_emisor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo_de</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_timbrado</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">establecimiento</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">punto_exp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/services.html#FacturaSeguraAPIClient.solicitar_inutilizacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_inutilizacion" title="Link to this definition"></a></dt>
+<dd><p>Solicita la inutilización de un rango de números de Documentos Electrónicos.</p>
+<p>Se utiliza para declarar números de documentos que no serán utilizados.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ruc_emisor</strong> (<em>str</em>) – RUC del emisor.</p></li>
+<li><p><strong>tipo_de</strong> (<em>str</em>) – Tipo de documento electrónico (“1” para Factura, “5” para Nota de Crédito).</p></li>
+<li><p><strong>num_timbrado</strong> (<em>str</em>) – Número de timbrado.</p></li>
+<li><p><strong>establecimiento</strong> (<em>str</em>) – Número de establecimiento.</p></li>
+<li><p><strong>punto_exp</strong> (<em>str</em>) – Número de punto de expedición.</p></li>
+<li><p><strong>num_doc</strong> (<em>str</em>) – Número de documento a inutilizar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La respuesta de la API a la solicitud de inutilización.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-3">
+<span id="modulo-facturacion-electronica-urls"></span><h2>módulo facturacion_electronica.urls<a class="headerlink" href="#module-3" title="Link to this heading"></a></h2>
+<p>Definiciones de URL para la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.urls">Este módulo define las rutas URL para las vistas relacionadas con la gestión
+de emisores de facturas electrónicas y documentos electrónicos, incluyendo
+operaciones CRUD y acciones específicas de la API.</p>
+</section>
+<section id="module-4">
+<span id="modulo-facturacion-electronica-views"></span><h2>módulo facturacion_electronica.views<a class="headerlink" href="#module-4" title="Link to this heading"></a></h2>
+<p>Vistas de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.views">Este módulo contiene las vistas para la gestión de emisores y documentos electrónicos,
+incluyendo operaciones CRUD y acciones relacionadas con la API de Factura Segura y SIFEN.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">DocumentoElectronicoDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#DocumentoElectronicoDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<p>Vista para eliminar un documento electrónico.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Elimina el documento y muestra un mensaje de éxito.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'documento'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#DocumentoElectronicoDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.delete" title="Link to this definition"></a></dt>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico" title="facturacion_electronica.models.DocumentoElectronico"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/facturacion-electronica/documentos/'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/documento_confirm_delete.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDetailView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">DocumentoElectronicoDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#DocumentoElectronicoDetailView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDetailView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DetailView</span></code></p>
+<p>Vista para mostrar los detalles de un documento electrónico específico.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Prepara los JSON de envío y respuesta de la API para una visualización legible.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDetailView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'documento'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDetailView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#DocumentoElectronicoDetailView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the single object into the context dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDetailView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico" title="facturacion_electronica.models.DocumentoElectronico"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoDetailView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/documento_detail.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">DocumentoElectronicoListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#DocumentoElectronicoListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<p>Vista para listar todos los documentos electrónicos.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Muestra una lista paginada de documentos electrónicos.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'documentos'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico" title="facturacion_electronica.models.DocumentoElectronico"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoListView.paginate_by">
+<span class="sig-name descname"><span class="pre">paginate_by</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoListView.paginate_by" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.DocumentoElectronicoListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/documento_list.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.DocumentoElectronicoListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
+<p>Vista para crear un nuevo emisor de factura electrónica.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Almacena los datos del formulario y muestra un mensaje de éxito.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm" title="facturacion_electronica.forms.EmisorFacturaElectronicaForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/facturacion-electronica/emisores/'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaCreateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/emisor_form.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<p>Vista para eliminar un emisor de factura electrónica.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Elimina el emisor y todos los documentos electrónicos relacionados de forma atómica.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'object'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.delete" title="Link to this definition"></a></dt>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/facturacion-electronica/emisores/'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/emisor_confirm_delete.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDetailView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaDetailView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DetailView</span></code></p>
+<p>Vista para mostrar los detalles de un emisor de factura electrónica específico.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDetailView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'emisor'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDetailView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaDetailView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/emisor_detail.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<p>Vista para listar todos los emisores de factura electrónica.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Muestra una lista paginada de emisores.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'emisores'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/emisor_list.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">EmisorFacturaElectronicaUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<p>Vista para actualizar un emisor de factura electrónica existente.</p>
+<p>Requiere que el usuario esté autenticado y tenga permisos de administrador.
+Actualiza los datos del formulario y muestra un mensaje de éxito.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm" title="facturacion_electronica.forms.EmisorFacturaElectronicaForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#EmisorFacturaElectronicaUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica" title="facturacion_electronica.models.EmisorFacturaElectronica"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/facturacion-electronica/emisores/'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica/emisor_form.html'</span></em><a class="headerlink" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.consultar_estado">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">consultar_estado</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#consultar_estado"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.consultar_estado" title="Link to this definition"></a></dt>
+<dd><p>Dispara la consulta de estado de un documento electrónico en SIFEN.</p>
+<p>Esta función es asíncrona (usa Celery) y no bloquea la UI. Proporciona
+feedback inmediato al usuario mientras la consulta se procesa en segundo plano.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>pk</strong> (<em>uuid.UUID</em>) – Clave primaria del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del documento con un mensaje informativo.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.consultar_estado_de_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">consultar_estado_de_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#consultar_estado_de_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.consultar_estado_de_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para consultar el estado de un documento electrónico en SIFEN.</p>
+<p>Requiere una solicitud POST. Dispara una tarea asíncrona para consultar el estado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>documento_id</strong> (<em>uuid.UUID</em>) – ID del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del documento con un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.descargar_kude_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">descargar_kude_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#descargar_kude_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.descargar_kude_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para descargar el KuDE (Representación Gráfica del Documento Electrónico).</p>
+<p>Requiere que el documento tenga un CDC asignado. Utiliza el cliente de la API
+para obtener el contenido PDF del KuDE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>documento_id</strong> (<em>uuid.UUID</em>) – ID del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Un HttpResponse con el contenido PDF o una redirección con mensaje de error.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse or HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.descargar_xml_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">descargar_xml_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#descargar_xml_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.descargar_xml_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para descargar el archivo XML de un documento electrónico.</p>
+<p>Requiere que el documento tenga un CDC asignado. Utiliza el cliente de la API
+para obtener el contenido XML del documento.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>documento_id</strong> (<em>uuid.UUID</em>) – ID del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Un HttpResponse con el contenido XML o una redirección con mensaje de error.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse or HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.generar_token_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">generar_token_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emisor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#generar_token_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.generar_token_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para generar o actualizar el token de autenticación de un emisor.</p>
+<p>Requiere una solicitud POST. Dispara la generación del token a través del cliente de la API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>emisor_id</strong> (<em>int</em>) – ID del emisor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del emisor con un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.solicitar_cancelacion_de_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">solicitar_cancelacion_de_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#solicitar_cancelacion_de_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.solicitar_cancelacion_de_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para solicitar la cancelación de un documento electrónico en SIFEN.</p>
+<p>Requiere una solicitud POST. Solo permite cancelar documentos en estado “Aprobado” o “Aprobado con Observación”.
+Dispara una tarea asíncrona para solicitar la cancelación.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>documento_id</strong> (<em>uuid.UUID</em>) – ID del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del documento con un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.solicitar_inutilizacion_de_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">solicitar_inutilizacion_de_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#solicitar_inutilizacion_de_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.solicitar_inutilizacion_de_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para solicitar la inutilización de un documento electrónico en SIFEN.</p>
+<p>Requiere una solicitud POST. No permite inutilizar documentos ya “Aprobados”, “Cancelados” o “Inutilizados”.
+Dispara una tarea asíncrona para solicitar la inutilización.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>documento_id</strong> (<em>uuid.UUID</em>) – ID del documento electrónico.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del documento con un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.toggle_emisor_activo_view">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">toggle_emisor_activo_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#toggle_emisor_activo_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.toggle_emisor_activo_view" title="Link to this definition"></a></dt>
+<dd><p>Vista para cambiar el estado “activo” de un emisor de factura electrónica.</p>
+<p>Requiere una solicitud POST. Alterna el valor del campo <cite>activo</cite> del emisor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – Objeto HttpRequest.</p></li>
+<li><p><strong>pk</strong> (<em>int</em>) – Clave primaria del emisor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona a la vista de detalle del emisor con un mensaje.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponseRedirect</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-5">
+<span id="modulo-facturacion-electronica-tasks"></span><h2>módulo facturacion_electronica.tasks<a class="headerlink" href="#module-5" title="Link to this heading"></a></h2>
+<p>Tareas asíncronas (Celery) de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.tasks">Este módulo define tareas Celery para la generación, consulta de estado,
+cancelación e inutilización de documentos electrónicos, interactuando
+con la API de Factura Segura y el sistema SIFEN.</p>
+</section>
+<section id="module-6">
+<span id="modulo-facturacion-electronica-mixins"></span><h2>módulo facturacion_electronica.mixins<a class="headerlink" href="#module-6" title="Link to this heading"></a></h2>
+<p>Mixins y Decoradores de la app Facturación Electrónica.</p>
+<p id="module-facturacion_electronica.mixins">Este módulo proporciona mixins y decoradores para asegurar que solo los usuarios
+con privilegios de administrador puedan acceder a ciertas vistas y funcionalidades.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="facturacion_electronica.mixins.AdminRequiredMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.mixins.</span></span><span class="sig-name descname"><span class="pre">AdminRequiredMixin</span></span><a class="reference internal" href="_modules/facturacion_electronica/mixins.html#AdminRequiredMixin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AccessMixin</span></code></p>
+<p>Mixin para vistas basadas en clases que requiere que el usuario autenticado
+tenga privilegios de administrador.</p>
+<ul class="simple">
+<li><p>Si el usuario no está autenticado, se le redirige a la página de login
+(según la configuración de <cite>LOGIN_URL</cite> de Django).</p></li>
+<li><p>Si el usuario está autenticado pero no tiene permisos de administrador,
+se muestra un mensaje de error y se le redirige a la página de inicio.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="facturacion_electronica.mixins.AdminRequiredMixin.dispatch">
+<span class="sig-name descname"><span class="pre">dispatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/mixins.html#AdminRequiredMixin.dispatch"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.mixins.AdminRequiredMixin.dispatch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.mixins.admin_required">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.mixins.</span></span><span class="sig-name descname"><span class="pre">admin_required</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/mixins.html#admin_required"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.mixins.admin_required" title="Link to this definition"></a></dt>
+<dd><p>Decorador para vistas basadas en funciones que requieren privilegios de administrador.</p>
+<p>Aplica las mismas reglas de verificación de permisos que <a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin" title="facturacion_electronica.mixins.AdminRequiredMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a>.
+- Si el usuario no está autenticado, se le redirige a la página de login.
+- Si el usuario está autenticado pero no tiene permisos de administrador,</p>
+<blockquote>
+<div><p>se muestra un mensaje de error y se le redirige a la página de inicio.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>callable</em>) – La función de vista a decorar.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La función de vista decorada.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Contenido del módulo</p>
+<span class="target" id="module-7"></span></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="ted.html" class="btn btn-neutral float-left" title="paquete ted" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="notificaciones.html" class="btn btn-neutral float-right" title="paquete notificaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

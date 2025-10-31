@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle del Documento Electrónico{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --brand:#6a3df0; --ink:#1f2330; --muted:#6b7280; --line:#eef0f4;
+    --surface:#ffffff; --surface-2:#f8fafc; --radius:16px;
+  }
+  .page-wrap{max-width:1100px;margin:0 auto;padding:24px 12px;}
+  .cardx{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 6px 16px rgba(31,35,48,.06);}
+  .cardx + .cardx{margin-top:18px;}
+  .cardx-hd{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:600;color:var(--ink);background:var(--surface);}
+  .cardx-bd{padding:18px;}
+  .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600}
+  .pill-success{background:#e8fff1;color:#147a3d;border:1px solid #b7ebc6}
+  .pill-danger{background:#fff0f0;color:#b42318;border:1px solid #ffd1cf}
+  .pill-warn{background:#fff7e6;color:#b45d12;border:1px solid #ffd9b3}
+  .pill-info{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe}
+  .pill-muted{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb}
+
+  .doc-header{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;justify-content:space-between}
+  .doc-title{font-size:1.6rem;font-weight:700;color:var(--ink);letter-spacing:.3px;margin:0}
+  .subtle{color:var(--muted);font-size:.9rem}
+  .mono{font-family: ui-monospace,SFMono-Regular,Menlo,monospace}
+  .chip{display:inline-flex;gap:8px;align-items:center;border:1px dashed var(--line);padding:8px 12px;border-radius:12px;background:var(--surface-2)}
+  .copy-btn{border:none;background:var(--brand);color:#fff;border-radius:10px;padding:6px 10px;font-weight:600}
+  .copy-btn:hover{filter:brightness(.95)}
+
+  .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .kv{display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .kv .k{color:var(--muted);font-size:.9rem}
+  .kv .v{color:var(--ink)}
+  @media (max-width: 860px){ .kv-grid{grid-template-columns:1fr} .kv{grid-template-columns:140px 1fr} }
+
+  .table-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table.clean{width:100%;border-collapse:collapse}
+  table.clean thead th{background:var(--surface-2);text-align:left;padding:12px;font-size:.9rem;color:var(--muted);border-bottom:1px solid var(--line)}
+  table.clean tbody td{padding:12px;border-bottom:1px solid var(--line)}
+  table.clean tbody tr:hover{background:#fbfbff}
+  .td-right{text-align:right}
+  .td-center{text-align:center}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px}
+  .btnx{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600}
+  .btnx-primary{background:var(--brand);color:#fff;border-color:transparent}
+  .btnx-warn{background:#fff7e6;border-color:#ffd9b3;color:#b45d12}
+  .btnx-danger{background:#fff0f0;border-color:#ffd1cf;color:#b42318}
+  .btnx-ghost{background:#fff;color:#4b5563}
+  .btnx[disabled],a.disabled-link{opacity:.45;pointer-events:none}
+
+  /* Mensajes Django */
+  .msgs{margin-bottom:16px}
+  .msg{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+</style>
+
+<div class="page-wrap">
+{% if messages %}
+  <div class="msgs" style="margin-bottom:16px">
+    {% for message in messages %}
+      <div class="msg">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+  <!-- Encabezado + Estado actual (lo importante) -->
+  <div class="cardx">
+    <div class="cardx-bd">
+      <div class="doc-header">
+        <div>
+          <div class="subtle">Documento</div>
+          <h1 class="doc-title">{{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}</h1>
+
+          <!-- Estado SIFEN simple, visible y claro -->
+          <div style="margin-top:10px">
+            <span class="subtle">Estado SIFEN:</span>
+            {% if documento.estado_sifen == 'aprobado' %}
+              <span class="pill pill-success">{{ documento.get_estado_sifen_display }}</span>
+            {% elif documento.estado_sifen == 'rechazado' or documento.estado_sifen == 'error_api' or documento.estado_sifen == 'error_sifen' %}
+              <span class="pill pill-danger">{{ documento.get_estado_sifen_display }}</span>
+            {% elif documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}
+              <span class="pill pill-warn">{{ documento.get_estado_sifen_display }}</span>
+            {% elif documento.estado_sifen == 'simulado' %}
+              <span class="pill pill-info">{{ documento.get_estado_sifen_display }}</span>
+            {% else %}
+              <span class="pill pill-muted">{{ documento.get_estado_sifen_display }}</span>
+            {% endif %}
+            {% if documento.descripcion_estado %}<span class="subtle" style="margin-left:8px">( {{ documento.descripcion_estado }} )</span>{% endif %}
+          </div>
+        </div>
+
+        <div>
+          <div class="subtle">CDC</div>
+          <div class="chip mono" style="margin-top:4px">
+            <span class="text-break">{{ documento.cdc|default:"N/A" }}</span>
+            {% if documento.cdc %}
+            <button type="button" class="copy-btn" onclick="navigator.clipboard.writeText('{{ documento.cdc }}')">Copiar</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <!-- Información General -->
+  <div class="cardx">
+    <div class="cardx-hd">Información General</div>
+    <div class="cardx-bd">
+      <div class="kv-grid">
+        <div class="kv">
+          <div class="k">ID</div>
+          <div class="v mono">
+            {{ documento.id }}
+            <button type="button" class="copy-btn" style="margin-left:8px" onclick="navigator.clipboard.writeText('{{ documento.id }}')">Copiar</button>
+          </div>
+        </div>
+        <div class="kv">
+          <div class="k">Emisor</div>
+          <div class="v">
+            <a class="text-decoration-none" href="{% url 'facturacion_electronica:emisor_detail' pk=documento.emisor.pk %}">{{ documento.emisor.nombre }}</a>
+          </div>
+        </div>
+        <div class="kv">
+          <div class="k">Tipo</div>
+          <div class="v">{{ documento.get_tipo_de_display }}</div>
+        </div>
+        <div class="kv">
+          <div class="k">Timbrado</div>
+          <div class="v">{{ documento.numero_timbrado|default:"N/A" }}</div>
+        </div>
+        <div class="kv">
+          <div class="k">Fecha de emisión</div>
+          <div class="v">{{ documento.fecha_emision|date:"d/m/Y H:i:s" }}</div>
+        </div>
+        <div class="kv" style="grid-column:1/-1">
+          <div class="k">Transacción asociada</div>
+          <div class="v">
+            {% if documento.transaccion_asociada %}
+              <a class="text-decoration-none mono" href="{% url 'transacciones:resultado_pago' transaccion_id=documento.transaccion_asociada.pk %}">
+                {{ documento.transaccion_asociada.id }}
+              </a>
+            {% else %}
+              <span class="subtle">N/A</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ítems -->
+  <div class="cardx">
+    <div class="cardx-hd">Ítems del Documento</div>
+    <div class="cardx-bd">
+      {% if documento.items.count %}
+      <div class="table-wrap">
+        <table class="clean">
+          <thead>
+            <tr>
+              <th style="width:16%">Código</th>
+              <th>Descripción</th>
+              <th class="td-right" style="width:10%">Cantidad</th>
+              <th class="td-right" style="width:14%">P. Unitario</th>
+              <th class="td-right" style="width:12%">Descuento</th>
+              <th class="td-center" style="width:10%">IVA</th>
+              <th class="td-right" style="width:12%">Tasa IVA</th>
+            </tr>
+          </thead>
+          <tbody class="mono">
+            {% for item in documento.items.all %}
+            <tr>
+              <td class="text-nowrap">{{ item.codigo_interno|default:"N/A" }}</td>
+              <td>{{ item.descripcion_producto_servicio }}</td>
+              <td class="td-right">{{ item.cantidad }}</td>
+              <td class="td-right">{{ item.precio_unitario }}</td>
+              <td class="td-right">{{ item.descuento_item }}</td>
+              <td class="td-center">{{ item.afectacion_iva }}</td>
+              <td class="td-right">{{ item.tasa_iva }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="subtle">No hay ítems asociados a este documento.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Acciones (consultar estado solo muestra el estado arriba) -->
+  <div class="cardx">
+    <div class="cardx-hd">Acciones</div>
+    <div class="cardx-bd">
+      <div class="actions">
+        <form action="{% url 'facturacion_electronica:consultar_estado' documento.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btnx btnx-primary">Consultar Estado SIFEN</button>
+        </form>
+
+        <form action="{% url 'facturacion_electronica:solicitar_cancelacion' documento.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btnx btnx-warn"
+            {% if documento.estado_sifen != 'aprobado' and documento.estado_sifen != 'aprobado_obs' %}disabled{% endif %}>
+            Solicitar Cancelación
+          </button>
+        </form>
+
+        <form action="{% url 'facturacion_electronica:solicitar_inutilizacion' documento.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btnx btnx-danger"
+            {% if documento.estado_sifen == 'aprobado' or documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}disabled{% endif %}>
+            Solicitar Inutilización
+          </button>
+        </form>
+
+        <a href="{% url 'facturacion_electronica:descargar_kude' documento.id %}"
+           class="btnx btnx-ghost {% if not documento.cdc %}disabled-link{% endif %}">
+          Descargar KuDE
+        </a>
+
+        <a href="{% url 'facturacion_electronica:descargar_xml' documento.id %}"
+           class="btnx btnx-ghost {% if not documento.cdc %}disabled-link{% endif %}">
+          Descargar XML
+        </a>
+      </div>
+
+    <div style="margin-top:12px; font-size:.95rem;">
+      <span class="subtle">Estado SIFEN actual:</span>
+      <span class="mono">{{ documento.get_estado_sifen_display }}</span>
+      {% if documento.descripcion_estado %}
+        <span class="subtle"> — {{ documento.descripcion_estado }}</span>
+      {% endif %}
+    </div>
+
+      <div class="subtle" style="margin-top:10px">
+        Consejo: tras consultar, recarga la página si no ves cambios inmediatos (según respuesta de SIFEN).
+      </div>
+    </div>
+  </div>
+
+  <!-- Volver -->
+  <div style="margin-top:18px;text-align:center">
+    <a href="{% url 'facturacion_electronica:documento_list' %}" class="btnx">← Volver a la Lista de Documentos</a>
+  </div>
+
+</div>
+{% endblock %}

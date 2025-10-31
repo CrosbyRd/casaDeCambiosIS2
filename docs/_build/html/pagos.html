@@ -1,0 +1,1580 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete pagos &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete payments" href="payments.html" />
+    <link rel="prev" title="paquete operaciones" href="operaciones.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete pagos</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.admin">módulo pagos.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.apps">módulo pagos.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.apps.PagosConfig"><code class="docutils literal notranslate"><span class="pre">PagosConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.forms">módulo pagos.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#contiene">Contiene:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.forms.CampoMedioPagoForm"><code class="docutils literal notranslate"><span class="pre">CampoMedioPagoForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.forms.MedioPagoClienteForm"><code class="docutils literal notranslate"><span class="pre">MedioPagoClienteForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.forms.TipoMedioPagoForm"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.models">módulo pagos.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.models.CampoMedioPago"><code class="docutils literal notranslate"><span class="pre">CampoMedioPago</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.models.MedioPagoCliente"><code class="docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.models.TipoMedioPago"><code class="docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.services">módulo pagos.services</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.services.build_json_de_from_transaction"><code class="docutils literal notranslate"><span class="pre">build_json_de_from_transaction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.services.ejecutar_acreditacion_a_cliente"><code class="docutils literal notranslate"><span class="pre">ejecutar_acreditacion_a_cliente()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.services.handle_payment_webhook"><code class="docutils literal notranslate"><span class="pre">handle_payment_webhook()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.services.iniciar_cobro_a_cliente"><code class="docutils literal notranslate"><span class="pre">iniciar_cobro_a_cliente()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo pagos.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-1">módulo pagos.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.AccessPagosMixin"><code class="docutils literal notranslate"><span class="pre">AccessPagosMixin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.MedioPagoCreateView"><code class="docutils literal notranslate"><span class="pre">MedioPagoCreateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.MedioPagoDeleteView"><code class="docutils literal notranslate"><span class="pre">MedioPagoDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.MedioPagoListView"><code class="docutils literal notranslate"><span class="pre">MedioPagoListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.MedioPagoPredeterminarView"><code class="docutils literal notranslate"><span class="pre">MedioPagoPredeterminarView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.MedioPagoUpdateView"><code class="docutils literal notranslate"><span class="pre">MedioPagoUpdateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.TipoPagoCreateView"><code class="docutils literal notranslate"><span class="pre">TipoPagoCreateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.TipoPagoDeleteView"><code class="docutils literal notranslate"><span class="pre">TipoPagoDeleteView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.TipoPagoListView"><code class="docutils literal notranslate"><span class="pre">TipoPagoListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.views.TipoPagoUpdateView"><code class="docutils literal notranslate"><span class="pre">TipoPagoUpdateView</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.gateways.base">módulo pagos.gateways.base</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.gateways.base.BasePaymentGateway"><code class="docutils literal notranslate"><span class="pre">BasePaymentGateway</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.gateways.local_gateway">módulo pagos.gateways.local_gateway</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.gateways.local_gateway.LocalGateway"><code class="docutils literal notranslate"><span class="pre">LocalGateway</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.gateways.simulador_gateway">módulo pagos.gateways.simulador_gateway</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.gateways.simulador_gateway.iniciar_pago"><code class="docutils literal notranslate"><span class="pre">iniciar_pago()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.gateways.stripe_gateway">módulo pagos.gateways.stripe_gateway</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.gateways.stripe_gateway.StripeGateway"><code class="docutils literal notranslate"><span class="pre">StripeGateway</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos.integrations.router">módulo pagos.integrations.router</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.integrations.router.iniciar_pago_stripe"><code class="docutils literal notranslate"><span class="pre">iniciar_pago_stripe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pagos">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete pagos</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pagos.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-pagos">
+<h1>paquete pagos<a class="headerlink" href="#paquete-pagos" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pagos.admin">
+<span id="modulo-pagos-admin"></span><h2>módulo pagos.admin<a class="headerlink" href="#module-pagos.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pagos.apps">
+<span id="modulo-pagos-apps"></span><h2>módulo pagos.apps<a class="headerlink" href="#module-pagos.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.apps.PagosConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.apps.</span></span><span class="sig-name descname"><span class="pre">PagosConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/apps.html#PagosConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.apps.PagosConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.apps.PagosConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#pagos.apps.PagosConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.apps.PagosConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos'</span></em><a class="headerlink" href="#pagos.apps.PagosConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.forms">
+<span id="modulo-pagos-forms"></span><h2>módulo pagos.forms<a class="headerlink" href="#module-pagos.forms" title="Link to this heading"></a></h2>
+<p>Módulo de formularios del app pagos .</p>
+<p>Este módulo define los formularios administrativos y de cliente para la gestión
+de medios de pago. Permite crear y validar tipos de medios, sus campos asociados
+y las instancias configuradas por cada cliente.</p>
+<section id="contiene">
+<h3>Contiene:<a class="headerlink" href="#contiene" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoForm</span></code>: formulario para el modelo <code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CampoMedioPagoForm</span></code>: formulario para los campos dinámicos asociados al tipo.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CampoMedioPagoFormSet</span></code>: formset inline para editar los campos de un tipo.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MedioPagoClienteForm</span></code>: formulario dinámico para crear/editar medios de pago de clientes.</p></li>
+</ul>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.forms.</span></span><span class="sig-name descname"><span class="pre">CampoMedioPagoForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/forms.html#CampoMedioPagoForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Define un <strong>campo dinámico</strong> asociado a un tipo de medio de pago.</p>
+<p>Cada tipo puede tener múltiples campos requeridos (por ejemplo,
+número de cuenta, RUC, alias, email) con validaciones opcionales
+mediante expresiones regulares predefinidas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_campo</strong> (<em>uuid</em>) – Identificador único del campo.</p></li>
+<li><p><strong>tipo</strong> (<a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><em>TipoMedioPago</em></a>) – Relación con el tipo de medio de pago.</p></li>
+<li><p><strong>nombre_campo</strong> (<em>str</em>) – Nombre del campo visible o técnico.</p></li>
+<li><p><strong>tipo_dato</strong> (<em>str</em>) – Tipo de dato (texto, número, teléfono, email, RUC).</p></li>
+<li><p><strong>obligatorio</strong> (<em>bool</em>) – Indica si el campo es obligatorio.</p></li>
+<li><p><strong>regex_opcional</strong> (<em>str</em>) – Patrón regex opcional de validación.</p></li>
+<li><p><strong>activo</strong> (<em>bool</em>) – Define si el campo está activo.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/pagos/forms.html#CampoMedioPagoForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['nombre_campo',</span> <span class="pre">'tipo_dato',</span> <span class="pre">'obligatorio',</span> <span class="pre">'regex_opcional',</span> <span class="pre">'activo']</span></em><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.CampoMedioPago" title="pagos.models.CampoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">CampoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre_campo':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;,</span> <span class="pre">'obligatorio':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;,</span> <span class="pre">'regex_opcional':</span> <span class="pre">&lt;django.forms.widgets.Select</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo_dato':</span> <span class="pre">&lt;django.forms.widgets.Select</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre_campo':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'obligatorio':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'regex_opcional':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo_dato':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pagos.forms.CampoMedioPagoForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#pagos.forms.CampoMedioPagoForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.forms.</span></span><span class="sig-name descname"><span class="pre">MedioPagoClienteForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/forms.html#MedioPagoClienteForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario dinámico para la creación o edición de <code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code>.</p>
+<p>Este formulario genera automáticamente los campos dinámicos definidos en el
+modelo <code class="xref py py-class docutils literal notranslate"><span class="pre">CampoMedioPago</span></code> según el tipo de medio seleccionado.</p>
+<section id="parametros">
+<h3>Parámetros<a class="headerlink" href="#parametros" title="Link to this heading"></a></h3>
+<dl>
+<dt>user<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code>, opcional</span></dt><dd><p>Usuario autenticado, utilizado para personalizar la experiencia (no requerido).</p>
+</dd>
+</dl>
+</section>
+<section id="atributos">
+<h3>Atributos<a class="headerlink" href="#atributos" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>campos_config<span class="classifier">list</span></dt><dd><p>Lista de los campos dinámicos generados en el formulario actual.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/pagos/forms.html#MedioPagoClienteForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['tipo',</span> <span class="pre">'alias',</span> <span class="pre">'activo',</span> <span class="pre">'predeterminado']</span></em><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.MedioPagoCliente" title="pagos.models.MedioPagoCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;,</span> <span class="pre">'alias':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;,</span> <span class="pre">'predeterminado':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'alias':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'predeterminado':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.campos_config">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">campos_config</span></span><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.campos_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/forms.html#MedioPagoClienteForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.clean" title="Link to this definition"></a></dt>
+<dd><p>Realiza validaciones personalizadas sobre los campos dinámicos.</p>
+<ul class="simple">
+<li><p>Verifica tipos de datos según el modelo.</p></li>
+<li><p>Aplica regex predefinidas.</p></li>
+<li><p>Construye el diccionario final <code class="docutils literal notranslate"><span class="pre">datos</span></code> del medio de pago.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tipo':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pagos.forms.MedioPagoClienteForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#pagos.forms.MedioPagoClienteForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.forms.</span></span><span class="sig-name descname"><span class="pre">TipoMedioPagoForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/forms.html#TipoMedioPagoForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Representa un <strong>tipo de medio de pago</strong> disponible en el sistema
+(por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).</p>
+<p>Incluye la configuración de la comisión que aplica cada medio, el motor
+de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_tipo</strong> (<em>uuid</em>) – Identificador único del tipo de medio de pago.</p></li>
+<li><p><strong>nombre</strong> (<em>str</em>) – Nombre único que identifica el medio de pago.</p></li>
+<li><p><strong>comision_porcentaje</strong> (<em>Decimal</em>) – Porcentaje de comisión aplicado (0–100).</p></li>
+<li><p><strong>descripcion</strong> (<em>str</em>) – Descripción adicional o instrucciones.</p></li>
+<li><p><strong>activo</strong> (<em>bool</em>) – Indica si el medio está disponible para uso.</p></li>
+<li><p><strong>creado_en</strong> (<em>datetime</em>) – Fecha de creación del registro.</p></li>
+<li><p><strong>actualizado_en</strong> (<em>datetime</em>) – Fecha de última actualización.</p></li>
+<li><p><strong>engine</strong> (<em>str</em>) – Motor o integración usada para procesar pagos.</p></li>
+<li><p><strong>engine_config</strong> (<em>dict</em>) – Configuración JSON específica del motor.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/pagos/forms.html#TipoMedioPagoForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['nombre',</span> <span class="pre">'comision_porcentaje',</span> <span class="pre">'descripcion',</span> <span class="pre">'activo',</span> <span class="pre">'engine',</span> <span class="pre">'engine_config']</span></em><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.widgets.CheckboxInput</span> <span class="pre">object&gt;,</span> <span class="pre">'comision_porcentaje':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion':</span> <span class="pre">&lt;django.forms.widgets.Textarea</span> <span class="pre">object&gt;,</span> <span class="pre">'engine':</span> <span class="pre">&lt;django.forms.widgets.Select</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'activo':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'comision_porcentaje':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'descripcion':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'engine':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'engine_config':</span> <span class="pre">&lt;django.forms.fields.JSONField</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pagos.forms.TipoMedioPagoForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#pagos.forms.TipoMedioPagoForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.models">
+<span id="modulo-pagos-models"></span><h2>módulo pagos.models<a class="headerlink" href="#module-pagos.models" title="Link to this heading"></a></h2>
+<p>Módulo de modelos para la aplicación <strong>Pagos</strong>.</p>
+<p>Contiene las definiciones de los modelos relacionados con los medios de pago
+aceptados por los clientes, incluyendo la configuración de tipos, campos
+personalizados, y validaciones dinámicas por cliente.</p>
+<dl class="simple">
+<dt>Modelos incluidos:</dt><dd><ul class="simple">
+<li><p>TipoMedioPago</p></li>
+<li><p>CampoMedioPago</p></li>
+<li><p>MedioPagoCliente</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.models.</span></span><span class="sig-name descname"><span class="pre">CampoMedioPago</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#CampoMedioPago"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.CampoMedioPago" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Define un <strong>campo dinámico</strong> asociado a un tipo de medio de pago.</p>
+<p>Cada tipo puede tener múltiples campos requeridos (por ejemplo,
+número de cuenta, RUC, alias, email) con validaciones opcionales
+mediante expresiones regulares predefinidas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_campo</strong> (<em>uuid</em>) – Identificador único del campo.</p></li>
+<li><p><strong>tipo</strong> (<a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><em>TipoMedioPago</em></a>) – Relación con el tipo de medio de pago.</p></li>
+<li><p><strong>nombre_campo</strong> (<em>str</em>) – Nombre del campo visible o técnico.</p></li>
+<li><p><strong>tipo_dato</strong> (<em>str</em>) – Tipo de dato (texto, número, teléfono, email, RUC).</p></li>
+<li><p><strong>obligatorio</strong> (<em>bool</em>) – Indica si el campo es obligatorio.</p></li>
+<li><p><strong>regex_opcional</strong> (<em>str</em>) – Patrón regex opcional de validación.</p></li>
+<li><p><strong>activo</strong> (<em>bool</em>) – Define si el campo está activo.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RegexOpciones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#CampoMedioPago.RegexOpciones"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextChoices</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.EMAIL">
+<span class="sig-name descname"><span class="pre">EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[^&#64;\\s]+&#64;[^&#64;\\s]+\\.[^&#64;\\s]+$'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.EMAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.NINGUNO">
+<span class="sig-name descname"><span class="pre">NINGUNO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.NINGUNO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.RUC_PY">
+<span class="sig-name descname"><span class="pre">RUC_PY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^\\d{6,8}-\\d{1}$'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.RUC_PY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.SOLO_LETRAS">
+<span class="sig-name descname"><span class="pre">SOLO_LETRAS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\\s]+$'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.SOLO_LETRAS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.SOLO_NUMEROS">
+<span class="sig-name descname"><span class="pre">SOLO_NUMEROS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^\\d+$'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.SOLO_NUMEROS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.RegexOpciones.TELEFONO_PY_LOCAL">
+<span class="sig-name descname"><span class="pre">TELEFONO_PY_LOCAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^09\\d{8}$'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.RegexOpciones.TELEFONO_PY_LOCAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TipoDato</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#CampoMedioPago.TipoDato"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TextChoices</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato.EMAIL">
+<span class="sig-name descname"><span class="pre">EMAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'email'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato.EMAIL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato.NUMERO">
+<span class="sig-name descname"><span class="pre">NUMERO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'numero'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato.NUMERO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato.RUC">
+<span class="sig-name descname"><span class="pre">RUC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ruc'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato.RUC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato.TELEFONO">
+<span class="sig-name descname"><span class="pre">TELEFONO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'telefono'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato.TELEFONO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.TipoDato.TEXTO">
+<span class="sig-name descname"><span class="pre">TEXTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'texto'</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.TipoDato.TEXTO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.get_regex_opcional_display">
+<span class="sig-name descname"><span class="pre">get_regex_opcional_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">regex_opcional&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.CampoMedioPago.get_regex_opcional_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.get_tipo_dato_display">
+<span class="sig-name descname"><span class="pre">get_tipo_dato_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo_dato&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.CampoMedioPago.get_tipo_dato_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.id_campo">
+<span class="sig-name descname"><span class="pre">id_campo</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.id_campo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.nombre_campo">
+<span class="sig-name descname"><span class="pre">nombre_campo</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.nombre_campo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#pagos.models.CampoMedioPago.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.obligatorio">
+<span class="sig-name descname"><span class="pre">obligatorio</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.obligatorio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.regex_opcional">
+<span class="sig-name descname"><span class="pre">regex_opcional</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.regex_opcional" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.tipo" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.tipo_dato">
+<span class="sig-name descname"><span class="pre">tipo_dato</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.tipo_dato" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.CampoMedioPago.tipo_id">
+<span class="sig-name descname"><span class="pre">tipo_id</span></span><a class="headerlink" href="#pagos.models.CampoMedioPago.tipo_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.models.</span></span><span class="sig-name descname"><span class="pre">MedioPagoCliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#MedioPagoCliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.MedioPagoCliente" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa un <strong>medio de pago configurado por un cliente</strong>.</p>
+<p>Contiene los datos específicos de ese cliente (guardados como JSON),
+y permite designar un medio predeterminado para operaciones futuras.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_medio</strong> (<em>uuid</em>) – Identificador único del medio de pago del cliente.</p></li>
+<li><p><strong>cliente</strong> (<a class="reference internal" href="clientes.html#clientes.models.Cliente" title="clientes.models.Cliente"><em>Cliente</em></a>) – Relación con el cliente propietario.</p></li>
+<li><p><strong>tipo</strong> (<a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><em>TipoMedioPago</em></a>) – Tipo de medio de pago utilizado.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Nombre personalizado asignado por el cliente.</p></li>
+<li><p><strong>datos</strong> (<em>dict</em>) – Información dinámica del medio (ej. número de cuenta).</p></li>
+<li><p><strong>activo</strong> (<em>bool</em>) – Indica si el medio está activo.</p></li>
+<li><p><strong>predeterminado</strong> (<em>bool</em>) – Indica si es el medio preferido por el cliente.</p></li>
+<li><p><strong>creado_en</strong> (<em>datetime</em>) – Fecha de creación.</p></li>
+<li><p><strong>actualizado_en</strong> (<em>datetime</em>) – Última modificación.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.actualizado_en">
+<span class="sig-name descname"><span class="pre">actualizado_en</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.actualizado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.alias" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#MedioPagoCliente.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.MedioPagoCliente.clean" title="Link to this definition"></a></dt>
+<dd><p>Valida que los datos JSON del medio de pago cumplan con los
+campos activos y sus reglas de validación definidas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Muestra<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValidationError</strong> – Si faltan campos obligatorios, o si
+los valores no cumplen con el formato esperado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.cliente">
+<span class="sig-name descname"><span class="pre">cliente</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.cliente_id">
+<span class="sig-name descname"><span class="pre">cliente_id</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.cliente_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.creado_en">
+<span class="sig-name descname"><span class="pre">creado_en</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.creado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.datos">
+<span class="sig-name descname"><span class="pre">datos</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.datos" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.get_next_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.MedioPagoCliente.get_next_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.get_next_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.MedioPagoCliente.get_next_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.get_previous_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.MedioPagoCliente.get_previous_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.get_previous_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.MedioPagoCliente.get_previous_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.id_medio">
+<span class="sig-name descname"><span class="pre">id_medio</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.id_medio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#pagos.models.MedioPagoCliente.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.predeterminado">
+<span class="sig-name descname"><span class="pre">predeterminado</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.predeterminado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#MedioPagoCliente.save"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.MedioPagoCliente.save" title="Link to this definition"></a></dt>
+<dd><p>Guarda el medio de pago aplicando la lógica de consistencia:
+- Si se desactiva, se quita el estado de predeterminado.
+- Si se marca como predeterminado, desmarca los otros medios</p>
+<blockquote>
+<div><p>predeterminados del mismo cliente.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.tipo" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.MedioPagoCliente.tipo_id">
+<span class="sig-name descname"><span class="pre">tipo_id</span></span><a class="headerlink" href="#pagos.models.MedioPagoCliente.tipo_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.models.</span></span><span class="sig-name descname"><span class="pre">TipoMedioPago</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#TipoMedioPago"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.TipoMedioPago" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa un <strong>tipo de medio de pago</strong> disponible en el sistema
+(por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).</p>
+<p>Incluye la configuración de la comisión que aplica cada medio, el motor
+de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_tipo</strong> (<em>uuid</em>) – Identificador único del tipo de medio de pago.</p></li>
+<li><p><strong>nombre</strong> (<em>str</em>) – Nombre único que identifica el medio de pago.</p></li>
+<li><p><strong>comision_porcentaje</strong> (<em>Decimal</em>) – Porcentaje de comisión aplicado (0–100).</p></li>
+<li><p><strong>descripcion</strong> (<em>str</em>) – Descripción adicional o instrucciones.</p></li>
+<li><p><strong>activo</strong> (<em>bool</em>) – Indica si el medio está disponible para uso.</p></li>
+<li><p><strong>creado_en</strong> (<em>datetime</em>) – Fecha de creación del registro.</p></li>
+<li><p><strong>actualizado_en</strong> (<em>datetime</em>) – Fecha de última actualización.</p></li>
+<li><p><strong>engine</strong> (<em>str</em>) – Motor o integración usada para procesar pagos.</p></li>
+<li><p><strong>engine_config</strong> (<em>dict</em>) – Configuración JSON específica del motor.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.ENGINE_CHOICES">
+<span class="sig-name descname"><span class="pre">ENGINE_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('manual',</span> <span class="pre">'Manual'),</span> <span class="pre">('stripe',</span> <span class="pre">'Stripe'),</span> <span class="pre">('sipap',</span> <span class="pre">'SIPAP'),</span> <span class="pre">('local',</span> <span class="pre">'Pasarela</span> <span class="pre">Local')]</span></em><a class="headerlink" href="#pagos.models.TipoMedioPago.ENGINE_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.activo">
+<span class="sig-name descname"><span class="pre">activo</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.activo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.actualizado_en">
+<span class="sig-name descname"><span class="pre">actualizado_en</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.actualizado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.campos">
+<span class="sig-name descname"><span class="pre">campos</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.campos" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.comision_porcentaje">
+<span class="sig-name descname"><span class="pre">comision_porcentaje</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.comision_porcentaje" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.creado_en">
+<span class="sig-name descname"><span class="pre">creado_en</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.creado_en" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.descripcion">
+<span class="sig-name descname"><span class="pre">descripcion</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.descripcion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.engine">
+<span class="sig-name descname"><span class="pre">engine</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.engine" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.engine_config">
+<span class="sig-name descname"><span class="pre">engine_config</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.engine_config" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.get_engine_display">
+<span class="sig-name descname"><span class="pre">get_engine_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">engine&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.TipoMedioPago.get_engine_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.get_next_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.TipoMedioPago.get_next_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.get_next_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_next_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.TipoMedioPago.get_next_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.get_previous_by_actualizado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_actualizado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">actualizado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.TipoMedioPago.get_previous_by_actualizado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.get_previous_by_creado_en">
+<span class="sig-name descname"><span class="pre">get_previous_by_creado_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">creado_en&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pagos.models.TipoMedioPago.get_previous_by_creado_en" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.id_tipo">
+<span class="sig-name descname"><span class="pre">id_tipo</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.id_tipo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.is_stripe">
+<span class="sig-name descname"><span class="pre">is_stripe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/models.html#TipoMedioPago.is_stripe"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.models.TipoMedioPago.is_stripe" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.medios_cliente">
+<span class="sig-name descname"><span class="pre">medios_cliente</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.medios_cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#pagos.models.TipoMedioPago.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.models.TipoMedioPago.transaccion_set">
+<span class="sig-name descname"><span class="pre">transaccion_set</span></span><a class="headerlink" href="#pagos.models.TipoMedioPago.transaccion_set" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.services">
+<span id="modulo-pagos-services"></span><h2>módulo pagos.services<a class="headerlink" href="#module-pagos.services" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.services.build_json_de_from_transaction">
+<span class="sig-prename descclassname"><span class="pre">pagos.services.</span></span><span class="sig-name descname"><span class="pre">build_json_de_from_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emisor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/services.html#build_json_de_from_transaction"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.services.build_json_de_from_transaction" title="Link to this definition"></a></dt>
+<dd><p>(Conservado por compatibilidad) Construye un JSON de DE a partir de una transacción.
+Nota: Actualmente NO se usa en el flujo principal; la task de facturación arma el DE.
+Puedes usarlo para diagnósticos o pruebas puntuales.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.services.ejecutar_acreditacion_a_cliente">
+<span class="sig-prename descclassname"><span class="pre">pagos.services.</span></span><span class="sig-name descname"><span class="pre">ejecutar_acreditacion_a_cliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/services.html#ejecutar_acreditacion_a_cliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.services.ejecutar_acreditacion_a_cliente" title="Link to this definition"></a></dt>
+<dd><p>Simula la transferencia de dinero (PYG) a la cuenta del cliente.
+(Flujo de VENTA de divisas del cliente; no se modifica)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.services.handle_payment_webhook">
+<span class="sig-prename descclassname"><span class="pre">pagos.services.</span></span><span class="sig-name descname"><span class="pre">handle_payment_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/services.html#handle_payment_webhook"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.services.handle_payment_webhook" title="Link to this definition"></a></dt>
+<dd><p>Orquestador de webhooks de pago.</p>
+<p>Determina la pasarela, procesa el evento y actualiza la Transaccion.
+Si el pago es exitoso, dispara la emisión de la factura electrónica (idempotente).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.services.iniciar_cobro_a_cliente">
+<span class="sig-prename descclassname"><span class="pre">pagos.services.</span></span><span class="sig-name descname"><span class="pre">iniciar_cobro_a_cliente</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">medio_pago_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/services.html#iniciar_cobro_a_cliente"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.services.iniciar_cobro_a_cliente" title="Link to this definition"></a></dt>
+<dd><p>Orquestador de pagos para iniciar un cobro a un cliente.</p>
+<ol class="arabic simple">
+<li><p>Determina el gateway a usar según el medio de pago.</p></li>
+<li><p>Carga dinámicamente el módulo del gateway.</p></li>
+<li><p>Delega la ejecución al gateway correspondiente.</p></li>
+</ol>
+<p>Devuelve URL de redirección o None si falla.</p>
+</dd></dl>
+
+</section>
+<section id="module-0">
+<span id="modulo-pagos-urls"></span><h2>módulo pagos.urls<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Este módulo define las rutas URL del aplicativo <strong>Pagos</strong>, que maneja tanto la gestión
+de tipos de medios de pago (nivel administrador) como los medios de pago de los clientes.</p>
+<p>Las vistas asociadas se encuentran en <code class="docutils literal notranslate"><span class="pre">pagos.views</span></code>.</p>
+<aside class="topic" id="module-pagos.urls">
+<p class="topic-title">Rutas definidas</p>
+<ul class="simple">
+<li><p><strong>tipos_list</strong> → Lista todos los tipos de medios de pago (vista de administración).</p></li>
+<li><p><strong>tipos_create</strong> → Permite crear un nuevo tipo de medio de pago.</p></li>
+<li><p><strong>tipos_update</strong> → Permite editar un tipo de medio de pago existente.</p></li>
+<li><p><strong>tipos_delete</strong> → Elimina un tipo de medio de pago existente.</p></li>
+<li><p><strong>clientes_list</strong> → Lista los medios de pago registrados por un cliente.</p></li>
+<li><p><strong>clientes_create</strong> → Permite registrar un nuevo medio de pago del cliente.</p></li>
+<li><p><strong>clientes_update</strong> → Permite editar un medio de pago del cliente.</p></li>
+<li><p><strong>clientes_delete</strong> → Elimina un medio de pago del cliente.</p></li>
+<li><p><strong>clientes_predeterminar</strong> → Marca un medio de pago del cliente como predeterminado.</p></li>
+</ul>
+</aside>
+</section>
+<section id="module-1">
+<span id="modulo-pagos-views"></span><h2>módulo pagos.views<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
+<p>Vistas del módulo Pagos: manejo de tipos de medios de pago (administración) y
+medios de pago del cliente (front-end de usuario).</p>
+<div class="admonition note" id="module-pagos.views">
+<p class="admonition-title">Nota</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Las vistas usan mixins de seguridad:</dt><dd><ul>
+<li><p><cite>LoginRequiredMixin</cite> y <cite>PermissionRequiredMixin</cite> para administración.</p></li>
+<li><p><cite>RequireClienteMixin</cite> para acceso de clientes.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Las vistas de administración soportan <strong>formsets dinámicos</strong> para campos de medios
+de pago (excepto cuando el engine es Stripe, donde los campos se omiten).</p></li>
+</ul>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.AccessPagosMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">AccessPagosMixin</span></span><a class="reference internal" href="_modules/pagos/views.html#AccessPagosMixin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.AccessPagosMixin" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionRequiredMixin</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.AccessPagosMixin.handle_no_permission">
+<span class="sig-name descname"><span class="pre">handle_no_permission</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#AccessPagosMixin.handle_no_permission"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.AccessPagosMixin.handle_no_permission" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.AccessPagosMixin.permission_required">
+<span class="sig-name descname"><span class="pre">permission_required</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos.access_pagos_section'</span></em><a class="headerlink" href="#pagos.views.AccessPagosMixin.permission_required" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.AccessPagosMixin.raise_exception">
+<span class="sig-name descname"><span class="pre">raise_exception</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#pagos.views.AccessPagosMixin.raise_exception" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">MedioPagoCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#pagos.views.MedioPagoCreateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.forms.MedioPagoClienteForm" title="pagos.forms.MedioPagoClienteForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoClienteForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoCreateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.get_form_kwargs">
+<span class="sig-name descname"><span class="pre">get_form_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoCreateView.get_form_kwargs"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoCreateView.get_form_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Return the keyword arguments for instantiating the form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.get_success_url">
+<span class="sig-name descname"><span class="pre">get_success_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoCreateView.get_success_url"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoCreateView.get_success_url" title="Link to this definition"></a></dt>
+<dd><p>Return the URL to redirect to after processing a valid form.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.MedioPagoCreateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.MedioPagoCliente" title="pagos.models.MedioPagoCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/clientes/'</span></em><a class="headerlink" href="#pagos.views.MedioPagoCreateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoCreateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/clientes_form.html'</span></em><a class="headerlink" href="#pagos.views.MedioPagoCreateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">MedioPagoDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoDeleteView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>QuerySet</cite> that will be used to look up the object.</p>
+<p>This method is called by the default implementation of get_object() and
+may not be called if get_object() is overridden.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.get_success_url">
+<span class="sig-name descname"><span class="pre">get_success_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoDeleteView.get_success_url"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.get_success_url" title="Link to this definition"></a></dt>
+<dd><p>Return the URL to redirect to after processing a valid form.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.MedioPagoCliente" title="pagos.models.MedioPagoCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.pk_url_kwarg">
+<span class="sig-name descname"><span class="pre">pk_url_kwarg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'id_medio'</span></em><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.pk_url_kwarg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/clientes/'</span></em><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/clientes_confirm_delete.html'</span></em><a class="headerlink" href="#pagos.views.MedioPagoDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">MedioPagoListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios'</span></em><a class="headerlink" href="#pagos.views.MedioPagoListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoListView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.MedioPagoListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.MedioPagoCliente" title="pagos.models.MedioPagoCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/clientes_list.html'</span></em><a class="headerlink" href="#pagos.views.MedioPagoListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoPredeterminarView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">MedioPagoPredeterminarView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoPredeterminarView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoPredeterminarView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoPredeterminarView.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoPredeterminarView.get"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoPredeterminarView.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoPredeterminarView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoPredeterminarView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoPredeterminarView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">MedioPagoUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RequireClienteMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.forms.MedioPagoClienteForm" title="pagos.forms.MedioPagoClienteForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoClienteForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.get_form_kwargs">
+<span class="sig-name descname"><span class="pre">get_form_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoUpdateView.get_form_kwargs"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.get_form_kwargs" title="Link to this definition"></a></dt>
+<dd><p>Return the keyword arguments for instantiating the form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoUpdateView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the <cite>QuerySet</cite> that will be used to look up the object.</p>
+<p>This method is called by the default implementation of get_object() and
+may not be called if get_object() is overridden.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.get_success_url">
+<span class="sig-name descname"><span class="pre">get_success_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#MedioPagoUpdateView.get_success_url"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.get_success_url" title="Link to this definition"></a></dt>
+<dd><p>Return the URL to redirect to after processing a valid form.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.MedioPagoCliente" title="pagos.models.MedioPagoCliente"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioPagoCliente</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.pk_url_kwarg">
+<span class="sig-name descname"><span class="pre">pk_url_kwarg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'id_medio'</span></em><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.pk_url_kwarg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/clientes/'</span></em><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.MedioPagoUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/clientes_form.html'</span></em><a class="headerlink" href="#pagos.views.MedioPagoUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">TipoPagoCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoCreateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoCreateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.views.AccessPagosMixin" title="pagos.views.AccessPagosMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessPagosMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CreateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#pagos.views.TipoPagoCreateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.forms.TipoMedioPagoForm" title="pagos.forms.TipoMedioPagoForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPagoForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoCreateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoCreateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoCreateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoCreateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.TipoPagoCreateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/tipos/'</span></em><a class="headerlink" href="#pagos.views.TipoPagoCreateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoCreateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/tipos_form.html'</span></em><a class="headerlink" href="#pagos.views.TipoPagoCreateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">TipoPagoDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoDeleteView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoDeleteView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.views.AccessPagosMixin" title="pagos.views.AccessPagosMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessPagosMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteView</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoDeleteView.delete"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.delete" title="Link to this definition"></a></dt>
+<dd><p>Call the delete() method on the fetched object and then redirect to the
+success URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoDeleteView.get"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.pk_url_kwarg">
+<span class="sig-name descname"><span class="pre">pk_url_kwarg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'id_tipo'</span></em><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.pk_url_kwarg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/tipos/'</span></em><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoDeleteView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/tipos_confirm_delete.html'</span></em><a class="headerlink" href="#pagos.views.TipoPagoDeleteView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">TipoPagoListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.views.AccessPagosMixin" title="pagos.views.AccessPagosMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessPagosMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tipos'</span></em><a class="headerlink" href="#pagos.views.TipoPagoListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoListView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.TipoPagoListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/tipos_list.html'</span></em><a class="headerlink" href="#pagos.views.TipoPagoListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.views.</span></span><span class="sig-name descname"><span class="pre">TipoPagoUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.views.AccessPagosMixin" title="pagos.views.AccessPagosMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AccessPagosMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.forms.TipoMedioPagoForm" title="pagos.forms.TipoMedioPagoForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPagoForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/views.html#TipoPagoUpdateView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the form into the context dict.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#pagos.models.TipoMedioPago" title="pagos.models.TipoMedioPago"><code class="xref py py-class docutils literal notranslate"><span class="pre">TipoMedioPago</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.pk_url_kwarg">
+<span class="sig-name descname"><span class="pre">pk_url_kwarg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'id_tipo'</span></em><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.pk_url_kwarg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/pagos/tipos/'</span></em><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pagos.views.TipoPagoUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pagos/tipos_form.html'</span></em><a class="headerlink" href="#pagos.views.TipoPagoUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.gateways.base">
+<span id="modulo-pagos-gateways-base"></span><h2>módulo pagos.gateways.base<a class="headerlink" href="#module-pagos.gateways.base" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.gateways.base.BasePaymentGateway">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.gateways.base.</span></span><span class="sig-name descname"><span class="pre">BasePaymentGateway</span></span><a class="reference internal" href="_modules/pagos/gateways/base.html#BasePaymentGateway"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.base.BasePaymentGateway" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Clase base abstracta para todas las pasarelas de pago.
+Define la interfaz común que cada pasarela debe implementar.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.base.BasePaymentGateway.handle_webhook">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/base.html#BasePaymentGateway.handle_webhook"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.base.BasePaymentGateway.handle_webhook" title="Link to this definition"></a></dt>
+<dd><p>Maneja una notificación de webhook de la pasarela de pago.
+Debe procesar el payload y devolver un diccionario con el estado de la transacción.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.base.BasePaymentGateway.initiate_payment">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initiate_payment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/base.html#BasePaymentGateway.initiate_payment"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.base.BasePaymentGateway.initiate_payment" title="Link to this definition"></a></dt>
+<dd><p>Inicia un proceso de pago para una transacción dada.
+Debe devolver la URL a la que el cliente debe ser redirigido para completar el pago.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.gateways.local_gateway">
+<span id="modulo-pagos-gateways-local-gateway"></span><h2>módulo pagos.gateways.local_gateway<a class="headerlink" href="#module-pagos.gateways.local_gateway" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.gateways.local_gateway.LocalGateway">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.gateways.local_gateway.</span></span><span class="sig-name descname"><span class="pre">LocalGateway</span></span><a class="reference internal" href="_modules/pagos/gateways/local_gateway.html#LocalGateway"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.local_gateway.LocalGateway" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.gateways.base.BasePaymentGateway" title="pagos.gateways.base.BasePaymentGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePaymentGateway</span></code></a></p>
+<p>Implementación de la pasarela de pago local simulada.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.local_gateway.LocalGateway.handle_webhook">
+<span class="sig-name descname"><span class="pre">handle_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/local_gateway.html#LocalGateway.handle_webhook"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.local_gateway.LocalGateway.handle_webhook" title="Link to this definition"></a></dt>
+<dd><p>Maneja una notificación de webhook de la pasarela local simulada.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.local_gateway.LocalGateway.initiate_payment">
+<span class="sig-name descname"><span class="pre">initiate_payment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/local_gateway.html#LocalGateway.initiate_payment"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.local_gateway.LocalGateway.initiate_payment" title="Link to this definition"></a></dt>
+<dd><p>Inicia un proceso de pago con la pasarela local simulada.
+Devuelve la URL a la que el cliente debe ser redirigido para completar el pago.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.gateways.simulador_gateway">
+<span id="modulo-pagos-gateways-simulador-gateway"></span><h2>módulo pagos.gateways.simulador_gateway<a class="headerlink" href="#module-pagos.gateways.simulador_gateway" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.gateways.simulador_gateway.iniciar_pago">
+<span class="sig-prename descclassname"><span class="pre">pagos.gateways.simulador_gateway.</span></span><span class="sig-name descname"><span class="pre">iniciar_pago</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/simulador_gateway.html#iniciar_pago"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.simulador_gateway.iniciar_pago" title="Link to this definition"></a></dt>
+<dd><p>Implementación del gateway para la pasarela simulada.</p>
+<p>Prepara los datos y llama al endpoint “api_iniciar_pago” del simulador.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transaccion</strong> (<a class="reference internal" href="transacciones.html#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><em>Transaccion</em></a>) – La transacción a procesar.</p></li>
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – La petición original para construir URLs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>La URL de redirección a la pasarela.
+None: Si hay un error.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pagos.gateways.stripe_gateway">
+<span id="modulo-pagos-gateways-stripe-gateway"></span><h2>módulo pagos.gateways.stripe_gateway<a class="headerlink" href="#module-pagos.gateways.stripe_gateway" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pagos.gateways.stripe_gateway.StripeGateway">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pagos.gateways.stripe_gateway.</span></span><span class="sig-name descname"><span class="pre">StripeGateway</span></span><a class="reference internal" href="_modules/pagos/gateways/stripe_gateway.html#StripeGateway"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.stripe_gateway.StripeGateway" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pagos.gateways.base.BasePaymentGateway" title="pagos.gateways.base.BasePaymentGateway"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePaymentGateway</span></code></a></p>
+<p>Implementación de la pasarela de pago Stripe.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.stripe_gateway.StripeGateway.handle_webhook">
+<span class="sig-name descname"><span class="pre">handle_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/stripe_gateway.html#StripeGateway.handle_webhook"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.stripe_gateway.StripeGateway.handle_webhook" title="Link to this definition"></a></dt>
+<dd><p>Maneja una notificación de webhook de Stripe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pagos.gateways.stripe_gateway.StripeGateway.initiate_payment">
+<span class="sig-name descname"><span class="pre">initiate_payment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/gateways/stripe_gateway.html#StripeGateway.initiate_payment"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.gateways.stripe_gateway.StripeGateway.initiate_payment" title="Link to this definition"></a></dt>
+<dd><p>Inicia un proceso de pago con Stripe para una transacción dada.
+Devuelve la URL a la que el cliente debe ser redirigido para completar el pago.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pagos.integrations.router">
+<span id="modulo-pagos-integrations-router"></span><h2>módulo pagos.integrations.router<a class="headerlink" href="#module-pagos.integrations.router" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pagos.integrations.router.iniciar_pago_stripe">
+<span class="sig-prename descclassname"><span class="pre">pagos.integrations.router.</span></span><span class="sig-name descname"><span class="pre">iniciar_pago_stripe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transaccion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">currency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'usd'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pagos/integrations/router.html#iniciar_pago_stripe"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#pagos.integrations.router.iniciar_pago_stripe" title="Link to this definition"></a></dt>
+<dd><p>Crea PaymentIntent para “transaccion” y devuelve el clientSecret.
+transaccion debe poder calcular monto en USD.</p>
+</dd></dl>
+
+</section>
+<section id="module-pagos">
+<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-pagos" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="operaciones.html" class="btn btn-neutral float-left" title="paquete operaciones" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="payments.html" class="btn btn-neutral float-right" title="paquete payments" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

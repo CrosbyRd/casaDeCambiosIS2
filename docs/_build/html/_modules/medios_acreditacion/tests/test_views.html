@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>medios_acreditacion.tests.test_views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">medios_acreditacion.tests.test_views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para medios_acreditacion.tests.test_views</h1><div class="highlight"><pre>
+<span></span><span class="c1"># medios_acreditacion/tests/test_views.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">medios_acreditacion.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioAcreditacion</span><span class="p">,</span> <span class="n">MedioAcreditacionCliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">usuarios.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
+
+<span class="n">HTTP_STATUS_TEXT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">200</span><span class="p">:</span> <span class="s2">&quot;OK – Página cargada correctamente&quot;</span><span class="p">,</span>
+    <span class="mi">302</span><span class="p">:</span> <span class="s2">&quot;Found – Redirección (normalmente éxito)&quot;</span><span class="p">,</span>
+    <span class="mi">403</span><span class="p">:</span> <span class="s2">&quot;Forbidden – Acceso denegado&quot;</span><span class="p">,</span>
+    <span class="mi">404</span><span class="p">:</span> <span class="s2">&quot;Not Found – Recurso inexistente&quot;</span><span class="p">,</span>
+    <span class="mi">400</span><span class="p">:</span> <span class="s2">&quot;Bad Request – Datos inválidos en formulario&quot;</span><span class="p">,</span>
+    <span class="mi">500</span><span class="p">:</span> <span class="s2">&quot;Internal Server Error – Error del servidor&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioAcreditacionViewsTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.setUp">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.setUp">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>  <span class="c1"># inicializar client para requests</span>
+        <span class="c1"># Crear usuario</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+            <span class="n">email</span><span class="o">=</span><span class="s2">&quot;testuser@example.com&quot;</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">,</span>
+            <span class="n">first_name</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span><span class="p">,</span>
+            <span class="n">last_name</span><span class="o">=</span><span class="s2">&quot;User&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">force_login</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+
+        <span class="c1"># Crear cliente</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cliente</span> <span class="o">=</span> <span class="n">Cliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Cliente Test&quot;</span><span class="p">,</span>
+            <span class="c1"># ... otros campos obligatorios de tu modelo Cliente</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Crear tipo de medio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span> <span class="o">=</span> <span class="n">TipoMedioAcreditacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">nombre</span><span class="o">=</span><span class="s2">&quot;Tarjeta de Crédito&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.test_crear_medio_cliente_ok">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.test_crear_medio_cliente_ok">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_crear_medio_cliente_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">medio</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">tipo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">datos</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;numero&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890123456&quot;</span><span class="p">},</span>
+            <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">medio</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El medio de acreditación creado debería estar asociado al cliente correcto.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">medio</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El medio de acreditación creado debería tener el tipo correcto.&quot;</span>
+        <span class="p">)</span></div>
+
+
+        <span class="c1"># ERROR INTENCIONAL: cambiar número a valor inválido</span>
+        <span class="c1"># medio.datos = {&quot;numero&quot;: &quot;abc&quot;}</span>
+        <span class="c1"># with self.assertRaises(Exception):</span>
+        <span class="c1">#     medio.full_clean()</span>
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.test_crear_medio_cliente_invalido">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.test_crear_medio_cliente_invalido">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_crear_medio_cliente_invalido</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">medio</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">tipo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">datos</span><span class="o">=</span><span class="p">{}</span>  <span class="c1"># vacío</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span>
+            <span class="ne">Exception</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Se esperaba error al crear medio de acreditación con datos vacíos.&quot;</span>
+        <span class="p">):</span>
+            <span class="n">medio</span><span class="o">.</span><span class="n">full_clean</span><span class="p">()</span>  <span class="c1"># valida según clean()</span></div>
+
+
+        <span class="c1"># ERROR INTENCIONAL: intentar crear predeterminado sin datos</span>
+        <span class="c1"># medio.predeterminado = True</span>
+        <span class="c1"># with self.assertRaises(Exception):</span>
+        <span class="c1">#     medio.full_clean()</span>
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.test_editar_medio_cliente_ok">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.test_editar_medio_cliente_ok">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_editar_medio_cliente_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">medio</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">tipo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">datos</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;numero&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890123456&quot;</span><span class="p">},</span>
+            <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">medio</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;Master Actualizada&quot;</span>
+        <span class="n">medio</span><span class="o">.</span><span class="n">datos</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;numero&quot;</span><span class="p">:</span> <span class="s2">&quot;1111222233334444&quot;</span><span class="p">}</span>
+        <span class="n">medio</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">medio</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">medio</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span>
+            <span class="s2">&quot;Master Actualizada&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El alias del medio debería actualizarse correctamente.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+            <span class="n">medio</span><span class="o">.</span><span class="n">datos</span><span class="p">[</span><span class="s2">&quot;numero&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;1111222233334444&quot;</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El número del medio debería actualizarse correctamente.&quot;</span>
+        <span class="p">)</span></div>
+
+
+        <span class="c1"># ERROR INTENCIONAL: editar número a valor inválido</span>
+        <span class="c1"># medio.datos = {&quot;numero&quot;: &quot;invalid&quot;}</span>
+        <span class="c1"># with self.assertRaises(Exception):</span>
+        <span class="c1">#     medio.full_clean()</span>
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.test_eliminar_medio_cliente_ok">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.test_eliminar_medio_cliente_ok">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_eliminar_medio_cliente_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">medio</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">tipo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">datos</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;numero&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890123456&quot;</span><span class="p">},</span>
+            <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">pk</span> <span class="o">=</span> <span class="n">medio</span><span class="o">.</span><span class="n">pk</span>
+        <span class="n">medio</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+            <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El medio debería eliminarse correctamente de la base de datos.&quot;</span>
+        <span class="p">)</span></div>
+
+
+        <span class="c1"># ERROR INTENCIONAL: eliminar de nuevo</span>
+        <span class="c1"># with self.assertRaises(MedioAcreditacionCliente.DoesNotExist):</span>
+        <span class="c1">#     MedioAcreditacionCliente.objects.get(pk=pk)</span>
+
+<div class="viewcode-block" id="MedioAcreditacionViewsTests.test_lista_medios_cliente">
+<a class="viewcode-back" href="../../../medios_acreditacion.tests.html#medios_acreditacion.tests.test_views.MedioAcreditacionViewsTests.test_lista_medios_cliente">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_lista_medios_cliente</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">medio</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span>
+            <span class="n">tipo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="p">,</span>
+            <span class="n">datos</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;numero&quot;</span><span class="p">:</span> <span class="s2">&quot;1234567890123456&quot;</span><span class="p">},</span>
+            <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">medios</span> <span class="o">=</span> <span class="n">MedioAcreditacionCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+            <span class="n">medio</span><span class="p">,</span>
+            <span class="n">medios</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;El medio creado debería aparecer en la lista de medios del cliente.&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+        <span class="c1"># ERROR INTENCIONAL: buscar cliente inexistente</span>
+        <span class="c1"># medios = MedioAcreditacionCliente.objects.filter(cliente_id=9999)</span>
+        <span class="c1"># self.assertEqual(len(medios), 0, msg=&quot;No deberían encontrarse medios para un cliente inexistente.&quot;)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

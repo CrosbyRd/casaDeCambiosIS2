@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Preferencias de Notificaciones{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-6 py-8">
+  <h1 class="text-2xl font-extrabold mb-4">Preferencias de Notificaciones</h1>
+
+  <div class="rounded-xl border p-6 bg-white">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-4">
+        {{ form.recibir_correo }} <label for="{{ form.recibir_correo.id_for_label }}" class="ml-2">Recibir notificaciones por correo</label>
+      </div>
+
+      <div class="mb-4">
+        <label class="font-bold">Monedas que quiero seguir</label>
+        <div class="mt-2">
+          {{ form.monedas_suscritas }}
+          <p class="text-sm text-neutral-500 mt-2">Si no seleccionas ninguna moneda recibirás notificaciones de todas las monedas.</p>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        {{ form.silenciar_todas }} <label for="{{ form.silenciar_todas.id_for_label }}" class="ml-2">Silenciar todas las notificaciones</label>
+      </div>
+
+      <div>
+        <button class="gx-btn" type="submit">Guardar</button>
+        <a href="{% url 'notificaciones:panel' %}" class="gx-btn--ghost ml-3 px-3 py-1">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}

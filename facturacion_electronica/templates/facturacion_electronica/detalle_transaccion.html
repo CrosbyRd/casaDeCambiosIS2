@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de Transacción{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Transacción {{ transaccion.id }}</h2>
+  <hr>
+  <dl class="row">
+    <dt class="col-sm-3">Tipo</dt><dd class="col-sm-9">{{ transaccion.tipo_operacion }}</dd>
+    <dt class="col-sm-3">Estado</dt><dd class="col-sm-9">{{ transaccion.estado }}</dd>
+    <dt class="col-sm-3">Moneda Origen</dt><dd class="col-sm-9">{{ transaccion.moneda_origen }} ({{ transaccion.monto_origen }})</dd>
+    <dt class="col-sm-3">Moneda Destino</dt><dd class="col-sm-9">{{ transaccion.moneda_destino }} ({{ transaccion.monto_destino }})</dd>
+    <dt class="col-sm-3">Tasa</dt><dd class="col-sm-9">{{ transaccion.tasa_cambio_aplicada }}</dd>
+    <dt class="col-sm-3">Fecha</dt><dd class="col-sm-9">{{ transaccion.fecha_creacion }}</dd>
+  </dl>
+</div>
+{% endblock %}

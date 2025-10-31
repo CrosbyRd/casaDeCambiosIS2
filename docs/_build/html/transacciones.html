@@ -1,0 +1,669 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete transacciones &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete ted" href="ted.html" />
+    <link rel="prev" title="paquete payments" href="payments.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete transacciones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.admin">módulo casaDeCambiosIS2.transacciones.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.apps">módulo transacciones.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.apps.TransaccionesConfig"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo transacciones.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion"><code class="docutils literal notranslate"><span class="pre">Transaccion</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.tests">módulo transacciones.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.urls">módulo transacciones.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.views">módulo transacciones.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarCompraDivisaView"><code class="docutils literal notranslate"><span class="pre">IniciarCompraDivisaView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.ResultadoPagoView"><code class="docutils literal notranslate"><span class="pre">ResultadoPagoView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.WebhookConfirmacionPagoView"><code class="docutils literal notranslate"><span class="pre">WebhookConfirmacionPagoView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.cancelar_por_tasa"><code class="docutils literal notranslate"><span class="pre">cancelar_por_tasa()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-transacciones">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete transacciones</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/transacciones.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-transacciones">
+<h1>paquete transacciones<a class="headerlink" href="#paquete-transacciones" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-transacciones.admin">
+<span id="modulo-casadecambiosis2-transacciones-admin"></span><h2>módulo casaDeCambiosIS2.transacciones.admin<a class="headerlink" href="#module-transacciones.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-transacciones.apps">
+<span id="modulo-transacciones-apps"></span><h2>módulo transacciones.apps<a class="headerlink" href="#module-transacciones.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.apps.</span></span><span class="sig-name descname"><span class="pre">TransaccionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/apps.html#TransaccionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.apps.TransaccionesConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transacciones'</span></em><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.ready">
+<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/apps.html#TransaccionesConfig.ready"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.ready" title="Link to this definition"></a></dt>
+<dd><p>Override this method in subclasses to run code when Django starts.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-0">
+<span id="modulo-transacciones-models"></span><h2>módulo transacciones.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Modelos de la aplicación <strong>transacciones</strong>.</p>
+<p id="module-transacciones.models">Este módulo define:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transaccion</span></code></a>: Representa operaciones de compra/venta de divisa.
+Incluye montos, monedas, tasas de cambio, comisiones, estados, medios de acreditación y validación de límites.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.models.MedioAcreditacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.models.</span></span><span class="sig-name descname"><span class="pre">MedioAcreditacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/models.html#MedioAcreditacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.models.MedioAcreditacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="transacciones.models.MedioAcreditacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#transacciones.models.MedioAcreditacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="transacciones.models.MedioAcreditacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#transacciones.models.MedioAcreditacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.MedioAcreditacion.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#transacciones.models.MedioAcreditacion.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.MedioAcreditacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#transacciones.models.MedioAcreditacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.models.</span></span><span class="sig-name descname"><span class="pre">Transaccion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/models.html#Transaccion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.models.Transaccion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Modelo que representa una operación de compra o venta de divisa.</p>
+<p>Perspectiva: Casa de Cambio.</p>
+<section id="tipos-de-operacion">
+<h3><strong>Tipos de operación</strong><a class="headerlink" href="#tipos-de-operacion" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“venta”: La empresa vende divisa al cliente (cliente compra divisa)</p></li>
+<li><p>“compra”: La empresa compra divisa al cliente (cliente vende divisa)</p></li>
+</ul>
+</section>
+<section id="estados-posibles">
+<h3><strong>Estados posibles</strong><a class="headerlink" href="#estados-posibles" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>“pendiente_pago_cliente”: Pendiente de pago del cliente (PYG)</p></li>
+<li><p>“pendiente_retiro_tauser”: Pendiente de retiro de divisa (Tauser)</p></li>
+<li><p>“pendiente_deposito_tauser”: Pendiente de depósito de divisa (Tauser)</p></li>
+<li><p>“procesando_acreditacion”: Procesando Acreditación a Cliente (PYG)</p></li>
+<li><p>“completada”: Transacción completada con éxito</p></li>
+<li><p>“cancelada”: Interrumpida antes del pago/deposito del cliente</p></li>
+<li><p>“anulada”: Revertida después del pago/deposito</p></li>
+<li><p>“error”: Error técnico o inesperado</p></li>
+</ul>
+<dl class="py exception">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#transacciones.models.Transaccion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.ESTADO_CHOICES">
+<span class="sig-name descname"><span class="pre">ESTADO_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('pendiente_confirmacion_pago',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Confirmación</span> <span class="pre">de</span> <span class="pre">Pago'),</span> <span class="pre">('pendiente_pago_cliente',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Pago</span> <span class="pre">del</span> <span class="pre">Cliente</span> <span class="pre">(PYG)'),</span> <span class="pre">('pendiente_retiro_tauser',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Retiro</span> <span class="pre">de</span> <span class="pre">Divisa</span> <span class="pre">(Tauser)'),</span> <span class="pre">('pendiente_deposito_tauser',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Depósito</span> <span class="pre">de</span> <span class="pre">Divisa</span> <span class="pre">(Tauser)'),</span> <span class="pre">('procesando_acreditacion',</span> <span class="pre">'Procesando</span> <span class="pre">Acreditación</span> <span class="pre">a</span> <span class="pre">Cliente</span> <span class="pre">(PYG)'),</span> <span class="pre">('pendiente_pago_stripe',</span> <span class="pre">'Pendiente</span> <span class="pre">de</span> <span class="pre">Pago</span> <span class="pre">con</span> <span class="pre">Stripe'),</span> <span class="pre">('completada',</span> <span class="pre">'Completada'),</span> <span class="pre">('cancelada',</span> <span class="pre">'Cancelada'),</span> <span class="pre">('cancelada_usuario_tasa',</span> <span class="pre">'Cancelada</span> <span class="pre">por</span> <span class="pre">Usuario</span> <span class="pre">(Variación</span> <span class="pre">de</span> <span class="pre">Tasa)'),</span> <span class="pre">('cancelada_tasa_expirada',</span> <span class="pre">'Cancelada</span> <span class="pre">(Tasa</span> <span class="pre">Expirada)'),</span> <span class="pre">('anulada',</span> <span class="pre">'Anulada'),</span> <span class="pre">('error',</span> <span class="pre">'Error')]</span></em><a class="headerlink" href="#transacciones.models.Transaccion.ESTADO_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.MODALIDAD_TASA_CHOICES">
+<span class="sig-name descname"><span class="pre">MODALIDAD_TASA_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('bloqueada',</span> <span class="pre">'Tasa</span> <span class="pre">Bloqueada'),</span> <span class="pre">('flotante',</span> <span class="pre">'Tasa</span> <span class="pre">Flotante</span> <span class="pre">(Indicativa)')]</span></em><a class="headerlink" href="#transacciones.models.Transaccion.MODALIDAD_TASA_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#transacciones.models.Transaccion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.TIPO_OPERACION_CHOICES">
+<span class="sig-name descname"><span class="pre">TIPO_OPERACION_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('venta',</span> <span class="pre">'Venta</span> <span class="pre">de</span> <span class="pre">Divisa'),</span> <span class="pre">('compra',</span> <span class="pre">'Compra</span> <span class="pre">de</span> <span class="pre">Divisa')]</span></em><a class="headerlink" href="#transacciones.models.Transaccion.TIPO_OPERACION_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/models.html#Transaccion.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.models.Transaccion.clean" title="Link to this definition"></a></dt>
+<dd><p>Valida que el monto de la transacción no supere los límites definidos en PYG.</p>
+<p>Considera:
+- Límite diario y mensual del cliente.
+- Acumulado de transacciones previas (excluyendo la propia).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.cliente">
+<span class="sig-name descname"><span class="pre">cliente</span></span><a class="headerlink" href="#transacciones.models.Transaccion.cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.cliente_id">
+<span class="sig-name descname"><span class="pre">cliente_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.cliente_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.codigo_operacion_tauser">
+<span class="sig-name descname"><span class="pre">codigo_operacion_tauser</span></span><a class="headerlink" href="#transacciones.models.Transaccion.codigo_operacion_tauser" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.comision_aplicada">
+<span class="sig-name descname"><span class="pre">comision_aplicada</span></span><a class="headerlink" href="#transacciones.models.Transaccion.comision_aplicada" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.documentos_electronicos">
+<span class="sig-name descname"><span class="pre">documentos_electronicos</span></span><a class="headerlink" href="#transacciones.models.Transaccion.documentos_electronicos" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.estado">
+<span class="sig-name descname"><span class="pre">estado</span></span><a class="headerlink" href="#transacciones.models.Transaccion.estado" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.estado_dinamico">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">estado_dinamico</span></span><a class="headerlink" href="#transacciones.models.Transaccion.estado_dinamico" title="Link to this definition"></a></dt>
+<dd><p>Devuelve el estado “cancelada_tasa_expirada” si la tasa ha expirado,
+de lo contrario, devuelve el estado actual.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.fecha_actualizacion">
+<span class="sig-name descname"><span class="pre">fecha_actualizacion</span></span><a class="headerlink" href="#transacciones.models.Transaccion.fecha_actualizacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.fecha_creacion">
+<span class="sig-name descname"><span class="pre">fecha_creacion</span></span><a class="headerlink" href="#transacciones.models.Transaccion.fecha_creacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_estado_display">
+<span class="sig-name descname"><span class="pre">get_estado_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">estado&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_estado_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_estado_display_dinamico">
+<span class="sig-name descname"><span class="pre">get_estado_display_dinamico</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/models.html#Transaccion.get_estado_display_dinamico"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.models.Transaccion.get_estado_display_dinamico" title="Link to this definition"></a></dt>
+<dd><p>Devuelve el display name del estado dinámico.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_modalidad_tasa_display">
+<span class="sig-name descname"><span class="pre">get_modalidad_tasa_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">modalidad_tasa&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_modalidad_tasa_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_next_by_fecha_actualizacion">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_actualizacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_actualizacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_next_by_fecha_actualizacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_next_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_next_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_previous_by_fecha_actualizacion">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_actualizacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_actualizacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_previous_by_fecha_actualizacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_previous_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_previous_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.get_tipo_operacion_display">
+<span class="sig-name descname"><span class="pre">get_tipo_operacion_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo_operacion&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.models.Transaccion.get_tipo_operacion_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.is_tasa_expirada">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_tasa_expirada</span></span><a class="headerlink" href="#transacciones.models.Transaccion.is_tasa_expirada" title="Link to this definition"></a></dt>
+<dd><p>Verifica si la tasa garantizada ha expirado para una transacción pendiente.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.medio_acreditacion_cliente">
+<span class="sig-name descname"><span class="pre">medio_acreditacion_cliente</span></span><a class="headerlink" href="#transacciones.models.Transaccion.medio_acreditacion_cliente" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.medio_acreditacion_cliente_id">
+<span class="sig-name descname"><span class="pre">medio_acreditacion_cliente_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.medio_acreditacion_cliente_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.medio_pago_utilizado">
+<span class="sig-name descname"><span class="pre">medio_pago_utilizado</span></span><a class="headerlink" href="#transacciones.models.Transaccion.medio_pago_utilizado" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.medio_pago_utilizado_id">
+<span class="sig-name descname"><span class="pre">medio_pago_utilizado_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.medio_pago_utilizado_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.modalidad_tasa">
+<span class="sig-name descname"><span class="pre">modalidad_tasa</span></span><a class="headerlink" href="#transacciones.models.Transaccion.modalidad_tasa" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.moneda_destino">
+<span class="sig-name descname"><span class="pre">moneda_destino</span></span><a class="headerlink" href="#transacciones.models.Transaccion.moneda_destino" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.moneda_destino_id">
+<span class="sig-name descname"><span class="pre">moneda_destino_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.moneda_destino_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.moneda_origen">
+<span class="sig-name descname"><span class="pre">moneda_origen</span></span><a class="headerlink" href="#transacciones.models.Transaccion.moneda_origen" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.moneda_origen_id">
+<span class="sig-name descname"><span class="pre">moneda_origen_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.moneda_origen_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.monto_destino">
+<span class="sig-name descname"><span class="pre">monto_destino</span></span><a class="headerlink" href="#transacciones.models.Transaccion.monto_destino" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.monto_origen">
+<span class="sig-name descname"><span class="pre">monto_origen</span></span><a class="headerlink" href="#transacciones.models.Transaccion.monto_origen" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#transacciones.models.Transaccion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.tasa_cambio_aplicada">
+<span class="sig-name descname"><span class="pre">tasa_cambio_aplicada</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tasa_cambio_aplicada" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.tasa_garantizada_hasta">
+<span class="sig-name descname"><span class="pre">tasa_garantizada_hasta</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tasa_garantizada_hasta" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.tauser_utilizado">
+<span class="sig-name descname"><span class="pre">tauser_utilizado</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tauser_utilizado" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.tauser_utilizado_id">
+<span class="sig-name descname"><span class="pre">tauser_utilizado_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tauser_utilizado_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.tipo_operacion">
+<span class="sig-name descname"><span class="pre">tipo_operacion</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tipo_operacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.usuario_operador">
+<span class="sig-name descname"><span class="pre">usuario_operador</span></span><a class="headerlink" href="#transacciones.models.Transaccion.usuario_operador" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.usuario_operador_id">
+<span class="sig-name descname"><span class="pre">usuario_operador_id</span></span><a class="headerlink" href="#transacciones.models.Transaccion.usuario_operador_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+<section id="module-transacciones.tests">
+<span id="modulo-transacciones-tests"></span><h2>módulo transacciones.tests<a class="headerlink" href="#module-transacciones.tests" title="Link to this heading"></a></h2>
+</section>
+<section id="module-transacciones.urls">
+<span id="modulo-transacciones-urls"></span><h2>módulo transacciones.urls<a class="headerlink" href="#module-transacciones.urls" title="Link to this heading"></a></h2>
+</section>
+<section id="module-transacciones.views">
+<span id="modulo-transacciones-views"></span><h2>módulo transacciones.views<a class="headerlink" href="#module-transacciones.views" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.views.IniciarCompraDivisaView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.views.</span></span><span class="sig-name descname"><span class="pre">IniciarCompraDivisaView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#IniciarCompraDivisaView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.IniciarCompraDivisaView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateView</span></code></p>
+<p>Vista para que el cliente inicie una transacción de compra de divisas.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.IniciarCompraDivisaView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#IniciarCompraDivisaView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.IniciarCompraDivisaView.get_context_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.views.IniciarCompraDivisaView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transacciones/iniciar_compra_divisa.html'</span></em><a class="headerlink" href="#transacciones.views.IniciarCompraDivisaView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.views.IniciarPagoTransaccionView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.views.</span></span><span class="sig-name descname"><span class="pre">IniciarPagoTransaccionView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#IniciarPagoTransaccionView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.IniciarPagoTransaccionView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<p>Vista para que el cliente inicie el proceso de pago para una transacción.
+Incluye la verificación MFA para el Flujo B (Tasa Flotante).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.IniciarPagoTransaccionView.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaccion_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#IniciarPagoTransaccionView.get"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.IniciarPagoTransaccionView.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.IniciarPagoTransaccionView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaccion_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#IniciarPagoTransaccionView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.IniciarPagoTransaccionView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.views.IniciarPagoTransaccionView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transacciones/verificar_otp_pago.html'</span></em><a class="headerlink" href="#transacciones.views.IniciarPagoTransaccionView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.views.ResultadoPagoView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.views.</span></span><span class="sig-name descname"><span class="pre">ResultadoPagoView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#ResultadoPagoView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.ResultadoPagoView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateView</span></code></p>
+<p>Muestra al cliente el resultado de su operación de pago después de ser
+redirigido desde la pasarela.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.ResultadoPagoView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#ResultadoPagoView.get_context_data"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.ResultadoPagoView.get_context_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.views.ResultadoPagoView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transacciones/resultado_pago.html'</span></em><a class="headerlink" href="#transacciones.views.ResultadoPagoView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transacciones.views.WebhookConfirmacionPagoView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.views.</span></span><span class="sig-name descname"><span class="pre">WebhookConfirmacionPagoView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#WebhookConfirmacionPagoView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.WebhookConfirmacionPagoView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<p>Endpoint que recibe la notificación (webhook) desde la pasarela de pagos.
+Actualiza el estado de la transacción según el resultado del pago.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.WebhookConfirmacionPagoView.dispatch">
+<span class="sig-name descname"><span class="pre">dispatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transacciones.views.WebhookConfirmacionPagoView.dispatch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transacciones.views.WebhookConfirmacionPagoView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#WebhookConfirmacionPagoView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.WebhookConfirmacionPagoView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="transacciones.views.cancelar_por_tasa">
+<span class="sig-prename descclassname"><span class="pre">transacciones.views.</span></span><span class="sig-name descname"><span class="pre">cancelar_por_tasa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaccion_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/views.html#cancelar_por_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.views.cancelar_por_tasa" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-transacciones">
+<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-transacciones" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="payments.html" class="btn btn-neutral float-left" title="paquete payments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="ted.html" class="btn btn-neutral float-right" title="paquete ted" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

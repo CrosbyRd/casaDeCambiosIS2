@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -70,111 +70,133 @@
            <div itemprop="articleBody">
              
   <h1>Código fuente para usuarios.management.commands.seed_users</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCommand</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCommand</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_user_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.management.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_user_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">roles.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clientes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
 
 <div class="viewcode-block" id="Command">
 <a class="viewcode-back" href="../../../../usuarios.management.commands.html#usuarios.management.commands.seed_users.Command">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">BaseCommand</span><span class="p">):</span>
-    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crea/actualiza un usuario Administrador con rol y permisos&quot;</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s2">&quot;Crea o actualiza usuarios de ejemplo (Admin, Analista y Clientes) y los asocia a sus roles.&quot;</span>
 
 <div class="viewcode-block" id="Command.handle">
 <a class="viewcode-back" href="../../../../usuarios.management.commands.html#usuarios.management.commands.seed_users.Command.handle">[documentos]</a>
     <span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
         <span class="n">User</span> <span class="o">=</span> <span class="n">get_user_model</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="s2">&quot;Iniciando creación de usuario Administrador...&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="s2">&quot;Iniciando creación y asignación de roles para usuarios de ejemplo...&quot;</span><span class="p">))</span>
 
-        <span class="c1"># --- Crear usuario admin de la app ---</span>
-        <span class="n">email</span> <span class="o">=</span> <span class="s2">&quot;globalexchangea2@gmail.com&quot;</span>
-        <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;password123&quot;</span>
-        <span class="n">user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
-            <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+        <span class="c1"># --- Obtener Roles (creados por seed_roles) ---</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rol_admin</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Administrador&quot;</span><span class="p">)</span>
+            <span class="n">rol_cliente</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cliente&quot;</span><span class="p">)</span>
+            <span class="n">rol_cliente_dev_otp_bypass</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cliente_Dev_OTP_Bypass&quot;</span><span class="p">)</span>
+            <span class="n">rol_analista</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Analista&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Role</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">ERROR</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Rol no encontrado - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Asegúrate de ejecutar &#39;python manage.py seed_roles&#39; primero.&quot;</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># --- Usuario Administrador ---</span>
+        <span class="n">admin_email</span> <span class="o">=</span> <span class="s2">&quot;globalexchangea2@gmail.com&quot;</span>
+        <span class="n">admin_password</span> <span class="o">=</span> <span class="s2">&quot;password123&quot;</span>
+        <span class="n">admin_user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">admin_email</span><span class="p">,</span>
             <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Admin&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Principal&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;is_staff&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>     <span class="c1"># puede loguearse como staff</span>
-                <span class="s2">&quot;is_superuser&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="c1"># no es superusuario global</span>
+                <span class="s2">&quot;is_staff&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;is_superuser&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="s2">&quot;is_verified&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
+        <span class="n">admin_user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">admin_password</span><span class="p">)</span>
+        <span class="n">admin_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">admin_user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_admin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario Administrador &#39;</span><span class="si">{</span><span class="n">admin_email</span><span class="si">}</span><span class="s2">&#39; asegurado y asignado al rol &#39;Administrador&#39;.&quot;</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario creado: </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">WARNING</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario ya existía: </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
-
-        <span class="c1"># --- Usar update_or_create para simplificar y asegurar la actualización</span>
-        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
-            <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">last_name</span><span class="p">,</span>
-            <span class="s2">&quot;is_staff&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">,</span>
-            <span class="s2">&quot;is_superuser&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">,</span>
-            <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">,</span>
-            <span class="s2">&quot;is_verified&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">is_verified</span><span class="p">,</span>
-        <span class="p">}</span>
-
-        <span class="n">user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
-            <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
-            <span class="n">defaults</span><span class="o">=</span><span class="n">defaults</span>
+        <span class="c1"># --- Usuario Analista ---</span>
+        <span class="n">analista_email</span> <span class="o">=</span> <span class="s2">&quot;analista1@example.com&quot;</span>
+        <span class="n">analista_password</span> <span class="o">=</span> <span class="s2">&quot;password123&quot;</span>
+        <span class="n">analista_user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">analista_email</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Analista&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cambiario&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;is_staff&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;is_superuser&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;is_verified&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
         <span class="p">)</span>
+        <span class="n">analista_user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">analista_password</span><span class="p">)</span>
+        <span class="n">analista_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">analista_user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_analista</span><span class="p">)</span>
+        <span class="n">analista_user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_cliente_dev_otp_bypass</span><span class="p">)</span> <span class="c1"># Para pruebas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario Analista &#39;</span><span class="si">{</span><span class="n">analista_email</span><span class="si">}</span><span class="s2">&#39; asegurado y asignado al rol &#39;Analista&#39;.&quot;</span><span class="p">))</span>
 
-        <span class="c1"># Siempre establecer/actualizar la contraseña</span>
-        <span class="k">if</span> <span class="n">password</span><span class="p">:</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
-            <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="c1"># --- Cargar fixture de clientes y crear usuarios asociados ---</span>
+        <span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">fixture_path</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;clientes&quot;</span> <span class="o">/</span> <span class="s2">&quot;fixtures&quot;</span> <span class="o">/</span> <span class="s2">&quot;clientes.json&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fixture_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">ERROR</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fixture de clientes no encontrado en: </span><span class="si">{</span><span class="n">fixture_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="k">return</span>
 
-        <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creado y contraseña establecida para: </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">WARNING</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actualizado y contraseña re-establecida para: </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fixture_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">clientes_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-        <span class="c1"># --- Crear Rol Administrador ---</span>
-        <span class="n">rol_admin</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get_or_create</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Administrador&quot;</span><span class="p">,</span>
-            <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Rol de Administrador&quot;</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">clientes_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;clientes.cliente&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
 
-        <span class="c1"># --- Buscar permisos personalizados ---</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span>
+            <span class="n">cliente</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Cliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+                <span class="n">nombre</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">],</span>
+                <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;categoria&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;categoria&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;activo&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;activo&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
 
-        <span class="n">permisos_codenames</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;access_admin_dashboard&quot;</span><span class="p">,</span>   <span class="c1"># Panel Admin</span>
-                <span class="s2">&quot;access_cotizaciones&quot;</span><span class="p">,</span>      <span class="c1"># Cotizaciones</span>
-                <span class="s2">&quot;access_monedas_section&quot;</span><span class="p">,</span>   <span class="c1"># Monedas</span>
-                <span class="s2">&quot;access_roles_panel&quot;</span><span class="p">,</span>       <span class="c1"># NUEVO: acceso a Roles</span>
-                <span class="s2">&quot;delete_roles&quot;</span><span class="p">,</span>             <span class="c1"># NUEVO: eliminar Roles</span>
-                <span class="s2">&quot;access_user_client_management&quot;</span><span class="p">,</span>  <span class="c1"># NUEVO:  acceso a asociacion cliente a usuario</span>
-                <span class="s2">&quot;access_clientes_panel&quot;</span><span class="p">,</span>   <span class="c1">#accede al menu de administracion de clientes</span>
-            <span class="p">]</span>
+            <span class="c1"># Crear usuario para este cliente</span>
+            <span class="n">client_user_email</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">@example.com&quot;</span>
+            <span class="n">client_user_password</span> <span class="o">=</span> <span class="s2">&quot;password123&quot;</span>
+            <span class="n">client_user</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+                <span class="n">email</span><span class="o">=</span><span class="n">client_user_email</span><span class="p">,</span>
+                <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;is_staff&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">&quot;is_superuser&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;is_verified&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">client_user</span><span class="o">.</span><span class="n">set_password</span><span class="p">(</span><span class="n">client_user_password</span><span class="p">)</span>
+            <span class="n">client_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            
+            <span class="c1"># Asociar usuario con cliente y roles</span>
+            <span class="n">client_user</span><span class="o">.</span><span class="n">clientes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cliente</span><span class="p">)</span>
+            <span class="n">client_user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_cliente</span><span class="p">)</span>
+            <span class="n">client_user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_cliente_dev_otp_bypass</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario para cliente &#39;</span><span class="si">{</span><span class="n">cliente</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&#39; creado y roles asignados.&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">WARNING</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Usuario para cliente &#39;</span><span class="si">{</span><span class="n">cliente</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&#39; actualizado y roles asignados.&quot;</span><span class="p">))</span>
 
-        <span class="n">permisos</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">codename</span> <span class="ow">in</span> <span class="n">permisos_codenames</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">perm</span> <span class="o">=</span> <span class="n">Permission</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">codename</span><span class="o">=</span><span class="n">codename</span><span class="p">)</span>
-                <span class="n">permisos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
-            <span class="k">except</span> <span class="n">Permission</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">ERROR</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;El permiso &#39;</span><span class="si">{</span><span class="n">codename</span><span class="si">}</span><span class="s2">&#39; no existe. &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Ejecuta &#39;makemigrations&#39; y &#39;migrate&#39; en la app correspondiente primero.&quot;</span>
-                <span class="p">))</span>
-
-        <span class="c1"># Asignar permisos al rol</span>
-        <span class="k">if</span> <span class="n">permisos</span><span class="p">:</span>
-            <span class="n">rol_admin</span><span class="o">.</span><span class="n">permissions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">permisos</span><span class="p">)</span>
-            <span class="n">rol_admin</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-
-        <span class="c1"># Asignar rol al usuario</span>
-        <span class="n">user</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">rol_admin</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Usuario </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2"> asignado al rol Administrador con permisos </span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">codename</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">permisos</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">(</span><span class="s2">&quot;Proceso de creación de usuarios de ejemplo finalizado.&quot;</span><span class="p">))</span></div>
 </div>
 
 </pre></div>

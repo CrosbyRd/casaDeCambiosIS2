@@ -1,18 +1,11 @@
-correo package
+paquete correo
 ==============
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   correo.migrations
-
-Submodules
+Submódulos
 ----------
 
-correo.admin module
+módulo correo.admin
 -------------------
 
 .. automodule:: correo.admin
@@ -20,7 +13,7 @@ correo.admin module
    :undoc-members:
    :show-inheritance:
 
-correo.apps module
+módulo correo.apps
 ------------------
 
 .. automodule:: correo.apps
@@ -28,7 +21,7 @@ correo.apps module
    :undoc-members:
    :show-inheritance:
 
-correo.models module
+módulo correo.models
 --------------------
 
 .. automodule:: correo.models
@@ -36,7 +29,7 @@ correo.models module
    :undoc-members:
    :show-inheritance:
 
-correo.tests module
+módulo correo.tests
 -------------------
 
 .. automodule:: correo.tests
@@ -44,7 +37,7 @@ correo.tests module
    :undoc-members:
    :show-inheritance:
 
-correo.urls module
+módulo correo.urls
 ------------------
 
 .. automodule:: correo.urls
@@ -52,7 +45,7 @@ correo.urls module
    :undoc-members:
    :show-inheritance:
 
-correo.views module
+módulo correo.views
 -------------------
 
 .. automodule:: correo.views
@@ -60,7 +53,7 @@ correo.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: correo

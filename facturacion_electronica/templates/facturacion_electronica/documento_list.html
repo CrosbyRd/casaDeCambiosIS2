@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Documentos Electrónicos{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-8 space-y-6">
+    <section class="space-y-6">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Documentos Electrónicos</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{% url 'admin_panel:dashboard' %}"
+                   class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+                    ⬅ Volver al Panel
+                </a>
+            </div>
+        </div>
+
+        {% if documentos %}
+        <div class="rounded-2xl border border-neutral-200 p-5 bg-white shadow-sm">
+            <div class="table-responsive">
+                <table class="min-w-full divide-y divide-neutral-200">
+                    <thead class="gx-thead">
+                        <tr>
+                    <th scope="col" class="px-4 py-3">ID</th>
+                    <th scope="col" class="px-4 py-3">Emisor</th>
+                    <th scope="col" class="px-4 py-3">Tipo</th>
+                    <th scope="col" class="px-4 py-3">Número Documento</th>
+                    <th scope="col" class="px-4 py-3">Estado SIFEN</th>
+                    <th scope="col" class="px-4 py-3">Fecha Emisión</th>
+                    <th scope="col" class="px-4 py-3">Transacción Asociada</th>
+                    <th scope="col" class="px-4 py-3">Acciones</th>
+                    <th scope="col" class="px-4 py-3">Eliminar</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y" style="divide-color:var(--line)">
+                {% for doc in documentos %}
+                <tr class="hover:bg-purple-50/40">
+                    <td class="px-4 py-3 font-bold">
+                        <a href="{% url 'facturacion_electronica:documento_detail' pk=doc.pk %}" class="text-[var(--brand)] hover:underline">
+                            Ver
+                        </a>
+                    </td>
+                    <td class="px-4 py-3">{{ doc.emisor.nombre }}</td>
+                    <td class="px-4 py-3">{{ doc.get_tipo_de_display }}</td>
+                    <td class="px-4 py-3">{{ doc.emisor.establecimiento }}-{{ doc.emisor.punto_expedicion }}-{{ doc.numero_documento }}</td>
+                    <td class="px-4 py-3">
+                        {% if doc.estado_sifen == 'aprobado' %}
+                            <span class="badge bg-success">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'rechazado' or doc.estado_sifen == 'error_api' or doc.estado_sifen == 'error_sifen' %}
+                            <span class="badge bg-danger">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'cancelado' or doc.estado_sifen == 'inutilizado' %}
+                            <span class="badge bg-warning">{{ doc.get_estado_sifen_display }}</span>
+                        {% elif doc.estado_sifen == 'simulado' %}
+                            <span class="badge bg-info">{{ doc.get_estado_sifen_display }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ doc.get_estado_sifen_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ doc.fecha_emision|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if doc.transaccion_asociada %}
+                            <a href="{% url 'transacciones:resultado_pago' transaccion_id=doc.transaccion_asociada.pk %}">{{ doc.transaccion_asociada.id|truncatechars:8 }}</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'facturacion_electronica:documento_detail' pk=doc.pk %}" class="btn btn-info btn-sm">Ver</a>
+                    </td>
+                    <td>
+                        <form action="{% url 'facturacion_electronica:documento_delete' pk=doc.pk %}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este documento electrónico? Esta acción es irreversible.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="flex justify-center mt-4">
+        <ul class="pagination flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="px-3 py-2 leading-tight text-purple-700 bg-white border border-purple-300 rounded-lg hover:bg-purple-100 hover:text-purple-800" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                </li>
+            {% endif %}
+            <li class="page-item active">
+                <span class="px-3 py-2 leading-tight text-white bg-purple-600 border border-purple-600 rounded-lg">{{ page_obj.number }} de {{ page_obj.num_pages }}</span>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="px-3 py-2 leading-tight text-purple-700 bg-white border border-purple-300 rounded-lg hover:bg-purple-100 hover:text-purple-800" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <p class="text-neutral-500">No hay documentos electrónicos registrados.</p>
+    {% endif %}
+</section>
+</main>
+
+<style>
+  /* Encabezado de tabla lila, texto blanco */
+  .gx-thead tr { background: var(--brand); }
+  .gx-thead th { color: #fff; font-weight:800; }
+</style>
+{% endblock %}

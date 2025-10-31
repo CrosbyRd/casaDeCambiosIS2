@@ -40,7 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
 </ul>
@@ -71,12 +71,20 @@
              
   <h1>Código fuente para roles.views</h1><div class="highlight"><pre>
 <span></span><span class="c1"># roles/views.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de vistas para la aplicación **Roles**.</span>
 
+<span class="sd">Contiene las vistas para la gestión de roles de usuarios,</span>
+<span class="sd">incluyendo:</span>
+<span class="sd">    - Panel de administración de roles.</span>
+<span class="sd">    - Asignación de roles a usuarios específicos.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_user_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">usuarios.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
 
 
 <div class="viewcode-block" id="role_panel">
@@ -84,46 +92,75 @@
 <span class="nd">@login_required</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">role_panel</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Renderiza la página para administrar Roles y maneja la creación de nuevos roles.</span>
-<span class="sd">    Solo accesible con permiso específico.</span>
+<span class="sd">    Renderiza el panel de administración de roles.</span>
+
+<span class="sd">    Solo accesible si el usuario tiene el permiso `roles.access_roles_panel`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    HttpResponse</span>
+<span class="sd">        Página con listado de usuarios y sus roles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;roles.access_roles_panel&quot;</span><span class="p">):</span>
-        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No tienes permiso para acceder a Roles.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
-        <span class="n">nombre_rol</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nombre&#39;</span><span class="p">)</span>
-        <span class="n">descripcion_rol</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;descripcion&#39;</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">nombre_rol</span><span class="p">:</span>
-            <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">nombre_rol</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">descripcion_rol</span><span class="p">)</span>
-            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Rol &#39;</span><span class="si">{</span><span class="n">nombre_rol</span><span class="si">}</span><span class="s2">&#39; creado exitosamente.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;El nombre del rol no puede estar vacío.&quot;</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;roles:role-panel&#39;</span><span class="p">)</span>  <span class="c1"># Redirigimos para evitar reenvío del formulario</span>
-
-    <span class="n">roles</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">usuarios</span> <span class="o">=</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">)</span>
     <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;roles&#39;</span><span class="p">:</span> <span class="n">roles</span>
+        <span class="s1">&#39;usuarios&#39;</span><span class="p">:</span> <span class="n">usuarios</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;roles/role_admin.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="role_delete">
-<a class="viewcode-back" href="../../roles.html#roles.views.role_delete">[documentos]</a>
+<div class="viewcode-block" id="manage_user_roles">
+<a class="viewcode-back" href="../../roles.html#roles.views.manage_user_roles">[documentos]</a>
 <span class="nd">@login_required</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">role_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;roles.delete_roles&quot;</span><span class="p">):</span>
-        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No tienes permiso para eliminar roles.&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">manage_user_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gestiona la asignación de roles a un usuario específico.</span>
+
+<span class="sd">    Permiso requerido: `usuarios.access_user_client_management`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    request : HttpRequest</span>
+<span class="sd">        Objeto de solicitud HTTP.</span>
+<span class="sd">    user_id : int</span>
+<span class="sd">        ID del usuario al que se le asignarán roles.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    HttpResponse</span>
+<span class="sd">        Redirecciona al panel de roles o renderiza formulario de gestión.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="s2">&quot;usuarios.access_user_client_management&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
 
-    <span class="n">rol_a_eliminar</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Role</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-    <span class="n">rol_nombre</span> <span class="o">=</span> <span class="n">rol_a_eliminar</span><span class="o">.</span><span class="n">name</span>   <span class="c1"># 👈 cambio aquí</span>
-    <span class="n">rol_a_eliminar</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
-    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Rol &#39;</span><span class="si">{</span><span class="n">rol_nombre</span><span class="si">}</span><span class="s2">&#39; eliminado exitosamente.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;roles:role-panel&#39;</span><span class="p">)</span></div>
+    <span class="n">user_to_manage</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">CustomUser</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># Obtener los IDs de los roles seleccionados en el formulario</span>
+        <span class="n">selected_role_ids</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;roles&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Limpiar los roles actuales y asignar los nuevos</span>
+        <span class="n">user_to_manage</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">role_id</span> <span class="ow">in</span> <span class="n">selected_role_ids</span><span class="p">:</span>
+            <span class="n">role</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">role_id</span><span class="p">)</span>
+            <span class="n">user_to_manage</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">role</span><span class="p">)</span>
+        
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Roles para </span><span class="si">{</span><span class="n">user_to_manage</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2"> actualizados correctamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;roles:role-panel&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Para el método GET, mostrar el formulario</span>
+    <span class="n">all_roles</span> <span class="o">=</span> <span class="n">Role</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">user_roles</span> <span class="o">=</span> <span class="n">user_to_manage</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;user_to_manage&#39;</span><span class="p">:</span> <span class="n">user_to_manage</span><span class="p">,</span>
+        <span class="s1">&#39;all_roles&#39;</span><span class="p">:</span> <span class="n">all_roles</span><span class="p">,</span>
+        <span class="s1">&#39;user_roles&#39;</span><span class="p">:</span> <span class="n">user_roles</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;roles/manage_user_roles.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
 
 </pre></div>
 

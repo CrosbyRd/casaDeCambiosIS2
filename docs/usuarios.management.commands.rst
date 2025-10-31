@@ -1,10 +1,10 @@
-usuarios.management.commands package
+paquete usuarios.management.commands
 ====================================
 
-Submodules
+Submódulos
 ----------
 
-usuarios.management.commands.seed\_users module
+módulo usuarios.management.commands.seed\_users
 -----------------------------------------------
 
 .. automodule:: usuarios.management.commands.seed_users
@@ -12,7 +12,7 @@ usuarios.management.commands.seed\_users module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: usuarios.management.commands

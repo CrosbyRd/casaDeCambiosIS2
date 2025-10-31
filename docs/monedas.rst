@@ -1,18 +1,11 @@
-monedas package
+paquete monedas
 ===============
 
-Subpackages
------------
 
-.. toctree::
-   :maxdepth: 4
-
-   monedas.migrations
-
-Submodules
+Submódulos
 ----------
 
-monedas.admin module
+módulo monedas.admin
 --------------------
 
 .. automodule:: monedas.admin
@@ -20,7 +13,7 @@ monedas.admin module
    :undoc-members:
    :show-inheritance:
 
-monedas.apps module
+módulo monedas.apps
 -------------------
 
 .. automodule:: monedas.apps
@@ -28,7 +21,7 @@ monedas.apps module
    :undoc-members:
    :show-inheritance:
 
-monedas.forms module
+módulo monedas.forms
 --------------------
 
 .. automodule:: monedas.forms
@@ -36,7 +29,7 @@ monedas.forms module
    :undoc-members:
    :show-inheritance:
 
-monedas.models module
+módulo monedas.models
 ---------------------
 
 .. automodule:: monedas.models
@@ -44,7 +37,7 @@ monedas.models module
    :undoc-members:
    :show-inheritance:
 
-monedas.tests module
+módulo monedas.tests
 --------------------
 
 .. automodule:: monedas.tests
@@ -52,7 +45,7 @@ monedas.tests module
    :undoc-members:
    :show-inheritance:
 
-monedas.urls module
+módulo monedas.urls
 -------------------
 
 .. automodule:: monedas.urls
@@ -60,7 +53,7 @@ monedas.urls module
    :undoc-members:
    :show-inheritance:
 
-monedas.views module
+módulo monedas.views
 --------------------
 
 .. automodule:: monedas.views
@@ -68,7 +61,7 @@ monedas.views module
    :undoc-members:
    :show-inheritance:
 
-Module contents
+Contenido del módulo
 ---------------
 
 .. automodule:: monedas

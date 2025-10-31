@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>transacciones.views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">transacciones.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para transacciones.views</h1><div class="highlight"><pre>
+<span></span><span class="c1"># transacciones/views.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">method_decorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.decorators.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">csrf_exempt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span><span class="p">,</span> <span class="n">ROUND_HALF_UP</span> <span class="c1"># Necesario para manejar Decimal y redondeo</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pagos.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">iniciar_cobro_a_cliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">usuarios.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cliente_activo</span><span class="p">,</span> <span class="n">send_otp_email</span><span class="p">,</span> <span class="n">validate_otp_code</span> <span class="c1"># Importar funciones OTP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">usuarios.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerificacionForm</span> <span class="c1"># Importar formulario de verificación</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pagos.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioPago</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cotizaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cotizacion</span> <span class="c1"># Para obtener la tasa en tiempo real</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ted.logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ajustar_monto_a_denominaciones_disponibles</span> <span class="c1"># Importar la lógica de ajuste</span>
+
+<span class="c1">#notificacion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.decorators.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">csrf_exempt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_object_or_404</span>
+
+
+<div class="viewcode-block" id="cancelar_por_tasa">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.cancelar_por_tasa">[documentos]</a>
+<span class="nd">@csrf_exempt</span>
+<span class="nd">@csrf_exempt</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cancelar_por_tasa</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span> <span class="ow">and</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">)</span>
+        <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;cancelada_usuario_tasa&#39;</span>
+        <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span></div>
+
+
+
+
+<div class="viewcode-block" id="IniciarCompraDivisaView">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.IniciarCompraDivisaView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IniciarCompraDivisaView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">TemplateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que el cliente inicie una transacción de compra de divisas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;transacciones/iniciar_compra_divisa.html&#39;</span> <span class="c1"># Crear esta plantilla</span>
+    
+<div class="viewcode-block" id="IniciarCompraDivisaView.get_context_data">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.IniciarCompraDivisaView.get_context_data">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Aquí se podría añadir lógica para formularios, datos iniciales, etc.</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+
+<div class="viewcode-block" id="IniciarPagoTransaccionView">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.IniciarPagoTransaccionView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IniciarPagoTransaccionView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">View</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para que el cliente inicie el proceso de pago para una transacción.</span>
+<span class="sd">    Incluye la verificación MFA para el Flujo B (Tasa Flotante).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;transacciones/verificar_otp_pago.html&#39;</span> <span class="c1"># Nueva plantilla para OTP</span>
+
+<div class="viewcode-block" id="IniciarPagoTransaccionView.get">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.IniciarPagoTransaccionView.get">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">cliente_activo</span> <span class="o">=</span> <span class="n">get_cliente_activo</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">,</span> <span class="n">cliente</span><span class="o">=</span><span class="n">cliente_activo</span><span class="p">)</span>
+
+        <span class="c1"># Solo si es tasa flotante y pendiente de confirmación, se pide OTP</span>
+        <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">modalidad_tasa</span> <span class="o">==</span> <span class="s1">&#39;flotante&#39;</span> <span class="ow">and</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_confirmacion_pago&#39;</span><span class="p">:</span>
+            <span class="n">send_otp_email</span><span class="p">(</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                <span class="s2">&quot;Confirmación de Pago Final&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Tu código de verificación para confirmar el pago es: </span><span class="si">{code}</span><span class="s2">. Válido por </span><span class="si">{minutes}</span><span class="s2"> minutos.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Hemos enviado un código de verificación a tu email (</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">VerificacionForm</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_name</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="s1">&#39;transaccion&#39;</span><span class="p">:</span> <span class="n">transaccion</span><span class="p">})</span>
+        
+        <span class="c1"># Si no requiere OTP o ya está en estado de pago, redirigir directamente a iniciar el cobro</span>
+        <span class="c1"># Esto cubre el Flujo A (tasa bloqueada) y reintentos de pago</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iniciar_cobro</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">transaccion</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IniciarPagoTransaccionView.post">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.IniciarPagoTransaccionView.post">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">cliente_activo</span> <span class="o">=</span> <span class="n">get_cliente_activo</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">,</span> <span class="n">cliente</span><span class="o">=</span><span class="n">cliente_activo</span><span class="p">)</span>
+
+        <span class="c1"># Lógica de verificación OTP para Flujo B</span>
+        <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">modalidad_tasa</span> <span class="o">==</span> <span class="s1">&#39;flotante&#39;</span> <span class="ow">and</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_confirmacion_pago&#39;</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">VerificacionForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="n">codigo</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s1">&#39;codigo&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">validate_otp_code</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">codigo</span><span class="p">):</span>
+                    <span class="c1"># OTP válido, proceder con la actualización de tasa y el cobro</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">verification_code</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Limpiar código OTP del usuario</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">code_created_at</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;verification_code&#39;</span><span class="p">,</span> <span class="s1">&#39;code_created_at&#39;</span><span class="p">])</span> <span class="c1"># Guardar cambios en el usuario</span>
+                    
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span> <span class="c1"># Cambiar estado de la transacción a pendiente de pago</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span> <span class="c1"># Guardar solo el estado en la transacción</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Código OTP verificado. Procediendo con el pago.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iniciar_cobro</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">transaccion</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Código OTP incorrecto o expirado.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Por favor, ingresa un código válido.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_name</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="s1">&#39;transaccion&#39;</span><span class="p">:</span> <span class="n">transaccion</span><span class="p">})</span>
+        
+        <span class="c1"># Si no es tasa flotante o ya pasó la verificación OTP, proceder directamente</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iniciar_cobro</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">transaccion</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iniciar_cobro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">transaccion</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lógica para actualizar la tasa (si es flotante) e iniciar el cobro.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;venta&#39;</span> <span class="ow">and</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">:</span>
+            <span class="c1"># Si la modalidad de tasa es flotante, actualizar la tasa de cambio aplicada con la tasa final</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">modalidad_tasa</span> <span class="o">==</span> <span class="s1">&#39;flotante&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Recuperar los valores actualizados de la sesión</span>
+                    <span class="n">operacion_pendiente</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;operacion_pendiente&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">operacion_pendiente</span><span class="p">:</span>
+                        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No hay datos de operación pendiente en la sesión.&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;core:detalle_transaccion&#39;</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+                    <span class="c1"># Actualizar la transacción con los valores de la sesión que ya incluyen la bonificación</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">operacion_pendiente</span><span class="p">[</span><span class="s1">&#39;monto_origen&#39;</span><span class="p">])</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">operacion_pendiente</span><span class="p">[</span><span class="s1">&#39;monto_recibido&#39;</span><span class="p">])</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">tasa_cambio_aplicada</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">operacion_pendiente</span><span class="p">[</span><span class="s1">&#39;tasa_aplicada&#39;</span><span class="p">])</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">comision_aplicada</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">operacion_pendiente</span><span class="p">[</span><span class="s1">&#39;comision_aplicada&#39;</span><span class="p">])</span>
+                    
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tasa_cambio_aplicada&#39;</span><span class="p">,</span> <span class="s1">&#39;monto_origen&#39;</span><span class="p">,</span> <span class="s1">&#39;monto_destino&#39;</span><span class="p">,</span> <span class="s1">&#39;comision_aplicada&#39;</span><span class="p">])</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Tasa de cambio y montos actualizados (final con comisiones y bonificación) para la operación flotante. Monto a pagar ajustado a </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="si">}</span><span class="s2"> PYG.&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al actualizar la tasa de cambio y montos: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;core:detalle_transaccion&#39;</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+            <span class="n">medio_pago_id</span> <span class="o">=</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">medio_pago_utilizado</span><span class="o">.</span><span class="n">id_tipo</span> <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">medio_pago_utilizado</span> <span class="k">else</span> <span class="kc">None</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">medio_pago_id</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No se especificó un medio de pago para esta transacción.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;core:detalle_transaccion&#39;</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+            <span class="n">url_pago</span> <span class="o">=</span> <span class="n">iniciar_cobro_a_cliente</span><span class="p">(</span><span class="n">transaccion</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">medio_pago_id</span><span class="o">=</span><span class="n">medio_pago_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">url_pago</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_pago</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;error&#39;</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No se pudo iniciar el proceso de pago. Por favor, intente nuevamente más tarde.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;core:detalle_transaccion&#39;</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Esta transacción no está en un estado válido para iniciar el pago.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;core:detalle_transaccion&#39;</span><span class="p">,</span> <span class="n">transaccion_id</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebhookConfirmacionPagoView">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.WebhookConfirmacionPagoView">[documentos]</a>
+<span class="nd">@method_decorator</span><span class="p">(</span><span class="n">csrf_exempt</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dispatch&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebhookConfirmacionPagoView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Endpoint que recibe la notificación (webhook) desde la pasarela de pagos.</span>
+<span class="sd">    Actualiza el estado de la transacción según el resultado del pago.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WebhookConfirmacionPagoView.post">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.WebhookConfirmacionPagoView.post">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [WEBHOOK] Webhook recibido: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Cuerpo de la petición inválido.&quot;</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+        <span class="c1"># Extraer datos del webhook</span>
+        <span class="n">transaccion_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;referencia_comercio&#39;</span><span class="p">)</span>
+        <span class="n">estado_pago</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;estado&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Delegar el procesamiento del webhook al orquestador de pagos</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pagos.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">handle_payment_webhook</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">handle_payment_webhook</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># Pasar el payload completo al orquestador</span>
+
+        <span class="c1"># El orquestador ya actualizó el estado de la transacción.</span>
+        <span class="c1"># Aquí solo devolvemos la respuesta adecuada al emisor del webhook.</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [WEBHOOK] Error al procesar webhook: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Error desconocido&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="s1">&#39;Error al procesar webhook.&#39;</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="s1">&#39;Webhook procesado.&#39;</span><span class="p">)})</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ResultadoPagoView">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.ResultadoPagoView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResultadoPagoView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra al cliente el resultado de su operación de pago después de ser</span>
+<span class="sd">    redirigido desde la pasarela.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;transacciones/resultado_pago.html&#39;</span>
+
+<div class="viewcode-block" id="ResultadoPagoView.get_context_data">
+<a class="viewcode-back" href="../../transacciones.html#transacciones.views.ResultadoPagoView.get_context_data">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">transaccion_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;transaccion_id&#39;</span><span class="p">]</span>
+        <span class="c1"># Recargar la transacción para asegurar que tenemos el estado más reciente</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">)</span>
+        <span class="n">transaccion</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span> <span class="c1"># Recargar la instancia desde la base de datos</span>
+        
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;transaccion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaccion</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;url_continuar_pago&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Inicializar a None</span>
+
+        <span class="c1"># Solo ofrecer continuar pago si la transacción está *realmente* pendiente de pago</span>
+        <span class="c1"># y tiene un medio de pago asociado.</span>
+        <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span> <span class="ow">and</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">medio_pago_utilizado</span><span class="p">:</span>
+            <span class="c1"># Llamar al orquestador para obtener la URL de pago</span>
+            <span class="c1"># No se crea una nueva transacción, solo se obtiene la URL para la existente</span>
+            <span class="n">url_continuar_pago</span> <span class="o">=</span> <span class="n">iniciar_cobro_a_cliente</span><span class="p">(</span><span class="n">transaccion</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">medio_pago_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">medio_pago_utilizado</span><span class="o">.</span><span class="n">id_tipo</span><span class="p">))</span>
+            <span class="n">context</span><span class="p">[</span><span class="s1">&#39;url_continuar_pago&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_continuar_pago</span>
+        
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

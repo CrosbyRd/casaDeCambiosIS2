@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Eliminar moneda | TED{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-8">
+    <h1 class="text-4xl font-extrabold text-red-600 flex items-center gap-2">🗑️ Eliminar moneda</h1>
+    <p class="text-lg text-[var(--muted)] mt-2">
+      Equipo <strong>{{ serial }}</strong>
+    </p>
+  </header>
+
+  <section class="bg-white border rounded-xl shadow-sm p-8" style="border-color:var(--line)">
+    <form method="post">
+      {% csrf_token %}
+
+      <p class="text-lg mb-3">
+        ¿Confirmás que querés eliminar la moneda
+        <strong>{{ moneda.nombre }} ({{ moneda.codigo }})</strong> del TED?
+      </p>
+
+      <ul class="text-[var(--muted)] mb-4 list-disc pl-6">
+        <li>Se eliminará <strong>todo el inventario</strong> de todas sus denominaciones (en todas las ubicaciones).</li>
+        <li>Se registrarán <strong>ajustes</strong> para llevar el stock a 0.</li>
+        <li>Las denominaciones quedarán <strong>desactivadas</strong> (se preserva el historial de movimientos).</li>
+        <li>La moneda dejará de estar marcada como <strong>admite_terminal</strong>.</li>
+      </ul>
+
+      <div class="mb-4 text-sm text-[var(--muted)]">
+        <div>Denominaciones: <strong>{{ total_denom }}</strong></div>
+        <div>Filas de inventario a afectar: <strong>{{ total_filas_inv }}</strong></div>
+        {% if ubicaciones and ubicaciones|length > 0 %}
+          <div>Ubicaciones involucradas: <strong>{{ ubicaciones|join:", " }}</strong></div>
+        {% endif %}
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+        <button type="submit"
+                class="px-5 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700 flex items-center gap-2">
+          🗑️ <span>Sí, eliminar moneda</span>
+        </button>
+        <a href="{% url 'admin_panel:ted:inventario' %}"
+           class="px-5 py-2 rounded-lg font-semibold text-white flex items-center gap-2"
+           style="background:var(--brand)">
+          ✖ <span>Cancelar</span>
+        </a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

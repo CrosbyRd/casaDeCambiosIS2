@@ -1,0 +1,47 @@
+{# notificaciones/templates/notificaciones/emails/cambio_tasa.html #}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Notificación de Cambio de Tasa</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { width: 90%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .header { font-size: 24px; color: #0056b3; margin-bottom: 20px; }
+        .content { font-size: 16px; }
+        .footer { margin-top: 20px; font-size: 12px; color: #777; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Hola, {{ usuario.first_name|default:usuario.email }}
+        </div>
+        <div class="content">
+            
+            <p><strong>{{ mensaje_notificacion }}</strong></p>
+           
+            <hr>
+            <h4>Detalles de la Cotización Actualizada:</h4>
+            <ul>
+                <li><strong>Moneda:</strong> {{ cotizacion.moneda_destino.nombre }} ({{ cotizacion.moneda_destino.codigo }})</li>
+                
+                {% if venta_cambio %}
+                <li><strong>Nuevo Precio de Venta (Final):</strong> {{ cotizacion.total_venta|floatformat:0 }} Gs.</li>
+                {% endif %}
+                {% if compra_cambio %}
+                <li><strong>Nuevo Precio de Compra (Final):</strong> {{ cotizacion.total_compra|floatformat:0 }} Gs.</li>
+                {% endif %}
+            </ul>
+        
+            <p>
+                Puedes iniciar una operación o ver más detalles en nuestro sitio web.
+            </p>
+        </div>
+        <div class="footer">
+            <p>Recibiste este correo porque tienes activadas las notificaciones por email en tu cuenta de {{ nombre_sitio }}.</p>
+            <p>Si no deseas recibir estos avisos, puedes <a href="#">configurar tus preferencias de notificación</a> en tu panel de usuario.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,53 +1,77 @@
-core package
+paquete core
 ============
 
-Submodules
+Submódulos
 ----------
 
-core.apps module
-----------------
+módulo casaDeCambiosIS2.core.apps
+---------------------------------
 
-.. automodule:: core.apps
+.. automodule:: casaDeCambiosIS2.core.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-core.forms module
------------------
+módulo casaDeCambiosIS2.core.forms
+----------------------------------
 
-.. automodule:: core.forms
+.. automodule:: casaDeCambiosIS2.core.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-core.logic module
------------------
+módulo casaDeCambiosIS2.core.logic
+----------------------------------
 
-.. automodule:: core.logic
+.. automodule:: casaDeCambiosIS2.core.logic
    :members:
    :undoc-members:
    :show-inheritance:
 
-core.tests module
------------------
+módulo casaDeCambiosIS2.core.tests
+----------------------------------
 
-.. automodule:: core.tests
+.. automodule:: casaDeCambiosIS2.core.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-core.views module
------------------
+módulo casaDeCambiosIS2.core.urls
+---------------------------------
 
-.. automodule:: core.views
+.. automodule:: casaDeCambiosIS2.core.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
+módulo casaDeCambiosIS2.core.utils
+----------------------------------
+
+.. automodule:: casaDeCambiosIS2.core.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.core.views
+----------------------------------
+
+.. automodule:: casaDeCambiosIS2.core.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+módulo casaDeCambiosIS2.core.management.commands.export_models_dot
+------------------------------------------------------------------
+
+.. automodule:: casaDeCambiosIS2.core.management.commands.export_models_dot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Contenido del módulo
 ---------------
 
-.. automodule:: core
+.. automodule:: casaDeCambiosIS2.core
    :members:
    :undoc-members:
    :show-inheritance:
