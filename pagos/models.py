@@ -70,7 +70,6 @@ class TipoMedioPago(models.Model):
         return self.engine == 'stripe'
 
     class Meta:
-        db_table = "pagos_tipo_medio"
         verbose_name = "Tipo de medio de pago"
         verbose_name_plural = "Tipos de medios de pago"
         permissions = [
