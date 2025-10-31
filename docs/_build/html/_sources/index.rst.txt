@@ -16,5 +16,3 @@ para más detalles.
    :caption: Contenidos:
 
    modules
-   notificaciones
-   simuladores

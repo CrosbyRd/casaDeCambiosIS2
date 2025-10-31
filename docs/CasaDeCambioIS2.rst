@@ -45,7 +45,6 @@ módulo CasaDeCambioIS2.wsgi
    :show-inheritance:
 
 Contenido del módulo
----------------
 
 .. automodule:: CasaDeCambioIS2
    :members:

@@ -1,0 +1,558 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>facturacion_electronica.views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">facturacion_electronica.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para facturacion_electronica.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Vistas de la app Facturación Electrónica.</span>
+
+<span class="sd">.. module:: facturacion_electronica.views</span>
+<span class="sd">   :synopsis: Vistas propias del módulo de Facturación Electrónica.</span>
+
+<span class="sd">Este módulo contiene las vistas para la gestión de emisores y documentos electrónicos,</span>
+<span class="sd">incluyendo operaciones CRUD y acciones relacionadas con la API de Factura Segura y SIFEN.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">,</span> <span class="n">DeleteView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginRequiredMixin</span>  <span class="c1"># Mantener LoginRequiredMixin para las vistas basadas en clases</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>  <span class="c1"># Importar los decoradores de permisos y login</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="n">ItemDocumentoElectronico</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmisorFacturaElectronicaForm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">FacturaSeguraAPIClient</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">generar_factura_electronica_task</span><span class="p">,</span>
+    <span class="n">get_estado_sifen_task</span><span class="p">,</span>
+    <span class="n">solicitar_cancelacion_task</span><span class="p">,</span>
+    <span class="n">solicitar_inutilizacion_task</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">admin_required</span>  <span class="c1"># Importar el nuevo mixin y decorador</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+
+<span class="c1"># Vistas para EmisorFacturaElectronica</span>
+<div class="viewcode-block" id="EmisorFacturaElectronicaListView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaListView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para listar todos los emisores de factura electrónica.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Muestra una lista paginada de emisores.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/emisor_list.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;emisores&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaDetailView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaDetailView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaDetailView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para mostrar los detalles de un emisor de factura electrónica específico.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/emisor_detail.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;emisor&#39;</span></div>
+
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaCreateView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaCreateView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para crear un nuevo emisor de factura electrónica.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Almacena los datos del formulario y muestra un mensaje de éxito.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronicaForm</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/emisor_form.html&#39;</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:emisor_list&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaCreateView.form_valid">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_valid">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Emisor de Factura Electrónica creado exitosamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaUpdateView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para actualizar un emisor de factura electrónica existente.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Actualiza los datos del formulario y muestra un mensaje de éxito.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronicaForm</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/emisor_form.html&#39;</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:emisor_list&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaUpdateView.form_valid">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_valid">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Emisor de Factura Electrónica actualizado exitosamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaDeleteView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronicaDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para eliminar un emisor de factura electrónica.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Elimina el emisor y todos los documentos electrónicos relacionados de forma atómica.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;facturacion_electronica/emisor_confirm_delete.html&quot;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;facturacion_electronica:emisor_list&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronicaDeleteView.delete">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.delete">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="n">success_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_success_url</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+            <span class="c1"># Borrar primero TODOS los documentos vinculados (usar related_name correcto)</span>
+            <span class="n">relacionados</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">documentos_electronicos</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">eliminados</span> <span class="o">=</span> <span class="n">relacionados</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">relacionados</span><span class="p">:</span>
+                <span class="c1"># Si el modelo tiene FileFields (PDF/KuDE), esto asegura que se borren del storage:</span>
+                <span class="n">doc</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+            <span class="c1"># Luego borrar el emisor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Emisor eliminado correctamente. También se eliminaron </span><span class="si">{</span><span class="n">eliminados</span><span class="si">}</span><span class="s2"> documento(s) electrónico(s) relacionado(s).&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">success_url</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Vistas para DocumentoElectronico</span>
+<div class="viewcode-block" id="DocumentoElectronicoListView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.DocumentoElectronicoListView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentoElectronicoListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para listar todos los documentos electrónicos.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Muestra una lista paginada de documentos electrónicos.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DocumentoElectronico</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/documento_list.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;documentos&#39;</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">20</span></div>
+
+
+
+<div class="viewcode-block" id="DocumentoElectronicoDetailView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.DocumentoElectronicoDetailView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentoElectronicoDetailView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para mostrar los detalles de un documento electrónico específico.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Prepara los JSON de envío y respuesta de la API para una visualización legible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DocumentoElectronico</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;facturacion_electronica/documento_detail.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;documento&#39;</span>
+
+<div class="viewcode-block" id="DocumentoElectronicoDetailView.get_context_data">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.DocumentoElectronicoDetailView.get_context_data">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;json_enviado_pretty&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">json_enviado_api</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">json_enviado_api</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;json_respuesta_pretty&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">json_respuesta_api</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">json_respuesta_api</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+
+
+<span class="c1"># Acciones para DocumentoElectronico (disparadas por POST)</span>
+<div class="viewcode-block" id="generar_token_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.generar_token_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>  <span class="c1"># Usar el decorador de función</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generar_token_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">emisor_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para generar o actualizar el token de autenticación de un emisor.</span>
+
+<span class="sd">    Requiere una solicitud POST. Dispara la generación del token a través del cliente de la API.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param emisor_id: ID del emisor.</span>
+<span class="sd">    :type emisor_id: int</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del emisor con un mensaje.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emisor</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">emisor_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">FacturaSeguraAPIClient</span><span class="p">(</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">_generate_auth_token</span><span class="p">()</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Token de autenticación generado/actualizado exitosamente.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al generar token: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:emisor_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">emisor_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="consultar_estado_de_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.consultar_estado_de_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">consultar_estado_de_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">documento_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para consultar el estado de un documento electrónico en SIFEN.</span>
+
+<span class="sd">    Requiere una solicitud POST. Dispara una tarea asíncrona para consultar el estado.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param documento_id: ID del documento electrónico.</span>
+<span class="sd">    :type documento_id: uuid.UUID</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del documento con un mensaje.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># pasar UUID directamente</span>
+            <span class="n">get_estado_sifen_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Solicitud de consulta de estado enviada. El estado se actualizará en breve.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al solicitar consulta de estado: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="solicitar_cancelacion_de_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.solicitar_cancelacion_de_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solicitar_cancelacion_de_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">documento_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para solicitar la cancelación de un documento electrónico en SIFEN.</span>
+
+<span class="sd">    Requiere una solicitud POST. Solo permite cancelar documentos en estado &#39;Aprobado&#39; o &#39;Aprobado con Observación&#39;.</span>
+<span class="sd">    Dispara una tarea asíncrona para solicitar la cancelación.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param documento_id: ID del documento electrónico.</span>
+<span class="sd">    :type documento_id: uuid.UUID</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del documento con un mensaje.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">documento</span><span class="o">.</span><span class="n">estado_sifen</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;aprobado&#39;</span><span class="p">,</span> <span class="s1">&#39;aprobado_obs&#39;</span><span class="p">]:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Solo se pueden cancelar documentos con estado &#39;Aprobado&#39; o &#39;Aprobado con Observación&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">solicitar_cancelacion_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Solicitud de cancelación enviada. El estado se actualizará en breve.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al solicitar cancelación: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="solicitar_inutilizacion_de_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.solicitar_inutilizacion_de_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solicitar_inutilizacion_de_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">documento_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para solicitar la inutilización de un documento electrónico en SIFEN.</span>
+
+<span class="sd">    Requiere una solicitud POST. No permite inutilizar documentos ya &#39;Aprobados&#39;, &#39;Cancelados&#39; o &#39;Inutilizados&#39;.</span>
+<span class="sd">    Dispara una tarea asíncrona para solicitar la inutilización.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param documento_id: ID del documento electrónico.</span>
+<span class="sd">    :type documento_id: uuid.UUID</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del documento con un mensaje.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">documento</span><span class="o">.</span><span class="n">estado_sifen</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;aprobado&#39;</span><span class="p">,</span> <span class="s1">&#39;cancelado&#39;</span><span class="p">,</span> <span class="s1">&#39;inutilizado&#39;</span><span class="p">]:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;No se puede inutilizar un documento con estado &#39;Aprobado&#39;, &#39;Cancelado&#39; o &#39;Inutilizado&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">solicitar_inutilizacion_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Solicitud de inutilización enviada. El estado se actualizará en breve.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al solicitar inutilización: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="descargar_kude_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.descargar_kude_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">descargar_kude_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">documento_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para descargar el KuDE (Representación Gráfica del Documento Electrónico).</span>
+
+<span class="sd">    Requiere que el documento tenga un CDC asignado. Utiliza el cliente de la API</span>
+<span class="sd">    para obtener el contenido PDF del KuDE.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param documento_id: ID del documento electrónico.</span>
+<span class="sd">    :type documento_id: uuid.UUID</span>
+<span class="sd">    :return: Un HttpResponse con el contenido PDF o una redirección con mensaje de error.</span>
+<span class="sd">    :rtype: HttpResponse or HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;El documento no tiene un CDC asignado para descargar el KuDE.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">FacturaSeguraAPIClient</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">pdf_content</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">descargar_kude</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="p">,</span> <span class="n">documento</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">ruc</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">pdf_content</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/pdf&#39;</span><span class="p">)</span>
+        <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Content-Disposition&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;attachment; filename=&quot;kude_</span><span class="si">{</span><span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="si">}</span><span class="s1">.pdf&quot;&#39;</span>
+        <span class="k">return</span> <span class="n">response</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al descargar KuDE: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="descargar_xml_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.descargar_xml_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">descargar_xml_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">documento_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para descargar el archivo XML de un documento electrónico.</span>
+
+<span class="sd">    Requiere que el documento tenga un CDC asignado. Utiliza el cliente de la API</span>
+<span class="sd">    para obtener el contenido XML del documento.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param documento_id: ID del documento electrónico.</span>
+<span class="sd">    :type documento_id: uuid.UUID</span>
+<span class="sd">    :return: Un HttpResponse con el contenido XML o una redirección con mensaje de error.</span>
+<span class="sd">    :rtype: HttpResponse or HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;El documento no tiene un CDC asignado para descargar el XML.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">FacturaSeguraAPIClient</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">xml_content</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">descargar_xml</span><span class="p">(</span><span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="p">,</span> <span class="n">documento</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">ruc</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">xml_content</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;application/xml&#39;</span><span class="p">)</span>
+        <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Content-Disposition&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;attachment; filename=&quot;de_</span><span class="si">{</span><span class="n">documento</span><span class="o">.</span><span class="n">cdc</span><span class="si">}</span><span class="s1">.xml&quot;&#39;</span>
+        <span class="k">return</span> <span class="n">response</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error al descargar XML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:documento_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">documento_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="toggle_emisor_activo_view">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.toggle_emisor_activo_view">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_emisor_activo_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para cambiar el estado &#39;activo&#39; de un emisor de factura electrónica.</span>
+
+<span class="sd">    Requiere una solicitud POST. Alterna el valor del campo `activo` del emisor.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param pk: Clave primaria del emisor.</span>
+<span class="sd">    :type pk: int</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del emisor con un mensaje.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emisor</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">emisor</span><span class="o">.</span><span class="n">activo</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">emisor</span><span class="o">.</span><span class="n">activo</span>
+        <span class="n">emisor</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;El estado &#39;activo&#39; del emisor </span><span class="si">{</span><span class="n">emisor</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> ha sido cambiado a </span><span class="si">{</span><span class="n">emisor</span><span class="o">.</span><span class="n">activo</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;facturacion_electronica:emisor_detail&#39;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="consultar_estado">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.consultar_estado">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@admin_required</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">consultar_estado</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dispara la consulta de estado de un documento electrónico en SIFEN.</span>
+
+<span class="sd">    Esta función es asíncrona (usa Celery) y no bloquea la UI. Proporciona</span>
+<span class="sd">    feedback inmediato al usuario mientras la consulta se procesa en segundo plano.</span>
+
+<span class="sd">    :param request: Objeto HttpRequest.</span>
+<span class="sd">    :param pk: Clave primaria del documento electrónico.</span>
+<span class="sd">    :type pk: uuid.UUID</span>
+<span class="sd">    :return: Redirecciona a la vista de detalle del documento con un mensaje informativo.</span>
+<span class="sd">    :rtype: HttpResponseRedirect</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+
+    <span class="c1"># dispara la consulta asíncrona</span>
+    <span class="n">get_estado_sifen_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="c1"># feedback inmediato al usuario (mostrado en documento_detail.html)</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Consulta enviada a SIFEN. Estado actual: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">get_estado_sifen_display</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># redirige al detalle para que vea el badge/estado</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s2">&quot;facturacion_electronica:documento_detail&quot;</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DocumentoElectronicoDeleteView">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.DocumentoElectronicoDeleteView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentoElectronicoDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">AdminRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista para eliminar un documento electrónico.</span>
+
+<span class="sd">    Requiere que el usuario esté autenticado y tenga permisos de administrador.</span>
+<span class="sd">    Elimina el documento y muestra un mensaje de éxito.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">DocumentoElectronico</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;facturacion_electronica/documento_confirm_delete.html&quot;</span> <span class="c1"># Podríamos crear una plantilla específica si se necesita confirmación</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">&quot;documento&quot;</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s2">&quot;facturacion_electronica:documento_list&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DocumentoElectronicoDeleteView.delete">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.views.DocumentoElectronicoDeleteView.delete">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="n">success_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_success_url</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Documento electrónico </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="si">}</span><span class="s2"> eliminado correctamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">success_url</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

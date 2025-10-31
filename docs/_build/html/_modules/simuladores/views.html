@@ -43,8 +43,6 @@
               <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -80,16 +78,20 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">get_object_or_404</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">TemplateView</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PagoSimulado</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">method_decorator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.views.decorators.csrf</span><span class="w"> </span><span class="kn">import</span> <span class="n">csrf_exempt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">PagoSimulado</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">notificaciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Notificacion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+
+
+<span class="c1"># simuladores/views.py</span>
 
 <div class="viewcode-block" id="PaginaPagoSimuladaView">
 <a class="viewcode-back" href="../../simuladores.html#simuladores.views.PaginaPagoSimuladaView">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PaginaPagoSimuladaView</span><span class="p">(</span><span class="n">TemplateView</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Renderiza la página HTML donde el usuario &quot;paga&quot; (confirma o cancela).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;simuladores/pagina_pago.html&#39;</span>
 
 <div class="viewcode-block" id="PaginaPagoSimuladaView.get_context_data">
@@ -98,19 +100,36 @@
         <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">pago_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;transaccion_id&#39;</span><span class="p">]</span>
         <span class="n">pago</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">PagoSimulado</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pago_id</span><span class="p">,</span> <span class="n">estado</span><span class="o">=</span><span class="s1">&#39;PENDIENTE&#39;</span><span class="p">)</span>
-        
         <span class="n">context</span><span class="p">[</span><span class="s1">&#39;pago&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pago</span>
-        
-        <span class="c1"># Obtener la transacción real asociada al pago simulado</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pago</span><span class="o">.</span><span class="n">referencia_comercio</span><span class="p">)</span>
-            <span class="n">context</span><span class="p">[</span><span class="s1">&#39;transaccion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaccion</span>
-        <span class="k">except</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-            <span class="n">context</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;No se encontró la transacción asociada a este pago.&quot;</span>
 
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Transaccion</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pago</span><span class="o">.</span><span class="n">referencia_comercio</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;transaccion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaccion</span>
+
+        <span class="c1"># 🔔 Solo notificaciones relevantes para esta transacción</span>
+        <span class="n">notificaciones</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+            <span class="n">ahora</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pendiente_retiro_tauser&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pendiente_deposito_tauser&#39;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="c1"># Solo notificaciones creadas después de la transacción</span>
+                <span class="n">notificaciones</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">Notificacion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                        <span class="n">destinatario</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                        <span class="n">leida</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">fecha_creacion__gte</span><span class="o">=</span><span class="n">transaccion</span><span class="o">.</span><span class="n">fecha_creacion</span><span class="p">,</span>
+                        <span class="n">mensaje__icontains</span><span class="o">=</span><span class="s2">&quot;ha cambiado&quot;</span>
+                    <span class="p">)</span>
+                    <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-fecha_creacion&#39;</span><span class="p">)[:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># solo la más reciente</span>
+                <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;notificaciones&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">notificaciones</span>
         <span class="k">return</span> <span class="n">context</span></div>
 </div>
+
+
+
 
 
 <div class="viewcode-block" id="ConfirmarPagoSimuladoView">
@@ -119,12 +138,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Procesa la confirmación del usuario, envía el webhook y redirige.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ConfirmarPagoSimuladoView.post">
 <a class="viewcode-back" href="../../simuladores.html#simuladores.views.ConfirmarPagoSimuladoView.post">[documentos]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">pago_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;transaccion_id&#39;</span><span class="p">]</span>
         <span class="n">pago</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">PagoSimulado</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pago_id</span><span class="p">,</span> <span class="n">estado</span><span class="o">=</span><span class="s1">&#39;PENDIENTE&#39;</span><span class="p">)</span>
-        
+
         <span class="n">accion</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;accion&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">accion</span> <span class="o">==</span> <span class="s2">&quot;pagar&quot;</span><span class="p">:</span>
@@ -142,14 +162,13 @@
             <span class="s1">&#39;estado&#39;</span><span class="p">:</span> <span class="n">estado_final</span><span class="p">,</span>
             <span class="s1">&#39;monto&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">pago</span><span class="o">.</span><span class="n">monto</span><span class="p">)</span>
         <span class="p">}</span>
-        
-        <span class="c1"># Llamar al orquestador para manejar el webhook</span>
+
         <span class="n">handle_payment_webhook</span><span class="p">(</span><span class="n">webhook_payload</span><span class="p">)</span>
 
         <span class="c1"># Actualizar estado del pago simulado y redirigir</span>
         <span class="n">pago</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;PROCESADO&#39;</span>
         <span class="n">pago</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-        
+
         <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">pago</span><span class="o">.</span><span class="n">url_retorno</span><span class="p">)</span></div>
 </div>
 

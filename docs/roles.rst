@@ -8,71 +8,71 @@ Submódulos
 módulo casaDeCambiosIS2.roles.admin
 -----------------------------------
 
-.. automodule:: casaDeCambiosIS2.roles.admin
+.. automodule:: roles.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.apps
-----------------------------------
+módulo roles.apps
+-----------------
 
-.. automodule:: casaDeCambiosIS2.roles.apps
+.. automodule:: roles.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.models
-------------------------------------
+módulo roles.models
+-------------------
 
-.. automodule:: casaDeCambiosIS2.roles.models
+.. automodule:: roles.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.serializers
------------------------------------------
+módulo roles.serializers
+------------------------
 
-.. automodule:: casaDeCambiosIS2.roles.serializers
+.. automodule:: roles.serializers
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.tests
------------------------------------
+módulo roles.tests
+------------------
 
-.. automodule:: casaDeCambiosIS2.roles.tests
+.. automodule:: roles.tests
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.urls
-----------------------------------
+módulo roles.urls
+-----------------
 
-.. automodule:: casaDeCambiosIS2.roles.urls
+.. automodule:: roles.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.views
------------------------------------
+módulo roles.views
+------------------
 
-.. automodule:: casaDeCambiosIS2.roles.views
+.. automodule:: roles.views
    :members:
    :undoc-members:
    :show-inheritance:
 
-módulo casaDeCambiosIS2.roles.management.commands.seed_roles
-------------------------------------------------------------
+Subpaquetes
+-----------
 
-.. automodule:: casaDeCambiosIS2.roles.management.commands.seed_roles
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 4
+
+   roles.management
 
 Contenido del módulo
----------------
+--------------------
 
-.. automodule:: casaDeCambiosIS2.roles
+.. automodule:: roles
    :members:
    :undoc-members:
    :show-inheritance:
