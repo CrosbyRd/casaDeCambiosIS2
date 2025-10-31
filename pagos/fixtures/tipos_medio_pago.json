@@ -51,11 +51,11 @@
     "model": "pagos.tipomediopago",
     "pk": "p5",
     "fields": {
-      "nombre": "Stripe ",
+      "nombre": "Stripe",
       "comision_porcentaje": 0.5,
       "descripcion": "",
       "activo": true,
-      "engine": "stripe ",
+      "engine": "stripe",
       "engine_config": {}
     }
   }
