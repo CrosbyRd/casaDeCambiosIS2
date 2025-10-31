@@ -104,24 +104,22 @@ TEMPLATES = [
     },
 ]
 
-# --- Base de datos (Postgres local) ---
+
+# --- Base de datos ---
+# Para desarrollo local usamos sqlite; tu config previa REMOTA queda comentada.
+# DATABASES = {
+#     "default": dj_database_url.config(conn_max_age=600)
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "casadecambio_db",
-        "USER": "casadecambio_user",
-        "PASSWORD": "una_contraseña_muy_segura",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+            'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+        }
 
-# --- Usuario personalizado ---
-AUTH_USER_MODEL = "usuarios.CustomUser"
 
-# --- Correo saliente (Gmail con App Password de 16 caracteres) ---
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+AUTH_USER_MODEL = 'usuarios.CustomUser'
+# Configuración de correo (ejemplo con Gmail)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "globalexchangeparaguay@gmail.com")
