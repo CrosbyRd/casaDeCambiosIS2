@@ -21,4 +21,5 @@ urlpatterns = [
     path('documentos/<uuid:documento_id>/inutilizar/', views.solicitar_inutilizacion_de_view, name='solicitar_inutilizacion'),
     path('documentos/<uuid:documento_id>/descargar_kude/', views.descargar_kude_view, name='descargar_kude'),
     path('documentos/<uuid:documento_id>/descargar_xml/', views.descargar_xml_view, name='descargar_xml'),
+    path('documentos/<uuid:pk>/eliminar/', views.DocumentoElectronicoDeleteView.as_view(), name='documento_delete'),
 ]
