@@ -1,6 +1,7 @@
 from django.db import models
 from monedas.models import Moneda
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 class Cotizacion(models.Model):
     moneda_base = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='cotizaciones_base')
     moneda_destino = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='cotizaciones_destino')
@@ -59,3 +60,24 @@ class Cotizacion(models.Model):
                 venta_cambio=venta_cambio,
                 compra_cambio=compra_cambio
             )
+class CotizacionHistorica(models.Model):
+    moneda_base = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='hist_base')
+    moneda_destino = models.ForeignKey(Moneda, on_delete=models.PROTECT, related_name='hist_destino')
+
+    valor_compra = models.DecimalField(max_digits=10, decimal_places=4, validators=[MinValueValidator(0)])
+    comision_compra = models.DecimalField(max_digits=10, decimal_places=4, default=0, validators=[MinValueValidator(0)])
+    valor_venta = models.DecimalField(max_digits=10, decimal_places=4, validators=[MinValueValidator(0)])
+    comision_venta = models.DecimalField(max_digits=10, decimal_places=4, default=0, validators=[MinValueValidator(0)])
+
+    fecha = models.DateTimeField(default=timezone.now, db_index=True)
+    fuente = models.CharField(max_length=40, blank=True, default="")  # opcional: "manual", "api", etc.
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["moneda_base", "moneda_destino", "fecha"], name="idx_hist_pair_fecha"),
+        ]
+        verbose_name = "Cotización histórica"
+        verbose_name_plural = "Cotizaciones históricas"
+
+    def __str__(self):
+        return f"{self.moneda_base.codigo}->{self.moneda_destino.codigo} @ {self.fecha:%Y-%m-%d %H:%M}"
