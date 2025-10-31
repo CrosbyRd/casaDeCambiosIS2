@@ -53,12 +53,12 @@ class EmisorFacturaElectronicaFormTests(TestCase):
         self.assertEqual(obj.ruc, "80099999")
 
     def test_form_sin_correo(self):
-        # Este test ahora prueba el fallo cuando el email no está
+        # El modelo permite que el email sea opcional (blank=True, null=True).
+        # Por lo tanto, el formulario debe ser válido incluso sin un correo.
         data = self.valid_data.copy()
         data.pop("email_emisor")
         form = EmisorFacturaElectronicaForm(data=data)
-        self.assertFalse(form.is_valid())
-        self.assertIn("email_emisor", form.errors)
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_form_ruc_repetido(self):
         # Creamos un emisor con los datos válidos

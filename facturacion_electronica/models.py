@@ -23,7 +23,7 @@ class EmisorFacturaElectronica(models.Model):
     )
 
     # Datos de contacto
-    email_emisor= models.EmailField(verbose_name="Email de contacto")
+    email_emisor= models.EmailField(blank=True, null=True, verbose_name="Email de contacto")
     telefono = models.CharField(max_length=25, blank=True, null=True, verbose_name="Teléfono de contacto")
 
     # Dirección (coincidente con nodos de cDepEmi, dDesDepEmi, cCiuEmi, dDesCiuEmi, dDirEmi, dNumCas, cPaisEmi)
@@ -101,8 +101,6 @@ class EmisorFacturaElectronica(models.Model):
             raise ValidationError(_("El Número de Timbrado debe tener exactamente 8 dígitos (ej. 02595733)."))
         if not self.fecha_inicio_timbrado:
             raise ValidationError(_("Debe indicar la fecha de inicio del timbrado (dFeIniT)."))
-        if not self.email_emisor:
-            raise ValidationError(_("Debe indicar un email de contacto para el emisor."))
 
 
         # Ubicación (opcional, pero cuando se complete que sea coherente)
