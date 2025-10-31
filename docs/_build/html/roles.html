@@ -57,21 +57,30 @@
 <li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete roles</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-casaDeCambiosIS2.roles.admin">módulo casaDeCambiosIS2.roles.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-casaDeCambiosIS2.roles.apps">módulo casaDeCambiosIS2.roles.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#casaDeCambiosIS2.roles.apps.RolesConfig"><code class="docutils literal notranslate"><span class="pre">RolesConfig</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.admin">módulo casaDeCambiosIS2.roles.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.apps">módulo roles.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roles.apps.RolesConfig"><code class="docutils literal notranslate"><span class="pre">RolesConfig</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#modulo-casadecambiosis2-roles-models">módulo casaDeCambiosIS2.roles.models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#modulo-casadecambiosis2-roles-serializers">módulo casaDeCambiosIS2.roles.serializers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-casaDeCambiosIS2.roles.tests">módulo casaDeCambiosIS2.roles.tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#modulo-casadecambiosis2-roles-urls">módulo casaDeCambiosIS2.roles.urls</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#modulo-casadecambiosis2-roles-views">módulo casaDeCambiosIS2.roles.views</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-casaDeCambiosIS2.roles.management.commands.seed_roles">módulo casaDeCambiosIS2.roles.management.commands.seed_roles</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#casaDeCambiosIS2.roles.management.commands.seed_roles.Command"><code class="docutils literal notranslate"><span class="pre">Command</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.models">módulo roles.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roles.models.Role"><code class="docutils literal notranslate"><span class="pre">Role</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.serializers">módulo roles.serializers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roles.serializers.RoleSerializer"><code class="docutils literal notranslate"><span class="pre">RoleSerializer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.tests">módulo roles.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.urls">módulo roles.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles.views">módulo roles.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#roles.views.manage_user_roles"><code class="docutils literal notranslate"><span class="pre">manage_user_roles()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#roles.views.role_panel"><code class="docutils literal notranslate"><span class="pre">role_panel()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#subpaquetes">Subpaquetes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-roles">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
@@ -82,10 +91,11 @@
 <li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -118,67 +128,277 @@
 <section id="submodulos">
 <h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
 </section>
-<section id="module-casaDeCambiosIS2.roles.admin">
-<span id="modulo-casadecambiosis2-roles-admin"></span><h2>módulo casaDeCambiosIS2.roles.admin<a class="headerlink" href="#module-casaDeCambiosIS2.roles.admin" title="Link to this heading"></a></h2>
+<section id="module-roles.admin">
+<span id="modulo-casadecambiosis2-roles-admin"></span><h2>módulo casaDeCambiosIS2.roles.admin<a class="headerlink" href="#module-roles.admin" title="Link to this heading"></a></h2>
 </section>
-<section id="module-casaDeCambiosIS2.roles.apps">
-<span id="modulo-casadecambiosis2-roles-apps"></span><h2>módulo casaDeCambiosIS2.roles.apps<a class="headerlink" href="#module-casaDeCambiosIS2.roles.apps" title="Link to this heading"></a></h2>
+<section id="module-roles.apps">
+<span id="modulo-roles-apps"></span><h2>módulo roles.apps<a class="headerlink" href="#module-roles.apps" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.apps.RolesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">casaDeCambiosIS2.roles.apps.</span></span><span class="sig-name descname"><span class="pre">RolesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/roles/apps.html#RolesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.roles.apps.RolesConfig" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="roles.apps.RolesConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.apps.</span></span><span class="sig-name descname"><span class="pre">RolesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/apps.html#RolesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.apps.RolesConfig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.apps.RolesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#casaDeCambiosIS2.roles.apps.RolesConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="roles.apps.RolesConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#roles.apps.RolesConfig.default_auto_field" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.apps.RolesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'roles'</span></em><a class="headerlink" href="#casaDeCambiosIS2.roles.apps.RolesConfig.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="roles.apps.RolesConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'roles'</span></em><a class="headerlink" href="#roles.apps.RolesConfig.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="modulo-casadecambiosis2-roles-models">
-<h2>módulo casaDeCambiosIS2.roles.models<a class="headerlink" href="#modulo-casadecambiosis2-roles-models" title="Link to this heading"></a></h2>
-</section>
-<section id="modulo-casadecambiosis2-roles-serializers">
-<h2>módulo casaDeCambiosIS2.roles.serializers<a class="headerlink" href="#modulo-casadecambiosis2-roles-serializers" title="Link to this heading"></a></h2>
-</section>
-<section id="module-casaDeCambiosIS2.roles.tests">
-<span id="modulo-casadecambiosis2-roles-tests"></span><h2>módulo casaDeCambiosIS2.roles.tests<a class="headerlink" href="#module-casaDeCambiosIS2.roles.tests" title="Link to this heading"></a></h2>
-</section>
-<section id="modulo-casadecambiosis2-roles-urls">
-<h2>módulo casaDeCambiosIS2.roles.urls<a class="headerlink" href="#modulo-casadecambiosis2-roles-urls" title="Link to this heading"></a></h2>
-</section>
-<section id="modulo-casadecambiosis2-roles-views">
-<h2>módulo casaDeCambiosIS2.roles.views<a class="headerlink" href="#modulo-casadecambiosis2-roles-views" title="Link to this heading"></a></h2>
-</section>
-<section id="module-casaDeCambiosIS2.roles.management.commands.seed_roles">
-<span id="modulo-casadecambiosis2-roles-management-commands-seed-roles"></span><h2>módulo casaDeCambiosIS2.roles.management.commands.seed_roles<a class="headerlink" href="#module-casaDeCambiosIS2.roles.management.commands.seed_roles" title="Link to this heading"></a></h2>
+<section id="module-roles.models">
+<span id="modulo-roles-models"></span><h2>módulo roles.models<a class="headerlink" href="#module-roles.models" title="Link to this heading"></a></h2>
+<p>Módulo de modelos para la aplicación <strong>Roles</strong>.</p>
+<p>Contiene la definición del modelo Role, que permite agrupar permisos
+y asignarlos a usuarios del sistema.</p>
+<dl class="simple">
+<dt>Modelo incluido:</dt><dd><ul class="simple">
+<li><p>Role</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py class">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.management.commands.seed_roles.Command">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">casaDeCambiosIS2.roles.management.commands.seed_roles.</span></span><span class="sig-name descname"><span class="pre">Command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/roles/management/commands/seed_roles.html#Command"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.roles.management.commands.seed_roles.Command" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCommand</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.management.commands.seed_roles.Command.handle">
-<span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/roles/management/commands/seed_roles.html#Command.handle"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.roles.management.commands.seed_roles.Command.handle" title="Link to this definition"></a></dt>
-<dd><p>The actual logic of the command. Subclasses must implement
-this method.</p>
+<dt class="sig sig-object py" id="roles.models.Role">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.models.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/models.html#Role"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.models.Role" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa un <strong>rol de usuario</strong> que agrupa permisos específicos.</p>
+<p>Un rol permite controlar el acceso a funcionalidades del sistema,
+simplificando la gestión de permisos para grupos de usuarios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Nombre único del rol.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Descripción opcional del rol.</p></li>
+<li><p><strong>permissions</strong> (<em>ManyToManyField</em><em>[</em><em>Permission</em><em>]</em>) – Conjunto de permisos asignados al rol.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="roles.models.Role.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#roles.models.Role.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="roles.models.Role.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#roles.models.Role.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.roles.management.commands.seed_roles.Command.help">
-<span class="sig-name descname"><span class="pre">help</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Crea/actualiza</span> <span class="pre">roles</span> <span class="pre">y</span> <span class="pre">permisos.'</span></em><a class="headerlink" href="#casaDeCambiosIS2.roles.management.commands.seed_roles.Command.help" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="roles.models.Role.customuser_set">
+<span class="sig-name descname"><span class="pre">customuser_set</span></span><a class="headerlink" href="#roles.models.Role.customuser_set" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.models.Role.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#roles.models.Role.description" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.models.Role.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#roles.models.Role.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.models.Role.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#roles.models.Role.name" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.models.Role.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#roles.models.Role.objects" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.models.Role.permissions">
+<span class="sig-name descname"><span class="pre">permissions</span></span><a class="headerlink" href="#roles.models.Role.permissions" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-casaDeCambiosIS2.roles"></span></section>
+<section id="module-roles.serializers">
+<span id="modulo-roles-serializers"></span><h2>módulo roles.serializers<a class="headerlink" href="#module-roles.serializers" title="Link to this heading"></a></h2>
+<p>Serializadores para la aplicación <strong>Roles</strong>.</p>
+<dl class="simple">
+<dt>Incluye:</dt><dd><ul class="simple">
+<li><p>RoleSerializer: serializa roles y sus permisos para APIs REST.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">roles.serializers.</span></span><span class="sig-name descname"><span class="pre">RoleSerializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/serializers.html#RoleSerializer"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.serializers.RoleSerializer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelSerializer</span></code></p>
+<p>Serializador de roles para APIs REST.</p>
+<p>Permite listar y obtener detalles de un rol incluyendo sus permisos.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#roles.serializers.RoleSerializer.id" title="Link to this definition"></a></dt>
+<dd><p>Identificador del rol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#roles.serializers.RoleSerializer.name" title="Link to this definition"></a></dt>
+<dd><p>Nombre del rol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#roles.serializers.RoleSerializer.description" title="Link to this definition"></a></dt>
+<dd><p>Descripción opcional.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.permissions">
+<span class="sig-name descname"><span class="pre">permissions</span></span><a class="headerlink" href="#roles.serializers.RoleSerializer.permissions" title="Link to this definition"></a></dt>
+<dd><p>Lista de permisos asociados.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/roles/serializers.html#RoleSerializer.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.serializers.RoleSerializer.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['id',</span> <span class="pre">'name',</span> <span class="pre">'description',</span> <span class="pre">'permissions']</span></em><a class="headerlink" href="#roles.serializers.RoleSerializer.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="roles.serializers.RoleSerializer.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#roles.serializers.RoleSerializer.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#roles.models.Role" title="roles.models.Role"><code class="xref py py-class docutils literal notranslate"><span class="pre">Role</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-roles.tests">
+<span id="modulo-roles-tests"></span><h2>módulo roles.tests<a class="headerlink" href="#module-roles.tests" title="Link to this heading"></a></h2>
+</section>
+<section id="module-roles.urls">
+<span id="modulo-roles-urls"></span><h2>módulo roles.urls<a class="headerlink" href="#module-roles.urls" title="Link to this heading"></a></h2>
+<p>Rutas URL para la aplicación <strong>Roles</strong>.</p>
+<dl class="simple">
+<dt>Define los endpoints para:</dt><dd><ul class="simple">
+<li><p>Panel de administración de roles.</p></li>
+<li><p>Gestión de roles por usuario.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="module-roles.views">
+<span id="modulo-roles-views"></span><h2>módulo roles.views<a class="headerlink" href="#module-roles.views" title="Link to this heading"></a></h2>
+<p>Módulo de vistas para la aplicación <strong>Roles</strong>.</p>
+<p>Contiene las vistas para la gestión de roles de usuarios,
+incluyendo:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Panel de administración de roles.</p></li>
+<li><p>Asignación de roles a usuarios específicos.</p></li>
+</ul>
+</div></blockquote>
+<dl class="py function">
+<dt class="sig sig-object py" id="roles.views.manage_user_roles">
+<span class="sig-prename descclassname"><span class="pre">roles.views.</span></span><span class="sig-name descname"><span class="pre">manage_user_roles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/views.html#manage_user_roles"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.views.manage_user_roles" title="Link to this definition"></a></dt>
+<dd><p>Gestiona la asignación de roles a un usuario específico.</p>
+<p>Permiso requerido: <cite>usuarios.access_user_client_management</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>HttpRequest</em>) – Objeto de solicitud HTTP.</p></li>
+<li><p><strong>user_id</strong> (<em>int</em>) – ID del usuario al que se le asignarán roles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Redirecciona al panel de roles o renderiza formulario de gestión.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="roles.views.role_panel">
+<span class="sig-prename descclassname"><span class="pre">roles.views.</span></span><span class="sig-name descname"><span class="pre">role_panel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roles/views.html#role_panel"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#roles.views.role_panel" title="Link to this definition"></a></dt>
+<dd><p>Renderiza el panel de administración de roles.</p>
+<p>Solo accesible si el usuario tiene el permiso <cite>roles.access_roles_panel</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Devuelve<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Página con listado de usuarios y sus roles.</p>
+</dd>
+<dt class="field-even">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-even"><p>HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="subpaquetes">
+<h2>Subpaquetes<a class="headerlink" href="#subpaquetes" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="module-roles">
+<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-roles" title="Link to this heading"></a></h2>
+</section>
 </section>
 
 

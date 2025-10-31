@@ -53,7 +53,7 @@ módulo simuladores.views
    :show-inheritance:
 
 Contenido del módulo
----------------
+--------------------
 
 .. automodule:: simuladores
    :members:

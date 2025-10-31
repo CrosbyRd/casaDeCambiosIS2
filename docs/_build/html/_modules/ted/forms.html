@@ -43,8 +43,6 @@
               <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -75,10 +73,31 @@
 <span></span><span class="c1"># ted/forms.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TedMovimiento</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Formularios para la gestión de ajustes de inventario del Tauser.</span>
 
+<span class="sd">Este módulo define los formularios utilizados para registrar ajustes de billetes</span>
+<span class="sd">en el inventario del Tauser (TedInventario). Permite especificar la cantidad a</span>
+<span class="sd">sumar o restar, el motivo del ajuste, un comentario opcional y la confirmación</span>
+<span class="sd">del usuario.</span>
+
+<span class="sd">Clases:</span>
+<span class="sd">    AjusteInventarioForm: Formulario principal para registrar un ajuste de inventario.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="AjusteInventarioForm">
 <a class="viewcode-back" href="../../ted.html#ted.forms.AjusteInventarioForm">[documentos]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AjusteInventarioForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario para registrar ajustes manuales en el inventario de billetes.</span>
+
+<span class="sd">    Campos:</span>
+<span class="sd">        delta (IntegerField): Cantidad de billetes a ajustar. Valores positivos suman,</span>
+<span class="sd">            valores negativos restan.</span>
+<span class="sd">        motivo (ChoiceField): Motivo del ajuste. Puede ser un ajuste manual o &#39;otro&#39;.</span>
+<span class="sd">        comentario (CharField): Comentario opcional sobre el ajuste (máx. 140 caracteres).</span>
+<span class="sd">        confirm (BooleanField): Confirmación obligatoria por parte del usuario para validar el ajuste.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">delta</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span>
         <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Ajuste (+ suma, − resta)&quot;</span><span class="p">,</span>
         <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Usa valores positivos para ingresar billetes y negativos para retirarlos.&quot;</span><span class="p">,</span>

@@ -21,7 +21,7 @@
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="next" title="paquete simuladores" href="simuladores.html" />
-    <link rel="prev" title="paquete ted" href="ted.html" /> 
+    <link rel="prev" title="facturacion_electronica" href="facturacion_electronica.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,33 +45,73 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete notificaciones</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-casaDeCambiosIS2.notificaciones.apps">módulo casaDeCambiosIS2.notificaciones.apps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig.default_auto_field</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.name"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig.name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.ready"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig.ready()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete notificaciones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.apps">módulo notificaciones.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.apps.NotificacionesConfig"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.emails">módulo notificaciones.emails</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.emails.enviar_email_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">enviar_email_cambio_tasa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.emails.enviar_email_con_adjunto"><code class="docutils literal notranslate"><span class="pre">enviar_email_con_adjunto()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-casaDeCambiosIS2.notificaciones.emails">módulo casaDeCambiosIS2.notificaciones.emails</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#casaDeCambiosIS2.notificaciones.emails.enviar_email_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">enviar_email_cambio_tasa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.forms">módulo notificaciones.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-forms">módulo casaDeCambiosIS2.notificaciones.forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-models">módulo casaDeCambiosIS2.notificaciones.models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-signals">módulo casaDeCambiosIS2.notificaciones.signals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-tasks">módulo casaDeCambiosIS2.notificaciones.tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-urls">módulo casaDeCambiosIS2.notificaciones.urls</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-utils">módulo casaDeCambiosIS2.notificaciones.utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#modulo-casadecambiosis2-notificaciones-views">módulo casaDeCambiosIS2.notificaciones.views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-casaDeCambiosIS2.notificaciones">Contenido del módulo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.models">módulo notificaciones.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion"><code class="docutils literal notranslate"><span class="pre">Notificacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.signals">módulo notificaciones.signals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.signals.crear_notificacion_por_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">crear_notificacion_por_cambio_tasa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.signals.crear_preferencias_para_nuevo_usuario"><code class="docutils literal notranslate"><span class="pre">crear_preferencias_para_nuevo_usuario()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.tasks">módulo notificaciones.tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.urls">módulo notificaciones.urls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.utils">módulo notificaciones.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.utils.crear_notificacion"><code class="docutils literal notranslate"><span class="pre">crear_notificacion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.views">módulo notificaciones.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.MarcarLeidaNotificacionView"><code class="docutils literal notranslate"><span class="pre">MarcarLeidaNotificacionView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView"><code class="docutils literal notranslate"><span class="pre">NotificacionListView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.SilenciarNotificacionView"><code class="docutils literal notranslate"><span class="pre">SilenciarNotificacionView</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.marcar_leidas"><code class="docutils literal notranslate"><span class="pre">marcar_leidas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.marcar_notificaciones_leidas"><code class="docutils literal notranslate"><span class="pre">marcar_notificaciones_leidas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.ver_nuevas"><code class="docutils literal notranslate"><span class="pre">ver_nuevas()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -88,6 +128,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete notificaciones</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/notificaciones.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -103,63 +144,596 @@
 <section id="submodulos">
 <h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
 </section>
-<section id="module-casaDeCambiosIS2.notificaciones.apps">
-<span id="modulo-casadecambiosis2-notificaciones-apps"></span><h2>módulo casaDeCambiosIS2.notificaciones.apps<a class="headerlink" href="#module-casaDeCambiosIS2.notificaciones.apps" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.apps">
+<span id="modulo-notificaciones-apps"></span><h2>módulo notificaciones.apps<a class="headerlink" href="#module-notificaciones.apps" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">casaDeCambiosIS2.notificaciones.apps.</span></span><span class="sig-name descname"><span class="pre">NotificacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/notificaciones/apps.html#NotificacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.apps.</span></span><span class="sig-name descname"><span class="pre">NotificacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/apps.html#NotificacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones'</span></em><a class="headerlink" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.name" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones'</span></em><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.ready">
-<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/notificaciones/apps.html#NotificacionesConfig.ready"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.notificaciones.apps.NotificacionesConfig.ready" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.ready">
+<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/apps.html#NotificacionesConfig.ready"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.ready" title="Link to this definition"></a></dt>
 <dd><p>Override this method in subclasses to run code when Django starts.</p>
 </dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="module-casaDeCambiosIS2.notificaciones.emails">
-<span id="modulo-casadecambiosis2-notificaciones-emails"></span><h2>módulo casaDeCambiosIS2.notificaciones.emails<a class="headerlink" href="#module-casaDeCambiosIS2.notificaciones.emails" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.emails">
+<span id="modulo-notificaciones-emails"></span><h2>módulo notificaciones.emails<a class="headerlink" href="#module-notificaciones.emails" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="casaDeCambiosIS2.notificaciones.emails.enviar_email_cambio_tasa">
-<span class="sig-prename descclassname"><span class="pre">casaDeCambiosIS2.notificaciones.emails.</span></span><span class="sig-name descname"><span class="pre">enviar_email_cambio_tasa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usuario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mensaje_notificacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cotizacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venta_cambio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compra_cambio</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/casaDeCambiosIS2/notificaciones/emails.html#enviar_email_cambio_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#casaDeCambiosIS2.notificaciones.emails.enviar_email_cambio_tasa" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="notificaciones.emails.enviar_email_cambio_tasa">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.emails.</span></span><span class="sig-name descname"><span class="pre">enviar_email_cambio_tasa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usuario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mensaje_notificacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cotizacion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venta_cambio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compra_cambio</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/emails.html#enviar_email_cambio_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.emails.enviar_email_cambio_tasa" title="Link to this definition"></a></dt>
 <dd><p>Envía un correo electrónico de notificación de cambio de tasa a un usuario.</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.emails.enviar_email_con_adjunto">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.emails.</span></span><span class="sig-name descname"><span class="pre">enviar_email_con_adjunto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destinatario_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asunto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_html</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nombre_adjunto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contenido_adjunto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo_mime_adjunto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'application/pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/emails.html#enviar_email_con_adjunto"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.emails.enviar_email_con_adjunto" title="Link to this definition"></a></dt>
+<dd><p>Envía un correo electrónico con un archivo adjunto.</p>
+</dd></dl>
+
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-forms">
-<h2>módulo casaDeCambiosIS2.notificaciones.forms<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-forms" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.forms">
+<span id="modulo-notificaciones-forms"></span><h2>módulo notificaciones.forms<a class="headerlink" href="#module-notificaciones.forms" title="Link to this heading"></a></h2>
+<p>Módulo de formularios para el manejo de las preferencias de notificación.</p>
+<p>Contiene el formulario que permite a los usuarios configurar sus opciones
+de alertas por correo electrónico y seleccionar las monedas para las cuales
+desean recibir notificaciones automáticas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.forms.</span></span><span class="sig-name descname"><span class="pre">PreferenciasNotificacionForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/forms.html#PreferenciasNotificacionForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario para la gestión de las <strong>preferencias de notificación</strong> del usuario.</p>
+<p>Permite definir si el usuario desea recibir alertas por correo electrónico
+sobre variaciones en las tasas de cambio y seleccionar las monedas de su interés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>monedas_seguidas</strong> – Campo de selección múltiple para elegir monedas
+que el usuario desea seguir (solo monedas con <cite>admite_en_linea=True</cite>
+y diferentes del guaraní paraguayo <cite>“PYG”</cite>).</p></li>
+<li><p><strong>Meta</strong> – Configuración de metadatos del formulario que asocia el modelo
+y define las etiquetas de los campos.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/notificaciones/forms.html#PreferenciasNotificacionForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase interna que define los metadatos del formulario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Modelo al cual está vinculado el formulario.</p></li>
+<li><p><strong>fields</strong> – Campos del modelo incluidos en el formulario.</p></li>
+<li><p><strong>labels</strong> – Etiquetas personalizadas para los campos.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['recibir_email_tasa_cambio',</span> <span class="pre">'monedas_seguidas']</span></em><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.Meta.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'recibir_email_tasa_cambio':</span> <span class="pre">'Recibir</span> <span class="pre">alertas</span> <span class="pre">de</span> <span class="pre">cambio</span> <span class="pre">de</span> <span class="pre">tasa</span> <span class="pre">por</span> <span class="pre">correo</span> <span class="pre">electrónico'}</span></em><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.Meta.labels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion" title="notificaciones.models.PreferenciasNotificacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenciasNotificacion</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'monedas_seguidas':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'recibir_email_tasa_cambio':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'monedas_seguidas':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="notificaciones.forms.PreferenciasNotificacionForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#notificaciones.forms.PreferenciasNotificacionForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-models">
-<h2>módulo casaDeCambiosIS2.notificaciones.models<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-models" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.models">
+<span id="modulo-notificaciones-models"></span><h2>módulo notificaciones.models<a class="headerlink" href="#module-notificaciones.models" title="Link to this heading"></a></h2>
+<p>Módulo de modelos para la aplicación de notificaciones.</p>
+<p>Define las entidades relacionadas con la configuración de preferencias de notificación
+de los usuarios y las notificaciones individuales que el sistema genera y envía.</p>
+<dl class="field-list simple">
+<dt class="field-odd">author<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Equipo de desarrollo Global Exchange</p>
+</dd>
+<dt class="field-even">since<span class="colon">:</span></dt>
+<dd class="field-even"><p>2025-10-16</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.models.</span></span><span class="sig-name descname"><span class="pre">Notificacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/models.html#Notificacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.models.Notificacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Modelo que representa una <strong>notificación individual</strong> generada por el sistema.</p>
+<p>Cada notificación está asociada a un usuario destinatario, contiene un mensaje,
+una marca de lectura y puede estar silenciada si el usuario no desea verla
+en el tablón principal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Identificador único de la notificación (UUID).</p></li>
+<li><p><strong>destinatario</strong> – Usuario que recibe la notificación.</p></li>
+<li><p><strong>mensaje</strong> – Texto con el contenido de la notificación.</p></li>
+<li><p><strong>leida</strong> – Indica si la notificación ya fue leída por el usuario.</p></li>
+<li><p><strong>silenciada</strong> – Indica si la notificación está silenciada (oculta en el tablón).</p></li>
+<li><p><strong>fecha_creacion</strong> – Fecha y hora en que se generó la notificación.</p></li>
+<li><p><strong>url_destino</strong> – Enlace opcional que permite al usuario navegar al origen
+de la notificación.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.TIPO_CHOICES">
+<span class="sig-name descname"><span class="pre">TIPO_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('tasa',</span> <span class="pre">'Cambio</span> <span class="pre">de</span> <span class="pre">Tasa'),</span> <span class="pre">('transaccion',</span> <span class="pre">'Actualización</span> <span class="pre">de</span> <span class="pre">Transacción'),</span> <span class="pre">('general',</span> <span class="pre">'General')]</span></em><a class="headerlink" href="#notificaciones.models.Notificacion.TIPO_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.destinatario">
+<span class="sig-name descname"><span class="pre">destinatario</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.destinatario" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.destinatario_id">
+<span class="sig-name descname"><span class="pre">destinatario_id</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.destinatario_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.fecha_creacion">
+<span class="sig-name descname"><span class="pre">fecha_creacion</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.fecha_creacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.get_next_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#notificaciones.models.Notificacion.get_next_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.get_previous_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#notificaciones.models.Notificacion.get_previous_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.get_tipo_display">
+<span class="sig-name descname"><span class="pre">get_tipo_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">tipo&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#notificaciones.models.Notificacion.get_tipo_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.leida">
+<span class="sig-name descname"><span class="pre">leida</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.leida" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.mensaje">
+<span class="sig-name descname"><span class="pre">mensaje</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.mensaje" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#notificaciones.models.Notificacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.silenciada">
+<span class="sig-name descname"><span class="pre">silenciada</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.silenciada" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.tipo">
+<span class="sig-name descname"><span class="pre">tipo</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.tipo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.Notificacion.url_destino">
+<span class="sig-name descname"><span class="pre">url_destino</span></span><a class="headerlink" href="#notificaciones.models.Notificacion.url_destino" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.models.</span></span><span class="sig-name descname"><span class="pre">PreferenciasNotificacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/models.html#PreferenciasNotificacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Modelo que almacena las <strong>preferencias de notificación</strong> asociadas a un usuario.</p>
+<p>Permite definir si el usuario desea recibir notificaciones por correo electrónico
+cuando cambian las tasas de cambio y qué monedas desea seguir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>usuario</strong> – Relación uno a uno con el usuario propietario de las preferencias.</p></li>
+<li><p><strong>recibir_email_tasa_cambio</strong> – Indica si el usuario desea recibir correos cuando
+se actualizan las tasas de cambio.</p></li>
+<li><p><strong>monedas_seguidas</strong> – Conjunto de monedas que el usuario desea seguir para
+recibir notificaciones.</p></li>
+<li><p><strong>id</strong> – Identificador primario (automático).</p></li>
+<li><p><strong>usuario</strong> – Usuario vinculado a las preferencias.</p></li>
+<li><p><strong>recibir_email_tasa_cambio</strong> – Preferencia sobre el canal de notificación.</p></li>
+<li><p><strong>monedas_seguidas</strong> – Lista de monedas seguidas por el usuario.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.monedas_seguidas">
+<span class="sig-name descname"><span class="pre">monedas_seguidas</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.monedas_seguidas" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.recibir_email_tasa_cambio">
+<span class="sig-name descname"><span class="pre">recibir_email_tasa_cambio</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.recibir_email_tasa_cambio" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.usuario">
+<span class="sig-name descname"><span class="pre">usuario</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.usuario" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.models.PreferenciasNotificacion.usuario_id">
+<span class="sig-name descname"><span class="pre">usuario_id</span></span><a class="headerlink" href="#notificaciones.models.PreferenciasNotificacion.usuario_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-signals">
-<h2>módulo casaDeCambiosIS2.notificaciones.signals<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-signals" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.signals">
+<span id="modulo-notificaciones-signals"></span><h2>módulo notificaciones.signals<a class="headerlink" href="#module-notificaciones.signals" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.signals.crear_notificacion_por_cambio_tasa">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.signals.</span></span><span class="sig-name descname"><span class="pre">crear_notificacion_por_cambio_tasa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venta_cambio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compra_cambio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/signals.html#crear_notificacion_por_cambio_tasa"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.signals.crear_notificacion_por_cambio_tasa" title="Link to this definition"></a></dt>
+<dd><p>Escucha la señal de cambio de cotización y crea notificaciones para los usuarios interesados.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.signals.crear_preferencias_para_nuevo_usuario">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.signals.</span></span><span class="sig-name descname"><span class="pre">crear_preferencias_para_nuevo_usuario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/signals.html#crear_preferencias_para_nuevo_usuario"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.signals.crear_preferencias_para_nuevo_usuario" title="Link to this definition"></a></dt>
+<dd><p>Crea un perfil de preferencias de notificación automáticamente para cada nuevo usuario.</p>
+</dd></dl>
+
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-tasks">
-<h2>módulo casaDeCambiosIS2.notificaciones.tasks<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-tasks" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.tasks">
+<span id="modulo-notificaciones-tasks"></span><h2>módulo notificaciones.tasks<a class="headerlink" href="#module-notificaciones.tasks" title="Link to this heading"></a></h2>
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-urls">
-<h2>módulo casaDeCambiosIS2.notificaciones.urls<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-urls" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.urls">
+<span id="modulo-notificaciones-urls"></span><h2>módulo notificaciones.urls<a class="headerlink" href="#module-notificaciones.urls" title="Link to this heading"></a></h2>
+<p>Módulo de enrutamiento de la aplicación de notificaciones.</p>
+<p>Define las rutas (URLs) que permiten acceder a las vistas relacionadas con la gestión
+de notificaciones y las preferencias del usuario en el sistema Global Exchange.</p>
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-utils">
-<h2>módulo casaDeCambiosIS2.notificaciones.utils<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-utils" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.utils">
+<span id="modulo-notificaciones-utils"></span><h2>módulo notificaciones.utils<a class="headerlink" href="#module-notificaciones.utils" title="Link to this heading"></a></h2>
+<p>Módulo utilitario para la gestión de notificaciones del sistema.</p>
+<p>Contiene funciones auxiliares para crear notificaciones y enviar correos electrónicos
+a los usuarios de la plataforma Global Exchange.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.utils.crear_notificacion">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.utils.</span></span><span class="sig-name descname"><span class="pre">crear_notificacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usuario</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titulo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mensaje</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enviar_correo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/utils.html#crear_notificacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.utils.crear_notificacion" title="Link to this definition"></a></dt>
+<dd><p>Crea una <strong>notificación</strong> para un usuario y, opcionalmente, envía un correo electrónico.</p>
+<p>Esta función permite registrar un evento informativo en el sistema de notificaciones
+y enviar un mensaje de correo si el usuario tiene configurado un correo electrónico válido.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>usuario</strong> (<em>django.contrib.auth.models.User</em>) – Usuario destinatario de la notificación.</p></li>
+<li><p><strong>titulo</strong> (<em>str</em>) – Título o encabezado breve de la notificación.</p></li>
+<li><p><strong>mensaje</strong> (<em>str</em>) – Contenido principal del mensaje.</p></li>
+<li><p><strong>tipo</strong> (<em>str</em>) – Tipo o categoría de la notificación (por defecto: <code class="docutils literal notranslate"><span class="pre">&quot;INFO&quot;</span></code>).</p></li>
+<li><p><strong>enviar_correo</strong> (<em>bool</em>) – Si es <code class="docutils literal notranslate"><span class="pre">True</span></code>, envía un correo al usuario además de crear la notificación.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instancia de la notificación creada.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#notificaciones.models.Notificacion" title="notificaciones.models.Notificacion">notificaciones.models.Notificacion</a></p>
+</dd>
+<dt class="field-even">Muestra<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>django.core.mail.BadHeaderError</strong> – Si ocurre un error en el encabezado del correo.</p></li>
+<li><p><strong>Exception</strong> – Si ocurre un error inesperado al crear la notificación.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="modulo-casadecambiosis2-notificaciones-views">
-<h2>módulo casaDeCambiosIS2.notificaciones.views<a class="headerlink" href="#modulo-casadecambiosis2-notificaciones-views" title="Link to this heading"></a></h2>
+<section id="module-notificaciones.views">
+<span id="modulo-notificaciones-views"></span><h2>módulo notificaciones.views<a class="headerlink" href="#module-notificaciones.views" title="Link to this heading"></a></h2>
+<p>Módulo de vistas para la aplicación de notificaciones.</p>
+<p>Contiene las vistas basadas en clases que permiten:
+- Mostrar las notificaciones de un usuario autenticado.
+- Editar sus preferencias de notificación.
+- Gestionar acciones de interacción como marcar notificaciones como leídas o silenciarlas mediante peticiones AJAX (JSON).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.views.MarcarLeidaNotificacionView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">MarcarLeidaNotificacionView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#MarcarLeidaNotificacionView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.MarcarLeidaNotificacionView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<p>Vista que permite <strong>marcar una notificación como leída</strong> mediante una solicitud AJAX (POST).</p>
+<p>Si la notificación aún no fue leída, se actualiza el campo <cite>leida</cite> a <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest recibido.</p></li>
+<li><p><strong>pk</strong> (<em>uuid.UUID</em>) – Clave primaria de la notificación a marcar como leída.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta JSON con el resultado de la operación.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.JsonResponse</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.views.MarcarLeidaNotificacionView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#MarcarLeidaNotificacionView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.MarcarLeidaNotificacionView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">NotificacionListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#NotificacionListView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.NotificacionListView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<p>Vista que lista las <strong>notificaciones activas</strong> (no silenciadas) del usuario autenticado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Modelo asociado a la vista.</p></li>
+<li><p><strong>template_name</strong> – Ruta del template HTML utilizado.</p></li>
+<li><p><strong>context_object_name</strong> – Nombre del contexto que contendrá la lista de notificaciones.</p></li>
+<li><p><strong>paginate_by</strong> – Cantidad de notificaciones mostradas por página.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView.context_object_name">
+<span class="sig-name descname"><span class="pre">context_object_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones'</span></em><a class="headerlink" href="#notificaciones.views.NotificacionListView.context_object_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#NotificacionListView.get_queryset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.NotificacionListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#notificaciones.views.NotificacionListView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#notificaciones.models.Notificacion" title="notificaciones.models.Notificacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">Notificacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView.paginate_by">
+<span class="sig-name descname"><span class="pre">paginate_by</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#notificaciones.views.NotificacionListView.paginate_by" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.NotificacionListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones/notificacion_list.html'</span></em><a class="headerlink" href="#notificaciones.views.NotificacionListView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">PreferenciasNotificacionUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#PreferenciasNotificacionUpdateView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateView</span></code></p>
+<p>Vista para <strong>editar las preferencias de notificación</strong> del usuario actual.</p>
+<p>Utiliza un formulario basado en <code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm</span></code> y actualiza
+el objeto <code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenciasNotificacion</span></code> vinculado al usuario autenticado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Modelo de preferencias de notificación.</p></li>
+<li><p><strong>form_class</strong> – Clase de formulario asociada.</p></li>
+<li><p><strong>template_name</strong> – Plantilla HTML utilizada.</p></li>
+<li><p><strong>success_url</strong> – URL a la cual se redirige tras la actualización exitosa.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.form_class">
+<span class="sig-name descname"><span class="pre">form_class</span></span><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.form_class" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm" title="notificaciones.forms.PreferenciasNotificacionForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.form_valid">
+<span class="sig-name descname"><span class="pre">form_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#PreferenciasNotificacionUpdateView.form_valid"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.form_valid" title="Link to this definition"></a></dt>
+<dd><p>If the form is valid, save the associated model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.get_object">
+<span class="sig-name descname"><span class="pre">get_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#PreferenciasNotificacionUpdateView.get_object"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.get_object" title="Link to this definition"></a></dt>
+<dd><p>Return the object the view is displaying.</p>
+<p>Require <cite>self.queryset</cite> and a <cite>pk</cite> or <cite>slug</cite> argument in the URLconf.
+Subclasses can override this to return any object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion" title="notificaciones.models.PreferenciasNotificacion"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreferenciasNotificacion</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.success_url">
+<span class="sig-name descname"><span class="pre">success_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/notificaciones/preferencias/'</span></em><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.success_url" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="notificaciones.views.PreferenciasNotificacionUpdateView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones/preferencias_form.html'</span></em><a class="headerlink" href="#notificaciones.views.PreferenciasNotificacionUpdateView.template_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="notificaciones.views.SilenciarNotificacionView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">SilenciarNotificacionView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#SilenciarNotificacionView"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.SilenciarNotificacionView" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code></p>
+<p>Vista que permite <strong>silenciar una notificación</strong> mediante una solicitud AJAX (POST).</p>
+<p>Cambia el estado de <cite>silenciada</cite> a <code class="docutils literal notranslate"><span class="pre">True</span></code> para ocultarla del tablón principal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest recibido.</p></li>
+<li><p><strong>pk</strong> (<em>uuid.UUID</em>) – Clave primaria de la notificación a silenciar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta JSON con el resultado de la operación.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.JsonResponse</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="notificaciones.views.SilenciarNotificacionView.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#SilenciarNotificacionView.post"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.SilenciarNotificacionView.post" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.views.marcar_leidas">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">marcar_leidas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#marcar_leidas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.marcar_leidas" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.views.marcar_notificaciones_leidas">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">marcar_notificaciones_leidas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#marcar_notificaciones_leidas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.marcar_notificaciones_leidas" title="Link to this definition"></a></dt>
+<dd><p>Marca todas las notificaciones no leídas del usuario autenticado como leídas.
+Devuelve un JSON indicando éxito.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="notificaciones.views.ver_nuevas">
+<span class="sig-prename descclassname"><span class="pre">notificaciones.views.</span></span><span class="sig-name descname"><span class="pre">ver_nuevas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/views.html#ver_nuevas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.views.ver_nuevas" title="Link to this definition"></a></dt>
+<dd><p>Devuelve la última notificación de tipo “tasa” no leída para el usuario.
+Una vez que se devuelve, la marca como leída para no volver a mostrarla.</p>
+</dd></dl>
+
 </section>
-<section id="module-casaDeCambiosIS2.notificaciones">
-<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-casaDeCambiosIS2.notificaciones" title="Link to this heading"></a></h2>
+<section id="module-notificaciones">
+<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-notificaciones" title="Link to this heading"></a></h2>
 </section>
 </section>
 
@@ -167,7 +741,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="ted.html" class="btn btn-neutral float-left" title="paquete ted" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="facturacion_electronica.html" class="btn btn-neutral float-left" title="facturacion_electronica" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
         <a href="simuladores.html" class="btn btn-neutral float-right" title="paquete simuladores" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

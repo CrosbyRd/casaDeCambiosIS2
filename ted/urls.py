@@ -1,20 +1,16 @@
 # ted/urls.py
 """
-Enrutamiento del módulo TED
-===========================
+Enrutamiento del módulo TED.
 
-.. module:: ted.urls
-   :synopsis: URLs del kiosco y del inventario TED.
+Este módulo define las URLs públicas del kiosco y las URLs de administración
+para gestionar el inventario del Tauser (TED) por denominación y ubicación.
 
-Este archivo define las rutas públicas del kiosco y las rutas de administración
-para gestionar el inventario por denominación y ubicación.
-
-El app se publica bajo el *namespace* ``ted`` cuando es incluido desde
-``admin_panel/urls.py`` con:
+El app se publica bajo el *namespace* ``ted`` cuando se incluye desde
+``admin_panel/urls.py`` como:
 
     path("ted/", include(("ted.urls", "ted"), namespace="ted"))
 
-De esta forma, los nombres completos quedan como:
+Nombres completos de las rutas (ejemplo):
 - admin_panel:ted:inventario
 - admin_panel:ted:crear_stock
 - admin_panel:ted:inventario_ajustar
@@ -22,6 +18,22 @@ De esta forma, los nombres completos quedan como:
 - admin_panel:ted:inventario_movimientos
 - admin_panel:ted:ubicaciones_disponibles
 - admin_panel:ted:monedas_disponibles
+
+Rutas definidas:
+- Kiosco (lado usuario):
+    - "" → panel principal del kiosco
+    - "operar/" → realizar operaciones de compra/venta
+    - "ticket/" → mostrar ticket de operación
+- Inventario (admin):
+    - "inventario/" → vista principal del inventario
+    - "inventario/crear/" → crear stock de billetes
+    - "inventario/eliminar-moneda/<int:moneda_id>/" → eliminar moneda completa
+    - "inventario/ajustar/<int:den_id>/" → ajustar cantidad de denominación
+    - "inventario/eliminar-den/<int:den_id>/" → eliminar denominación específica
+    - "inventario/movimientos/" → listar movimientos del inventario
+- Endpoints JSON (kiosco):
+    - "ubicaciones_disponibles/" → devolver ubicaciones activas
+    - "monedas_disponibles/" → devolver monedas disponibles
 """
 
 from django.urls import path

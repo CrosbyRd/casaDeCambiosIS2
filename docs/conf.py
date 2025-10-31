@@ -8,11 +8,8 @@ import django
 
 # Añadir el directorio raíz del proyecto (donde se encuentra manage.py) al sys.path
 # Esto asume que conf.py está en casaDeCambiosIS2/docs/
-# La ruta correcta para que Django encuentre las apps es el directorio que contiene el paquete principal (casaDeCambiosIS2)
-# La ruta correcta para que Django encuentre las apps es el directorio que contiene el paquete principal (casaDeCambiosIS2)
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'casaDeCambiosIS2'))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CasaDeCambioIS2.settings')
 django.setup()
@@ -50,6 +47,11 @@ autodoc_default_options = {
     'undoc-members': True,
     'show-inheritance': True,
 }
+
+# Suprimir advertencias específicas
+suppress_warnings = ['autodoc.indentation']
+# No tratar las advertencias como errores
+autodoc_warningiserror = False
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pagos.forms &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">pagos.forms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para pagos.forms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de formularios del app pagos .</span>
+
+<span class="sd">Este módulo define los formularios administrativos y de cliente para la gestión</span>
+<span class="sd">de medios de pago. Permite crear y validar tipos de medios, sus campos asociados</span>
+<span class="sd">y las instancias configuradas por cada cliente.</span>
+
+<span class="sd">Contiene:</span>
+<span class="sd">---------</span>
+
+<span class="sd">- ``TipoMedioPagoForm``: formulario para el modelo :class:`TipoMedioPago`.</span>
+<span class="sd">- ``CampoMedioPagoForm``: formulario para los campos dinámicos asociados al tipo.</span>
+<span class="sd">- ``CampoMedioPagoFormSet``: formset inline para editar los campos de un tipo.</span>
+<span class="sd">- ``MedioPagoClienteForm``: formulario dinámico para crear/editar medios de pago de clientes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django</span><span class="w"> </span><span class="kn">import</span> <span class="n">forms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">widgets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">inlineformset_factory</span><span class="p">,</span> <span class="n">BaseInlineFormSet</span>  <span class="c1"># 👈 AÑADIDO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioPago</span><span class="p">,</span> <span class="n">CampoMedioPago</span><span class="p">,</span> <span class="n">MedioPagoCliente</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+
+<span class="c1"># Presets de regex (value=regex, label=texto que ve el admin)</span>
+<span class="n">REGEX_PREDEF_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;(sin regex)&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Solo números&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[^@\s]+@[^@\s]+\.[^@\s]+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Email básico&quot;</span><span class="p">),</span>      <span class="c1"># ← igual al modelo</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^09\d</span><span class="si">{8}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="s2">&quot;Teléfono PY (09xxxxxxxx)&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="s2">&quot;RUC&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Solo letras&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<span class="c1"># ------------------------------</span>
+<span class="c1"># Admin: Tipo + Campos (inline)</span>
+<span class="c1"># ------------------------------</span>
+<div class="viewcode-block" id="TipoMedioPagoForm">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.TipoMedioPagoForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioPagoForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa un **tipo de medio de pago** disponible en el sistema</span>
+<span class="sd">    (por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).</span>
+
+<span class="sd">    Incluye la configuración de la comisión que aplica cada medio, el motor</span>
+<span class="sd">    de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.</span>
+
+<span class="sd">    :param uuid id_tipo: Identificador único del tipo de medio de pago.</span>
+<span class="sd">    :param str nombre: Nombre único que identifica el medio de pago.</span>
+<span class="sd">    :param Decimal comision_porcentaje: Porcentaje de comisión aplicado (0–100).</span>
+<span class="sd">    :param str descripcion: Descripción adicional o instrucciones.</span>
+<span class="sd">    :param bool activo: Indica si el medio está disponible para uso.</span>
+<span class="sd">    :param datetime creado_en: Fecha de creación del registro.</span>
+<span class="sd">    :param datetime actualizado_en: Fecha de última actualización.</span>
+<span class="sd">    :param str engine: Motor o integración usada para procesar pagos.</span>
+<span class="sd">    :param dict engine_config: Configuración JSON específica del motor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TipoMedioPagoForm.Meta">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.TipoMedioPagoForm.Meta">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">TipoMedioPago</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nombre&quot;</span><span class="p">,</span> <span class="s2">&quot;comision_porcentaje&quot;</span><span class="p">,</span> <span class="s2">&quot;descripcion&quot;</span><span class="p">,</span> <span class="s2">&quot;activo&quot;</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="s2">&quot;engine_config&quot;</span><span class="p">]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-input w-full&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;comision_porcentaje&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">NumberInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;flex-1 px-3 py-2 border-0 focus:outline-none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="s2">&quot;0.01&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;inputmode&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
+            <span class="p">}),</span>
+            <span class="s2">&quot;descripcion&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">Textarea</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-textarea w-full&quot;</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+            <span class="s2">&quot;activo&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">CheckboxInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-checkbox&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;engine&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-select w-full&quot;</span><span class="p">}),</span>
+        <span class="p">}</span></div>
+</div>
+
+
+<div class="viewcode-block" id="CampoMedioPagoForm">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.CampoMedioPagoForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CampoMedioPagoForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define un **campo dinámico** asociado a un tipo de medio de pago.</span>
+
+<span class="sd">    Cada tipo puede tener múltiples campos requeridos (por ejemplo,</span>
+<span class="sd">    número de cuenta, RUC, alias, email) con validaciones opcionales</span>
+<span class="sd">    mediante expresiones regulares predefinidas.</span>
+
+<span class="sd">    :param uuid id_campo: Identificador único del campo.</span>
+<span class="sd">    :param TipoMedioPago tipo: Relación con el tipo de medio de pago.</span>
+<span class="sd">    :param str nombre_campo: Nombre del campo visible o técnico.</span>
+<span class="sd">    :param str tipo_dato: Tipo de dato (texto, número, teléfono, email, RUC).</span>
+<span class="sd">    :param bool obligatorio: Indica si el campo es obligatorio.</span>
+<span class="sd">    :param str regex_opcional: Patrón regex opcional de validación.</span>
+<span class="sd">    :param bool activo: Define si el campo está activo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+<div class="viewcode-block" id="CampoMedioPagoForm.Meta">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.CampoMedioPagoForm.Meta">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">CampoMedioPago</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;nombre_campo&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tipo_dato&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;obligatorio&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;regex_opcional&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;activo&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nombre_campo&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-input w-full&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;tipo_dato&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-select w-full&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;obligatorio&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">CheckboxInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-checkbox&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;regex_opcional&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-select w-full&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;activo&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">CheckboxInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-checkbox&quot;</span><span class="p">}),</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># 👉 aseguramos que el select muestre nuestros presets y guarde el patrón</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;regex_opcional&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="n">REGEX_PREDEF_CHOICES</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_BaseCampoMedioPagoFormSet</span><span class="p">(</span><span class="n">BaseInlineFormSet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formset base para el modelo :class:`CampoMedioPago`.</span>
+
+<span class="sd">    Características:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    - ``extra=0``: evita formularios vacíos automáticos.</span>
+<span class="sd">    - ``can_delete=True``: permite marcar para eliminación.</span>
+<span class="sd">    - ``clean()``: valida que no existan duplicados en el campo ``nombre_campo``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">form</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">forms</span><span class="p">:</span>
+            <span class="c1"># Saltar forms vacíos o marcados para borrar</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="s2">&quot;cleaned_data&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DELETE&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nombre_campo&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="c1"># si el form no tiene nombre, dejemos que falle por “obligatorio”</span>
+                <span class="c1"># (o simplemente ignoramos para no duplicar mensajes)</span>
+                <span class="k">continue</span>
+
+            <span class="n">key</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">cleaned_data</span><span class="p">[</span><span class="s2">&quot;nombre_campo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">form</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="s2">&quot;nombre_campo&quot;</span><span class="p">,</span> <span class="s2">&quot;Ya existe otro campo con ese nombre.&quot;</span><span class="p">)</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;__all__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Hay campos duplicados en el formulario.&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="c1"># muestra un error general de formset (aparece arriba de la tabla)</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">django.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+
+<span class="c1"># 👇 ESTE es el formset que debe usarse en la vista</span>
+<span class="n">CampoMedioPagoFormSet</span> <span class="o">=</span> <span class="n">inlineformset_factory</span><span class="p">(</span>
+    <span class="n">parent_model</span><span class="o">=</span><span class="n">TipoMedioPago</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">CampoMedioPago</span><span class="p">,</span>
+    <span class="n">form</span><span class="o">=</span><span class="n">CampoMedioPagoForm</span><span class="p">,</span>
+    <span class="n">formset</span><span class="o">=</span><span class="n">_BaseCampoMedioPagoFormSet</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># 👈 importantísimo</span>
+    <span class="n">can_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>     <span class="c1"># 👈 para {{ f.DELETE }}</span>
+    <span class="n">fk_name</span><span class="o">=</span><span class="s2">&quot;tipo&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># ---------------------------------</span>
+<span class="c1"># Cliente: Form dinámico por &quot;tipo&quot;</span>
+<span class="c1"># ---------------------------------</span>
+<div class="viewcode-block" id="MedioPagoClienteForm">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoClienteForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioPagoClienteForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">ModelForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario dinámico para la creación o edición de :class:`MedioPagoCliente`.</span>
+
+<span class="sd">    Este formulario genera automáticamente los campos dinámicos definidos en el</span>
+<span class="sd">    modelo :class:`CampoMedioPago` según el tipo de medio seleccionado.</span>
+
+<span class="sd">    Parámetros</span>
+<span class="sd">    ----------</span>
+<span class="sd">    user : :class:`django.contrib.auth.models.User`, opcional</span>
+<span class="sd">        Usuario autenticado, utilizado para personalizar la experiencia (no requerido).</span>
+
+<span class="sd">    Atributos</span>
+<span class="sd">    ---------</span>
+<span class="sd">    campos_config : list</span>
+<span class="sd">        Lista de los campos dinámicos generados en el formulario actual.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Sobrescribimos &#39;tipo&#39; para tener control total del widget y la UX</span>
+    <span class="n">tipo</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">ModelChoiceField</span><span class="p">(</span>
+        <span class="n">queryset</span><span class="o">=</span><span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;stripe&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;nombre&quot;</span><span class="p">),</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">Select</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-select w-full&quot;</span><span class="p">}),</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Selecciona el tipo de medio de pago&quot;</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">empty_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="c1"># Elimina la opción &quot;---------&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="MedioPagoClienteForm.Meta">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoClienteForm.Meta">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">MedioPagoCliente</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tipo&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">,</span> <span class="s2">&quot;activo&quot;</span><span class="p">,</span> <span class="s2">&quot;predeterminado&quot;</span><span class="p">]</span>
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;alias&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-input w-full&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;activo&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">CheckboxInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-checkbox&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;predeterminado&quot;</span><span class="p">:</span> <span class="n">forms</span><span class="o">.</span><span class="n">CheckboxInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-checkbox&quot;</span><span class="p">}),</span>
+        <span class="p">}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># 1) Determinar el &#39;tipo&#39; seleccionado</span>
+        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># a) Si estoy editando y ya hay FK</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;tipo_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">tipo_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tipo</span>
+
+        <span class="c1"># b) Si viene por POST (form enviado) o por initial / querystring</span>
+        <span class="k">if</span> <span class="n">tipo_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tipo_pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_pk obtenido: </span><span class="si">{</span><span class="n">tipo_pk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+            <span class="k">if</span> <span class="n">tipo_pk</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tipo_obj</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">tipo_pk</span><span class="p">,</span> <span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_obj encontrado: </span><span class="si">{</span><span class="n">tipo_obj</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+                <span class="k">except</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                    <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo.&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+
+        <span class="c1"># c) Fallback UX: si no hay selección y hay al menos un tipo activo, usamos el primero</span>
+        <span class="k">if</span> <span class="n">tipo_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">first_tipo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tipo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">queryset</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">first_tipo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tipo_obj</span> <span class="o">=</span> <span class="n">first_tipo</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="p">[</span><span class="s2">&quot;tipo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">first_tipo</span><span class="o">.</span><span class="n">pk</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: Usando primer tipo activo como fallback: </span><span class="si">{</span><span class="n">first_tipo</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+
+        <span class="c1"># 2) Construir campos dinámicos si tenemos tipo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_campos_config</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">tipo_obj</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;tipo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="n">tipo_obj</span><span class="o">.</span><span class="n">pk</span>
+            <span class="n">campos_qs</span> <span class="o">=</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">tipo</span><span class="o">=</span><span class="n">tipo_obj</span><span class="p">,</span> <span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;nombre_campo&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: Campos dinámicos para </span><span class="si">{</span><span class="n">tipo_obj</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">campos_qs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+            <span class="k">for</span> <span class="n">campo</span> <span class="ow">in</span> <span class="n">campos_qs</span><span class="p">:</span>
+                <span class="n">nombre</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span>
+                <span class="n">requerido</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">obligatorio</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">nombre</span><span class="p">,</span>
+                    <span class="n">required</span><span class="o">=</span><span class="n">requerido</span><span class="p">,</span>
+                    <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">TextInput</span><span class="p">(</span><span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;form-input w-full&quot;</span><span class="p">}),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span><span class="o">.</span><span class="n">initial</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">datos</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_campos_config</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">campo</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: No hay tipo_obj, no se construyen campos dinámicos.&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">campos_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_campos_config&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+<div class="viewcode-block" id="MedioPagoClienteForm.clean">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoClienteForm.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza validaciones personalizadas sobre los campos dinámicos.</span>
+
+<span class="sd">        - Verifica tipos de datos según el modelo.</span>
+<span class="sd">        - Aplica regex predefinidas.</span>
+<span class="sd">        - Construye el diccionario final ``datos`` del medio de pago.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="n">datos</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">errores</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">check_regex</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="n">valor</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">patron</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">campo</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_campos_config&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">nombre</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span>
+            <span class="n">valor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nombre</span><span class="p">)</span>
+
+            <span class="c1"># Validación por tipo de dato liviana (se alinea con models.clean())</span>
+            <span class="k">if</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">NUMERO</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^-?\d+(?:[\.,]\d+)?$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Debe ser numérico&quot;</span>
+                <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TELEFONO</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+?\d{6,15}$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Teléfono inválido&quot;</span>
+                <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">EMAIL</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[^@\s]+@[^@\s]+\.[^@\s]+$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Email inválido&quot;</span>
+                <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">RUC</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;RUC inválido (########-#)&quot;</span>
+
+            <span class="c1"># Regex solo predefinida</span>
+            <span class="n">patron</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">regex_opcional</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">patron</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_regex</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="n">valor</span><span class="p">):</span>
+                <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Formato inválido&quot;</span>
+
+            <span class="n">datos</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">valor</span>
+
+        <span class="k">if</span> <span class="n">errores</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">errores</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">datos</span> <span class="o">=</span> <span class="n">datos</span>
+        <span class="k">return</span> <span class="n">cleaned</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

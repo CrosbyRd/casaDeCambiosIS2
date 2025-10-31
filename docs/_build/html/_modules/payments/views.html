@@ -43,8 +43,6 @@
               <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notificaciones.html">paquete notificaciones</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../simuladores.html">paquete simuladores</a></li>
 </ul>
 
         </div>
@@ -74,6 +72,7 @@
   <h1>Código fuente para payments.views</h1><div class="highlight"><pre>
 <span></span><span class="c1"># payments/views.py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">stripe</span> <span class="c1"># Importar la librería stripe</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonResponse</span><span class="p">,</span> <span class="n">HttpResponseBadRequest</span>
@@ -147,6 +146,58 @@
         <span class="s1">&#39;transaccion&#39;</span><span class="p">:</span> <span class="n">transaccion</span><span class="p">,</span> <span class="c1"># Pasamos el objeto completo al template</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;payments/stripe_payment_page.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="stripe_webhook_view">
+<a class="viewcode-back" href="../../payments.html#payments.views.stripe_webhook_view">[documentos]</a>
+<span class="nd">@csrf_exempt</span> <span class="c1"># ¡CRÍTICO! Los webhooks vienen sin token CSRF.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stripe_webhook_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vista que escucha las notificaciones asíncronas de Stripe (webhooks).</span>
+<span class="sd">    </span>
+<span class="sd">    Esta vista es llamada directamente por el SERVIDOR de Stripe, no por el</span>
+<span class="sd">    navegador del cliente.</span>
+<span class="sd">    </span>
+<span class="sd">    La seguridad de esta vista depende 100% de la variable de entorno</span>
+<span class="sd">    &#39;STRIPE_WEBHOOK_SECRET&#39;. Asegúrate de que esté configurada correctamente</span>
+<span class="sd">    tanto en local (con Stripe CLI) como en producción (con Heroku).</span>
+<span class="sd">    </span>
+<span class="sd">    Ver las instrucciones en settings.py para más detalles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span>
+    <span class="n">sig_header</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">META</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HTTP_STRIPE_SIGNATURE&#39;</span><span class="p">)</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># La variable &#39;webhook_secret&#39; se carga desde el entorno correcto</span>
+    <span class="c1"># (settings.py lee .env en local o Config Vars en Heroku)</span>
+    <span class="n">webhook_secret</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">STRIPE_WEBHOOK_SECRET</span> 
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">stripe</span><span class="o">.</span><span class="n">Webhook</span><span class="o">.</span><span class="n">construct_event</span><span class="p">(</span>
+            <span class="n">payload</span><span class="p">,</span> <span class="n">sig_header</span><span class="p">,</span> <span class="n">webhook_secret</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Payload inválido</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [STRIPE WEBHOOK] Invalid payload: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Mantener el print de error</span>
+        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s1">&#39;Invalid payload&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">stripe</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">SignatureVerificationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Firma inválida (¡Clave whsec_... incorrecta!)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [STRIPE WEBHOOK] ERROR DE FIRMA. Revisa tu STRIPE_WEBHOOK_SECRET. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Mantener el print de error</span>
+        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s1">&#39;Invalid signature&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [STRIPE WEBHOOK] Error al construir evento de Stripe: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Mantener el print de error</span>
+        <span class="k">return</span> <span class="n">HttpResponseBadRequest</span><span class="p">(</span><span class="s1">&#39;Error processing webhook&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+    <span class="c1"># Delegar el procesamiento del evento al servicio de pagos</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pagos.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">handle_payment_webhook</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">handle_payment_webhook</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="c1"># Convertir el objeto Event a dict</span>
+    
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [STRIPE WEBHOOK] Error al procesar webhook en pagos.services: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Mantener el print de error</span>
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;success&#39;</span><span class="p">})</span></div>
 
 </pre></div>
 

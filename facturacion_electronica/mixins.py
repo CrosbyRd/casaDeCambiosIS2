@@ -1,3 +1,12 @@
+"""
+Mixins y Decoradores de la app Facturación Electrónica.
+
+.. module:: facturacion_electronica.mixins
+   :synopsis: Mixins y decoradores para control de acceso en el módulo de Facturación Electrónica.
+
+Este módulo proporciona mixins y decoradores para asegurar que solo los usuarios
+con privilegios de administrador puedan acceder a ciertas vistas y funcionalidades.
+"""
 from functools import wraps
 
 from django.conf import settings
@@ -13,10 +22,18 @@ ADMIN_ROLE_NAME = getattr(settings, "FACTURACION_ELECTRONICA_ADMIN_ROLE_NAME", "
 
 def _user_is_admin(user) -> bool:
     """
-    Regla flexible para considerar a un usuario como 'admin':
-    - is_superuser o is_staff
-    - o pertenece a roles ManyToMany con name=ADMIN_ROLE_NAME
-    - o pertenece a grupos de Django con name=ADMIN_ROLE_NAME
+    Verifica si un usuario tiene privilegios de administrador.
+
+    Un usuario se considera administrador si:
+    - Está autenticado.
+    - Es superusuario o miembro del staff.
+    - O pertenece a un rol (si el modelo de usuario tiene una relación 'roles')
+      o a un grupo de Django con el nombre definido en `ADMIN_ROLE_NAME`.
+
+    :param user: El objeto de usuario a verificar.
+    :type user: django.contrib.auth.models.User o CustomUser
+    :return: True si el usuario es administrador, False en caso contrario.
+    :rtype: bool
     """
     if not getattr(user, "is_authenticated", False):
         return False
@@ -45,7 +62,13 @@ def _user_is_admin(user) -> bool:
 
 
 def _redirect_home():
-    """Redirige a 'home' si existe, si no a raíz '/'."""
+    """
+    Redirige al usuario a la página de inicio ('home') o a la raíz del sitio ('/')
+    si la URL 'home' no está definida.
+
+    :return: Un objeto HttpResponseRedirect para la redirección.
+    :rtype: django.http.HttpResponseRedirect
+    """
     try:
         return redirect(reverse("home"))
     except NoReverseMatch:
@@ -54,9 +77,13 @@ def _redirect_home():
 
 class AdminRequiredMixin(AccessMixin):
     """
-    Mixin que asegura que el usuario autenticado tenga privilegios de administrador.
-    - Si no está autenticado: usa la mecánica de AccessMixin (LOGIN_URL).
-    - Si está autenticado pero sin permisos: mensaje y redirección a 'home' (o '/').
+    Mixin para vistas basadas en clases que requiere que el usuario autenticado
+    tenga privilegios de administrador.
+
+    - Si el usuario no está autenticado, se le redirige a la página de login
+      (según la configuración de `LOGIN_URL` de Django).
+    - Si el usuario está autenticado pero no tiene permisos de administrador,
+      se muestra un mensaje de error y se le redirige a la página de inicio.
     """
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -71,8 +98,17 @@ class AdminRequiredMixin(AccessMixin):
 
 def admin_required(func):
     """
-    Decorador para vistas de función que requieren privilegios de administrador.
-    Acepta las mismas reglas que AdminRequiredMixin.
+    Decorador para vistas basadas en funciones que requieren privilegios de administrador.
+
+    Aplica las mismas reglas de verificación de permisos que :class:`AdminRequiredMixin`.
+    - Si el usuario no está autenticado, se le redirige a la página de login.
+    - Si el usuario está autenticado pero no tiene permisos de administrador,
+      se muestra un mensaje de error y se le redirige a la página de inicio.
+
+    :param func: La función de vista a decorar.
+    :type func: callable
+    :return: La función de vista decorada.
+    :rtype: callable
     """
     @wraps(func)
     def wrapper(request, *args, **kwargs):

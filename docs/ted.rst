@@ -54,7 +54,6 @@ módulo ted.views
    :show-inheritance:
 
 Contenido del módulo
----------------
 
 .. automodule:: ted
    :members:

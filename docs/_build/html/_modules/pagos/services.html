@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pagos.services &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">pagos.services</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para pagos.services</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pagos/services.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpRequest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>  <span class="c1"># Importar timezone (si lo usas en otra parte)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>      <span class="c1"># Importar timedelta (si lo usas en otra parte)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse</span>     <span class="c1"># Importar reverse para construir URLs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlencode</span>  <span class="c1"># Importar urlencode para construir parámetros de URL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioPago</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">payments.stripe_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_payment_intent</span>  <span class="c1"># Servicio de Stripe</span>
+
+<span class="c1"># &gt;&gt;&gt; Integración con facturación electrónica (imports mínimos y seguros)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">facturacion_electronica.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">generar_factura_electronica_task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">facturacion_electronica.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="n">DocumentoElectronico</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>  <span class="c1"># Necesario si simulas o generas ids en otros flujos</span>
+
+
+<div class="viewcode-block" id="iniciar_cobro_a_cliente">
+<a class="viewcode-back" href="../../pagos.html#pagos.services.iniciar_cobro_a_cliente">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">iniciar_cobro_a_cliente</span><span class="p">(</span><span class="n">transaccion</span><span class="p">:</span> <span class="n">Transaccion</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="n">medio_pago_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Orquestador de pagos para iniciar un cobro a un cliente.</span>
+
+<span class="sd">    1) Determina el gateway a usar según el medio de pago.</span>
+<span class="sd">    2) Carga dinámicamente el módulo del gateway.</span>
+<span class="sd">    3) Delega la ejecución al gateway correspondiente.</span>
+
+<span class="sd">    Devuelve URL de redirección o None si falla.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. Determinar el gateway a utilizar</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">medio_pago</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">id_tipo</span><span class="o">=</span><span class="n">medio_pago_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] No se encontró el medio de pago con ID: </span><span class="si">{</span><span class="n">medio_pago_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">activo</span> <span class="ow">or</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">engine</span> <span class="o">==</span> <span class="s1">&#39;manual&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] El medio de pago &#39;</span><span class="si">{</span><span class="n">medio_pago</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&#39; no está activo o no es procesable automáticamente.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">engine_name</span> <span class="o">=</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">engine</span>
+
+    <span class="c1"># Lógica específica para Stripe</span>
+    <span class="k">if</span> <span class="n">engine_name</span> <span class="o">==</span> <span class="s1">&#39;stripe&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Monto en centavos y moneda; aquí asumimos monto_origen y moneda_origen</span>
+            <span class="n">amount_in_cents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="n">currency</span> <span class="o">=</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># &#39;usd&#39;, etc.</span>
+
+            <span class="n">payment_intent_data</span> <span class="o">=</span> <span class="n">create_payment_intent</span><span class="p">(</span>
+                <span class="n">amount_in_cents</span><span class="o">=</span><span class="n">amount_in_cents</span><span class="p">,</span>
+                <span class="n">currency</span><span class="o">=</span><span class="n">currency</span><span class="p">,</span>
+                <span class="n">customer_email</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                <span class="n">transaction_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>  <span class="c1"># clave para recuperar la transacción en el webhook</span>
+            <span class="p">)</span>
+
+            <span class="n">client_secret</span> <span class="o">=</span> <span class="n">payment_intent_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;clientSecret&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">client_secret</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No se pudo obtener el client_secret de Stripe: </span><span class="si">{</span><span class="n">payment_intent_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Error desconocido&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">base_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;payments:stripe_payment_page&#39;</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">urlencode</span><span class="p">({</span>
+                <span class="s1">&#39;client_secret&#39;</span><span class="p">:</span> <span class="n">client_secret</span><span class="p">,</span>
+                <span class="s1">&#39;transaction_id&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="p">})</span>
+            <span class="n">redirect_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s1">?</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [PAGOS] Redirigiendo a Stripe para transacción </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">redirect_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect_url</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] Error al iniciar pago con Stripe para transacción </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Lógica para otros gateways (existente)</span>
+    <span class="n">gateway_module_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pagos.gateways.</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">_gateway&quot;</span>
+
+    <span class="c1"># 2. Cargar dinámicamente el módulo del gateway</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">gateway_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">gateway_module_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [PAGOS] Cargando gateway: </span><span class="si">{</span><span class="n">gateway_module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] No se pudo encontrar el módulo de gateway: </span><span class="si">{</span><span class="n">gateway_module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># 3. Delegar la ejecución al gateway</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">gateway_class_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">engine_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">Gateway&quot;</span>
+        <span class="n">gateway_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">gateway_module</span><span class="p">,</span> <span class="n">gateway_class_name</span><span class="p">)</span>
+
+        <span class="n">gateway_instance</span> <span class="o">=</span> <span class="n">gateway_class</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">gateway_instance</span><span class="o">.</span><span class="n">initiate_payment</span><span class="p">(</span><span class="n">transaccion</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] La clase &#39;</span><span class="si">{</span><span class="n">gateway_class_name</span><span class="si">}</span><span class="s2">&#39; o el método &#39;initiate_payment&#39; no está definido en </span><span class="si">{</span><span class="n">gateway_module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS] Error al iniciar pago con gateway </span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ejecutar_acreditacion_a_cliente">
+<a class="viewcode-back" href="../../pagos.html#pagos.services.ejecutar_acreditacion_a_cliente">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ejecutar_acreditacion_a_cliente</span><span class="p">(</span><span class="n">transaccion</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simula la transferencia de dinero (PYG) a la cuenta del cliente.</span>
+<span class="sd">    (Flujo de VENTA de divisas del cliente; no se modifica)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [SIMULACIÓN DE PAGO] Iniciando acreditación para la transacción </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: -&gt; Cliente: </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">cliente</span><span class="o">.</span><span class="n">get_full_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">medio_acreditacion_cliente</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: -&gt; Medio de Acreditación: </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">medio_acreditacion_cliente</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARN: -&gt; No se especificó un medio de acreditación.&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: -&gt; Monto a acreditar: </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_destino</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">50</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="handle_payment_webhook">
+<a class="viewcode-back" href="../../pagos.html#pagos.services.handle_payment_webhook">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_payment_webhook</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Orquestador de webhooks de pago.</span>
+
+<span class="sd">    Determina la pasarela, procesa el evento y actualiza la Transaccion.</span>
+<span class="sd">    Si el pago es exitoso, dispara la emisión de la factura electrónica (idempotente).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">event_type</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+    <span class="n">data_object</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="c1"># 1) localizar transaccion_id (Stripe metadata o pasarelas locales)</span>
+    <span class="n">transaccion_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">data_object</span> <span class="ow">and</span> <span class="n">data_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">):</span>
+        <span class="n">transaccion_id</span> <span class="o">=</span> <span class="n">data_object</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transaccion_id&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">data_object</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transaction_id&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">transaccion_id</span><span class="p">:</span>
+        <span class="n">transaccion_id</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;referencia_comercio&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">transaccion_id</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Webhook sin ID de transacción válido.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Webhook sin transaccion_id.&#39;</span><span class="p">}</span>
+
+    <span class="c1"># 2) obtener transacción y medio</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">transaccion</span> <span class="o">=</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">transaccion_id</span><span class="p">)</span>
+        <span class="n">medio_pago</span> <span class="o">=</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">medio_pago_utilizado</span>
+    <span class="k">except</span> <span class="n">Transaccion</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Transacción </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2"> no encontrada.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Transacción no encontrada.&#39;</span><span class="p">}</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Transacción </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2"> sin medio de pago asociado.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Medio de pago no asociado.&#39;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">medio_pago</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">activo</span> <span class="ow">or</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">engine</span> <span class="o">==</span> <span class="s1">&#39;manual&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Medio de pago inválido: </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">medio_pago</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Medio de pago no válido.&#39;</span><span class="p">}</span>
+
+    <span class="n">engine_name</span> <span class="o">=</span> <span class="n">medio_pago</span><span class="o">.</span><span class="n">engine</span>
+
+    <span class="c1"># 3) STRIPE: procesa localmente el intent</span>
+    <span class="k">if</span> <span class="n">engine_name</span> <span class="o">==</span> <span class="s1">&#39;stripe&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s1">&#39;payment_intent.succeeded&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Actualiza estado de transacción (mantengo tu lógica)</span>
+                <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">:</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;pendiente_retiro_tauser&#39;</span>  <span class="c1"># o &#39;completada&#39; si tu flujo lo requiere</span>
+                    <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [STRIPE WEBHOOK] Éxito: Transacción </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2"> actualizada.&quot;</span><span class="p">)</span>
+
+                <span class="c1"># --- Disparo idempotente de facturación electrónica ---</span>
+                <span class="n">_emitir_factura_si_corresponde</span><span class="p">(</span><span class="n">transaccion</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;EXITOSO&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Pago exitoso y transacción actualizada.&#39;</span><span class="p">}</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [STRIPE WEBHOOK] Error al actualizar Tx </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2"> o emitir factura: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Error al procesar: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span>
+
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s1">&#39;payment_intent.payment_failed&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">:</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;cancelada&#39;</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [STRIPE WEBHOOK] Tx </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2"> marcada cancelada por fallo de pago.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;RECHAZADO&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Pago fallido y transacción cancelada.&#39;</span><span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [STRIPE WEBHOOK] Evento no manejado: </span><span class="si">{</span><span class="n">event_type</span><span class="si">}</span><span class="s2"> para Tx </span><span class="si">{</span><span class="n">transaccion_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;IGNORADO&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Evento </span><span class="si">{</span><span class="n">event_type</span><span class="si">}</span><span class="s1"> no manejado.&#39;</span><span class="p">}</span>
+
+    <span class="c1"># 4) Otros gateways: delega a su handler y actúa según resultado</span>
+    <span class="n">gateway_module_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pagos.gateways.</span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">_gateway&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">gateway_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">gateway_module_name</span><span class="p">)</span>
+        <span class="n">gateway_class_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">engine_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">Gateway&quot;</span>
+        <span class="n">gateway_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">gateway_module</span><span class="p">,</span> <span class="n">gateway_class_name</span><span class="p">)</span>
+        <span class="n">gateway_instance</span> <span class="o">=</span> <span class="n">gateway_class</span><span class="p">()</span>
+        <span class="n">webhook_result</span> <span class="o">=</span> <span class="n">gateway_instance</span><span class="o">.</span><span class="n">handle_webhook</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+        <span class="c1"># Validar expiración de tasa garantizada si aplica</span>
+        <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">modalidad_tasa</span> <span class="o">==</span> <span class="s1">&#39;bloqueada&#39;</span> <span class="ow">and</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transaccion</span><span class="p">,</span> <span class="s2">&quot;is_tasa_expirada&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;cancelada_tasa_expirada&#39;</span>
+            <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARN: [PAGOS WEBHOOK] Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> cancelada por tasa expirada. Revisar reembolso.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Tasa garantizada expirada. Pago fuera de tiempo.&#39;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">webhook_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;EXITOSO&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">:</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;pendiente_retiro_tauser&#39;</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [PAGOS WEBHOOK] Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> -&gt; &#39;pendiente_retiro_tauser&#39;.&quot;</span><span class="p">)</span>
+
+                <span class="c1"># --- Disparo idempotente de facturación electrónica ---</span>
+                <span class="n">_emitir_factura_si_corresponde</span><span class="p">(</span><span class="n">transaccion</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">webhook_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;RECHAZADO&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span><span class="p">:</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;cancelada&#39;</span>
+                <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [PAGOS WEBHOOK] Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> -&gt; &#39;cancelada&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">webhook_result</span>
+
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Módulo gateway no encontrado: </span><span class="si">{</span><span class="n">gateway_module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Gateway no encontrado.&#39;</span><span class="p">}</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Clase/método no encontrado en </span><span class="si">{</span><span class="n">gateway_module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Webhook no implementado en gateway.&#39;</span><span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [PAGOS WEBHOOK] Error interno con gateway </span><span class="si">{</span><span class="n">engine_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Error interno: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_emitir_factura_si_corresponde</span><span class="p">(</span><span class="n">transaccion</span><span class="p">:</span> <span class="n">Transaccion</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Emite la factura electrónica de forma idempotente:</span>
+<span class="sd">    - Requiere un Emisor ACTIVO.</span>
+<span class="sd">    - No emite si ya existe un DocumentoElectronico no finalizado con esta transacción.</span>
+<span class="sd">    - Delega el armado del DE y numeración a la task de facturación.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">existe</span> <span class="o">=</span> <span class="n">DocumentoElectronico</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">transaccion_asociada</span><span class="o">=</span><span class="n">transaccion</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span>
+            <span class="n">estado_sifen__in</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rechazado&#39;</span><span class="p">,</span> <span class="s1">&#39;inutilizado&#39;</span><span class="p">,</span> <span class="s1">&#39;error_api&#39;</span><span class="p">,</span> <span class="s1">&#39;error_sifen&#39;</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">existe</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [FACTURACION] Ya existe documento para Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">; no se dispara nuevamente.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">emisor</span> <span class="o">=</span> <span class="n">EmisorFacturaElectronica</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">emisor</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARN: [FACTURACION] No hay Emisor ACTIVO configurado. No se emite factura.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">receptor_email</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transaccion</span><span class="p">,</span> <span class="s2">&quot;cliente&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;receptor@test.com&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Llamamos a la task usando kwargs para evitar problemas de aridad en Celery</span>
+        <span class="n">generar_factura_electronica_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span>
+            <span class="n">emisor_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">transaccion_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="n">json_de_completo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>             <span class="c1"># el builder de la task arma el DE a partir de la Transaccion</span>
+            <span class="n">email_receptor</span><span class="o">=</span><span class="n">receptor_email</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;INFO: [FACTURACION] Task disparada para Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> con Emisor </span><span class="si">{</span><span class="n">emisor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: [FACTURACION] No se pudo disparar la emisión para Tx </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="build_json_de_from_transaction">
+<a class="viewcode-back" href="../../pagos.html#pagos.services.build_json_de_from_transaction">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_json_de_from_transaction</span><span class="p">(</span><span class="n">transaccion</span><span class="p">:</span> <span class="n">Transaccion</span><span class="p">,</span> <span class="n">emisor</span><span class="p">:</span> <span class="n">EmisorFacturaElectronica</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    (Conservado por compatibilidad) Construye un JSON de DE a partir de una transacción.</span>
+<span class="sd">    Nota: Actualmente NO se usa en el flujo principal; la task de facturación arma el DE.</span>
+<span class="sd">    Puedes usarlo para diagnósticos o pruebas puntuales.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">cliente</span>
+
+    <span class="n">json_de_completo</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;dDV&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">dv_ruc</span><span class="p">,</span>
+        <span class="s2">&quot;dRucEm&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">ruc</span><span class="p">,</span>
+        <span class="s2">&quot;dNomEm&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">nombre</span><span class="p">,</span>
+        <span class="s2">&quot;dDirEm&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">direccion</span><span class="p">,</span>
+        <span class="s2">&quot;dNumCas&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">numero_casa</span><span class="p">,</span>
+        <span class="s2">&quot;dDesCiu&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">descripcion_ciudad</span><span class="p">,</span>
+        <span class="s2">&quot;cUniMed&quot;</span><span class="p">:</span> <span class="s2">&quot;77&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dDesDep&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">descripcion_departamento</span><span class="p">,</span>
+        <span class="s2">&quot;cDep&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">codigo_departamento</span><span class="p">,</span>
+        <span class="s2">&quot;dTelEm&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">telefono</span><span class="p">,</span>
+        <span class="s2">&quot;dEmailEm&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">email_emisor</span><span class="p">,</span>
+        <span class="s2">&quot;dActEco&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">actividades_economicas</span><span class="p">,</span>
+        <span class="s2">&quot;dEst&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">establecimiento</span><span class="p">,</span>
+        <span class="s2">&quot;dPunExp&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">punto_expedicion</span><span class="p">,</span>
+        <span class="s2">&quot;dNumTim&quot;</span><span class="p">:</span> <span class="n">emisor</span><span class="o">.</span><span class="n">numero_timbrado_actual</span><span class="p">,</span>
+        <span class="s2">&quot;dNumDoc&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">emisor</span><span class="o">.</span><span class="n">siguiente_numero_factura</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span>
+        <span class="s2">&quot;iTiDE&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dFeEmi&quot;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;dTotOpe&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="p">),</span>
+        <span class="s2">&quot;dMoneda&quot;</span><span class="p">:</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span><span class="p">,</span>
+        <span class="s2">&quot;dTipCam&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">tasa_cambio_aplicada</span><span class="p">),</span>
+        <span class="s2">&quot;dNomRec&quot;</span><span class="p">:</span> <span class="n">cliente</span><span class="o">.</span><span class="n">get_full_name</span><span class="p">(),</span>
+        <span class="s2">&quot;dRucRec&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cliente</span><span class="p">,</span> <span class="s1">&#39;ruc&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;dDirRec&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cliente</span><span class="p">,</span> <span class="s1">&#39;direccion&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;dTelRec&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cliente</span><span class="p">,</span> <span class="s1">&#39;telefono&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;dEmailRec&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cliente</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;dDesProSer&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Cambio de </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_destino</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dCantProSer&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dUniMed&quot;</span><span class="p">:</span> <span class="s2">&quot;UNI&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dPrUnit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="p">),</span>
+                <span class="s2">&quot;dTotOpeItem&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="p">),</span>
+                <span class="s2">&quot;dIVA&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;iAfecIVA&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;compra&#39;</span><span class="p">:</span>
+        <span class="n">json_de_completo</span><span class="p">[</span><span class="s2">&quot;dTotOpe&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="p">[</span><span class="s2">&quot;dMoneda&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_destino</span><span class="o">.</span><span class="n">codigo</span>
+        <span class="n">json_de_completo</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;dDesProSer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Compra de </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_origen</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_origen</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;por </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">transaccion</span><span class="o">.</span><span class="n">moneda_destino</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;dPrUnit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="p">)</span>
+        <span class="n">json_de_completo</span><span class="p">[</span><span class="s2">&quot;items&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;dTotOpeItem&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">transaccion</span><span class="o">.</span><span class="n">monto_destino</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">json_de_completo</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
