@@ -677,37 +677,72 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             
             # Recalcular monto_destino_actual y monto_origen_actual con la tasa actual
             if transaccion.tipo_operacion == 'venta': # Cliente compra divisa extranjera
-                # --- CORRECCIÓN ---
-                # El monto a recibir (destino) es fijo. Se ajusta por denominación.
-                ajuste = ajustar_monto_a_denominaciones_disponibles(
-                    transaccion.monto_destino, transaccion.moneda_destino, 'venta'
-                )
-                monto_destino_actual = ajuste['monto_ajustado']
-
-                # Se recalcula el monto a pagar (origen) en PYG con la nueva tasa.
-                monto_origen_actual = (monto_destino_actual * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+                # Recalcular la simulación completa para obtener los valores correctos
+                # Usar el monto_origen original de la operación pendiente
+                # Si 'monto_origen_inicial' no está en la sesión, usar transaccion.monto_origen como fallback
+                monto_origen_inicial = Decimal(self.request.session.get('operacion_pendiente', {}).get('monto_origen_inicial', str(transaccion.monto_origen)))
                 
-                # Actualizar operacion_pendiente en sesión con los montos ajustados
-                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
-                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
-                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
-                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
-                operacion_pendiente['monto_ajustado'] = ajuste['ajustado']
-                operacion_pendiente['monto_maximo_posible'] = str(ajuste['monto_maximo_posible'])
-                self.request.session['operacion_pendiente'] = operacion_pendiente
+                resultado_simulacion_actualizada = calcular_simulacion(
+                    monto_origen_inicial,
+                    transaccion.moneda_origen.codigo,
+                    transaccion.moneda_destino.codigo,
+                    user=self.request.user
+                )
+
+                if resultado_simulacion_actualizada.get('error'):
+                    messages.error(self.request, resultado_simulacion_actualizada['error'])
+                    tasa_actual = Decimal('0.00')
+                    monto_destino_actual = Decimal('0.00')
+                    monto_origen_actual = Decimal('0.00')
+                    bonificacion_aplicada = Decimal('0.00')
+                else:
+                    monto_origen_actual = resultado_simulacion_actualizada['monto_origen']
+                    monto_destino_actual = resultado_simulacion_actualizada['monto_recibido']
+                    tasa_actual = resultado_simulacion_actualizada['tasa_aplicada']
+                    bonificacion_aplicada = resultado_simulacion_actualizada['bonificacion_aplicada']
+
+                    # Actualizar operacion_pendiente en sesión con los montos ajustados
+                    operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                    operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                    operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                    operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
+                    operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
+                    operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
+                    self.request.session['operacion_pendiente'] = operacion_pendiente
 
             else: # Cliente vende divisa extranjera
-                monto_origen_actual = transaccion.monto_origen # El monto origen es el que el cliente entrega
-                monto_destino_actual = (transaccion.monto_origen * tasa_actual).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
-                
-                # Actualizar operacion_pendiente en sesión con los montos ajustados
-                operacion_pendiente = self.request.session.get('operacion_pendiente', {})
-                operacion_pendiente['monto_origen'] = str(monto_origen_actual)
-                operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
-                operacion_pendiente['tasa_aplicada'] = str(tasa_actual) # Asegurar que la tasa también se actualice
-                operacion_pendiente['monto_ajustado'] = False # No hay ajuste de denominaciones para este caso
-                operacion_pendiente['monto_maximo_posible'] = str(transaccion.monto_destino) # O el monto original
-                self.request.session['operacion_pendiente'] = operacion_pendiente
+                # Recalcular la simulación completa para obtener los valores correctos
+                monto_origen_inicial = Decimal(self.request.session.get('operacion_pendiente', {}).get('monto_origen_inicial', str(transaccion.monto_origen)))
+
+                resultado_simulacion_actualizada = calcular_simulacion(
+                    monto_origen_inicial,
+                    transaccion.moneda_origen.codigo,
+                    transaccion.moneda_destino.codigo,
+                    user=self.request.user
+                )
+
+                if resultado_simulacion_actualizada.get('error'):
+                    messages.error(self.request, resultado_simulacion_actualizada['error'])
+                    tasa_actual = Decimal('0.00')
+                    monto_destino_actual = Decimal('0.00')
+                    monto_origen_actual = Decimal('0.00')
+                    bonificacion_aplicada = Decimal('0.00')
+                else:
+                    monto_origen_actual = resultado_simulacion_actualizada['monto_origen']
+                    monto_destino_actual = resultado_simulacion_actualizada['monto_recibido']
+                    tasa_actual = resultado_simulacion_actualizada['tasa_aplicada']
+                    bonificacion_aplicada = resultado_simulacion_actualizada['bonificacion_aplicada']
+
+                    # Actualizar operacion_pendiente en sesión con los montos ajustados
+                    operacion_pendiente = self.request.session.get('operacion_pendiente', {})
+                    operacion_pendiente['monto_origen'] = str(monto_origen_actual)
+                    operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
+                    operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
+                    operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
+                    operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
+                    self.request.session['operacion_pendiente'] = operacion_pendiente
 
 
         except Cotizacion.DoesNotExist:
