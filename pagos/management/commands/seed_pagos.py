@@ -13,8 +13,18 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **kwargs):
         fixture_path = Path(__file__).resolve().parents[3] / "pagos" / "fixtures" / "tipos_medio_pago.json"
-        # ... (el resto de tu lógica de 'handle' está bien) ...
         
+        # --- ### BLOQUE FALTANTE ### ---
+        # Este es el bloque que probablemente borraste.
+        # Lee el archivo JSON y lo carga en la variable 'data'.
+        if not fixture_path.exists():
+            self.stdout.write(self.style.ERROR(f"No se encontró el fixture en {fixture_path}"))
+            return
+
+        with open(fixture_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        # --- ### FIN DEL BLOQUE FALTANTE ### ---
+
         for item in data:
             fields = item["fields"]
             nombre_limpio = fields["nombre"].strip()
@@ -29,10 +39,8 @@ class Command(BaseCommand):
                     "engine": fields.get("engine", "manual").strip(),
                     "engine_config": fields.get("engine_config", {}),
                     
-                    # --- 2. AÑADE ESTA LÍNEA ---
-                    # Asigna un valor por defecto (ej. 0.0) si no viene en el JSON
+                    # Esta es la corrección de la vez anterior
                     "bonificacion_porcentaje": fields.get("bonificacion_porcentaje", Decimal("0.0")),
-                    # -------------------------
                 }
             )
             
