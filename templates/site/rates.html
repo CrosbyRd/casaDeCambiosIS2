@@ -18,15 +18,21 @@
       </thead>
       <tbody>
         {% for c in cotizaciones %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)"
+              data-code="{{ c.moneda_destino.codigo }}"
+              data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+              data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
             <td class="px-4 py-3">
               <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
               {{ c.moneda_destino.codigo }}
             </td>
 
-            {# sin decimales #}
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</td>
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</td>
+            <td class="px-4 py-3 text-right font-semibold">
+              <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+            </td>
+            <td class="px-4 py-3 text-right font-semibold">
+              <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+            </td>
 
             <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
           </tr>
@@ -36,7 +42,6 @@
       </tbody>
     </table>
   </section>
-</main>
 
 <script>
 (function(){
@@ -47,6 +52,232 @@
     const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
   });
+      // Indicadores de variación con persistencia de 12h
+  const TTL = 12 * 60 * 60 * 1000; // 12 horas en ms
+  const rows = document.querySelectorAll('tbody tr[data-code]');
+
+  rows.forEach(row => {
+    const code = String(row.dataset.code || '').toUpperCase();
+
+    ['compra', 'venta'].forEach(field => {
+      const el = row.querySelector(`.rate[data-field="${field}"]`);
+      if (!el) return;
+
+      const textNum = (el.textContent || '').replace(/\D+/g, '');
+      const nowVal = Number(row.dataset[field] || textNum);
+      const key = `rates:${code}:${field}`;
+      const nowTs = Date.now();
+
+      let data = null;
+      try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) {}
+
+      const prevVal = (data && typeof data.value === 'number') ? data.value : null;
+      let lastChange = data && data.lastChange ? data.lastChange : null; // {time, dir:'up'|'down'}
+
+      // ¿Qué mostrar?
+      let showDir = null;
+      if (prevVal !== null && nowVal !== prevVal) {
+        // Cambió: mostrar y actualizar "lastChange"
+        showDir = nowVal > prevVal ? 'up' : 'down';
+        lastChange = { time: nowTs, dir: showDir };
+      } else if (lastChange && (nowTs - lastChange.time) < TTL) {
+        // No cambió ahora, pero hubo un cambio reciente (<12h)
+        showDir = lastChange.dir;
+      }
+
+      if (showDir) {
+        const badge = document.createElement('span');
+        badge.textContent = showDir === 'up' ? '▲' : '▼';
+        badge.className = 'ml-1 text-xs opacity-70 align-middle';
+        badge.classList.add(showDir === 'up' ? 'text-emerald-600' : 'text-red-600');
+        // microajuste vertical
+        badge.style.position = 'relative';
+        badge.style.top = '-1px';
+        el.after(badge);
+      }
+
+      // Guardar valor actual y limpiar lastChange si ya expiró
+      const persisted = lastChange && (nowTs - lastChange.time) < TTL ? lastChange : null;
+      localStorage.setItem(key, JSON.stringify({ value: nowVal, lastChange: persisted }));
+    });
+  });
 })();
 </script>
+<!-- debajo de la tabla -->
+<section class="chart-card mt-8 p-4 bg-white border rounded-xl shadow-sm" style="border-color:var(--line)">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+    <h2 class="text-lg font-semibold">
+      Histórico (PYG → <span id="fx-symbol">—</span>)
+    </h2>
+
+    <!-- Selector de moneda + radios -->
+    <div class="flex flex-wrap items-center gap-3 text-sm">
+      <label class="flex items-center gap-2">
+        Moneda:
+        <select id="fx-select" class="border rounded px-2 py-1">
+          <!-- se llena desde las filas de la tabla -->
+        </select>
+      </label>
+      <span class="hidden md:inline">·</span>
+      <label><input type="radio" name="campo" value="venta" checked> Venta</label>
+      <label class="ml-2"><input type="radio" name="campo" value="compra"> Compra</label>
+      <span class="hidden md:inline">·</span>
+      <label><input type="radio" name="agg" value="last" checked> Último por día</label>
+      <label class="ml-2"><input type="radio" name="agg" value="avg"> Promedio diario</label>
+    </div>
+  </div>
+
+  <!-- Contenedor con altura fija; el canvas ocupa el 100% -->
+  <div id="chartWrap" class="relative h-72 md:h-80 lg:h-96">
+    <canvas id="ratesChart" style="width:100%; height:100%"></canvas>
+  </div>
+  <p id="chart-empty" class="text-xs text-neutral-500 mt-2 hidden">No hay datos históricos para el rango seleccionado.</p>
+  <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
+</section>
+
+<!-- Chart.js + date-fns + adapter (en este orden) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+
+<script>
+(function(){
+  const apiUrl   = "{% url 'cotizaciones:api_serie' %}";
+  const rows     = Array.from(document.querySelectorAll('tbody tr[data-code]'));
+  const elSymbol = document.getElementById('fx-symbol');
+  const select   = document.getElementById('fx-select');
+  const emptyMsg = document.getElementById('chart-empty');
+  const ctx      = document.getElementById('ratesChart').getContext('2d');
+
+  // 1) Poblar selector con las monedas que aparecen en la tabla
+  const seen = new Set();
+  rows.forEach(tr => {
+    const code = String(tr.dataset.code || '').toUpperCase();
+    if (code && !seen.has(code)) {
+      seen.add(code);
+      const opt = document.createElement('option');
+      opt.value = code; opt.textContent = code;
+      select.appendChild(opt);
+    }
+  });
+
+  // Valor inicial (si la tabla está vacía, cae en USD como backup)
+  const initial = select.options[0]?.value || rows[0]?.dataset.code || 'USD';
+  select.value = initial;
+  const state = { code: initial, campo: 'venta', agg: 'last' };
+  elSymbol.textContent = state.code;
+
+  // 2) Inicializar Chart
+  // 2) Inicializar Chart (usa tus variables CSS y un gradient suave)
+const css  = getComputedStyle(document.documentElement);
+const BRAND = css.getPropertyValue('--brand').trim() || '#7c3aed';
+const LINE  = css.getPropertyValue('--line').trim()  || '#e5e7eb';
+const MUTED = css.getPropertyValue('--muted').trim() || '#6b7280';
+const INK   = css.getPropertyValue('--ink').trim()   || '#111827';
+
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, BRAND + '33'); // ~20% alpha
+gradient.addColorStop(1, BRAND + '00'); // 0% alpha
+
+let chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'PYG → ' + state.code,
+      data: [],
+      tension: 0.25,
+      borderWidth: 2,
+      borderColor: BRAND,
+      backgroundColor: gradient,
+      pointRadius: 4,
+      pointHoverRadius: 5,
+      pointBackgroundColor: BRAND,
+      pointBorderColor: '#fff',
+      fill: true,
+      spanGaps: true,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+    normalized: true,
+    animation: false,
+    scales: {
+      x: { type: 'time', time: { unit: 'day' }, grid: { color: LINE }, ticks: { color: MUTED } },
+      y: { beginAtZero: false, grid: { color: LINE }, ticks: { color: MUTED } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: INK,
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: LINE,
+        borderWidth: 1,
+        displayColors: false
+      }
+    }
+  }
+});
+
+
+  // 3) Carga de serie
+  async function loadSeries() {
+    elSymbol.textContent = state.code;
+    emptyMsg.classList.add('hidden');
+
+    const params = new URLSearchParams({
+      base: 'PYG',
+      destino: state.code,
+      campo: state.campo,
+      agg: state.agg
+    });
+
+    try {
+      const r = await fetch(`${apiUrl}?${params.toString()}`);
+      const j = await r.json();
+
+      if (!j.ok) throw new Error(j.error || 'Error al obtener serie');
+
+      // Adaptar a Date (algunos adapters lo requieren)
+      const points = (j.points || []).map(p => ({ x: new Date(p.x), y: p.y }));
+
+      chart.data.datasets[0].label = `PYG → ${state.code} (${state.campo}/${state.agg})`;
+      chart.data.datasets[0].data  = points;
+      chart.update();
+
+      if (!points.length) emptyMsg.classList.remove('hidden');
+    } catch (e) {
+      console.error(e);
+      chart.data.datasets[0].data = [];
+      chart.update();
+      emptyMsg.textContent = 'No se pudo cargar el histórico.';
+      emptyMsg.classList.remove('hidden');
+    }
+  }
+
+  // 4) Interacciones
+  select.addEventListener('change', () => { state.code = select.value; loadSeries(); });
+
+  // Seguir admitiendo click en filas para cambiar la moneda
+  rows.forEach(tr => tr.addEventListener('click', () => {
+    const code = String(tr.dataset.code || 'USD').toUpperCase();
+    state.code = code;
+    if (select.value !== code) select.value = code;
+    loadSeries();
+  }));
+
+  document.querySelectorAll('input[name="campo"]').forEach(radio =>
+    radio.addEventListener('change', e => { state.campo = e.target.value; loadSeries(); })
+  );
+  document.querySelectorAll('input[name="agg"]').forEach(radio =>
+    radio.addEventListener('change', e => { state.agg = e.target.value; loadSeries(); })
+  );
+
+  // 5) Primera carga
+  loadSeries();
+})();
+</script>
+</main>
 {% endblock %}

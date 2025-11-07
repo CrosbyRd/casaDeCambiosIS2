@@ -193,19 +193,19 @@
                   {{ t.moneda_origen.codigo }}
                 </span>
               </td>
-              <td class="px-4 py-4 text-right">
-                <span class="font-bold text-purple-900">{{ t.monto_origen|floatformat:2 }}</span>
+              <td class="px-4 py-4 text-center">
+                <span class="font-bold text-purple-900">{{ t.monto_origen|floatformat:"-2" }}</span>
               </td>
               <td class="px-4 py-4">
                 <span class="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-900">
                   {{ t.moneda_destino.codigo }}
                 </span>
               </td>
-              <td class="px-4 py-4 text-right">
-                <span class="font-bold text-purple-900">{{ t.monto_destino|floatformat:2 }}</span>
+              <td class="px-4 py-4 text-center">
+                <span class="font-bold text-purple-900">{{ t.monto_destino|floatformat:"-2" }}</span>
               </td>
-              <td class="px-4 py-4 text-right">
-                <span class="text-sm font-semibold text-purple-700">{{ t.tasa_cambio_aplicada|floatformat:4 }}</span>
+              <td class="px-4 py-4 text-center">
+                <span class="text-sm font-semibold text-purple-700">{{ t.tasa_cambio_aplicada|floatformat:"-4" }}</span>
               </td>
               <td class="px-4 py-4">
                 <code class="rounded bg-purple-50 px-2 py-1 text-xs font-mono text-purple-900">{{ t.codigo_operacion_tauser }}</code>

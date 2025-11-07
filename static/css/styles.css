@@ -415,3 +415,13 @@ img, svg, video{ max-width:100%; height:auto; }
   white-space:nowrap;
 }
 .rate-card.hidden{ display:none; }
+/* --- Charts (cohesivo con la UI) --- */
+.chart-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 24px -12px rgba(17,24,39,.08);
+}
+.chart-controls input[type="radio"] { accent-color: var(--brand); }
+#fx-select { border-color: var(--line); }
+

@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
-    "cotizaciones",
     "admin_panel",
     "core.apps.CoreConfig",
     "pagos",
@@ -69,7 +68,7 @@ INSTALLED_APPS = [
     "analista_panel",
     "facturacion_electronica", # Nueva app para facturación electrónica
     "widget_tweaks",
-
+    "cotizaciones.apps.CotizacionesConfig",
 ]
 
 # --- Middleware ---
