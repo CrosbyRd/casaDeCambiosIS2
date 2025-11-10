@@ -74,3 +74,4 @@ EOF
 
 git add .gitignore
 git commit -m "chore: unify .gitignore for Django/py"
+codex.patch

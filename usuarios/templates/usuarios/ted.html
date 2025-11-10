@@ -106,30 +106,10 @@
                       <option value="">— Seleccioná una sucursal —</option>
                       <!-- Si ya renderizas ubicaciones desde el server, mantienen este select -->
                     </select>
-                    <p class="location-hint">Para continuar al menú de operaciones.</p>
+                    <p class="location-hint">Tras elegir la sucursal, ingresá el código de la operación.</p>
                   </div>
 
                   <button class="gx-btn" type="button" id="btn-login-ingresar" disabled>Continuar</button>
-                </div>
-              </section>
-
-              <!-- VISTA: Menú -->
-              <section id="menu-screen" class="ted-screen-view" aria-live="polite">
-                <div class="view-content">
-                  <h2 style="text-align:center;margin-bottom:12px">Operaciones disponibles</h2>
-                  <div class="menu-grid">
-                    <button id="btn-menu-retirar" type="button" class="menu-card" aria-label="Retiro de dinero">
-                      <div class="menu-icon">💵</div>
-                      <div class="menu-label">Retiro de Dinero</div>
-                    </button>
-                    <button id="btn-menu-deposito" type="button" class="menu-card" aria-label="Depósito de dinero">
-                      <div class="menu-icon">💰</div>
-                      <div class="menu-label">Depósito de Dinero</div>
-                    </button>
-                  </div>
-                  <div style="text-align:center;margin-top:16px">
-                    <button id="btn-menu-salir" type="button" class="gx-btn gx-btn--ghost">🚪 Salir</button>
-                  </div>
                 </div>
               </section>
 
@@ -351,7 +331,7 @@
   };
   const formatAmount = (a, code)=> `${formatAmountRaw(a)} ${code}`;
 
-  const ctx = { modo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null, tx_id:null };
+  const ctx = { modo:null, lastModo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null, tx_id:null };
 
   // === CSRF ===
   function getCookie(name){
@@ -426,11 +406,18 @@
 
   /* Carga y pinta las divisas disponibles para RETIRO (según sucursal) */
   async function loadRetiroCurrencies(){
-    try{
-      const cont = qs('#retiro-currencies');
-      const list = qs('#retiro-currency-list');
-      if(!cont || !list) return;
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if(!cont || !list) return;
 
+    if (ctx.modo !== 'retiro' || !ctx.raw) {
+      list.innerHTML = '';
+      cont.style.display = 'none';
+      cont.setAttribute('aria-hidden','true');
+      return;
+    }
+
+    try{
       const data = await api(`${URLS.divisas}?ubicacion=${encodeURIComponent(ctx.ubicacion||'')}`);
       const currencies = (data && (data.currencies || data.monedas)) || [];
 
@@ -441,13 +428,17 @@
           `<span class="currency-chip" data-cur="${c}" title="${c}">${flag(c)}</span>`
         ).join('');
       }
-      cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+      cont.style.display = 'block';
+      cont.setAttribute('aria-hidden','false');
     }catch(_e){
-      const cont = qs('#retiro-currencies');
-      const list = qs('#retiro-currency-list');
-      if(cont && list){
+      if (ctx.modo === 'retiro' && ctx.raw) {
         list.innerHTML = '<span style="opacity:.8">No se pudo cargar el stock.</span>';
-        cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+        cont.style.display = 'block';
+        cont.setAttribute('aria-hidden','false');
+      } else {
+        list.innerHTML = '';
+        cont.style.display = 'none';
+        cont.setAttribute('aria-hidden','true');
       }
     }
   }
@@ -476,7 +467,9 @@
     }
     const cont = qs('#retiro-currencies');
     if(cont){
-      cont.style.display = (id === 'transaction-screen' && ctx.modo === 'retiro') ? 'block' : 'none';
+      const shouldShow = id === 'transaction-screen' && ctx.modo === 'retiro' && ctx.raw;
+      cont.style.display = shouldShow ? 'block' : 'none';
+      cont.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
     }
   };
 
@@ -565,10 +558,19 @@
     if (inp) inp.value = '';
     const btn = btnTxValidar();
     if (btn) btn.disabled = true;
-    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null; ctx.tx_id = null;
+    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null; ctx.tx_id = null; ctx.modo = null;
     const box = qs('#confirm-amount-box');
     if (box) { box.innerHTML = ''; box.style.display = 'none'; }
     qs('#confirm-amount-text')?.classList.remove('hidden');
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if (cont && list) {
+      list.innerHTML = '';
+      cont.style.display = 'none';
+      cont.setAttribute('aria-hidden','true');
+    }
+    qsa('#retiro-currency-list .currency-chip').forEach(ch=> ch.classList.remove('match','dimmed'));
+    qs('#tx-title') && (qs('#tx-title').textContent = 'Operación');
   }
 
   // ---------------- Login (ubicación + terminal) ----------------
@@ -632,34 +634,11 @@
 
   btnLogin?.addEventListener('click', ()=>{
     resetTxUI();
-    show('menu-screen');
-  });
-
-  // ---------------- Menú ----------------
-  qs('#btn-menu-retirar')?.addEventListener('click', ()=>{
-    ctx.modo = 'retiro';
-    resetTxUI();
-    qs('#tx-title').textContent = 'Retiro de Dinero';
     show('transaction-screen');
-    try { loadRetiroCurrencies(); } catch(_){}
-  });
-
-  qs('#btn-menu-deposito')?.addEventListener('click', ()=>{
-    ctx.modo = 'deposito';
-    resetTxUI();
-    qs('#tx-title').textContent = 'Depósito de Dinero';
-    show('transaction-screen');
-    const cont = qs('#retiro-currencies');
-    const list = qs('#retiro-currency-list');
-    if (cont && list) {
-      list.innerHTML = '';
-      cont.style.display = 'none';
-      cont.setAttribute('aria-hidden','true');
+    const input = codeInput();
+    if (input) {
+      input.focus();
     }
-  });
-
-  qs('#btn-menu-salir')?.addEventListener('click', ()=>{
-    ctx.modo = null; resetTxUI(); show('login-screen');
   });
 
   // ---------------- Código + validar ----------------
@@ -669,22 +648,52 @@
   });
   qs('#btn-tx-cancelar')?.addEventListener('click', ()=>{
     resetTxUI();
-    show('menu-screen');
+    show('login-screen');
   });
 
   qs('#btn-tx-validar')?.addEventListener('click', async ()=>{
     try{
-      if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
-      const info = await api(URLS.validar, { codigo: (ctx.code||'').trim(), modo: ctx.modo });
-      // Validar que el tipo de transacción coincida con el modo seleccionado
-      if (info.tipo_operacion && info.tipo_operacion !== ctx.modo) {
-        const tipoReal = info.tipo_operacion === 'retiro' ? 'Retiro' : 'Depósito';
-        const tipoEsperado = ctx.modo === 'retiro' ? 'Retiro' : 'Depósito';
-        throw Object.assign(new Error(`Este código es para ${tipoReal}, pero seleccionaste ${tipoEsperado}. Volvé al menú y elegí la operación correcta.`), {status: 400});
+      const code = (ctx.code||'').trim();
+      if(!code) throw new Error('Ingresá el código de operación.');
+
+      let modos = [];
+      if (ctx.modo) {
+        modos = [ctx.modo];
+      } else if (ctx.lastModo) {
+        modos = ctx.lastModo === 'retiro' ? ['retiro', 'deposito'] : ['deposito', 'retiro'];
+      } else {
+        modos = ['retiro', 'deposito'];
       }
+      let info = null;
+      let usedMode = ctx.modo || null;
+      let lastError = null;
+
+      for (const modo of modos) {
+        try {
+          const payload = { codigo: code, modo };
+          info = await api(URLS.validar, payload);
+          usedMode = info?.modo || info?.tipo_operacion || modo;
+          break;
+        } catch(err) {
+          lastError = err;
+          if (ctx.modo || modo === 'deposito') throw err;
+        }
+      }
+
+      if (!info) {
+        throw lastError || new Error('No se pudo validar la operación.');
+      }
+
+      ctx.modo = (usedMode === 'deposito' || usedMode === 'retiro') ? usedMode : 'retiro';
+      ctx.lastModo = ctx.modo;
       ctx.raw  = info;
-      ctx.code = (info && info.codigo) ? String(info.codigo).trim() : (ctx.code||'').trim();
+      ctx.code = info && info.codigo ? String(info.codigo).trim() : code;
       ctx.tx_id = info && info.tx_id ? String(info.tx_id) : null;
+
+      const title = qs('#tx-title');
+      if (title) {
+        title.textContent = ctx.modo === 'deposito' ? 'Depósito de Dinero' : 'Retiro de Dinero';
+      }
 
       // 🆕 Sincronizar el cliente activo de la sesión con el dueño del código
       //    (la vista `seleccionar_cliente` guarda SESSION_KEY en la sesión)
@@ -695,6 +704,7 @@
       }
 
       if (ctx.modo === 'retiro') {
+        await loadRetiroCurrencies();
         qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
           if ((ch.dataset.cur||'').toUpperCase() === String(info.moneda||'').toUpperCase()) {
             ch.classList.add('match'); ch.classList.remove('dimmed');
@@ -702,6 +712,14 @@
             ch.classList.add('dimmed'); ch.classList.remove('match');
           }
         });
+      } else {
+        const cont = qs('#retiro-currencies');
+        const list = qs('#retiro-currency-list');
+        if (list) list.innerHTML = '';
+        if (cont) {
+          cont.style.display = 'none';
+          cont.setAttribute('aria-hidden','true');
+        }
       }
 
       const box = qs('#confirm-amount-box');
@@ -718,16 +736,22 @@
       box.style.display = 'block';
       textEl?.classList.add('hidden');
       show('confirm-amount-screen');
-    }catch(err){ showError('validar', err); }
+    }catch(err){
+      ctx.modo = null;
+      showError('validar', err);
+    }
   });
 
   // ---------------- Precontar + OTP ----------------
   qs('#btn-amount-cancel')?.addEventListener('click', ()=>{
     resetTxUI();
-    show('menu-screen');
+    show('transaction-screen');
+    const input = codeInput();
+    if (input) input.focus();
   });
   qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
     try{
+      if (!ctx.modo) throw new Error('Validá una operación antes de continuar.');
       const payload = { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion };
       if (ctx.tx_id) payload.tx_id = ctx.tx_id;
       const data = await api(URLS.precontar, payload);
@@ -777,9 +801,9 @@
   });
 
   // ---------------- Botones de salida/imprimir ----------------
-  qs('#btn-success-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+  qs('#btn-success-exit')?.addEventListener('click', ()=> { resetTxUI(); show('login-screen'); });
   qs('#btn-success-print')?.addEventListener('click', ()=> { if(ctx.ticket_url){ window.open(ctx.ticket_url, 'ticket', 'width=460,height=640'); } });
-  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { resetTxUI(); show('login-screen'); });
 
   // ---------------- Teclado virtual (delegación + foco seguro) ----------------
   let active = null;
