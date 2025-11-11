@@ -1,0 +1,242 @@
+{% extends "admin_panel/dashboard.html" %}
+{% load static %}
+
+{% block title %}Dashboard de Ganancias{% endblock %}
+
+{% block extra_head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card-metric {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .card-metric h4 {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .card-metric p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #28a745; /* Color para ganancias */
+        }
+        .chart-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .filter-form {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Dashboard de Ganancias</h1>
+
+    <!-- Formulario de Filtros -->
+    <div class="filter-form">
+        <form method="GET" action="{% url 'ganancias:dashboard_ganancias' %}">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="fecha_inicio">Fecha Inicio:</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ fecha_inicio_seleccionada }}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="fecha_fin">Fecha Fin:</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ fecha_fin_seleccionada }}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="moneda_operada">Moneda Operada:</label>
+                    <select class="form-control" id="moneda_operada" name="moneda_operada">
+                        <option value="">Todas</option>
+                        {% for moneda in todas_las_monedas %}
+                            <option value="{{ moneda.id }}" {% if moneda.id|stringformat:"s" == moneda_operada_seleccionada %}selected{% endif %}>
+                                {{ moneda.codigo }} - {{ moneda.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+            <a href="{% url 'ganancias:dashboard_ganancias' %}" class="btn btn-secondary">Limpiar Filtros</a>
+        </form>
+    </div>
+
+    <!-- Métricas Clave -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card-metric">
+                <h4>Ganancia Total del Período</h4>
+                <p>{{ ganancia_total_periodo|floatformat:2 }} PYG</p>
+            </div>
+        </div>
+        <!-- Podríamos añadir más métricas aquí, como ganancia promedio diaria, etc. -->
+    </div>
+
+    <!-- Gráfico de Tendencias de Ganancias por Día -->
+    <div class="chart-container">
+        <h3 class="h5 mb-3 text-gray-800">Ganancias Diarias (PYG)</h3>
+        <canvas id="gananciasDiariasChart"></canvas>
+    </div>
+
+    <!-- Ganancias por Moneda Operada -->
+    <div class="chart-container">
+        <h3 class="h5 mb-3 text-gray-800">Ganancias por Moneda Operada (PYG)</h3>
+        <canvas id="gananciasPorMonedaChart"></canvas>
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Moneda</th>
+                        <th>Ganancia Total (PYG)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ganancia in ganancias_por_moneda %}
+                    <tr>
+                        <td>{{ ganancia.moneda_operada__codigo }} - {{ ganancia.moneda_operada__nombre }}</td>
+                        <td>{{ ganancia.total_moneda|floatformat:2 }} PYG</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">No hay datos de ganancias para las monedas operadas en este período.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% comment %}
+    Pasar datos de Django a JavaScript de forma segura usando json_script.
+    Esto evita problemas de escape de caracteres y warnings en el editor.
+{% endcomment %}
+<script id="ganancias-diarias-data" type="application/json">
+    {{ fechas_grafico|json_script:"fechas_grafico_data" }}
+    {{ totales_grafico|json_script:"totales_grafico_data" }}
+</script>
+
+<script id="ganancias-por-moneda-data" type="application/json">
+    {{ ganancias_por_moneda|json_script:"ganancias_por_moneda_data" }}
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Recuperar datos de ganancias diarias
+        var fechasGraficoElement = document.getElementById('fechas_grafico_data');
+        var totalesGraficoElement = document.getElementById('totales_grafico_data');
+
+        var fechasGrafico = JSON.parse(fechasGraficoElement.textContent);
+        var totalesGrafico = JSON.parse(totalesGraficoElement.textContent);
+
+        // Gráfico de Ganancias Diarias
+        var ctxDiarias = document.getElementById('gananciasDiariasChart').getContext('2d');
+        new Chart(ctxDiarias, {
+            type: 'line',
+            data: {
+                labels: fechasGrafico,
+                datasets: [{
+                    label: 'Ganancia Diaria (PYG)',
+                    data: totalesGrafico,
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Ganancia (PYG)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Recuperar datos de ganancias por moneda
+        var gananciasPorMonedaElement = document.getElementById('ganancias_por_moneda_data');
+        var gananciasPorMonedaRaw = JSON.parse(gananciasPorMonedaElement.textContent);
+
+        var labelsMoneda = gananciasPorMonedaRaw.map(function(g) { return g.moneda_operada__codigo; });
+        var dataMoneda = gananciasPorMonedaRaw.map(function(g) { return parseFloat(g.total_moneda); });
+
+        // Gráfico de Ganancias por Moneda Operada
+        var ctxMoneda = document.getElementById('gananciasPorMonedaChart').getContext('2d');
+        new Chart(ctxMoneda, {
+            type: 'bar',
+            data: {
+                labels: labelsMoneda,
+                datasets: [{
+                    label: 'Ganancia Total (PYG)',
+                    data: dataMoneda,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Ganancia (PYG)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Moneda Operada'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
