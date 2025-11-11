@@ -50,7 +50,17 @@ def crear_o_actualizar_registro_ganancia(sender, instance, created, **kwargs):
         bonificacion_monto = instance.comision_aplicada
         comision_final = comision_bruta - bonificacion_monto
 
-        ganancia_neta_real = comision_final* instance.monto
+        # Determinar el monto de la moneda operada para calcular la ganancia
+        monto_operado_para_ganancia = Decimal('0.00')
+        if instance.tipo_operacion == 'venta':
+            # Si la empresa vende (cliente compra), la ganancia se calcula sobre el monto de la moneda destino (ej. USD)
+            monto_operado_para_ganancia = instance.monto_destino
+        elif instance.tipo_operacion == 'compra':
+            # Si la empresa compra (cliente vende), la ganancia se calcula sobre el monto de la moneda origen (ej. USD)
+            monto_operado_para_ganancia = instance.monto_origen
+        
+        ganancia_neta_real = comision_final * monto_operado_para_ganancia
+    
         # Crear o actualizar el RegistroGanancia
         RegistroGanancia.objects.update_or_create(
             transaccion=instance,
