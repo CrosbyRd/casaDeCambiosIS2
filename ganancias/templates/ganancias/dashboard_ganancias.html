@@ -127,6 +127,29 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);
     outline: none;
     }
+
+    /* === Forzar color lila en el item seleccionado del <select> === */
+    .filter-form .form-select option:checked{
+    background-color: var(--brand) !important; /* lila fuerte */
+    color: #fff !important;
+    }
+
+    /* Hover lila en el desplegable (cubre más navegadores/estados) */
+    .filter-form .form-select option:hover,
+    .filter-form .form-select option:focus,
+    .filter-form .form-select option:active,
+    .filter-form .form-select:focus option:hover{
+    background-color: var(--brand) !important; /* lila */
+    color: #fff !important;
+    }
+
+
+    /* En algunos navegadores, cuando el select está en foco,
+    esta regla ayuda a mantener el color del seleccionado */
+    .filter-form .form-select:focus option:checked{
+    background-color: var(--brand) !important;
+    color: #fff !important;
+    }
 </style>
 {% endblock %}
 
@@ -167,9 +190,11 @@
                     <select class="form-select form-control" id="moneda_operada" name="moneda_operada">
                         <option value="">Todas las monedas</option>
                         {% for moneda in todas_las_monedas %}
-                            <option value="{{ moneda.id }}" {% if moneda.id|stringformat:"s" == moneda_operada_seleccionada %}selected{% endif %}>
-                                {{ moneda.codigo }} - {{ moneda.nombre }}
-                            </option>
+                            {% if moneda.codigo != "PYG" %}
+                                <option value="{{ moneda.id }}" {% if moneda.id|stringformat:"s" == moneda_operada_seleccionada %}selected{% endif %}>
+                                    {{ moneda.codigo }} - {{ moneda.nombre }}
+                                </option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>
