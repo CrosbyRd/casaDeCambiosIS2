@@ -496,6 +496,11 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
         #    (si actualizaste services con contrato estricto, ahí adentro ya se envía solo DE)
         doc_electronico = client.generar_de(de_completo, transaccion_id)
 
+        # Actualizar estado de la transacción a 'completada' si es una operación de 'compra'
+        if tx.tipo_operacion == 'compra':
+            tx.estado = 'completada'
+            tx.save(update_fields=['estado'])
+
         # 4) agendar consulta si corresponde
         if (
             doc_electronico
@@ -597,13 +602,6 @@ def get_estado_sifen_task(self, documento_electronico_id):
                 new_estado, new_desc = "cancelado", "Documento cancelado en SIFEN."
             elif est == "APROBADO":
                 new_estado, new_desc = "aprobado", info.get("desc_sifen", "Aprobado en SIFEN.")
-                # --- INICIO: Lógica para actualizar estado de la transacción ---
-                transaccion = doc_electronico.transaccion_asociada
-                if transaccion and transaccion.estado == 'procesando_acreditacion':
-                    transaccion.estado = 'completada'
-                    transaccion.save(update_fields=['estado'])
-                # --- FIN: Lógica para actualizar estado de la transacción ---
-                
                 # --- INICIO: Enviar factura por email (para pruebas) ---
                 # Se envía cada vez que se consulta y el estado es 'aprobado'.
                 enviar_factura_por_email_task.delay(doc_electronico.id)
