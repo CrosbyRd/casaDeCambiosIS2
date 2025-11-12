@@ -141,18 +141,16 @@
       </a>
     </section>
 
-    <!-- Visualizar Ganancias (placeholder) -->
+    <!-- Dashboard de Ganancias -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-green-600 text-5xl mb-4">💹</div>
-      <h2 class="text-xl font-bold mb-2">Generar Reportes</h2>
-      <p class="text-gray-500 mb-4">Panel para generacion de reportes del negocio.</p>
-      <button type="button"
-              class="block w-full py-2 rounded-lg font-semibold text-white text-center opacity-60 cursor-not-allowed"
-              style="background:var(--brand);"
-              aria-disabled="true"
-              title="Disponible próximamente">
-        Próximamente
-      </button>
+      <h2 class="text-xl font-bold mb-2">Dashboard de Ganancias</h2>
+      <p class="text-gray-500 mb-4">Visualiza las ganancias por período y por moneda operada.</p>
+      <a href="{% url 'ganancias:dashboard_ganancias' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
     </section>
 
   </div>
