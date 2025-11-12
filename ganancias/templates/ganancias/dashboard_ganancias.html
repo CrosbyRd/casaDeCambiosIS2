@@ -22,7 +22,14 @@
     .dashboard-header h1{color:#000;font-size:1.75rem;font-weight:700;margin:0;padding-left:clamp(24px,5vw,120px);}
 
     /* Filtros */
-    .filter-section{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:1.25rem;border-left:4px solid var(--brand);}
+    .filter-section{
+        background:#fff;
+        border-radius:12px;
+        box-shadow:var(--shadow-sm);
+        padding:1.25rem;
+        /* sin línea lateral */
+        border-left:none;
+        }
     .filter-section h3{font-size:1.05rem;font-weight:600;color:var(--muted);margin:0 0 1rem;display:flex;gap:.5rem;align-items:center;}
     .filter-section h3::before{content:"🔍";}
     .filter-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
@@ -86,16 +93,61 @@
         .content-grid{grid-template-columns:1fr}
         .chart-container{height:320px}
     }
+
+    /* Espaciado superior/inferior del encabezado de página */
+    .page-header{
+    margin-top: 22px;   /* aire contra el navbar/top */
+    margin-bottom: 28px;/* separación del bloque de filtros */
+    padding-top: 6px;   /* sensación de “despegado” */
+    }
+    .page-header h1{
+    margin: 0 0 6px 0;  /* h1 pegado al subtítulo, sin colisiones */
+    }
+    .page-header p{
+    margin: 0;
+    }
+
+    /* Select lila para "Moneda Operada" */
+    .filter-form .form-select{
+    background-color: var(--brand-soft);  /* lila suave */
+    color: var(--ink);                     /* texto legible */
+    border-color: var(--brand);            /* borde lila */
+    appearance: none;                      /* quita estilo nativo para que aplique el color */
+    }
+
+    /* Hover consistente */
+    .filter-form .form-select:hover{
+    border-color: var(--brand-hover);
+    }
+
+    /* Focus accesible y consistente (ya tienes sombra, reforzamos color) */
+    .filter-form .form-select:focus{
+    background-color: var(--brand-soft);
+    border-color: var(--brand-hover);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);
+    outline: none;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-wide">
 
-    <!-- Header -->
-    <div class="dashboard-header">
-        <h1>Dashboard de Ganancias</h1>
+  <header class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Dashboard de Ganancias</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Aquí puedes gestionar todas las cotizaciones registradas en el sistema.
+      </p>
     </div>
+
+    <div class="space-x-3 flex">
+      <a href="{% url 'admin_panel:dashboard' %}"
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--brand-dark)]">
+        ⬅ Volver al Panel
+      </a>
+    </div>
+  </header>
 
     <!-- Filtros -->
     <div class="filter-section">
@@ -137,7 +189,7 @@
             <div class="metric-hero-content">
                 <div class="metric-hero-icon">💵</div>
                 <div class="metric-hero-label">Ganancia Total del Período</div>
-                <div class="metric-hero-value">{{ ganancia_total_periodo|floatformat:0 }}</div>
+                <div id="hero-total-amount" class="metric-hero-value">{{ ganancia_total_periodo|floatformat:0 }}</div>
                 <div class="metric-hero-currency">PYG</div>
             </div>
         </section>
@@ -301,5 +353,27 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 });
+
+/* === Formateo de miles (es-PY) para hero y tabla === */
+(function(){
+  const fmt = new Intl.NumberFormat('es-PY');
+
+  // HERO (total del período)
+  const hero = document.getElementById('hero-total-amount');
+  if (hero) {
+    const raw = hero.textContent.trim();
+    // limpia posibles separadores previos y convierte a número
+    const n = Number(raw.replace(/\./g,'').replace(/,/g,'.'));
+    if (!Number.isNaN(n)) hero.textContent = fmt.format(Math.round(n));
+  }
+
+  // Tabla "Ganancias por Moneda" (usa la clase existente .amount-display)
+  document.querySelectorAll('.amount-display').forEach(el => {
+    const raw = el.textContent.trim();
+    const n = Number(raw.replace(/\./g,'').replace(/,/g,'.'));
+    if (!Number.isNaN(n)) el.textContent = fmt.format(Math.round(n));
+  });
+})();
+
 </script>
 {% endblock %}
