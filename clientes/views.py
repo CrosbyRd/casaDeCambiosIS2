@@ -37,8 +37,7 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         
         if search_query:
             queryset = queryset.filter(
-                Q(nombre__icontains=search_query) |
-                Q(correo_electronico__icontains=search_query)
+                Q(nombre__icontains=search_query)
             )
         
         if categoria:
