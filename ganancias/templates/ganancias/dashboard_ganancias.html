@@ -198,6 +198,14 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="filter-col">
+                    <label for="tipo_operacion" class="form-label">Tipo de Operación</label>
+                    <select class="form-select form-control" id="tipo_operacion" name="tipo_operacion">
+                        <option value="">Ganancias Generales</option>
+                        <option value="venta" {% if tipo_operacion_seleccionado == 'venta' %}selected{% endif %}>Ganancias por Venta</option>
+                        <option value="compra" {% if tipo_operacion_seleccionado == 'compra' %}selected{% endif %}>Ganancias por Compra</option>
+                    </select>
+                </div>
                 <div class="filter-actions">
                     <button type="submit" class="btn btn-primary-custom">✓ Aplicar</button>
                     <a href="{% url 'ganancias:dashboard_ganancias' %}" class="btn btn-secondary-custom">↺ Limpiar</a>

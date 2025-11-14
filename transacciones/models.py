@@ -107,6 +107,12 @@ class Transaccion(models.Model):
     # Detalles financieros
     tasa_cambio_aplicada = models.DecimalField(max_digits=10, decimal_places=4)
     comision_aplicada = models.DecimalField(max_digits=10, decimal_places=2)
+    comision_cotizacion = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        default=0,
+        help_text="Comisión de compra/venta de la cotización en el momento de la transacción."
+    )
 
     # Información operativa
     medio_acreditacion_cliente = models.ForeignKey('clientes.MedioAcreditacion', on_delete=models.PROTECT, null=True, blank=True, help_text="Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).")

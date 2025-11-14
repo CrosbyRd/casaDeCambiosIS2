@@ -39,6 +39,7 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
         'monto_recibido': Decimal('0.0'),
         'tasa_aplicada': Decimal('0.0'),
         'bonificacion_aplicada': Decimal('0.0'),
+        'comision_cotizacion': Decimal('0.0'), # Nuevo campo para la comisión de la cotización
         'monto_ajustado': False,
         'monto_maximo_posible': Decimal('0.0'),
     }
@@ -90,6 +91,7 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
                 raise ValueError(f"Tasa de cambio de venta inválida para {moneda_destino}.")
             
             monto_recibido = monto_origen / tasa_final
+            resultado['comision_cotizacion'] = comision_vta # Guardar la comisión de venta
 
             # Ajuste por denominaciones disponibles
             ajuste = ajustar_monto_a_denominaciones_disponibles(
@@ -125,6 +127,7 @@ def calcular_simulacion(monto_origen: Decimal, moneda_origen: str, moneda_destin
                 raise ValueError(f"Tasa de cambio de compra inválida para {moneda_origen}.")
                 
             monto_recibido = monto_origen * tasa_final
+            resultado['comision_cotizacion'] = comision_com # Guardar la comisión de compra
 
         else:
             raise ValueError("La simulación debe ser entre PYG y una moneda extranjera.")
