@@ -40,7 +40,13 @@
                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition"/>
               </td>
               <td class="px-6 py-4">
-                {{ form.categoria }}
+                <select name="categoria" id="id_categoria"
+                        class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-[var(--ink)]
+                               focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:border-[var(--brand)] transition">
+                  <option value="minorista" {% if form.instance.categoria == 'minorista' %}selected{% endif %}>Minorista</option>
+                  <option value="corporativo" {% if form.instance.categoria == 'corporativo' %}selected{% endif %}>Corporativo</option>
+                  <option value="vip" {% if form.instance.categoria == 'vip' %}selected{% endif %}>VIP</option>
+                </select>
               </td>
             </tr>
             <tr>
@@ -61,7 +67,8 @@
   <!-- Botones debajo del formulario -->
   <div class="flex justify-end gap-3 pt-6">
     <a href="{% url 'clientes:lista' %}" 
-       class="px-4 py-2 rounded-lg font-semibold text-white bg-gray-500 hover:bg-gray-600">
+       class="px-4 py-2 rounded-lg font-semibold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">
       Cancelar
     </a>
     <button type="submit" form="form-cliente"
