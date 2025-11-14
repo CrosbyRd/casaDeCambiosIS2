@@ -25,15 +25,16 @@ def dashboard_ganancias(request):
         fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
         ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__gte=fecha_inicio)
     else:
-        fecha_inicio = (datetime.now() - timedelta(days=30)).date() # Por defecto, últimos 30 días
-        ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__gte=fecha_inicio)
-
+        # Si no se proporciona fecha_inicio_str, no aplicamos un filtro de fecha de inicio por defecto,
+        # permitiendo que se muestren todos los registros históricos.
+        fecha_inicio = None # No aplicar filtro de inicio por defecto
     if fecha_fin_str:
         fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
         ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__lte=fecha_fin)
     else:
-        fecha_fin = datetime.now().date() # Por defecto, hasta hoy
-        ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__lte=fecha_fin)
+        fecha_fin = None # No aplicar filtro de fin por defecto
+        # Si no se proporciona fecha_fin_str, no aplicamos un filtro de fecha de fin por defecto,
+        # permitiendo que se muestren todos los registros históricos.
 
     if moneda_operada_id:
         ganancias_queryset = ganancias_queryset.filter(moneda_operada__id=moneda_operada_id)

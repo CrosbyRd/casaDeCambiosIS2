@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone # Importar timezone
 from transacciones.models import Transaccion
 from monedas.models import Moneda
 from decimal import Decimal # Importar Decimal para cálculos precisos
@@ -57,6 +58,7 @@ def crear_o_actualizar_registro_ganancia(sender, instance, created, **kwargs):
                 'ganancia_registrada': ganancia_neta_real,
                 'moneda_ganancia': moneda_pyg,
                 'moneda_operada': moneda_operada,
+                'fecha_registro': timezone.now(),
             }
         )
         print(f"Registro de ganancia creado/actualizado para Transaccion {instance.id} con ganancia neta real: {ganancia_neta_real}")
