@@ -37,4 +37,8 @@ urlpatterns = [
     path("clientes/<uuid:id_medio>/editar/", views.MedioPagoUpdateView.as_view(), name="clientes_update"),
     path("clientes/<uuid:id_medio>/eliminar/", views.MedioPagoDeleteView.as_view(), name="clientes_delete"),
     path("clientes/<uuid:id_medio>/predeterminar/", views.MedioPagoPredeterminarView.as_view(), name="clientes_predeterminar"),
+
+    # Rutas AJAX para la integración en iniciar_operacion
+    path("api/clientes/crear/", views.AjaxCreateMedioPagoView.as_view(), name="ajax_clientes_create"),
+    path("api/clientes/<uuid:id_medio>/form/", views.AjaxGetMedioPagoFormView.as_view(), name="ajax_clientes_get_form"),
 ]

@@ -18,14 +18,16 @@ medios de pago del cliente (front-end de usuario).
 
 """
 from django.contrib import messages
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
-from django.db.models import Count, Q 
+from django.db.models import Count, Q
+from django.template.loader import render_to_string # Importar para renderizar plantillas a string
 from .models import TipoMedioPago, CampoMedioPago, MedioPagoCliente
 from .forms import (
     TipoMedioPagoForm,
@@ -36,7 +38,9 @@ from .forms import (
 from django.db import transaction
 from django.utils.timezone import now
 from django.urls import reverse
-from usuarios.mixins import RequireClienteMixin 
+from usuarios.mixins import RequireClienteMixin
+from clientes.models import Cliente # Importar Cliente para get_cliente_activo
+from usuarios.utils import get_cliente_activo # Importar get_cliente_activo
 
 # ---------------------------------------------------------------------------
 # Mixins
@@ -302,3 +306,97 @@ class MedioPagoPredeterminarView(RequireClienteMixin, View):
 
     def get(self, *args, **kwargs):
         return HttpResponseForbidden("Método no permitido")
+
+class AjaxCreateMedioPagoView(RequireClienteMixin, View):
+    """
+    Vista AJAX para crear un nuevo MedioPagoCliente.
+    Devuelve JSON con el nuevo medio si es exitoso, o el formulario con errores si falla.
+    """
+    def get(self, request, *args, **kwargs):
+        cliente = self.cliente
+        # Obtener el tipo de medio de pago si se pasa en la URL (para campos dinámicos)
+        tipo_id = request.GET.get('tipo')
+        initial_data = {}
+        if tipo_id:
+            initial_data['tipo'] = tipo_id
+        
+        form = MedioPagoClienteForm(initial=initial_data, user=request.user)
+        form_html = render_to_string(
+            "pagos/clientes_form_ajax.html",
+            {'form': form, 'cliente': cliente},
+            request=request
+        )
+        return JsonResponse({
+            'success': True,
+            'form_html': form_html,
+        })
+
+    def post(self, request, *args, **kwargs):
+        cliente = self.cliente # Obtenido del RequireClienteMixin
+        form = MedioPagoClienteForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            medio_pago = form.save(commit=False)
+            medio_pago.cliente = cliente
+            medio_pago.save()
+
+            # Preparar datos del nuevo medio para la respuesta JSON
+            campos_data = []
+            for campo in medio_pago.tipo.campos.filter(activo=True):
+                campos_data.append({
+                    'nombre_campo': campo.nombre_campo,
+                    'valor': medio_pago.datos.get(campo.nombre_campo, ''),
+                })
+
+            return JsonResponse({
+                'success': True,
+                'id_medio': str(medio_pago.id_medio),
+                'alias': medio_pago.alias,
+                'tipo_nombre': medio_pago.tipo.nombre,
+                'campos': campos_data,
+                'message': "Medio de pago creado correctamente."
+            })
+        else:
+            # Si el formulario no es válido, renderizarlo con errores y devolver el HTML
+            form_html = render_to_string(
+                "pagos/clientes_form_ajax.html",
+                {'form': form, 'cliente': cliente},
+                request=request
+            )
+            return JsonResponse({
+                'success': False,
+                'form_html': form_html,
+                'message': "Por favor, corregí los errores en el formulario."
+            })
+
+class AjaxGetMedioPagoFormView(RequireClienteMixin, View):
+    """
+    Vista AJAX para obtener el HTML de un formulario de MedioPagoCliente (para edición/visualización).
+    """
+    def get(self, request, *args, **kwargs):
+        cliente = self.cliente
+        id_medio = kwargs.get('id_medio')
+        
+        try:
+            medio_pago = MedioPagoCliente.objects.get(id_medio=id_medio, cliente=cliente)
+            form = MedioPagoClienteForm(instance=medio_pago, user=request.user)
+            
+            form_html = render_to_string(
+                "pagos/clientes_form_ajax.html",
+                {'form': form, 'object': medio_pago, 'cliente': cliente}, # Pasar 'object' para que la plantilla sepa que es edición
+                request=request
+            )
+            return JsonResponse({
+                'success': True,
+                'form_html': form_html,
+            })
+        except MedioPagoCliente.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': "Medio de pago no encontrado o no pertenece al cliente."
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f"Error al cargar el formulario: {str(e)}"
+            }, status=500)

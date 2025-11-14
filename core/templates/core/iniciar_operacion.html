@@ -140,21 +140,22 @@
           </label>
           <div class="flex items-center gap-2">
             {{ form.medio_pago }}
-            <a href="{% url 'pagos:clientes_create' %}?next={{ request.get_full_path|urlencode }}"
+            <button type="button" id="btn-agregar-medio-pago"
                class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap"
                style="background:var(--brand-soft); color:var(--brand-dark);">
               ➕ Agregar
-            </a>
+            </button>
           </div>
           {% if form.medio_pago.errors %}
             <p class="mt-1 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
           {% endif %}
 
-          <div id="medio-pago-detalles" class="mt-3 p-3 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
-            <h3 class="text-sm font-semibold text-[var(--ink)] mb-1">Detalles del Método de pago</h3>
-            <p class="text-sm text-[var(--muted)]">Proveedor: <strong id="detalle-alias-pago"></strong></p>
-            <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo-pago"></strong></p>
-            <div id="detalle-campos-dinamicos-pago" class="mt-1 space-y-1"></div>
+          <div id="contenedor-form-pago" class="mt-3 hidden">
+            <!-- Aquí se cargará el formulario AJAX para crear un nuevo medio de pago -->
+          </div>
+
+          <div id="contenedor-detalle-pago" class="mt-3 hidden">
+            <!-- Aquí se cargará el formulario AJAX para ver/editar un medio de pago existente -->
           </div>
         </div>
       </div>
@@ -295,10 +296,9 @@
 
   const medioPagoBlock = document.getElementById('medio-pago-block');
   const medioPagoSelect = document.getElementById('id_medio_pago');
-  const medioPagoDetalles = document.getElementById('medio-pago-detalles');
-  const detalleAliasPago = document.getElementById('detalle-alias-pago');
-  const detalleTipoPago = document.getElementById('detalle-tipo-pago');
-  const detalleCamposDinamicosPago = document.getElementById('detalle-campos-dinamicos-pago');
+  const btnAgregarMedioPago = document.getElementById('btn-agregar-medio-pago');
+  const contenedorFormPago = document.getElementById('contenedor-form-pago');
+  const contenedorDetallePago = document.getElementById('contenedor-detalle-pago');
 
   const medioAcreditacionBlock = document.getElementById('medio-acreditacion-block');
   const medioAcreditacionSelect = document.getElementById('id_medio_acreditacion');
@@ -314,6 +314,7 @@
 
   const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
 
+  // mediosPagoData ya se pasa desde el contexto de Django
   const mediosPagoData = JSON.parse('{{ medios_pago_json|default:"{}"|escapejs }}');
   const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|default:"{}"|escapejs }}');
 
@@ -335,10 +336,12 @@
     } else if (t === 'compra') {
       medioAcreditacionBlock?.classList.remove('hidden');
       medioPagoBlock?.classList.add('hidden');
-      medioPagoDetalles?.classList.add('hidden');
+      contenedorFormPago?.classList.add('hidden'); // Ocultar form de pago si es compra
+      contenedorDetallePago?.classList.add('hidden'); // Ocultar detalle de pago si es compra
     } else {
       medioPagoBlock?.classList.add('hidden');
-      medioPagoDetalles?.classList.add('hidden');
+      contenedorFormPago?.classList.add('hidden');
+      contenedorDetallePago?.classList.add('hidden');
       medioAcreditacionBlock?.classList.add('hidden');
       medioAcreditacionDetalles?.classList.add('hidden');
     }
@@ -381,49 +384,203 @@
     monto?.addEventListener(ev, enforce);
   });
 
-  function mostrarDetallesMedioPago() {
-    const id = medioPagoSelect?.value;
-    if (id && mediosPagoData[id]) {
-      const medio = mediosPagoData[id];
-      detalleAliasPago.textContent = medio.alias || '';
-      detalleTipoPago.textContent = medio.tipo_nombre || '';
-      detalleCamposDinamicosPago.innerHTML = '';
-      (medio.campos || []).forEach(campo=>{
-        const p = document.createElement('p');
-        p.className = 'text-sm text-[var(--muted)]';
-        p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
-        detalleCamposDinamicosPago.appendChild(p);
+  // --- Lógica AJAX para Medios de Pago ---
+  async function cargarFormularioCreacion() {
+    contenedorDetallePago.classList.add('hidden'); // Ocultar detalles si se va a crear
+    contenedorFormPago.classList.remove('hidden');
+    try {
+      const response = await fetch('{% url "pagos:ajax_clientes_create" %}', {
+        method: 'GET', // Opcional, para obtener un formulario vacío
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json',
+        },
       });
-      medioPagoDetalles?.classList.remove('hidden');
-    } else {
-      medioPagoDetalles?.classList.add('hidden');
+      const data = await response.json();
+      if (data.success) {
+        contenedorFormPago.innerHTML = data.form_html;
+        inicializarFormularioDinamico(contenedorFormPago);
+      } else {
+        // Manejar error si la carga inicial del formulario falla
+        contenedorFormPago.innerHTML = `<p class="text-red-600">${data.message}</p>`;
+      }
+    } catch (error) {
+      console.error('Error al cargar el formulario de creación:', error);
+      contenedorFormPago.innerHTML = `<p class="text-red-600">Error al cargar el formulario de creación.</p>`;
     }
   }
 
-  function mostrarDetallesMedioAcreditacion() {
-    const id = medioAcreditacionSelect?.value;
-    if (id && mediosAcreditacionData[id]) {
-      const medio = mediosAcreditacionData[id];
-      detalleAliasAcreditacion.textContent = medio.alias || '';
-      detalleTipoAcreditacion.textContent = medio.tipo_nombre || '';
-      detalleCamposDinamicosAcreditacion.innerHTML = '';
-      (medio.campos || []).forEach(campo=>{
-        const p = document.createElement('p');
-        p.className = 'text-sm text-[var(--muted)]';
-        p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
-        detalleCamposDinamicosAcreditacion.appendChild(p);
+  async function enviarFormularioCreacion(event) {
+    event.preventDefault();
+    const formElement = event.target;
+    const formData = new FormData(formElement);
+
+    try {
+      const response = await fetch('{% url "pagos:ajax_clientes_create" %}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+        },
+        body: formData,
       });
-      medioAcreditacionDetalles?.classList.remove('hidden');
-    } else {
-      medioAcreditacionDetalles?.classList.add('hidden');
+      const data = await response.json();
+
+      if (data.success) {
+        // Añadir el nuevo medio de pago al select
+        const newOption = new Option(data.alias, data.id_medio, true, true);
+        medioPagoSelect.add(newOption);
+        medioPagoSelect.value = data.id_medio; // Seleccionar el nuevo medio
+        
+        // Actualizar mediosPagoData para que los detalles funcionen
+        mediosPagoData[data.id_medio] = {
+            id_medio: data.id_medio,
+            alias: data.alias,
+            tipo_nombre: data.tipo_nombre,
+            campos: data.campos,
+        };
+
+        mostrarDetallesMedioPago(); // Mostrar los detalles del nuevo medio
+        contenedorFormPago.classList.add('hidden'); // Ocultar el formulario de creación
+        messages.success(data.message); // Mostrar mensaje de éxito
+      } else {
+        // Mostrar el formulario con errores
+        contenedorFormPago.innerHTML = data.form_html;
+        inicializarFormularioDinamico(contenedorFormPago); // Re-inicializar scripts del form
+        messages.error(data.message); // Mostrar mensaje de error
+      }
+    } catch (error) {
+      console.error('Error al enviar el formulario de creación:', error);
+      messages.error('Error de red al intentar crear el medio de pago.');
     }
   }
 
-  medioPagoSelect?.addEventListener('change', mostrarDetallesMedioPago);
-  medioAcreditacionSelect?.addEventListener('change', mostrarDetallesMedioAcreditacion);
+  async function cargarFormularioEdicion(idMedio) {
+    contenedorFormPago.classList.add('hidden'); // Ocultar formulario de creación
+    contenedorDetallePago.classList.remove('hidden');
+    try {
+      const response = await fetch(`/pagos/api/clientes/${idMedio}/form/`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        contenedorDetallePago.innerHTML = data.form_html;
+        // Deshabilitar todos los campos del formulario cargado para que sea solo de visualización
+        contenedorDetallePago.querySelectorAll('input, select, textarea, button[type="submit"]').forEach(field => {
+          field.setAttribute('disabled', 'true');
+        });
+        // Ocultar el botón de guardar en el modo de solo lectura
+        const saveButton = contenedorDetallePago.querySelector('button[type="submit"]');
+        if (saveButton) {
+          saveButton.style.display = 'none';
+        }
+        // Ocultar el botón de cancelar también, ya que no hay acción real
+        const cancelButton = contenedorDetallePago.querySelector('#btn-cancelar-form-pago');
+        if (cancelButton) {
+          cancelButton.style.display = 'none';
+        }
+      } else {
+        contenedorDetallePago.innerHTML = `<p class="text-red-600">${data.message}</p>`;
+      }
+    } catch (error) {
+      console.error('Error al cargar el formulario de edición:', error);
+      contenedorDetallePago.innerHTML = `<p class="text-red-600">Error al cargar los detalles del medio de pago.</p>`;
+    }
+  }
+
+  function inicializarFormularioDinamico(container) {
+    const formElement = container.querySelector('form.gx-form');
+    if (formElement) {
+      formElement.addEventListener('submit', enviarFormularioCreacion);
+      const tipoSelect = formElement.querySelector('#id_tipo');
+      if (tipoSelect) {
+        tipoSelect.addEventListener('change', async function() {
+          const selectedTipoId = this.value;
+          if (selectedTipoId) {
+            // Recargar el formulario con el tipo seleccionado para mostrar los campos dinámicos
+            try {
+              const response = await fetch(`{% url "pagos:ajax_clientes_create" %}?tipo=${selectedTipoId}`, {
+                method: 'GET',
+                headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'Content-Type': 'application/json',
+                },
+              });
+              const data = await response.json();
+              if (data.success) {
+                contenedorFormPago.innerHTML = data.form_html;
+                inicializarFormularioDinamico(contenedorFormPago); // Re-inicializar
+              } else {
+                contenedorFormPago.innerHTML = `<p class="text-red-600">${data.message}</p>`;
+              }
+            } catch (error) {
+              console.error('Error al recargar el formulario por cambio de tipo:', error);
+            }
+          }
+        });
+      }
+      // Manejar el botón de cancelar dentro del formulario AJAX
+      const btnCancelar = formElement.querySelector('#btn-cancelar-form-pago');
+      if (btnCancelar) {
+        btnCancelar.addEventListener('click', () => {
+          contenedorFormPago.classList.add('hidden');
+          // Si había un medio de pago seleccionado antes, mostrar sus detalles
+          if (medioPagoSelect.value) {
+            cargarFormularioEdicion(medioPagoSelect.value);
+          } else {
+            // Si no había nada seleccionado, ocultar también el contenedor de detalles
+            contenedorDetallePago.classList.add('hidden');
+          }
+        });
+      }
+    }
+  }
+
+  btnAgregarMedioPago?.addEventListener('click', cargarFormularioCreacion);
+
+  medioPagoSelect?.addEventListener('change', function() {
+    const selectedId = this.value;
+    if (selectedId) {
+      cargarFormularioEdicion(selectedId);
+    } else {
+      contenedorDetallePago.classList.add('hidden');
+      contenedorFormPago.classList.add('hidden');
+    }
+  });
+
+  // Inicializar al cargar la página si ya hay un medio de pago seleccionado
+  if (medioPagoSelect?.value) {
+    cargarFormularioEdicion(medioPagoSelect.value);
+  }
+
+  // Función para mostrar mensajes de Django (si se usan)
+  function showMessage(type, text) {
+    const messagesContainer = document.getElementById('flash-messages') || document.createElement('div');
+    if (!messagesContainer.id) {
+      messagesContainer.id = 'flash-messages';
+      messagesContainer.className = 'mb-3 space-y-2';
+      form.before(messagesContainer);
+    }
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `px-3 py-2 rounded-xl border ${type === 'error' ? 'bg-red-50 border-red-300 text-red-800' : 'bg-green-50 border-green-300 text-green-800'}`;
+    messageDiv.textContent = text;
+    messagesContainer.appendChild(messageDiv);
+    setTimeout(() => messageDiv.remove(), 5000); // Eliminar mensaje después de 5 segundos
+  }
+  // Sobrescribir messages.success y messages.error para usar nuestra función
+  window.messages = {
+    success: (text) => showMessage('success', text),
+    error: (text) => showMessage('error', text),
+    info: (text) => showMessage('info', text), // Añadir info si es necesario
+  };
 
   enforce();
-  mostrarDetallesMedioPago();
+  // La lógica de mostrarDetallesMedioPago ya no es necesaria directamente aquí,
+  // ya que cargarFormularioEdicion se encarga de mostrar los detalles.
+  // mostrarDetallesMedioPago();
   mostrarDetallesMedioAcreditacion();
 
   /* === Formateo visual del monto (input espejo) === */
