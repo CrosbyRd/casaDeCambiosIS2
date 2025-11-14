@@ -14,7 +14,7 @@
     </div>
     <a href="{% url 'clientes:lista' %}" 
        class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
-       style="color:var(--brand-dark)">⬅ Volver a Clientes</a>
+       style="color:var(--brand-dark)">⬅ Volver</a>
   </header>
 
   <!-- Formulario como tabla -->
@@ -65,9 +65,10 @@
   <!-- Botones debajo del formulario -->
   <div class="flex justify-end gap-3 pt-6">
     <a href="{% url 'clientes:lista' %}" 
-       class="px-4 py-2 rounded-lg font-semibold text-white bg-gray-500 hover:bg-gray-600">
+       class="px-4 py-2 rounded-lg font-semibold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">
       Cancelar
-    </a>
+    </a>    
     <button type="submit" form="form-cliente"
             class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
             style="background:var(--brand)">
