@@ -17,6 +17,7 @@ def dashboard_ganancias(request):
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
     moneda_operada_id = request.GET.get('moneda_operada')
+    tipo_operacion = request.GET.get('tipo_operacion')
 
     ganancias_queryset = RegistroGanancia.objects.all()
 
@@ -24,18 +25,22 @@ def dashboard_ganancias(request):
         fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
         ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__gte=fecha_inicio)
     else:
-        fecha_inicio = (datetime.now() - timedelta(days=30)).date() # Por defecto, últimos 30 días
-        ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__gte=fecha_inicio)
-
+        # Si no se proporciona fecha_inicio_str, no aplicamos un filtro de fecha de inicio por defecto,
+        # permitiendo que se muestren todos los registros históricos.
+        fecha_inicio = None # No aplicar filtro de inicio por defecto
     if fecha_fin_str:
         fecha_fin = datetime.strptime(fecha_fin_str, '%Y-%m-%d').date()
         ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__lte=fecha_fin)
     else:
-        fecha_fin = datetime.now().date() # Por defecto, hasta hoy
-        ganancias_queryset = ganancias_queryset.filter(fecha_registro__date__lte=fecha_fin)
+        fecha_fin = None # No aplicar filtro de fin por defecto
+        # Si no se proporciona fecha_fin_str, no aplicamos un filtro de fecha de fin por defecto,
+        # permitiendo que se muestren todos los registros históricos.
 
     if moneda_operada_id:
         ganancias_queryset = ganancias_queryset.filter(moneda_operada__id=moneda_operada_id)
+
+    if tipo_operacion in ['compra', 'venta']:
+        ganancias_queryset = ganancias_queryset.filter(transaccion__tipo_operacion=tipo_operacion)
 
     # --- Métricas Clave ---
     ganancia_total_periodo = ganancias_queryset.aggregate(total=Sum('ganancia_registrada'))['total'] or 0
@@ -73,5 +78,6 @@ def dashboard_ganancias(request):
         'fecha_inicio_seleccionada': fecha_inicio_str,
         'fecha_fin_seleccionada': fecha_fin_str,
         'moneda_operada_seleccionada': moneda_operada_id,
+        'tipo_operacion_seleccionado': tipo_operacion,
     }
     return render(request, 'ganancias/dashboard_ganancias.html', context)
