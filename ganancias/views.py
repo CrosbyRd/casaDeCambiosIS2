@@ -17,6 +17,7 @@ def dashboard_ganancias(request):
     fecha_inicio_str = request.GET.get('fecha_inicio')
     fecha_fin_str = request.GET.get('fecha_fin')
     moneda_operada_id = request.GET.get('moneda_operada')
+    tipo_operacion = request.GET.get('tipo_operacion')
 
     ganancias_queryset = RegistroGanancia.objects.all()
 
@@ -36,6 +37,9 @@ def dashboard_ganancias(request):
 
     if moneda_operada_id:
         ganancias_queryset = ganancias_queryset.filter(moneda_operada__id=moneda_operada_id)
+
+    if tipo_operacion in ['compra', 'venta']:
+        ganancias_queryset = ganancias_queryset.filter(transaccion__tipo_operacion=tipo_operacion)
 
     # --- Métricas Clave ---
     ganancia_total_periodo = ganancias_queryset.aggregate(total=Sum('ganancia_registrada'))['total'] or 0
@@ -73,5 +77,6 @@ def dashboard_ganancias(request):
         'fecha_inicio_seleccionada': fecha_inicio_str,
         'fecha_fin_seleccionada': fecha_fin_str,
         'moneda_operada_seleccionada': moneda_operada_id,
+        'tipo_operacion_seleccionado': tipo_operacion,
     }
     return render(request, 'ganancias/dashboard_ganancias.html', context)
