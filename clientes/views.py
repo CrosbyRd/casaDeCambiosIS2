@@ -14,13 +14,11 @@ from django.contrib.auth.decorators import login_required
 
 
 from .models import Cliente
-from .forms import ClienteForm, ClienteSearchForm
-
+from .forms import ClienteForm
 class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Cliente
     template_name = 'clientes/lista_clientes.html'
     context_object_name = 'clientes'
-    paginate_by = 15
     permission_required = 'clientes.access_clientes_panel'   #se agrega el permiso para que solo los roles con este permiso accedan
     
     
@@ -28,34 +26,9 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         return redirect('home')  # 🚀 tu menú principal
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        
-        # Filtros
-        search_query = self.request.GET.get('q', '')
-        categoria = self.request.GET.get('categoria', '')
-        activo = self.request.GET.get('activo', '')
-        
-        if search_query:
-            queryset = queryset.filter(
-                Q(nombre__icontains=search_query)
-            )
-        
-        if categoria:
-            queryset = queryset.filter(categoria=categoria)
-        
-        if activo:
-            queryset = queryset.filter(activo=(activo.lower() == 'true'))
-            
-        return queryset.order_by('nombre')
+        # Devolvemos todos los clientes y dejamos el filtrado al frontend (JS)
+        return super().get_queryset().order_by('nombre')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['search_form'] = ClienteSearchForm(self.request.GET or None)
-        context['search_query'] = self.request.GET.get('q', '')
-        context['categoria_filtro'] = self.request.GET.get('categoria', '')
-        context['activo_filtro'] = self.request.GET.get('activo', '')
-        return context
-
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Cliente
     template_name = 'clientes/detalle_cliente.html'

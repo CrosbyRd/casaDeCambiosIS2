@@ -34,33 +34,41 @@
     </div>
   </header>
 
-  <!-- Filtros -->
-  <section class="bg-white border rounded-xl shadow-sm p-6 mb-6" style="border-color:var(--line)">
-    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div>
-        <input type="text" name="q" placeholder="Buscar por nombre o email..." 
-               value="{{ search_query }}"
-               class="w-full border border-gray-300 rounded-lg px-4 py-2">
+  <!-- Filtros (frontend, similar a Roles) -->
+  <section class="bg-white border rounded-xl shadow-sm p-4 mb-6" style="border-color:var(--line)">
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="return false;">
+      <div class="md:col-span-1">
+        <label for="filtroTextoClientes" class="block text-sm font-medium mb-1" style="color:var(--muted)">
+          Buscar por nombre
+        </label>
+        <input id="filtroTextoClientes" type="search" placeholder="Ej: Juan, Cliente VIP"
+               class="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
+               style="border-color:var(--line); --tw-ring-color:var(--brand);" />
       </div>
       <div>
-        <select name="categoria" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-          <option value="">Todas las categorías</option>
-          <option value="minorista" {% if categoria_filtro == 'minorista' %}selected{% endif %}>Minorista</option>
-          <option value="corporativo" {% if categoria_filtro == 'corporativo' %}selected{% endif %}>Corporativo</option>
-          <option value="vip" {% if categoria_filtro == 'vip' %}selected{% endif %}>VIP</option>
+        <label for="filtroCategoria" class="block text-sm font-medium mb-1" style="color:var(--muted)">
+          Filtrar por categoría
+        </label>
+        <select id="filtroCategoria"
+                class="w-full rounded-lg border px-3 py-2 bg-white outline-none focus:ring-2"
+                style="border-color:var(--line); --tw-ring-color:var(--brand);">
+          <option value="">Todas</option>
+          <option value="minorista">Minorista</option>
+          <option value="corporativo">Corporativo</option>
+          <option value="vip">VIP</option>
         </select>
       </div>
       <div>
-        <select name="activo" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+        <label for="filtroActivo" class="block text-sm font-medium mb-1" style="color:var(--muted)">
+          Filtrar por estado
+        </label>
+        <select id="filtroActivo"
+                class="w-full rounded-lg border px-3 py-2 bg-white outline-none focus:ring-2"
+                style="border-color:var(--line); --tw-ring-color:var(--brand);">
           <option value="">Todos</option>
-          <option value="true" {% if activo_filtro == 'true' %}selected{% endif %}>Activos</option>
-          <option value="false" {% if activo_filtro == 'false' %}selected{% endif %}>Inactivos</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
         </select>
-      </div>
-      <div>
-        <button type="submit" class="w-full px-4 py-2 rounded-lg font-bold text-white" style="background:var(--brand)">
-          Buscar
-        </button>
       </div>
     </form>
   </section>
@@ -78,9 +86,12 @@
             <th class="px-6 py-3 text-center">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tbodyClientes">
           {% for cliente in clientes %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
+          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)"
+              data-text="{{ cliente.nombre|lower }}"
+              data-categoria="{{ cliente.categoria }}"
+              data-activo="{% if cliente.activo %}activo{% else %}inactivo{% endif %}">
             <td class="px-6 py-4 font-semibold text-[var(--ink)]">{{ cliente.nombre }}</td>
 
             <td class="px-6 py-4">
@@ -126,4 +137,37 @@
     </div>
   </section>
 </main>
+<script>
+  // Debounce util para inputs (igual que en Roles)
+  function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+
+  const filtroTextoClientes = document.getElementById('filtroTextoClientes');
+  const filtroCategoria = document.getElementById('filtroCategoria');
+  const filtroActivo = document.getElementById('filtroActivo');
+  const tbodyClientes = document.getElementById('tbodyClientes');
+  const rowsClientes = [...tbodyClientes.querySelectorAll('tr[data-text]')];
+
+  function aplicarFiltrosClientes(){
+    const q   = (filtroTextoClientes.value || '').toLowerCase().trim();
+    const cat = (filtroCategoria.value || '').toLowerCase();
+    const act = (filtroActivo.value || '').toLowerCase();
+
+    rowsClientes.forEach(tr => {
+      const txt       = (tr.dataset.text || '').toLowerCase();
+      const categoria = (tr.dataset.categoria || '').toLowerCase();
+      const activo    = (tr.dataset.activo || '').toLowerCase();
+
+      const matchTxt = !q   || txt.includes(q);
+      const matchCat = !cat || categoria === cat;
+      const matchAct = !act || activo === act;
+
+      tr.style.display = (matchTxt && matchCat && matchAct) ? '' : 'none';
+    });
+  }
+
+  const filtrarClientes = debounce(aplicarFiltrosClientes, 150);
+  filtroTextoClientes.addEventListener('input', filtrarClientes);
+  filtroCategoria.addEventListener('change', aplicarFiltrosClientes);
+  filtroActivo.addEventListener('change', aplicarFiltrosClientes);
+</script>
 {% endblock %}
