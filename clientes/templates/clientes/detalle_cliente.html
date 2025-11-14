@@ -9,11 +9,12 @@
       <p class="text-lg leading-relaxed max-w-xl text-[var(--muted)]">Aquí puedes ver toda la información del cliente seleccionado.</p>
     </div>
     <div class="space-x-3 flex">
-      <a href="{% url 'clientes:lista' %}" class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600">⬅ Volver</a>
-    </div>
+      <a href="{% url 'clientes:lista' %}" 
+        class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+        style="color:var(--brand-dark)">⬅ Volver</a>    </div>
   </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 gap-6">    
     <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
       <table class="w-full border-collapse">
         <thead style="background:var(--brand); color:#fff">
@@ -33,24 +34,6 @@
         </tbody>
       </table>
     </section>
-
-    <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-      <table class="w-full border-collapse">
-        <thead style="background:var(--brand); color:#fff">
-          <tr><th class="px-6 py-3 text-left">💰 Límites de Compra</th></tr>
-        </thead>
-        <tbody>
-          <tr class="border-b" style="border-color:var(--line)"><td class="px-6 py-3"><strong>USD:</strong> ${{ cliente.limite_compra_usd|floatformat:2 }}</td></tr>
-          <tr><td class="px-6 py-3"><strong>Capacidad de Compra:</strong> {% if cliente.activo %}<span class="text-green-600 font-semibold">Disponible</span>{% else %}<span class="text-red-600 font-semibold">Límite excedido</span>{% endif %}</td></tr>
-        </tbody>
-      </table>
-    </section>
   </div>
-
-  <section class="bg-white border rounded-xl shadow-sm p-6 mt-6" style="border-color:var(--line)">
-    <h2 class="text-lg font-bold mb-4 text-[var(--ink)]">📄 Información de Transacciones</h2>
-    <div class="mb-3 p-3 rounded bg-blue-100 text-blue-800">ℹ️ Este cliente tiene una bonificación del <strong>{{ cliente.bonificacion }}%</strong> en todas sus transacciones.</div>
-    <div class="p-3 rounded bg-yellow-100 text-yellow-800">⚠️ Los límites mostrados son automáticos según la categoría <strong>{{ cliente.get_categoria_display }}</strong>.</div>
-  </section>
 </main>
 {% endblock %}
