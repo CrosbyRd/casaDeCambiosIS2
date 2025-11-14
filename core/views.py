@@ -114,6 +114,7 @@ def iniciar_operacion(request):
                 initial_data['monto_recibido_simulacion'] = str(resultado_simulacion['monto_recibido'])
                 initial_data['tasa_aplicada_simulacion'] = str(resultado_simulacion['tasa_aplicada'])
                 initial_data['bonificacion_aplicada_simulacion'] = str(resultado_simulacion['bonificacion_aplicada'])
+                initial_data['comision_cotizacion_simulacion'] = str(resultado_simulacion['comision_cotizacion']) # Nuevo
                 initial_data['monto_ajustado_simulacion'] = resultado_simulacion['monto_ajustado']
                 initial_data['monto_maximo_posible_simulacion'] = str(resultado_simulacion['monto_maximo_posible'])
             elif resultado_simulacion and resultado_simulacion.get('error'):
@@ -139,6 +140,7 @@ def iniciar_operacion(request):
             'monto_recibido': Decimal(initial_data['monto_recibido_simulacion']),
             'tasa_aplicada': Decimal(initial_data['tasa_aplicada_simulacion']),
             'bonificacion_aplicada': Decimal(initial_data['bonificacion_aplicada_simulacion']),
+            'comision_cotizacion': Decimal(initial_data['comision_cotizacion_simulacion']), # Nuevo
             'monto_ajustado': initial_data['monto_ajustado_simulacion'],
             'monto_maximo_posible': Decimal(initial_data['monto_maximo_posible_simulacion']),
             'error': None,
@@ -211,6 +213,7 @@ def iniciar_operacion(request):
             'monto_recibido': str(resultado_simulacion['monto_recibido']),
             'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
             'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
+            'comision_cotizacion': str(resultado_simulacion['comision_cotizacion']), # Nuevo
             'modalidad_tasa': form.cleaned_data['modalidad_tasa'],
             'monto_ajustado': resultado_simulacion.get('monto_ajustado', False), # Guardar si hubo ajuste
             'monto_maximo_posible': str(resultado_simulacion.get('monto_maximo_posible', Decimal('0'))), # Guardar el máximo posible
@@ -296,6 +299,7 @@ def confirmar_operacion(request):
                 monto_destino=operacion_pendiente['monto_recibido'],
                 tasa_cambio_aplicada=operacion_pendiente['tasa_aplicada'],
                 comision_aplicada=operacion_pendiente['comision_aplicada'],
+                comision_cotizacion=operacion_pendiente['comision_cotizacion'], # Nuevo
                 codigo_operacion_tauser=codigo_operacion_tauser,
                 tasa_garantizada_hasta=tasa_garantizada_hasta,
                 modalidad_tasa=modalidad_tasa, # Se mantiene la modalidad seleccionada
@@ -307,6 +311,9 @@ def confirmar_operacion(request):
 
         # Lógica para Flujo A (Tasa Bloqueada sin Stripe)
         elif modalidad_tasa == 'bloqueada':
+            # Asegurarse de que la comisión de cotización esté en la sesión para el flujo OTP
+            operacion_pendiente['comision_cotizacion'] = str(operacion_pendiente['comision_cotizacion'])
+            request.session['operacion_pendiente'] = operacion_pendiente
             return redirect('core:verificar_otp_reserva')
 
         # Lógica para Flujo B (Tasa Flotante sin Stripe)
@@ -409,6 +416,7 @@ def confirmar_operacion(request):
                     monto_destino=Decimal(operacion_pendiente['monto_recibido']),
                     tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
                     comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_pendiente['comision_cotizacion']), # Nuevo
                     codigo_operacion_tauser=codigo_operacion_tauser,
                     tasa_garantizada_hasta=None, # No hay tasa garantizada para flotante
                     modalidad_tasa=modalidad_tasa,
@@ -430,6 +438,7 @@ def confirmar_operacion(request):
                     monto_destino=Decimal(operacion_pendiente['monto_recibido']),
                     tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
                     comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_pendiente['comision_cotizacion']), # Nuevo
                     codigo_operacion_tauser=codigo_operacion_tauser,
                     tasa_garantizada_hasta=None,
                     modalidad_tasa=modalidad_tasa,
@@ -569,7 +578,7 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
         )
         messages.info(request, f"Hemos enviado un código de verificación a tu email ({request.user.email}).")
         form = VerificacionForm()
-        return render(request, self.template_name, {'form': form, 'email': request.user.email})
+        return render(request, self.template_name, {'form': form, 'email': request.user.email, 'operacion': operacion_pendiente}) # Pasar operacion_pendiente
 
     def post(self, request, *args, **kwargs):
         operacion_pendiente = request.session.get('operacion_pendiente')
@@ -621,6 +630,7 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
                     monto_destino=Decimal(operacion_pendiente['monto_recibido']),
                     tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
                     comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_pendiente['comision_cotizacion']), # Nuevo
                     codigo_operacion_tauser=codigo_operacion_tauser,
                     tasa_garantizada_hasta=tasa_garantizada_hasta,
                     modalidad_tasa=modalidad_tasa,
@@ -707,6 +717,7 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
                     operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
                     operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
                     operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['comision_cotizacion'] = str(resultado_simulacion_actualizada['comision_cotizacion']) # Nuevo: Guardar comisión de cotización
                     operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
                     operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
                     self.request.session['operacion_pendiente'] = operacion_pendiente
@@ -740,6 +751,7 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
                     operacion_pendiente['monto_recibido'] = str(monto_destino_actual)
                     operacion_pendiente['tasa_aplicada'] = str(tasa_actual)
                     operacion_pendiente['comision_aplicada'] = str(bonificacion_aplicada) # Usar la bonificación calculada por logic.py
+                    operacion_pendiente['comision_cotizacion'] = str(resultado_simulacion_actualizada['comision_cotizacion']) # Nuevo: Guardar comisión de cotización
                     operacion_pendiente['monto_ajustado'] = resultado_simulacion_actualizada['monto_ajustado']
                     operacion_pendiente['monto_maximo_posible'] = str(resultado_simulacion_actualizada['monto_maximo_posible'])
                     self.request.session['operacion_pendiente'] = operacion_pendiente
@@ -773,6 +785,8 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
         # Asegurar que monto_destino y comision_aplicada siempre se actualicen con los valores de la sesión
         transaccion.monto_destino = Decimal(operacion_pendiente['monto_recibido'])
         transaccion.comision_aplicada = Decimal(operacion_pendiente['comision_aplicada'])
+        # Usar .get con un valor por defecto para evitar KeyError en caso de que no exista (ej. transacciones antiguas)
+        transaccion.comision_cotizacion = Decimal(operacion_pendiente.get('comision_cotizacion', '0.0'))
 
         # --- NEW LOGIC FOR COMPRA WITH TASA FLOTANTE ---
         if transaccion.tipo_operacion == 'compra' and transaccion.modalidad_tasa == 'flotante':
