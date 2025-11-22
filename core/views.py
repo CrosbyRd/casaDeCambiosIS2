@@ -108,6 +108,12 @@ def iniciar_operacion(request):
                 monto_origen_decimal, moneda_origen_from_url, moneda_destino_from_url, user=request.user
             )
             if resultado_simulacion and not resultado_simulacion.get('error'):
+                # Asegurar que monto_origen esté en el resultado_simulacion
+                # Si se realizó un ajuste, `calcular_simulacion` ya incluye 'monto_origen'
+                # Si no hubo ajuste, lo añadimos aquí para consistencia.
+                if 'monto_origen' not in resultado_simulacion:
+                    resultado_simulacion['monto_origen'] = monto_origen_decimal
+                
                 # Actualizar initial_data con los montos ajustados si hubo ajuste
                 if resultado_simulacion.get('monto_ajustado'):
                     initial_data['monto'] = str(resultado_simulacion['monto_origen']) # Monto origen ajustado
@@ -117,6 +123,8 @@ def iniciar_operacion(request):
                 initial_data['comision_cotizacion_simulacion'] = str(resultado_simulacion['comision_cotizacion']) # Nuevo
                 initial_data['monto_ajustado_simulacion'] = resultado_simulacion['monto_ajustado']
                 initial_data['monto_maximo_posible_simulacion'] = str(resultado_simulacion['monto_maximo_posible'])
+                # También añadir el monto_origen original o ajustado a initial_data
+                initial_data['monto_origen_simulacion'] = str(resultado_simulacion['monto_origen'])
             elif resultado_simulacion and resultado_simulacion.get('error'):
                 messages.error(request, resultado_simulacion['error'])
                 resultado_simulacion = None # Limpiar resultado si hay error
@@ -143,6 +151,7 @@ def iniciar_operacion(request):
             'comision_cotizacion': Decimal(initial_data['comision_cotizacion_simulacion']), # Nuevo
             'monto_ajustado': initial_data['monto_ajustado_simulacion'],
             'monto_maximo_posible': Decimal(initial_data['monto_maximo_posible_simulacion']),
+            'monto_origen': Decimal(initial_data.get('monto_origen_simulacion', initial_data['monto'])), # Asegurar que monto_origen esté presente
             'error': None,
         }
     else:
@@ -234,8 +243,108 @@ def iniciar_operacion(request):
         if form.cleaned_data.get('metodo_entrega'):
             operacion_data['metodo_entrega'] = form.cleaned_data['metodo_entrega']
 
-        request.session['operacion_pendiente'] = operacion_data
-        return redirect('core:confirmar_operacion')
+        # --- INICIO DE LA LÓGICA UNIFICADA ---
+        # La lógica que antes estaba en confirmar_operacion se mueve aquí.
+        # Usa 'operacion_data' directamente en lugar de 'operacion_pendiente' de la sesión.
+
+        modalidad_tasa = operacion_data.get('modalidad_tasa', 'bloqueada')
+        metodo_entrega = operacion_data.get('metodo_entrega')
+        
+        # Lógica para Stripe
+        if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG' and metodo_entrega == 'stripe':
+            try:
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+                tipo_medio_pago_stripe = TipoMedioPago.objects.get(engine='stripe')
+            except (Moneda.DoesNotExist, TipoMedioPago.DoesNotExist) as e:
+                messages.error(request, f"Error de configuración interna: {e}")
+                return redirect('core:iniciar_operacion')
+
+            transaccion = Transaccion.objects.create(
+                cliente=cliente,
+                usuario_operador=request.user,
+                tipo_operacion=tipo_operacion,
+                estado='pendiente_pago_stripe',
+                moneda_origen=moneda_origen_obj,
+                monto_origen=Decimal(operacion_data['monto_origen']),
+                moneda_destino=moneda_destino_obj,
+                monto_destino=Decimal(operacion_data['monto_recibido']),
+                tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                codigo_operacion_tauser=str(uuid.uuid4())[:10],
+                tasa_garantizada_hasta=timezone.now() + timedelta(hours=2),
+                modalidad_tasa=modalidad_tasa,
+                medio_pago_utilizado=tipo_medio_pago_stripe,
+            )
+            messages.info(request, "Operación registrada. Procede al pago con tarjeta.")
+            return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
+
+        # Lógica para Flujo A (Tasa Bloqueada necesita OTP)
+        elif modalidad_tasa == 'bloqueada':
+            request.session['operacion_pendiente'] = operacion_data
+            return redirect('core:verificar_otp_reserva')
+
+        # Lógica para Flujo B (Tasa Flotante)
+        else:
+            try:
+                moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+            except Moneda.DoesNotExist:
+                messages.error(request, "Error al encontrar las monedas para la transacción.")
+                return redirect('core:iniciar_operacion')
+
+            codigo_operacion_tauser = str(uuid.uuid4())[:10]
+            medio_pago_obj = None
+            medio_acreditacion_obj = None
+
+            if tipo_operacion == 'venta':
+                medio_pago_id = operacion_data.get('medio_pago_id')
+                if medio_pago_id:
+                    try:
+                        medio_pago_obj = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente).tipo
+                    except MedioPagoCliente.DoesNotExist:
+                        messages.error(request, "El medio de pago ya no es válido.")
+                        return redirect('core:iniciar_operacion')
+            elif tipo_operacion == 'compra':
+                medio_acreditacion_id = operacion_data.get('medio_acreditacion_id')
+                if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
+                    try:
+                        ma_cliente = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                        medio_acreditacion_obj = ClientesMedioAcreditacion.objects.filter(
+                            cliente=request.user, 
+                            alias=ma_cliente.alias
+                        ).first()
+                    except MedioAcreditacionCliente.DoesNotExist:
+                        messages.error(request, "El medio de acreditación ya no es válido.")
+                        return redirect('core:iniciar_operacion')
+            
+            estado_inicial = 'pendiente_pago_cliente' if tipo_operacion == 'compra' else 'pendiente_confirmacion_pago'
+            
+            transaccion = Transaccion.objects.create(
+                cliente=cliente,
+                usuario_operador=request.user,
+                tipo_operacion=tipo_operacion,
+                estado=estado_inicial,
+                moneda_origen=moneda_origen_obj,
+                monto_origen=Decimal(operacion_data['monto_origen']),
+                moneda_destino=moneda_destino_obj,
+                monto_destino=Decimal(operacion_data['monto_recibido']),
+                tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                codigo_operacion_tauser=codigo_operacion_tauser,
+                modalidad_tasa=modalidad_tasa,
+                medio_pago_utilizado=medio_pago_obj,
+                medio_acreditacion_cliente=medio_acreditacion_obj,
+            )
+
+            if tipo_operacion == 'compra':
+                messages.success(request, "Operación de compra iniciada. Realiza el pago en el Tauser.")
+                return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+            else:
+                messages.info(request, "Operación de venta iniciada. Confirma el pago.")
+                return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
 
     return render(request, 'core/iniciar_operacion.html', {
         'form': form,

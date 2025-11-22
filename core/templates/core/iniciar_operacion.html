@@ -207,6 +207,52 @@
         </div>
       {% endif %}
 
+      <!-- INICIO: Bloque de Resumen de Operación (movido desde confirmar_operacion.html) -->
+      {% if resultado_simulacion and not resultado_simulacion.error %}
+      <div id="resumen-operacion-block" class="p-4 border-t" style="border-color:var(--line)">
+        <h3 class="text-xl font-bold mb-4 text-[var(--ink)]">✅ Resumen de la Operación</h3>
+        <div class="gx-summary">
+          <div class="gx-row">
+            <span class="gx-label">Tipo de operación</span>
+            <span class="gx-value">
+              {% if form.tipo_operacion.value == 'compra' %}
+                Compra de divisa (vos vendés, la casa compra)
+              {% else %}
+                Venta de divisa (vos comprás, la casa vende)
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="gx-row">
+            <span class="gx-label">Monto que entregas</span>
+            <span class="gx-value">
+                {{ form.monto.value|floatformat:2|formatear_moneda }}
+                <span class="gx-badge">{{ form.moneda_origen.value }}</span>
+            </span>
+          </div>
+          
+          <div class="gx-row gx-row--highlight">
+            <span class="gx-label">Monto a recibir</span>
+            <span class="gx-value gx-amount">
+                {{ resultado_simulacion.monto_recibido|floatformat:2|formatear_moneda }}
+                <span class="gx-badge" style="font-size: 0.9rem; font-weight: 700;">{{ form.moneda_destino.value }}</span>
+            </span>
+          </div>
+          
+          <div class="gx-row">
+            <span class="gx-label">Tasa aplicada</span>
+            <span class="gx-value">{{ resultado_simulacion.tasa_aplicada|floatformat:4 }}</span>
+          </div>
+
+          <div class="gx-row">
+            <span class="gx-label">Bonificación aplicada</span>
+            <span class="gx-value">{{ resultado_simulacion.bonificacion_aplicada|floatformat:2|formatear_moneda }} PYG</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <!-- FIN: Bloque de Resumen de Operación -->
+
       <div class="p-4 border-t sticky-actions" style="border-color:var(--line)">
         <div class="flex flex-col md:flex-row gap-2 md:justify-end">
           <a href="{% url 'home' %}"
@@ -217,7 +263,7 @@
           <button id="btn-submit" type="submit"
                   class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
                   style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
-            Proceder a Confirmación
+            <span id="btn-submit-text">Proceder a Confirmación</span>
           </button>
         </div>
       </div>
@@ -226,6 +272,41 @@
 </main>
 
 <style>
+  /* Estilos del resumen de operación (copiados de confirmar_operacion.html) */
+  .gx-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gx-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-soft, #f0f0f0);
+  }
+  .gx-row:last-child { border-bottom: none; }
+  .gx-row--highlight {
+    background-color: var(--brand-soft, #f8f5ff);
+    margin: 0 -1rem;
+    padding: 12px 1rem;
+    border-radius: 8px;
+  }
+  .gx-label { font-size: 1rem; color: var(--muted, #666); }
+  .gx-value { font-size: 1rem; font-weight: 600; color: var(--ink, #333); }
+  .gx-badge {
+    background-color: var(--brand-soft, #f8f5ff);
+    color: var(--brand-dark, #5c20cf);
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .gx-amount { font-size: 1.125rem; font-weight: 800; color: var(--brand, #7c3aed); }
+
   #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago, #id_medio_acreditacion {
     width:100%; border:1.5px solid var(--line); border-radius:12px;
     padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
@@ -311,6 +392,14 @@
 
   const form = document.getElementById('form-operacion');
   const hasErrors = form && form.dataset.hasErrors === '1';
+
+  const resumenBlock = document.getElementById('resumen-operacion-block');
+  const btnSubmitText = document.getElementById('btn-submit-text');
+
+  // Si el bloque de resumen existe, la simulación fue exitosa. Cambiamos el texto del botón.
+  if (resumenBlock && btnSubmitText) {
+    btnSubmitText.textContent = 'Confirmar Operación';
+  }
 
   const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
 
