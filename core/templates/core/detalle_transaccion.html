@@ -97,6 +97,14 @@
                 Continuar el pago en Stripe
               </a>
             </div>
+          {% elif transaccion.estado == 'pendiente_confirmacion_pago' %}
+            <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
+              <h3 class="text-xl font-bold text-[var(--ink)]">Acción Requerida</h3>
+              <p class="text-gray-600 mt-2 mb-4">Tu operación de venta está pendiente de confirmación. Por favor, procede con el pago para finalizarla.</p>
+              <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="gx-btn">
+                Continuar con el Pago
+              </a>
+            </div>
           {% endif %}
           {% if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
             <div class="text-center mt-6">
