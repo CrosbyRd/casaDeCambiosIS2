@@ -117,6 +117,52 @@
         </div>
       {% endif %}
 
+      <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
+        <h3 class="text-xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Tipo de Operación:</span>
+            <span class="font-semibold text-gray-800">{{ transaccion.get_tipo_operacion_display }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Estado Actual:</span>
+            <span class="font-semibold text-gray-800">{{ transaccion.get_estado_display }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Fecha de Creación:</span>
+            <span class="font-semibold text-gray-800">{{ transaccion.fecha_creacion|date:"d/m/Y H:i" }} hs</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Modalidad de Tasa:</span>
+            <span class="font-semibold text-gray-800">{{ transaccion.get_modalidad_tasa_display }}</span>
+          </div>
+          {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+            <div class="flex justify-between items-center col-span-full">
+              <span class="text-gray-600">Tasa Garantizada Hasta:</span>
+              <span class="font-semibold text-gray-800">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
+        <h3 class="text-xl font-bold text-[var(--ink)] mb-4">Información de Pago/Acreditación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Medio de Pago Utilizado:</span>
+              <span class="font-semibold text-gray-800">{{ transaccion.medio_pago_utilizado.nombre }}</span>
+            </div>
+          {% endif %}
+          {% if transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Medio de Acreditación Utilizado:</span>
+              <span class="font-semibold text-gray-800">{{ transaccion.medio_acreditacion_cliente.alias }} ({{ transaccion.medio_acreditacion_cliente.canal_financiero.nombre }})</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
       <div class="text-center mt-6">
         <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Ir a mi Dashboard</a>
       </div>
