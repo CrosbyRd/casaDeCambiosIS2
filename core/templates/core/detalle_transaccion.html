@@ -6,7 +6,7 @@
 {% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-6 py-10">
+<main class="max-w-4xl mx-auto px-6 py-10">
   {% if transaccion.is_tasa_expirada %}
     {% include "partials/page_header.html" with title="Operación Cancelada" subtitle="El tiempo para garantizar la tasa ha expirado." %}
   {% elif transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' or transaccion.estado == 'pendiente_pago_stripe' %}
@@ -20,164 +20,597 @@
   {% else %}
     {% include "partials/page_header.html" with title="Detalle de Operación" subtitle=transaccion.get_estado_display_dinamico %}
   {% endif %}
+  
   {% include "partials/messages.html" %}
 
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <div class="p-5">
-      {% if transaccion.is_tasa_expirada %}
-        <div class="text-center p-6 bg-red-50 text-red-700 rounded-lg">
-          <h2 class="text-xl font-bold">Operación Expirada</h2>
-          <p class="mt-2">Esta operación ha sido cancelada porque el tiempo para garantizar la tasa de cambio ha finalizado. Por favor, inicia una nueva operación.</p>
-        </div>
-      {% else %}
-        <div class="text-center">
-          <p class="text-lg text-gray-600">
-            {% if transaccion.tipo_operacion == 'compra' %}
-              Nos entregarás
-            {% else %}
-              Pagarás
-            {% endif %}
-          </p>
-          <p class="text-5xl font-extrabold text-[var(--ink)] my-2">
-            {{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}
-          </p>
-          <p class="text-lg text-gray-600">
-            Y recibirás
-          </p>
-          <p class="text-5xl font-extrabold text-[var(--brand)] my-2">
-            {{ transaccion.monto_destino|unlocalize }} {{ transaccion.moneda_destino.codigo }}
-          </p>
-          
-          <div class="max-w-md mx-auto my-6 p-4 bg-gray-50 rounded-lg border border-[var(--line-soft)]">
-            <div class="flex justify-between items-center text-sm mb-2">
-              <span class="text-gray-600">Tasa de Cambio Aplicada:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.tasa_cambio_aplicada|unlocalize }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-gray-600">Bonificación:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.comision_aplicada|unlocalize }}</span>
-            </div>
-          </div>
-
-          {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
-            <p class="text-sm text-gray-600 text-center">
-              Esta tasa está garantizada hasta: <strong>{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</strong>.
-            </p>
-          {% endif %}
-
-          {% if transaccion.tipo_operacion == 'compra' and transaccion.estado == 'pendiente_deposito_tauser' %}
-            {% if transaccion.modalidad_tasa == 'bloqueada' %}
-              <p class="text-lg text-gray-800 text-center mt-6">
-                Utilizá el siguiente código como referencia para tu depósito:
-              </p>
-              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-                {{ transaccion.codigo_operacion_tauser }}
-              </p>
-              <p class="text-sm text-gray-600 text-center">
-                Tenés hasta la fecha de expiración para realizar el depósito y mantener la tasa.
-              </p>
-            {% elif transaccion.modalidad_tasa == 'flotante' %}
-              <p class="text-lg text-gray-800 text-center mt-6">
-                Utilizá el siguiente código como referencia para tu pago:
-              </p>
-              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-                {{ transaccion.codigo_operacion_tauser }}
-              </p>
-              <p class="text-sm text-gray-600 text-center">
-                El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
-              </p>
-            {% endif %}
-          {% endif %}
-          
-          {% if transaccion.estado == 'pendiente_pago_stripe' %}
-            <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
-              <h3 class="text-xl font-bold text-[var(--ink)]">Acción Requerida</h3>
-              <p class="text-gray-600 mt-2 mb-4">Para completar tu operación, por favor realiza el pago a través de nuestra pasarela segura.</p>
-              <a href="{% url 'core:iniciar_pago_stripe' transaccion.id %}" class="gx-btn">
-                Continuar el pago en Stripe
-              </a>
-            </div>
-          {% elif transaccion.estado == 'pendiente_confirmacion_pago' %}
-            <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
-              <h3 class="text-xl font-bold text-[var(--ink)]">Acción Requerida</h3>
-              <p class="text-gray-600 mt-2 mb-4">Tu operación de venta está pendiente de confirmación. Por favor, procede con el pago para finalizarla.</p>
-              <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="gx-btn">
-                Continuar con el Pago
-              </a>
-            </div>
-          {% endif %}
-          {% if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
-            <div class="text-center mt-6">
-              <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="gx-btn">Confirmar Pago</button>
-              </form>
-            </div>
-          {% endif %}
-        </div>
-      {% endif %}
-
-      <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
-        <h3 class="text-xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Tipo de Operación:</span>
-            <span class="font-semibold text-gray-800">{{ transaccion.get_tipo_operacion_display }}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Estado Actual:</span>
-            <span class="font-semibold text-gray-800">{{ transaccion.get_estado_display }}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Fecha de Creación:</span>
-            <span class="font-semibold text-gray-800">{{ transaccion.fecha_creacion|date:"d/m/Y H:i" }} hs</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Modalidad de Tasa:</span>
-            <span class="font-semibold text-gray-800">{{ transaccion.get_modalidad_tasa_display }}</span>
-          </div>
-          {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
-            <div class="flex justify-between items-center col-span-full">
-              <span class="text-gray-600">Tasa Garantizada Hasta:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</span>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
-        <h3 class="text-xl font-bold text-[var(--ink)] mb-4">Información de Pago/Acreditación</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado %}
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">Medio de Pago Utilizado:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.medio_pago_utilizado.nombre }}</span>
-            </div>
-          {% endif %}
-          {% if transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">Medio de Acreditación Utilizado:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.medio_acreditacion_cliente.alias }} ({{ transaccion.medio_acreditacion_cliente.canal_financiero.nombre }})</span>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="text-center mt-6">
-        <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Ir a mi Dashboard</a>
+  {% if transaccion.is_tasa_expirada %}
+    <!-- Estado Expirado -->
+    <div class="tx-status-banner tx-status-banner--expired">
+      <div class="tx-status-banner__icon">⏱️</div>
+      <div class="tx-status-banner__content">
+        <h2 class="tx-status-banner__title">Operación Expirada</h2>
+        <p class="tx-status-banner__text">Esta operación ha sido cancelada porque el tiempo para garantizar la tasa de cambio ha finalizado. Por favor, inicia una nueva operación.</p>
       </div>
     </div>
-  </section>
+    
+    <div class="text-center mt-8">
+      <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Volver al Dashboard</a>
+    </div>
+  {% else %}
+    <!-- Tarjeta Principal de Montos -->
+    <div class="tx-amounts-card">
+      <!-- Header con tipo de operación prominente -->
+      <div class="tx-amounts-card__header-full">
+        <div class="tx-badge-large tx-badge-large--{{ transaccion.tipo_operacion }}">
+          {% if transaccion.tipo_operacion == 'compra' %}
+            <span class="tx-badge-large__icon">📥</span>
+            <span class="tx-badge-large__text">Compra de {{ transaccion.moneda_destino.codigo }}</span>
+          {% else %}
+            <span class="tx-badge-large__icon">📤</span>
+            <span class="tx-badge-large__text">Venta de {{ transaccion.moneda_origen.codigo }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="tx-flow">
+        <!-- Monto Origen -->
+        <div class="tx-flow__item tx-flow__item--origin">
+          <div class="tx-flow__label">
+            {% if transaccion.tipo_operacion == 'compra' %}Entregas{% else %}Pagas{% endif %}
+          </div>
+          <div class="tx-flow__amount">
+            <span class="tx-flow__currency">{{ transaccion.moneda_origen.codigo }}</span>
+            <span class="tx-flow__value" data-amount="{{ transaccion.monto_origen|unlocalize }}"></span>
+          </div>
+        </div>
+
+        <!-- Flecha de conversión -->
+        <div class="tx-flow__arrow">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+
+        <!-- Monto Destino -->
+        <div class="tx-flow__item tx-flow__item--destination">
+          <div class="tx-flow__label">Recibes</div>
+          <div class="tx-flow__amount tx-flow__amount--highlight">
+            <span class="tx-flow__currency">{{ transaccion.moneda_destino.codigo }}</span>
+            <span class="tx-flow__value" data-amount="{{ transaccion.monto_destino|unlocalize }}"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles de la Tasa -->
+      <div class="tx-rate-details">
+        <div class="tx-rate-details__row">
+          <span class="tx-rate-details__label">Tasa de Cambio</span>
+          <span class="tx-rate-details__value tx-rate-details__value--primary">
+            <span data-amount="{{ transaccion.tasa_cambio_aplicada|unlocalize }}"></span> PYG
+          </span>
+        </div>
+      </div>
+
+      {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+        <div class="tx-guarantee-notice">
+          <span class="tx-guarantee-notice__icon">🔒</span>
+          <span class="tx-guarantee-notice__text">
+            Tasa garantizada hasta <strong>{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</strong>
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Código de Operación (si aplica) -->
+    {% if transaccion.tipo_operacion == 'compra' and transaccion.estado == 'pendiente_deposito_tauser' %}
+      <div class="tx-code-card">
+        <div class="tx-code-card__icon">🔑</div>
+        <div class="tx-code-card__content">
+          <h3 class="tx-code-card__title">
+            {% if transaccion.modalidad_tasa == 'bloqueada' %}
+              Código de Referencia para tu Depósito
+            {% else %}
+              Código de Referencia para tu Pago
+            {% endif %}
+          </h3>
+          <div class="tx-code-card__code">{{ transaccion.codigo_operacion_tauser }}</div>
+          <p class="tx-code-card__note">
+            {% if transaccion.modalidad_tasa == 'bloqueada' %}
+              Tenés hasta la fecha de expiración para realizar el depósito y mantener la tasa.
+            {% else %}
+              El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Acciones Requeridas -->
+    {% if transaccion.estado == 'pendiente_pago_stripe' %}
+      <div class="tx-action-card">
+        <div class="tx-action-card__header">
+          <span class="tx-action-card__icon">💳</span>
+          <h3 class="tx-action-card__title">Acción Requerida</h3>
+        </div>
+        <p class="tx-action-card__text">Para completar tu operación, por favor realiza el pago a través de nuestra pasarela segura.</p>
+        <a href="{% url 'core:iniciar_pago_stripe' transaccion.id %}" class="gx-btn gx-btn--full">
+          Continuar el pago en Stripe
+        </a>
+      </div>
+    {% elif transaccion.estado == 'pendiente_confirmacion_pago' %}
+      <div class="tx-action-card">
+        <div class="tx-action-card__header">
+          <span class="tx-action-card__icon">⏳</span>
+          <h3 class="tx-action-card__title">Acción Requerida</h3>
+        </div>
+        <p class="tx-action-card__text">Tu operación de venta está pendiente de confirmación. Por favor, procede con el pago para finalizarla.</p>
+        <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="gx-btn gx-btn--full">
+          Continuar con el Pago
+        </a>
+      </div>
+    {% elif transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
+      <div class="tx-action-card">
+        <div class="tx-action-card__header">
+          <span class="tx-action-card__icon">✓</span>
+          <h3 class="tx-action-card__title">Confirmar Pago</h3>
+        </div>
+        <p class="tx-action-card__text">Estás a un paso de completar tu operación.</p>
+        <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="gx-btn gx-btn--full">Confirmar Pago</button>
+        </form>
+      </div>
+    {% endif %}
+
+    <!-- Información Detallada -->
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-6">
+        <h2 class="text-2xl font-extrabold mb-1" style="color: var(--brand);">Detalles de la Operación</h2>
+        <div class="h-1 w-16 rounded-full" style="background: var(--brand);"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Detalles de Operación -->
+        <div class="bg-white border rounded-xl p-6 shadow-sm" style="border-color: var(--line);">
+          <h3 class="flex items-center gap-2 text-lg font-bold mb-5 pb-4 border-b" style="color: var(--ink); border-color: var(--line);">
+            <span class="text-xl">📋</span>
+            <span>Información General</span>
+          </h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-start gap-4">
+              <span class="text-sm font-semibold" style="color: var(--muted);">Tipo de Operación</span>
+              <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.get_tipo_operacion_display }}</span>
+            </div>
+            <div class="flex justify-between items-start gap-4 pt-4 border-t" style="border-color: #f3f4f6;">
+              <span class="text-sm font-semibold" style="color: var(--muted);">Estado Actual</span>
+              <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.get_estado_display }}</span>
+            </div>
+            <div class="flex justify-between items-start gap-4 pt-4 border-t" style="border-color: #f3f4f6;">
+              <span class="text-sm font-semibold" style="color: var(--muted);">Fecha de Creación</span>
+              <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.fecha_creacion|date:"d/m/Y H:i" }} hs</span>
+            </div>
+            <div class="flex justify-between items-start gap-4 pt-4 border-t" style="border-color: #f3f4f6;">
+              <span class="text-sm font-semibold" style="color: var(--muted);">Modalidad de Tasa</span>
+              <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.get_modalidad_tasa_display }}</span>
+            </div>
+            {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+              <div class="flex justify-between items-start gap-4 p-3 rounded-lg mt-4" style="background: var(--brand-soft);">
+                <span class="text-sm font-semibold" style="color: var(--muted);">Tasa Garantizada Hasta</span>
+                <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Información de Pago/Acreditación -->
+        {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado or transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
+          <div class="bg-white border rounded-xl p-6 shadow-sm" style="border-color: var(--line);">
+            <h3 class="flex items-center gap-2 text-lg font-bold mb-5 pb-4 border-b" style="color: var(--ink); border-color: var(--line);">
+              <span class="text-xl">💰</span>
+              <span>Pago/Acreditación</span>
+            </h3>
+            <div class="space-y-4">
+              {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado %}
+                <div class="flex justify-between items-start gap-4">
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Medio de Pago</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.medio_pago_utilizado.nombre }}</span>
+                </div>
+              {% endif %}
+              {% if transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
+                <div class="flex justify-between items-start gap-4">
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Medio de Acreditación</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.medio_acreditacion_cliente.alias }} ({{ transaccion.medio_acreditacion_cliente.canal_financiero.nombre }})</span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Botón de Navegación -->
+    <div class="text-center mt-8">
+      <a href="{% url 'usuarios:dashboard' %}" class="btn-ghost">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver al Dashboard
+      </a>
+    </div>
+  {% endif %}
 </main>
 
+<script>
+// Función para formatear números con separador de miles (punto) y decimales (coma)
+function formatNumber(num) {
+  // Convertir a número y fijar 2 decimales
+  const number = parseFloat(num).toFixed(2);
+  // Separar parte entera y decimal
+  const [integer, decimal] = number.split('.');
+  // Agregar puntos como separador de miles
+  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // Retornar con coma como separador decimal
+  return `${formattedInteger},${decimal}`;
+}
+
+// Formatear todos los elementos con data-amount al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  const amountElements = document.querySelectorAll('[data-amount]');
+  amountElements.forEach(function(el) {
+    const rawAmount = el.getAttribute('data-amount');
+    if (rawAmount) {
+      el.textContent = formatNumber(rawAmount);
+    }
+  });
+});
+</script>
+
 <style>
-  .gx-btn{
-    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
-    padding:12px 16px; font-size:16px; width: auto; /* Ajustado para que no ocupe todo el ancho */
-    display: inline-block; text-decoration: none;
-    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
-    cursor:pointer; transition: filter .15s ease, transform .02s ease;
+/* ============================================
+   TRANSACTION DETAIL STYLES
+   ============================================ */
+
+/* Status Banners */
+.tx-status-banner {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.tx-status-banner--expired {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #fca5a5;
+}
+.tx-status-banner__icon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.tx-status-banner__content {
+  flex: 1;
+}
+.tx-status-banner__title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #991b1b;
+  margin: 0 0 8px;
+}
+.tx-status-banner__text {
+  color: #7f1d1d;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Transaction Badge - Large Version */
+.tx-badge-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 32px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 24px;
+  width: 100%;
+  box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.15);
+}
+.tx-badge-large--compra {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border: 2px solid #93c5fd;
+}
+.tx-badge-large--venta {
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #be185d;
+  border: 2px solid #f9a8d4;
+}
+.tx-badge-large__icon {
+  font-size: 32px;
+  line-height: 1;
+}
+.tx-badge-large__text {
+  font-weight: 900;
+}
+
+/* Amounts Card */
+.tx-amounts-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  padding: 0;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px -12px rgba(17, 24, 39, 0.12);
+  overflow: hidden;
+}
+.tx-amounts-card__header-full {
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  border-bottom: 2px solid var(--line);
+}
+
+/* Transaction Flow */
+.tx-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px;
+  flex-wrap: wrap;
+}
+.tx-flow__item {
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  border: 2px solid var(--line);
+  transition: all 0.3s ease;
+}
+.tx-flow__item:hover {
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px -8px rgba(124, 58, 237, 0.2);
+  transform: translateY(-2px);
+}
+.tx-flow__item--destination {
+  border-color: var(--brand);
+  background: linear-gradient(135deg, var(--brand-soft) 0%, #ffffff 100%);
+}
+.tx-flow__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.tx-flow__amount {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tx-flow__currency {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.tx-flow__value {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.tx-flow__amount--highlight .tx-flow__value {
+  color: var(--brand);
+}
+.tx-flow__arrow {
+  color: var(--brand);
+  flex-shrink: 0;
+  animation: pulseArrow 2s ease-in-out infinite;
+}
+@keyframes pulseArrow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* Rate Details */
+.tx-rate-details {
+  background: var(--brand-soft);
+  border: 1px dashed var(--brand);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 32px 32px 32px;
+}
+.tx-rate-details__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tx-rate-details__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4c1d95;
+}
+.tx-rate-details__value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.tx-rate-details__value--primary {
+  font-size: 20px;
+  color: var(--brand);
+}
+
+/* Guarantee Notice */
+.tx-guarantee-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fbbf24;
+  border-radius: 12px;
+  margin: 0 32px 32px 32px;
+  font-size: 14px;
+  color: #78350f;
+}
+.tx-guarantee-notice__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.tx-guarantee-notice__text strong {
+  font-weight: 800;
+  color: #92400e;
+}
+
+/* Code Card */
+.tx-code-card {
+  display: flex;
+  gap: 24px;
+  padding: 28px;
+  background: linear-gradient(135deg, #ede9fe 0%, #ffffff 100%);
+  border: 2px solid var(--brand);
+  border-radius: 18px;
+  margin-bottom: 24px;
+  align-items: center;
+  box-shadow: 0 8px 32px -12px rgba(124, 58, 237, 0.25);
+}
+.tx-code-card__icon {
+  font-size: 40px;
+  flex-shrink: 0;
+}
+.tx-code-card__content {
+  flex: 1;
+}
+.tx-code-card__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+.tx-code-card__code {
+  display: inline-block;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--brand);
+  background: #fff;
+  padding: 16px 24px;
+  border: 2px dashed var(--brand);
+  border-radius: 12px;
+  letter-spacing: 2px;
+  font-family: ui-monospace, Consolas, monospace;
+  margin-bottom: 12px;
+}
+.tx-code-card__note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Action Card */
+.tx-action-card {
+  padding: 28px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+  border: 2px solid #fb923c;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px -12px rgba(251, 146, 60, 0.25);
+}
+.tx-action-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tx-action-card__icon {
+  font-size: 28px;
+}
+.tx-action-card__title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+}
+.tx-action-card__text {
+  color: var(--muted);
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+/* Button Modifications */
+.gx-btn--full {
+  width: 100%;
+  justify-content: center;
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.btn-ghost:hover {
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .tx-amounts-card__header-full {
+    padding: 20px;
   }
-  .gx-btn:hover{ filter:brightness(1.03); }
+  .tx-badge-large {
+    font-size: 18px;
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tx-badge-large__icon {
+    font-size: 28px;
+  }
+  .tx-flow {
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+  }
+  .tx-flow__arrow {
+    transform: rotate(90deg);
+  }
+  .tx-flow__item {
+    width: 100%;
+    min-width: auto;
+  }
+  .tx-flow__value {
+    font-size: 28px;
+  }
+  .tx-rate-details {
+    margin: 0 20px 20px 20px;
+  }
+  .tx-guarantee-notice {
+    margin: 0 20px 20px 20px;
+  }
+  .tx-code-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  .tx-code-card__code {
+    font-size: 24px;
+  }
+}
 </style>
 {% endblock %}
