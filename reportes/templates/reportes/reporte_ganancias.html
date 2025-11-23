@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Ganancias{% endblock %}
+
+{% block content %}
+<main class="max-w-7xl mx-auto p-8">
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div class="text-center sm:text-left">
+      <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">💹 Reporte de Ganancias</h1>
+      <p class="text-lg leading-relaxed max-w-xl mx-auto sm:mx-0" style="color:var(--muted)">
+        Revisa y analiza las ganancias generadas en tus operaciones de cambio durante el período seleccionado.
+      </p>
+    </div>
+
+    <div class="flex justify-center sm:justify-end mt-4 sm:mt-0 gap-3">
+      <a href="{% url 'reportes:panel_reportes' %}"
+        class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95 transition"
+        style="color:var(--brand-dark)">
+        ⬅ Volver al Panel de Reportes
+      </a>
+    </div>
+  </header>
+
+  <!-- 🌐 FILTROS -->
+  <section class="bg-white shadow rounded-lg p-4 mb-6 border border-blue-100">
+    <h2 class="text-lg font-semibold text-gray-700 mb-2 flex items-center">Filtrar flujo de ganancias</h2>
+    <p class="text-sm text-gray-500 mb-4">
+      Ajusta los filtros para visualizar el pulso financiero de tus operaciones.
+    </p>
+
+    <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Fecha Inicio</label>
+        <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Fecha Fin</label>
+        <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Tipo de operación</label>
+        <select name="tipo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+          onchange="this.form.submit()">
+          <option value="">-- Todos --</option>
+          <option value="venta" {% if request.GET.tipo == 'venta' %}selected{% endif %}>Venta de Divisa</option>
+          <option value="compra" {% if request.GET.tipo == 'compra' %}selected{% endif %}>Compra de Divisa</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Moneda</label>
+        <select name="moneda" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+          onchange="this.form.submit()">
+          <option value="">-- Todas --</option>
+          {% for m in monedas %}
+            {% if m.codigo != "PYG" %}
+              <option value="{{ m.codigo }}" {% if request.GET.moneda == m.codigo %}selected{% endif %}>
+                {{ m.nombre }} ({{ m.codigo }})
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Cliente</label>
+        <input type="text" name="cliente" value="{{ request.GET.cliente }}" placeholder="Nombre cliente"
+          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+      </div>
+
+      <div class="flex space-x-2">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          Filtrar
+        </button>
+        <a href="{% url 'reportes:reporte_ganancias' %}"
+          class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+          Limpiar
+        </a>
+      </div>
+    </form>
+  </section>
+
+  <!-- 📤 DESCARGAS -->
+  <div class="flex justify-end items-center mb-4 space-x-2">
+    <a href="{% url 'reportes:reporte_ganancias_pdf' %}?{{ request.GET.urlencode }}"
+      class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+      📄 Descargar PDF
+    </a>
+    <a href="{% url 'reportes:reporte_ganancias_excel' %}?{{ request.GET.urlencode }}"
+      class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+      📊 Exportar Excel
+    </a>
+  </div>
+
+  <!-- 📈 RESUMEN -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-gradient-to-b from-green-50 to-white shadow rounded-lg p-4 text-center border border-green-200">
+      <p class="text-gray-500">Total General</p>
+      <p class="text-xl font-bold {% if total_ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+        {{ total_ganancia|floatformat:0 }} Gs
+      </p>
+      <p class="text-xs text-gray-400">Balance neto del flujo global</p>
+    </div>
+
+    <div class="bg-gradient-to-b from-blue-50 to-white shadow rounded-lg p-4 text-center border border-blue-200">
+      <p class="text-gray-500">Total Ventas</p>
+      <p class="text-xl font-bold text-green-600">{{ total_ventas|floatformat:0 }} Gs</p>
+      <p class="text-xs text-gray-400">💰 Corriente de ingresos</p>
+    </div>
+
+    <div class="bg-gradient-to-b from-red-50 to-white shadow rounded-lg p-4 text-center border border-red-200">
+      <p class="text-gray-500">Total Compras</p>
+      <p class="text-xl font-bold text-red-600">{{ total_compras|floatformat:0 }} Gs</p>
+      <p class="text-xs text-gray-400">🛒 Corriente de egresos</p>
+    </div>
+  </section>
+
+  <!-- 📋 TABLA DE TRANSACCIONES -->
+  <div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-100">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-blue-50">
+        <tr>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">#</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Cliente</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Tipo</th>
+          <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Monto Origen</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Moneda</th>
+          <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Tasa aplicada</th>
+          <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Monto Destino</th>
+          <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Comisión</th>
+          <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Ganancia (PYG)</th>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Fecha</th>
+        </tr>
+      </thead>
+
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for t in page_obj %}
+        <tr class="hover:bg-blue-50 transition {% cycle 'bg-white' 'bg-gray-50' %}">
+          
+          <!-- Numeración secuencial con paginación -->
+          <td class="px-4 py-2">
+            {{ forloop.counter0|add:page_obj.start_index }}
+          </td>
+
+          <td class="px-4 py-2 font-medium text-gray-800">{{ t.cliente }}</td>
+
+          <td class="px-4 py-2">
+            {% if t.tipo_operacion == 'venta' %}
+              <span class="text-green-700 font-semibold">Venta de Divisa</span>
+            {% else %}
+              <span class="text-red-700 font-semibold">Compra de Divisa</span>
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:0 }}</td>
+
+          <td class="px-4 py-2 text-right">
+            {% if t.tipo_operacion == 'venta' %}
+              {{ t.moneda_destino.codigo }}
+            {% else %}
+              {{ t.moneda_origen.codigo }}
+            {% endif %}
+          </td>
+
+          <td class="px-4 py-2 text-right">{{ t.tasa_cambio_aplicada|floatformat:0 }}</td>
+
+          <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:0 }}</td>
+          <td class="px-4 py-2 text-right">{{ t.comision_aplicada|floatformat:0 }}</td>
+
+          <td class="px-4 py-2 text-right {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+            {{ t.ganancia|floatformat:0 }}
+          </td>
+
+          <td class="px-4 py-2">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="10" class="px-4 py-4 text-center text-gray-500">
+            💤 No se registran flujos financieros en este período.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="flex justify-center mt-4 gap-2 text-sm">
+    {% if page_obj.has_previous %}
+      <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}"
+        class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">⬅ Anterior</a>
+    {% endif %}
+
+    <span class="px-3 py-1">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+      <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}"
+        class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">Siguiente ➡</a>
+    {% endif %}
+  </div>
+
+</main>
+{% endblock %}

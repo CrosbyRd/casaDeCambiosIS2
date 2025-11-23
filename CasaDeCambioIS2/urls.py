@@ -87,4 +87,10 @@ urlpatterns = [
 
     # TED
     path("ted/", include(("ted.urls", "ted"), namespace="ted")),
+
+
+    #REPORTES
+    path("reportes/", include("reportes.urls")),
+
+
 ]
