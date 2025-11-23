@@ -1,0 +1,17 @@
+<header class="max-w-5xl mx-auto px-6 pt-8 pb-2 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+  <div>
+    <h1 class="text-4xl font-extrabold text-[var(--ink)]">{{ title }}</h1>
+    {% if subtitle %}
+      <p class="text-lg text-[var(--muted)] leading-relaxed max-w-xl mt-1">{{ subtitle }}</p>
+    {% endif %}
+  </div>
+  <div class="flex gap-2">
+    {% if back_url %}
+      <a href="{{ back_url }}" class="rounded-xl px-4 py-2 border"
+         style="background:var(--brand-soft); color:var(--brand-dark); border-color:var(--line)">
+        Volver
+      </a>
+    {% endif %}
+    {% block header_actions %}{% endblock %}
+  </div>
+</header>

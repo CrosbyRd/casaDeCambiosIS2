@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6">Cómo funciona</h1>
+
+<ol class="grid md:grid-cols-3 gap-6 mb-8">
+  <li class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">1. Cotizá</h2>
+    <p class="text-neutral-600">Elegí el par y el método; ves el total con costos.</p>
+  </li>
+  <li class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">2. Envía</h2>
+    <p class="text-neutral-600">Cargás los datos de la billetera o cuenta bancaria.</p>
+  </li>
+  <li class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">3. Confirma</h2>
+    <p class="text-neutral-600">Revisás y confirmás. Te damos un comprobante.</p>
+  </li>
+</ol>
+
+<div class="rounded-lg p-6 bg-neutral-50">
+  <h2 class="h2 mb-3">Requisitos</h2>
+  <ul class="list-disc pl-6">
+    <li>Documento de identidad vigente.</li>
+    <li>Cuenta bancaria a nombre propio.</li>
+    <li>Fondos de origen lícito.</li>
+  </ul>
+  <div class="mt-6">
+    <a href="{% url 'site_calculator' %}" class="btn">Probar calculadora</a>
+  </div>
+</div>
+</main>
+
+{% endblock %}

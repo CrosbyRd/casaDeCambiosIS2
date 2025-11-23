@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block header_auth %}{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Crear cuenta</h1>
+
+  <div class="grid md:grid-cols-2 gap-6 items-start">
+    <form id="signupForm" class="border border-neutral-200 rounded-lg p-6"
+          method="post" action="{% url 'usuarios:register' %}" novalidate>
+      {% csrf_token %}
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium" for="id_first_name">Nombre</label>
+          <input id="id_first_name" name="first_name" type="text"
+                 value="{{ form.first_name.value|default_if_none:'' }}"
+                 autocomplete="given-name"
+                 class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                 placeholder="Tu nombre" />
+        </div>
+
+        <div>
+          <label class="block mb-2 font-medium" for="id_last_name">Apellido</label>
+          <input id="id_last_name" name="last_name" type="text"
+                 value="{{ form.last_name.value|default_if_none:'' }}"
+                 autocomplete="family-name"
+                 class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                 placeholder="Tu apellido" />
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <label class="block mb-2 font-medium" for="id_email">Email</label>
+        <input id="id_email" name="email" type="email"
+               value="{{ form.email.value|default_if_none:'' }}"
+               autocomplete="email"
+               class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+               placeholder="tu@correo.com" />
+      </div>
+
+      <div class="mt-6">
+        <label class="block mb-2 font-medium" for="id_password">Contraseña</label>
+        <div class="relative">
+          <input id="id_password" name="password" type="password"
+                 autocomplete="new-password" data-pw-enhanced="1"
+                 class="w-full h-11 px-4 pr-12 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand"
+                 placeholder="Mínimo 8 caracteres" />
+          <!-- Botón ojo -->
+          <button type="button" id="pwToggle"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-9 w-9 rounded-md text-neutral-500 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand"
+                  aria-label="Mostrar contraseña" aria-pressed="false">
+            <!-- Ojo cerrado -->
+            <svg class="h-5 w-5" id="iconEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M9.88 3.49A9.53 9.53 0 0112 3c4.86 0 8.25 1.99 9.96 5.32a10.64 10.64 0 01-1.35 1.9M6.22 6.22C4.24 7.35 2.83 8.91 2.04 10.68 3.75 14.01 7.14 16 12 16c.66 0 1.3-.05 1.92-.16M10.59 10.59a3 3 0 004.24 4.24"/>
+            </svg>
+            <!-- Ojo abierto -->
+            <svg class="h-5 w-5 hidden" id="iconEyeOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32C3.75 8.99 7.14 7 12 7s8.25 1.99 9.96 5.32C20.25 15.65 16.86 17.64 12 17.64s-8.25-1.99-9.96-5.32z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <label class="inline-flex items-center gap-3">
+          <input id="id_terms" name="terms" type="checkbox" class="h-5 w-5"
+                 {% if form.terms.value %}checked{% endif %} />
+          <span>Acepto <a class="text-brand hover:underline" href="{% url 'site_legal' %}">términos y privacidad</a></span>
+        </label>
+      </div>
+
+      <button class="btn w-full mt-6" type="submit">Registrarme</button>
+      <a href="{% url 'login' %}" class="btn-secondary mt-3 w-full inline-flex justify-center">Ya tengo cuenta</a>
+    </form>
+
+    <aside class="border border-neutral-200 rounded-lg p-6 bg-white self-start">
+      <h2 class="h2 mb-3">Verificación por correo electrónico</h2>
+      <p class="text-neutral-700">
+        Para activar tu cuenta, te enviaremos un <strong>código de verificación</strong> al email que registres.
+      </p>
+
+      <ul class="mt-4 space-y-2 text-neutral-700">
+        <li class="flex gap-3"><span class="select-none">✉️</span> Recibirás un mensaje con el código.</li>
+        <li class="flex gap-3"><span class="select-none">🔗</span> El código es de <strong>un solo uso</strong> y vence en minutos.</li>
+        <li class="flex gap-3"><span class="select-none">🧭</span> Escribe bien tu dirección antes de registrarte.</li>
+      </ul>
+
+      <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
+        Si no te llega, revisa spam o solicita reenviar desde la pantalla de verificación.
+      </div>
+    </aside>
+  </div>
+
+  <div id="signupError" class="modal {% if form.errors %}block{% else %}hidden{% endif %}">
+    <div class="modal-overlay" data-modal-overlay tabindex="-1" aria-hidden="true"></div>
+    <div class="w-full h-full flex items-center justify-center p-6">
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="signupErrTitle">
+        <h2 id="signupErrTitle" class="h2 mb-4">Datos incompletos o incorrectos</h2>
+        {% if form.errors %}
+          <ul class="text-neutral-700 mb-6 list-disc pl-5">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-neutral-700 mb-6">Nombre, apellido, email, contraseña y aceptar términos son obligatorios.</p>
+        {% endif %}
+        <div class="flex gap-3 justify-end">
+          <button class="btn" data-modal-close="signupError">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Validación mínima existente
+  const form = document.getElementById('signupForm');
+  const modalErr = document.getElementById('signupError');
+
+  form.addEventListener('submit', function(e){
+    const first = document.getElementById('id_first_name').value.trim();
+    const last  = document.getElementById('id_last_name').value.trim();
+    const email = document.getElementById('id_email').value.trim();
+    const pass  = document.getElementById('id_password').value.trim();
+    const terms = document.getElementById('id_terms').checked;
+
+    if (!first || !last || !email || !pass || !terms) {
+      e.preventDefault();
+      modalErr.classList.remove('hidden');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const overlay = e.target?.closest('[data-modal-overlay]');
+    const closeId = e.target?.closest('[data-modal-close]')?.getAttribute('data-modal-close');
+    if (overlay) overlay.closest('.modal')?.classList.add('hidden');
+    if (closeId) document.getElementById(closeId)?.classList.add('hidden');
+  });
+
+  // Toggle de contraseña SOLO para este template
+  (function(){
+    const btn = document.getElementById('pwToggle');
+    const input = document.getElementById('id_password');
+    const eyeOn  = document.getElementById('iconEyeOn');
+    const eyeOff = document.getElementById('iconEyeOff');
+
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', () => {
+      const shown = input.type === 'text';
+      input.type = shown ? 'password' : 'text';
+      btn.setAttribute('aria-pressed', String(!shown));
+      btn.setAttribute('aria-label', shown ? 'Mostrar contraseña' : 'Ocultar contraseña');
+      eyeOn.classList.toggle('hidden', shown);   // si estaba mostrando, ocúltalo
+      eyeOff.classList.toggle('hidden', !shown); // alterna el otro
+      input.focus({ preventScroll:true });
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Verificar OTP - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-md mx-auto px-6 py-6">
+    <header class="mb-6 text-center">
+        <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">🔒 Verificar Código OTP</h1>
+        <p class="text-base leading-relaxed text-[var(--muted)]">
+            Hemos enviado un código de verificación a tu email: <strong>{{ email }}</strong>.
+            Por favor, ingrésalo a continuación para continuar con la operación.
+        </p>
+    </header>
+
+    {% if messages %}
+        <div id="flash-messages" class="mb-4 space-y-2">
+            {% for message in messages %}
+                <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="{{ form.codigo.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
+                    {{ form.codigo.label }}
+                </label>
+                {{ form.codigo }}
+                {% if form.codigo.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.codigo.errors.as_text|cut:"* " }}</p>
+                {% endif %}
+            </div>
+            <button type="submit"
+                    class="w-full inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
+                    style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
+                Verificar y Continuar
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <a href="{% url 'usuarios:reenviar_codigo' %}" class="text-sm text-[var(--brand-dark)] hover:underline">
+                Reenviar código
+            </a>
+        </div>
+    </section>
+</main>
+
+<style>
+    #id_codigo {
+        width:100%; border:1.5px solid var(--line); border-radius:12px;
+        padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
+        transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    #id_codigo:focus {
+        outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
+    }
+</style>
+{% endblock %}

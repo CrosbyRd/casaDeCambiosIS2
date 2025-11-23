@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Emisor{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Eliminar Emisor de Factura Electrónica</h2>
+    <hr>
+    <p>¿Estás seguro de que querés eliminar el emisor
+        "<strong>{{ object.nombre }}</strong>"
+        (RUC: {{ object.ruc }}-{{ object.dv_ruc }})?</p>
+    <p class="text-danger">
+        Esta acción es irreversible y eliminará todos los documentos electrónicos asociados a este emisor.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+        <a href="{% url 'facturacion_electronica:emisor_detail' pk=object.pk %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

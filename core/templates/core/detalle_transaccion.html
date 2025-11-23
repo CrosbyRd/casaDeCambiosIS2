@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block title %}Detalle de Operación{% endblock %}
+{% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  {% if transaccion.is_tasa_expirada %}
+    {% include "partials/page_header.html" with title="Operación Cancelada" subtitle="El tiempo para garantizar la tasa ha expirado." %}
+  {% elif transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' or transaccion.estado == 'pendiente_pago_stripe' %}
+    {% if transaccion.modalidad_tasa == 'bloqueada' %}
+      {% include "partials/page_header.html" with title="Operación con Tasa Reservada" subtitle="Tu tasa de cambio está garantizada por un tiempo limitado." %}
+    {% elif transaccion.modalidad_tasa == 'flotante' %}
+      {% include "partials/page_header.html" with title="Operación con Tasa de Mercado" subtitle="La tasa final se definirá al momento del pago." %}
+    {% else %}
+      {% include "partials/page_header.html" with title="Detalle de Operación" %}
+    {% endif %}
+  {% else %}
+    {% include "partials/page_header.html" with title="Detalle de Operación" subtitle=transaccion.get_estado_display_dinamico %}
+  {% endif %}
+  {% include "partials/messages.html" %}
+
+  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="p-5">
+      {% if transaccion.is_tasa_expirada %}
+        <div class="text-center p-6 bg-red-50 text-red-700 rounded-lg">
+          <h2 class="text-xl font-bold">Operación Expirada</h2>
+          <p class="mt-2">Esta operación ha sido cancelada porque el tiempo para garantizar la tasa de cambio ha finalizado. Por favor, inicia una nueva operación.</p>
+        </div>
+      {% else %}
+        <div class="text-center">
+          <p class="text-lg text-gray-600">
+            {% if transaccion.tipo_operacion == 'compra' %}
+              Nos entregarás
+            {% else %}
+              Pagarás
+            {% endif %}
+          </p>
+          <p class="text-5xl font-extrabold text-[var(--ink)] my-2">
+            {{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}
+          </p>
+          <p class="text-lg text-gray-600">
+            Y recibirás
+          </p>
+          <p class="text-5xl font-extrabold text-[var(--brand)] my-2">
+            {{ transaccion.monto_destino|unlocalize }} {{ transaccion.moneda_destino.codigo }}
+          </p>
+          
+          <div class="max-w-md mx-auto my-6 p-4 bg-gray-50 rounded-lg border border-[var(--line-soft)]">
+            <div class="flex justify-between items-center text-sm mb-2">
+              <span class="text-gray-600">Tasa de Cambio Aplicada:</span>
+              <span class="font-semibold text-gray-800">{{ transaccion.tasa_cambio_aplicada|unlocalize }}</span>
+            </div>
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-600">Bonificación:</span>
+              <span class="font-semibold text-gray-800">{{ transaccion.comision_aplicada|unlocalize }}</span>
+            </div>
+          </div>
+
+          {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+            <p class="text-sm text-gray-600 text-center">
+              Esta tasa está garantizada hasta: <strong>{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</strong>.
+            </p>
+          {% endif %}
+
+          {% if transaccion.tipo_operacion == 'compra' and transaccion.estado == 'pendiente_deposito_tauser' %}
+            {% if transaccion.modalidad_tasa == 'bloqueada' %}
+              <p class="text-lg text-gray-800 text-center mt-6">
+                Utilizá el siguiente código como referencia para tu depósito:
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+              <p class="text-sm text-gray-600 text-center">
+                Tenés hasta la fecha de expiración para realizar el depósito y mantener la tasa.
+              </p>
+            {% elif transaccion.modalidad_tasa == 'flotante' %}
+              <p class="text-lg text-gray-800 text-center mt-6">
+                Utilizá el siguiente código como referencia para tu pago:
+              </p>
+              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
+                {{ transaccion.codigo_operacion_tauser }}
+              </p>
+              <p class="text-sm text-gray-600 text-center">
+                El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
+              </p>
+            {% endif %}
+          {% endif %}
+          
+          {% if transaccion.estado == 'pendiente_pago_stripe' %}
+            <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
+              <h3 class="text-xl font-bold text-[var(--ink)]">Acción Requerida</h3>
+              <p class="text-gray-600 mt-2 mb-4">Para completar tu operación, por favor realiza el pago a través de nuestra pasarela segura.</p>
+              <a href="{% url 'core:iniciar_pago_stripe' transaccion.id %}" class="gx-btn">
+                Continuar el pago en Stripe
+              </a>
+            </div>
+          {% endif %}
+          {% if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
+            <div class="text-center mt-6">
+              <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="gx-btn">Confirmar Pago</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="text-center mt-6">
+        <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Ir a mi Dashboard</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<style>
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
+    padding:12px 16px; font-size:16px; width: auto; /* Ajustado para que no ocupe todo el ancho */
+    display: inline-block; text-decoration: none;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+    cursor:pointer; transition: filter .15s ease, transform .02s ease;
+  }
+  .gx-btn:hover{ filter:brightness(1.03); }
+</style>
+{% endblock %}

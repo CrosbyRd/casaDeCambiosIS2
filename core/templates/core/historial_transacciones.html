@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Historial de Transacciones - Global Exchange{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-8 space-y-6">
+
+  <header class="space-y-2">
+    <div class="flex items-center gap-3 flex-wrap">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-purple-950">Historial de transacciones</h1>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-purple-700">
+        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+        Registro completo
+      </span>
+    </div>
+    <p class="text-[var(--muted)] max-w-2xl text-sm md:text-base">
+      Filtrá, buscá y revisá todas tus operaciones. Los filtros activos se aplican a toda la lista.
+    </p>
+  </header>
+
+  <!-- Filtros -->
+  <form method="get" class="bg-gradient-to-br from-white to-purple-50/30 border border-purple-100 rounded-2xl p-5 shadow-lg">
+    <div class="flex items-center gap-2 mb-4">
+      <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+      </svg>
+      <h2 class="text-lg font-extrabold text-purple-950">Filtros de búsqueda</h2>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Tipo</label>
+        <select name="tipo" class="gx-field">
+          <option value="">Todos</option>
+          <option value="compra" {% if filtros.tipo == 'compra' %}selected{% endif %}>Compra</option>
+          <option value="venta"  {% if filtros.tipo == 'venta'  %}selected{% endif %}>Venta</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Estado</label>
+        <input class="gx-field" name="estado" value="{{ filtros.estado|default:'' }}" placeholder="Ej: pendiente_pago_cliente">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Moneda</label>
+        <input class="gx-field" name="moneda" value="{{ filtros.moneda|default:'' }}" placeholder="Ej: USD">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Desde</label>
+        <input type="date" class="gx-field" name="desde" value="{{ filtros.desde|default:'' }}">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Hasta</label>
+        <input type="date" class="gx-field" name="hasta" value="{{ filtros.hasta|default:'' }}">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1.5 text-purple-900">Buscar</label>
+        <input class="gx-field" name="q" value="{{ filtros.q|default:'' }}" placeholder="ID o código">
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      <button class="gx-btn inline-flex items-center gap-2" type="submit">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        Aplicar filtros
+      </button>
+      <a class="gx-btn gx-btn--ghost inline-flex items-center gap-2" href="?">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        Limpiar
+      </a>
+    </div>
+  </form>
+
+  <!-- Tabla -->
+  <section class="bg-gradient-to-br from-white to-purple-50/20 border border-purple-100 rounded-2xl shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <caption class="sr-only">Listado de transacciones</caption>
+        <thead class="gx-thead">
+          <tr>
+            <th scope="col" class="px-4 py-4 text-left">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+                Acciones
+              </div>
+            </th>
+            <th scope="col" class="px-4 py-4 text-left">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                Fecha
+              </div>
+            </th>
+            <th scope="col" class="px-4 py-4 text-left">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"/>
+                </svg>
+                Tipo
+              </div>
+            </th>
+            <th scope="col" class="px-4 py-4 text-left">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                Estado
+              </div>
+            </th>
+            <th scope="col" class="px-4 py-4 text-left">Origen</th>
+            <th scope="col" class="px-4 py-4 text-right">Monto origen</th>
+            <th scope="col" class="px-4 py-4 text-left">Destino</th>
+            <th scope="col" class="px-4 py-4 text-right">Monto destino</th>
+            <th scope="col" class="px-4 py-4 text-right">Tasa</th>
+            <th scope="col" class="px-4 py-4 text-left">Código</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-purple-100">
+          {% for t in page_obj.object_list %}
+            <tr class="group hover:bg-purple-50 transition-colors duration-150">
+              <td class="px-4 py-4">
+                <a href="{% url 'core:detalle_transaccion' transaccion_id=t.id %}" 
+                   class="inline-flex items-center gap-1.5 text-sm font-bold text-purple-600 hover:text-purple-800 hover:gap-2 transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  Ver detalle
+                </a>
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-purple-900">{{ t.fecha_creacion|date:"d/m/Y" }}</span>
+                  <span class="text-xs text-purple-600/60">{{ t.fecha_creacion|date:"H:i" }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <span class="inline-flex items-center gap-1.5 rounded-lg bg-purple-100 px-2.5 py-1 text-xs font-bold text-purple-900">
+                  {% if t.tipo_operacion == 'compra' %}
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                  {% else %}
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                    </svg>
+                  {% endif %}
+                  {{ t.get_tipo_operacion_display }}
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                {% with estado_lower=t.estado|lower %}
+                  {% if 'completada' in estado_lower or 'aprobada' in estado_lower or 'finalizada' in estado_lower %}
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-xs font-extrabold text-emerald-700">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      {{ t.get_estado_display_dinamico }}
+                    </span>
+                  {% elif 'pendiente' in estado_lower or 'proceso' in estado_lower %}
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-extrabold text-amber-700">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      {{ t.get_estado_display_dinamico }}
+                    </span>
+                  {% elif 'cancelada' in estado_lower or 'rechazada' in estado_lower or 'anulada' in estado_lower %}
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 border border-red-200 px-2.5 py-1 text-xs font-extrabold text-red-700">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                      </svg>
+                      {{ t.get_estado_display_dinamico }}
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-purple-50 border border-purple-200 px-2.5 py-1 text-xs font-extrabold text-purple-700">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                      </svg>
+                      {{ t.get_estado_display_dinamico }}
+                    </span>
+                  {% endif %}
+                {% endwith %}
+              </td>
+              <td class="px-4 py-4">
+                <span class="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-900">
+                  {{ t.moneda_origen.codigo }}
+                </span>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="font-bold text-purple-900">{{ t.monto_origen|floatformat:"-2" }}</span>
+              </td>
+              <td class="px-4 py-4">
+                <span class="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-0.5 text-xs font-bold text-purple-900">
+                  {{ t.moneda_destino.codigo }}
+                </span>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="font-bold text-purple-900">{{ t.monto_destino|floatformat:"-2" }}</span>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <span class="text-sm font-semibold text-purple-700">{{ t.tasa_cambio_aplicada|floatformat:"-4" }}</span>
+              </td>
+              <td class="px-4 py-4">
+                <code class="rounded bg-purple-50 px-2 py-1 text-xs font-mono text-purple-900">{{ t.codigo_operacion_tauser }}</code>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10" class="px-4 py-12">
+                <div class="flex flex-col items-center justify-center text-center">
+                  <svg class="w-16 h-16 text-purple-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <p class="text-purple-600 font-semibold text-lg">No se encontraron transacciones</p>
+                  <p class="text-purple-500/70 text-sm mt-1">Intenta ajustar los filtros o crear una nueva operación</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="flex flex-col sm:flex-row items-center justify-between gap-3 p-5 border-t border-purple-100 bg-gradient-to-r from-purple-50/50 to-transparent" aria-label="Paginación">
+        <div class="flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="font-bold text-purple-900">Página {{ page_obj.number }}</span>
+          <span class="text-purple-600">de</span>
+          <span class="font-bold text-purple-900">{{ page_obj.paginator.num_pages }}</span>
+        </div>
+        <div class="flex gap-2">
+          {% comment %}
+            Corrección de paginación: Iterar sobre request.GET.items para preservar
+            todos los filtros de la URL excepto el 'page' actual.
+          {% endcomment %}
+          
+          {% if page_obj.has_previous %}
+            <a class="gx-btn gx-btn--ghost inline-flex items-center gap-2" 
+              href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Anterior
+            </a>
+          {% endif %}
+          
+          {% if page_obj.has_next %}
+            <a class="gx-btn inline-flex items-center gap-2" 
+              href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+              Siguiente
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+    {% endif %}
+  </section>
+</main>
+
+<style>
+  .gx-field{
+    width:100%; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; height:44px;
+    background:#fff; color:var(--ink); transition:box-shadow .15s, border-color .15s;
+  }
+  .gx-field:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18); }
+
+  .gx-btn{
+    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px; padding:10px 14px;
+    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+  }
+  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
+  .gx-btn--ghost:hover{ background:var(--brand-soft); }
+
+  /* Encabezado de tabla lila, texto blanco */
+  .gx-thead tr { background: var(--brand); }
+  .gx-thead th { color: #fff; font-weight:800; }
+</style>
+{% endblock %}

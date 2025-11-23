@@ -1,0 +1,44 @@
+Celery necesita un intermediario para gestionar la cola de tareas. Usaremos Redis, que es ligero y muy rápido.
+
+
+# Instala Celery y la librería para conectar con Redis
+pip install celery redis
+
+
+
+También necesitas tener Redis instalado y corriendo en tu sistema. Si usas Ubuntu/Debian:
+sudo apt update
+sudo apt install redis-server
+sudo systemctl enable redis-server --now
+
+
+Para que todo esto funcione, necesitas tener un proceso "trabajador" de Celery corriendo.
+
+Abre una nueva terminal, navega a la carpeta de tu proyecto, activa el entorno virtual y ejecuta:
+
+# Asegúrate de que tu entorno virtual esté activo
+# cd /home/richar-carballo/Escritorio/IS2/casaDeCambiosIS2
+# source ../entorno/bin/activate
+
+celery -A CasaDeCambioIS2 worker -l info
+
+
+EXPLICACION
+sí, necesitas ejecutar ese comando cada vez que trabajes en el proyecto "celery -A CasaDeCambioIS2 worker -l info"
+
+Piensa en tu aplicación como si tuviera dos empleados diferentes:
+
+El Servidor de Django (python manage.py runserver): Este es el empleado que atiende al público.
+ Recibe las peticiones web (como la del administrador guardando una tasa), hace cosas rápidas y 
+ da una respuesta inmediata. En nuestro caso, su trabajo ahora es solo anotar en una 
+ libreta (la cola de Redis) que "hay que enviar correos".
+
+El Trabajador de Celery (celery -A CasaDeCambioIS2 worker ...): Este es el empleado que trabaja en la trastienda, sin 
+que el público lo vea. Constantemente mira la libreta de tareas. Cuando ve una nueva anotación ("enviar correos"), 
+la toma y se pone a hacer el trabajo pesado (enviar los 100 correos uno por uno) sin interrumpir al empleado que 
+atiende al público.
+
+En Resumen
+Necesitas dos terminales abiertas cada vez que desarrolles.
+Terminal 1: python manage.py runserver para que tu sitio web funcione.
+Terminal 2: celery -A CasaDeCambioIS2 worker -l info para que las tareas en segundo plano (como enviar correos) se procesen.

@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>facturacion_electronica.models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">facturacion_electronica.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para facturacion_electronica.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Modelos de la app Facturación Electrónica.</span>
+
+<span class="sd">.. module:: facturacion_electronica.models</span>
+<span class="sd">   :synopsis: Modelos propios del módulo de Facturación Electrónica.</span>
+
+<span class="sd">Incluye:</span>
+<span class="sd">- :class:`EmisorFacturaElectronica`: Representa la información de un emisor de facturas electrónicas.</span>
+<span class="sd">- :class:`DocumentoElectronico`: Representa una factura o nota de crédito electrónica generada.</span>
+<span class="sd">- :class:`ItemDocumentoElectronico`: Representa un ítem dentro de un Documento Electrónico.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.postgres.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONField</span>  <span class="c1"># Para almacenar JSON de la API</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegexValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronica">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronica">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmisorFacturaElectronica</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa la información de un emisor de facturas electrónicas.</span>
+
+<span class="sd">    Este modelo almacena todos los datos necesarios para identificar a un emisor</span>
+<span class="sd">    ante el sistema de facturación electrónica, incluyendo su RUC, dirección,</span>
+<span class="sd">    numeración de timbrado y rangos de facturación.</span>
+
+<span class="sd">    :param nombre: Razón social o nombre del emisor.</span>
+<span class="sd">    :param ruc: Número de Identificación Tributaria (RUC) del emisor (sin DV).</span>
+<span class="sd">    :param dv_ruc: Dígito Verificador del RUC.</span>
+<span class="sd">    :param email_emisor: Email de contacto del emisor.</span>
+<span class="sd">    :param telefono: Teléfono de contacto del emisor.</span>
+<span class="sd">    :param codigo_departamento: Código del departamento de la dirección del emisor.</span>
+<span class="sd">    :param descripcion_departamento: Descripción del departamento.</span>
+<span class="sd">    :param codigo_ciudad: Código de la ciudad de la dirección del emisor.</span>
+<span class="sd">    :param descripcion_ciudad: Descripción de la ciudad.</span>
+<span class="sd">    :param direccion: Dirección física del emisor.</span>
+<span class="sd">    :param numero_casa: Número de casa de la dirección.</span>
+<span class="sd">    :param pais: Código de país (por defecto &quot;PY&quot;).</span>
+<span class="sd">    :param establecimiento: Número de establecimiento (3 dígitos).</span>
+<span class="sd">    :param punto_expedicion: Número de punto de expedición (3 dígitos).</span>
+<span class="sd">    :param numero_timbrado_actual: Número de timbrado actual (8 dígitos).</span>
+<span class="sd">    :param fecha_inicio_timbrado: Fecha de inicio de vigencia del timbrado.</span>
+<span class="sd">    :param auth_token: Token de autenticación para la API de FacturaSegura.</span>
+<span class="sd">    :param token_generado_at: Fecha y hora de generación del token.</span>
+<span class="sd">    :param activo: Indica si el emisor está activo en el sistema.</span>
+<span class="sd">    :param rango_numeracion_inicio: Número inicial del rango de numeración de facturas.</span>
+<span class="sd">    :param rango_numeracion_fin: Número final del rango de numeración de facturas.</span>
+<span class="sd">    :param siguiente_numero_factura: Próximo número de factura a emitir.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Identificación del emisor (coincidir con XML)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Razón social / Nombre&quot;</span><span class="p">)</span>
+    <span class="n">ruc</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d{7,8}$&#39;</span><span class="p">)],</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;RUC (sin DV)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">dv_ruc</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d$&#39;</span><span class="p">)],</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;DV&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Datos de contacto</span>
+    <span class="n">email_emisor</span><span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Email de contacto&quot;</span><span class="p">)</span>
+    <span class="n">telefono</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Teléfono de contacto&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Dirección (coincidente con nodos de cDepEmi, dDesDepEmi, cCiuEmi, dDesCiuEmi, dDirEmi, dNumCas, cPaisEmi)</span>
+    <span class="n">codigo_departamento</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Código Dpto (cDepEmi)&quot;</span><span class="p">)</span>
+    <span class="n">descripcion_departamento</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Desc. Dpto (dDesDepEmi)&quot;</span><span class="p">)</span>
+    <span class="n">codigo_ciudad</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Código Ciudad (cCiuEmi)&quot;</span><span class="p">)</span>
+    <span class="n">descripcion_ciudad</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Desc. Ciudad (dDesCiuEmi)&quot;</span><span class="p">)</span>
+    <span class="n">direccion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Dirección (dDirEmi)&quot;</span><span class="p">)</span>
+    <span class="n">numero_casa</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;N° Casa (dNumCas)&quot;</span><span class="p">)</span>
+    <span class="n">pais</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;PY&quot;</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;País (cPaisEmi)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Numeración fija del ejercicio (establecimiento y punto)</span>
+    <span class="n">establecimiento</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{3}</span><span class="s1">$&#39;</span><span class="p">)],</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Establecimiento (3 dígitos, ej. 001)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">punto_expedicion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{3}</span><span class="s1">$&#39;</span><span class="p">)],</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Punto de expedición (3 dígitos, ej. 003)&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Timbrado (según XML del profe: dNumTim y dFeIniT)</span>
+    <span class="n">numero_timbrado_actual</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">RegexValidator</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d</span><span class="si">{8}</span><span class="s1">$&#39;</span><span class="p">)],</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Número de Timbrado (8 dígitos, ej. 02595733)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fecha_inicio_timbrado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateField</span><span class="p">(</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Fecha de inicio de Timbrado (YYYY-MM-DD)&quot;</span>
+    <span class="p">)</span>
+
+
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Token de autenticación (FacturaSegura)&quot;</span><span class="p">)</span>
+    <span class="n">token_generado_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Fecha/hora de generación del token&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Estado del emisor en el sistema</span>
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Emisor activo&quot;</span><span class="p">)</span>
+
+    <span class="c1"># --- NUEVOS CAMPOS (numeración 401–450) ---</span>
+    <span class="n">rango_numeracion_inicio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Inicio de numeración&quot;</span><span class="p">)</span>
+    <span class="n">rango_numeracion_fin</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">450</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Fin de numeración&quot;</span><span class="p">)</span>
+    <span class="n">siguiente_numero_factura</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">401</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Próximo número a emitir&quot;</span><span class="p">)</span>
+
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Emisor de Factura Electrónica&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Emisores de Factura Electrónica&quot;</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">UniqueConstraint</span><span class="p">(</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ruc&quot;</span><span class="p">,</span> <span class="s2">&quot;dv_ruc&quot;</span><span class="p">,</span> <span class="s2">&quot;establecimiento&quot;</span><span class="p">,</span> <span class="s2">&quot;punto_expedicion&quot;</span><span class="p">,</span> <span class="s2">&quot;numero_timbrado_actual&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uniq_emisor_ruc_estab_punto_timbrado&quot;</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ruc</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dv_ruc</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="EmisorFacturaElectronica.clean">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronica.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza validaciones personalizadas para los campos del emisor.</span>
+
+<span class="sd">        Verifica la validez del RUC, DV, establecimiento, punto de expedición,</span>
+<span class="sd">        número de timbrado, fecha de inicio de timbrado, y la coherencia</span>
+<span class="sd">        de los rangos de numeración.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># RUC / DV</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ruc</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ruc</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="mi">7</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ruc</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El RUC debe ser numérico de 7 u 8 dígitos.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dv_ruc</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dv_ruc</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dv_ruc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El DV debe ser un dígito numérico.&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Establecimiento y Punto de Expedición</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">establecimiento</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">establecimiento</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">establecimiento</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El Establecimiento debe tener 3 dígitos (ej. 001).&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punto_expedicion</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">punto_expedicion</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">punto_expedicion</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El Punto de expedición debe tener 3 dígitos (ej. 003).&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Timbrado</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numero_timbrado_actual</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">numero_timbrado_actual</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numero_timbrado_actual</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El Número de Timbrado debe tener exactamente 8 dígitos (ej. 02595733).&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fecha_inicio_timbrado</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Debe indicar la fecha de inicio del timbrado (dFeIniT).&quot;</span><span class="p">))</span>
+
+
+        <span class="c1"># Ubicación (opcional, pero cuando se complete que sea coherente)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">codigo_departamento</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">codigo_departamento</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El código de departamento debe ser positivo.&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">codigo_ciudad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">codigo_ciudad</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;El código de ciudad debe ser positivo.&quot;</span><span class="p">))</span>
+        
+                <span class="c1"># --- VALIDACIONES DE RANGO ---</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;El rango de numeración es inválido (inicio &gt; fin).&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;El siguiente número (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">siguiente_numero_factura</span><span class="si">}</span><span class="s2">) debe estar entre &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span></div>
+
+        
+
+<div class="viewcode-block" id="EmisorFacturaElectronica.reservar_numero_y_avanzar">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronica.reservar_numero_y_avanzar">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reservar_numero_y_avanzar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reserva el siguiente número de factura disponible y avanza el contador.</span>
+
+<span class="sd">        Este método asegura la concurrencia segura al reservar un número</span>
+<span class="sd">        dentro del rango definido y actualizar el `siguiente_numero_factura`.</span>
+<span class="sd">        Debe usarse al crear un `DocumentoElectronico` propio (emisión).</span>
+
+<span class="sd">        :raises ValidationError: Si no hay numeración disponible en el rango.</span>
+<span class="sd">        :return: Una tupla con el número de factura como entero y como string de 7 dígitos.</span>
+<span class="sd">        :rtype: tuple[int, str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_from_db</span><span class="p">()</span>  <span class="c1"># bloquea la fila del emisor</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">siguiente_numero_factura</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No hay numeración disponible en el rango </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_inicio</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rango_numeracion_fin</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">07d</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="EmisorFacturaElectronica.etiqueta_con">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.EmisorFacturaElectronica.etiqueta_con">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">etiqueta_con</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numero_int</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Genera la etiqueta completa del documento electrónico (ej. &#39;001-003-0000401&#39;).</span>
+
+<span class="sd">        Combina el establecimiento, punto de expedición y el número de documento</span>
+<span class="sd">        dado para formar la etiqueta completa.</span>
+
+<span class="sd">        :param numero_int: El número de documento como entero.</span>
+<span class="sd">        :type numero_int: int</span>
+<span class="sd">        :return: La etiqueta formateada del documento.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">establecimiento</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">punto_expedicion</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">numero_int</span><span class="si">:</span><span class="s2">07d</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</div>
+
+        
+        
+<div class="viewcode-block" id="DocumentoElectronico">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.DocumentoElectronico">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocumentoElectronico</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa una factura o nota de crédito electrónica generada.</span>
+
+<span class="sd">    Este modelo almacena la información detallada de un documento electrónico,</span>
+<span class="sd">    incluyendo su tipo, numeración, estado SIFEN, fechas, y referencias a</span>
+<span class="sd">    JSONs de la API y URLs de descarga.</span>
+
+<span class="sd">    :param id: Identificador único universal del documento.</span>
+<span class="sd">    :param emisor: Referencia al emisor que generó el documento.</span>
+<span class="sd">    :param tipo_de: Tipo de documento electrónico (factura o nota de crédito).</span>
+<span class="sd">    :param numero_documento: Número correlativo del documento (7 dígitos).</span>
+<span class="sd">    :param numero_timbrado: Número de timbrado asociado al documento.</span>
+<span class="sd">    :param cdc: Código de Control del documento (44 caracteres).</span>
+<span class="sd">    :param estado_sifen: Estado actual del documento en el sistema SIFEN.</span>
+<span class="sd">    :param descripcion_estado: Descripción adicional del estado.</span>
+<span class="sd">    :param fecha_emision: Fecha y hora de emisión del documento.</span>
+<span class="sd">    :param json_enviado_api: JSON enviado a la API de FacturaSegura.</span>
+<span class="sd">    :param json_respuesta_api: JSON recibido como respuesta de la API.</span>
+<span class="sd">    :param transaccion_asociada: Transacción de la casa de cambio asociada a este documento.</span>
+<span class="sd">    :param url_kude: URL para descargar el KuDE (Representación Gráfica del Documento Electrónico).</span>
+<span class="sd">    :param url_xml: URL para descargar el archivo XML del documento.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TIPO_DE_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;factura&#39;</span><span class="p">,</span> <span class="s1">&#39;Factura Electrónica&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;nota_credito&#39;</span><span class="p">,</span> <span class="s1">&#39;Nota de Crédito Electrónica&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">ESTADO_SIFEN_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;pendiente_envio&#39;</span><span class="p">,</span> <span class="s1">&#39;Pendiente de envío&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;pendiente_aprobacion&#39;</span><span class="p">,</span> <span class="s1">&#39;Pendiente de Aprobación SIFEN&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;pendiente_cancelacion&#39;</span><span class="p">,</span> <span class="s1">&#39;Pendiente de cancelación&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;pendiente_inutilizacion&#39;</span><span class="p">,</span> <span class="s1">&#39;Pendiente de inutilización&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;aprobado&#39;</span><span class="p">,</span> <span class="s1">&#39;Aprobado&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;aprobado_obs&#39;</span><span class="p">,</span> <span class="s1">&#39;Aprobado con Observación&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;rechazado&#39;</span><span class="p">,</span> <span class="s1">&#39;Rechazado&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;cancelado&#39;</span><span class="p">,</span> <span class="s1">&#39;Cancelado&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;inutilizado&#39;</span><span class="p">,</span> <span class="s1">&#39;Inutilizado&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;error_api&#39;</span><span class="p">,</span> <span class="s1">&#39;Error en API Factura Segura&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;error_sifen&#39;</span><span class="p">,</span> <span class="s1">&#39;Error en SIFEN&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;simulado&#39;</span><span class="p">,</span> <span class="s1">&#39;Simulado (Modo Desarrollo)&#39;</span><span class="p">),</span>  <span class="c1"># Para el modo de simulación</span>
+    <span class="p">]</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">emisor</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">EmisorFacturaElectronica</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;documentos_electronicos&#39;</span><span class="p">)</span>
+
+    <span class="n">tipo_de</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">TIPO_DE_CHOICES</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Tipo de Documento Electrónico&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Numeración del documento</span>
+    <span class="n">numero_documento</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Número de Documento&quot;</span><span class="p">)</span>  <span class="c1"># Ej: 0000401</span>
+    <span class="n">numero_timbrado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Número de Timbrado&quot;</span><span class="p">)</span>  <span class="c1"># dNumTim</span>
+
+    <span class="n">cdc</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">44</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Código de Control (CDC)&quot;</span><span class="p">)</span>
+
+    <span class="n">estado_sifen</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">ESTADO_SIFEN_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;pendiente_aprobacion&#39;</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Estado SIFEN&quot;</span><span class="p">)</span>
+    <span class="n">descripcion_estado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Descripción del Estado&quot;</span><span class="p">)</span>
+
+    <span class="n">fecha_emision</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Fecha y Hora de Emisión&quot;</span><span class="p">)</span>
+
+    <span class="c1"># JSONs de la API</span>
+    <span class="n">json_enviado_api</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;JSON Enviado a API&quot;</span><span class="p">)</span>
+    <span class="n">json_respuesta_api</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;JSON Respuesta de API&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Relación con Transacción (opcional)</span>
+    <span class="n">transaccion_asociada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="s1">&#39;transacciones.Transaccion&#39;</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;documentos_electronicos&#39;</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Transacción Asociada&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># URLs de descarga</span>
+    <span class="n">url_kude</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;URL de Descarga KuDE&quot;</span><span class="p">)</span>
+    <span class="n">url_xml</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;URL de Descarga XML&quot;</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Documento Electrónico&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Documentos Electrónicos&quot;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;-fecha_emision&#39;</span><span class="p">]</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;emisor&#39;</span><span class="p">,</span> <span class="s1">&#39;numero_documento&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DocumentoElectronico.clean">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.DocumentoElectronico.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Realiza validaciones personalizadas para los campos del documento electrónico.</span>
+
+<span class="sd">        Verifica que el número de documento tenga exactamente 7 dígitos numéricos.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Validación suave: exactamente 7 dígitos (permitimos cualquier rango para poder importar/verificar XML ajenos)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numero_documento</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numero_documento</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">7</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">numero_documento</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;El número de documento debe tener exactamente 7 dígitos (con ceros a la izquierda).&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_tipo_de_display</span><span class="p">()</span><span class="si">}</span><span class="s2"> Nro. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">establecimiento</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">emisor</span><span class="o">.</span><span class="n">punto_expedicion</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">numero_documento</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_estado_sifen_display</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ItemDocumentoElectronico">
+<a class="viewcode-back" href="../../facturacion_electronica.html#facturacion_electronica.forms.ItemDocumentoElectronico">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemDocumentoElectronico</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa un ítem dentro de un Documento Electrónico.</span>
+
+<span class="sd">    Este modelo detalla cada producto o servicio incluido en un documento</span>
+<span class="sd">    electrónico, con información como código, descripción, cantidad, precio,</span>
+<span class="sd">    descuentos y detalles de afectación de IVA.</span>
+
+<span class="sd">    :param documento_electronico: Referencia al documento electrónico al que pertenece el ítem.</span>
+<span class="sd">    :param codigo_interno: Código interno del producto o servicio.</span>
+<span class="sd">    :param descripcion_producto_servicio: Descripción del producto o servicio.</span>
+<span class="sd">    :param unidad_medida: Código de la unidad de medida.</span>
+<span class="sd">    :param cantidad: Cantidad del producto o servicio.</span>
+<span class="sd">    :param precio_unitario: Precio unitario del producto o servicio.</span>
+<span class="sd">    :param descuento_item: Monto de descuento aplicado a este ítem.</span>
+<span class="sd">    :param afectacion_iva: Código de afectación del IVA.</span>
+<span class="sd">    :param proporcion_iva: Proporción gravada del IVA.</span>
+<span class="sd">    :param tasa_iva: Tasa de IVA aplicada.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">documento_electronico</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">DocumentoElectronico</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+
+    <span class="n">codigo_interno</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Código Interno&quot;</span><span class="p">)</span>  <span class="c1"># dCodInt</span>
+    <span class="n">descripcion_producto_servicio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Descripción Producto/Servicio&quot;</span><span class="p">)</span>  <span class="c1"># dDesProSer</span>
+    <span class="n">unidad_medida</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;77&quot;</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Unidad de Medida&quot;</span><span class="p">)</span>  <span class="c1"># cUniMed</span>
+    <span class="n">cantidad</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Cantidad&quot;</span><span class="p">)</span>  <span class="c1"># dCantProSer</span>
+    <span class="n">precio_unitario</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Precio Unitario&quot;</span><span class="p">)</span>  <span class="c1"># dPUniProSer</span>
+    <span class="n">descuento_item</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Descuento por Ítem&quot;</span><span class="p">)</span>  <span class="c1"># dDescItem</span>
+
+    <span class="c1"># Campos relacionados con IVA</span>
+    <span class="n">afectacion_iva</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Código de Afectación IVA&quot;</span><span class="p">)</span>  <span class="c1"># iAfecIVA</span>
+    <span class="n">proporcion_iva</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Proporción Gravada IVA&quot;</span><span class="p">)</span>  <span class="c1"># dPropIVA</span>
+    <span class="n">tasa_iva</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Tasa IVA&quot;</span><span class="p">)</span>  <span class="c1"># dTasaIVA</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Ítem de Documento Electrónico&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Ítems de Documentos Electrónicos&quot;</span>
+        
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">descripcion_producto_servicio</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cantidad</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">precio_unitario</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

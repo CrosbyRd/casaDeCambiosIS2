@@ -1,0 +1,62 @@
+[
+  {
+    "model": "cotizaciones.cotizacion",
+    "fields": {
+      "moneda_base": "PYG",
+      "moneda_destino": "USD",
+      "valor_compra": 7236,
+      "comision_compra": 150,
+      "valor_venta": 7213,
+      "comision_venta": 150,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "fields": {
+      "moneda_base": "PYG",
+      "moneda_destino": "BRL",
+      "valor_compra": 1307,
+      "comision_compra": 50,
+      "valor_venta": 1313,
+      "comision_venta": 50,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "fields": {
+      "moneda_base": "PYG",
+      "moneda_destino": "EUR",
+      "valor_compra": 7839,
+      "comision_compra": 170,
+      "valor_venta": 7811,
+      "comision_venta": 170,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "fields": {
+      "moneda_base": "PYG",
+      "moneda_destino": "ARS",
+      "valor_compra": 45,
+      "comision_compra": 5,
+      "valor_venta": 46,
+      "comision_venta": 5,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
+    }
+  },
+  {
+    "model": "cotizaciones.cotizacion",
+    "fields": {
+      "moneda_base": "PYG",
+      "moneda_destino": "PEN",
+      "valor_compra": 1500,
+      "comision_compra": 90,
+      "valor_venta": 1600,
+      "comision_venta": 95,
+      "fecha_actualizacion": "2025-10-24T10:00:00Z"
+    }
+  }
+]

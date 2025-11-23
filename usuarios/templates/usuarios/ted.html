@@ -1,0 +1,851 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/ted.css' %}"/>
+
+<!-- Estilos mínimos SOLO para el bloque de confirmación -->
+<style>
+  .confirm-box{
+    display:none;
+    margin:18px auto 8px auto;
+    max-width:640px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    border:1.5px solid rgba(255,255,255,0.16);
+    border-radius:18px;
+    padding:18px 20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.25) inset, 0 10px 30px rgba(0,0,0,0.10);
+  }
+  .confirm-box .cb-top{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;
+  }
+  .confirm-box .cb-chip{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px;
+    background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.18);
+    font-weight:700; letter-spacing:.3px;
+  }
+  .confirm-box .cb-flag{ font-size:18px; line-height:1; }
+  .confirm-box .cb-code{ opacity:.95 }
+  .confirm-box .cb-mode{ font-size:14px; opacity:.85 }
+  .confirm-box .cb-value{
+    font-weight:900; line-height:1.15; letter-spacing:.2px;
+    font-size:36px; margin:6px 0 2px 0;
+    text-shadow:0 1px 0 rgba(0,0,0,0.35);
+  }
+  .confirm-box .cb-value .cb-code{
+    font-size:18px; font-weight:800; margin-left:6px; opacity:.9;
+  }
+  .confirm-box .cb-sub{
+    margin-top:6px; font-size:14px; opacity:.9;
+  }
+  #confirm-amount-text.hidden { display:none !important; }
+</style>
+
+<style>
+/* ===== Variantes de título "Confirmación" (elige UNA en el HTML) ===== */
+.confirm-title { text-align:center; margin:0 0 10px; }
+
+/* Opción 2: Texto con gradiente + subrayado brillante */
+.confirm-title--gradient{
+  display:inline-block; margin:auto; font-weight:900; letter-spacing:.3px;
+  font-size:22px;
+  background:linear-gradient(90deg,#c4b5fd,#a78bfa,#c4b5fd);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  position:relative; text-transform:uppercase;
+}
+.confirm-title--gradient::after{
+  content:""; display:block; width:120px; height:3px; margin:8px auto 0;
+  background:linear-gradient(90deg, transparent, #a78bfa, transparent);
+  border-radius:99px; box-shadow:0 0 16px rgba(167,139,250,.6);
+}
+
+/* === Estados visuales de chips de divisa === */
+.currency-chip.match{
+  outline:2px solid rgba(124,58,237,.45);
+  box-shadow:0 0 0 3px rgba(124,58,237,.18), 0 8px 18px rgba(0,0,0,.22);
+  transform:translateY(-1px);
+}
+.currency-chip.dimmed{
+  opacity:.45;
+  filter:grayscale(.2);
+}
+</style>
+
+<main style="max-width:1100px;margin:0 auto;padding:24px">
+  <section class="ted-machine">
+    <div class="ted-layout">
+      <!-- Pantalla principal -->
+      <div class="ted-layout-main">
+        <div class="ted-screen">
+          <div class="ted-screen-glow"></div>
+
+          <div class="ted-screen-inner">
+            <!-- Cabecera -->
+            <header class="ted-header">
+              <div class="logo-badge">
+                <img class="ted-logo" src="{% static 'img/logo-secundario.png' %}" alt="Global Exchange">
+              </div>
+              <div class="welcome-badge" id="welcome-badge">👋 Bienvenido</div>
+              <h1 class="ted-title">GLOBAL EXCHANGE</h1>
+            </header>
+
+            <!-- Vistas -->
+            <div class="ted-views-container">
+              <!-- VISTA: Inicio -->
+              <section id="login-screen" class="ted-screen-view active" aria-live="polite">
+                <div class="view-content">
+                  <p>Hola,
+                    <strong>{% firstof request.user.get_full_name request.user.username request.user.email "Usuario" %}</strong>.
+                  </p>
+
+                  <div class="location-picker">
+                    <label for="select-ubicacion" class="location-label">Ubicación del TED</label>
+                    <select id="select-ubicacion" class="ted-select" aria-required="true">
+                      <option value="">— Seleccioná una sucursal —</option>
+                      <!-- Si ya renderizas ubicaciones desde el server, mantienen este select -->
+                    </select>
+                    <p class="location-hint">Para continuar al menú de operaciones.</p>
+                  </div>
+
+                  <button class="gx-btn" type="button" id="btn-login-ingresar" disabled>Continuar</button>
+                </div>
+              </section>
+
+              <!-- VISTA: Menú -->
+              <section id="menu-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content">
+                  <h2 style="text-align:center;margin-bottom:12px">Operaciones disponibles</h2>
+                  <div class="menu-grid">
+                    <button id="btn-menu-retirar" type="button" class="menu-card" aria-label="Retiro de dinero">
+                      <div class="menu-icon">💵</div>
+                      <div class="menu-label">Retiro de Dinero</div>
+                    </button>
+                    <button id="btn-menu-deposito" type="button" class="menu-card" aria-label="Depósito de dinero">
+                      <div class="menu-icon">💰</div>
+                      <div class="menu-label">Depósito de Dinero</div>
+                    </button>
+                  </div>
+                  <div style="text-align:center;margin-top:16px">
+                    <button id="btn-menu-salir" type="button" class="gx-btn gx-btn--ghost">🚪 Salir</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: Retiro / Depósito (ingreso código) -->
+              <section id="transaction-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content">
+                  <h3 id="tx-title">Operación</h3>
+                  <label for="transaction-number">Ingrese el código de operación</label>
+                  <input id="transaction-number" type="text" class="ted-input" placeholder="Código de operación" autocomplete="off" data-kb="num" />
+                  
+                  <!-- Divisas disponibles (solo para RETIRO) -->
+                  <div id="retiro-currencies" class="currency-section" style="display:none">
+                    <div class="currency-label">Divisas disponibles</div>
+                    <div id="retiro-currency-list" class="currency-list" aria-live="polite">
+                    </div>
+                  </div>
+
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-tx-cancelar">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-tx-validar">Validar</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: Confirmación de monto -->
+              <section id="confirm-amount-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="confirm-title">
+                    <span class="confirm-title--gradient">Confirmación</span>
+                  </div>
+
+                  <!-- NUEVO bloque visual -->
+                  <div id="confirm-amount-box" class="confirm-box" aria-live="polite"></div>
+
+                  <!-- Fallback de texto plano (se ocultará si hay box) -->
+                  <div id="confirm-amount-text" class="confirm-text">¿Desea confirmar la operación?</div>
+
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-amount-cancel">Cancelar</button>
+                    <button class="gx-btn" type="button" id="btn-amount-confirm">Continuar</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: OTP -->
+              <section id="otp-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <h3 class="status-title">Verificación</h3>
+                  <p class="status-message">Ingresá el código de verificación enviado a tu correo.</p>
+                  <div id="otp-summary" class="status-message" style="margin:8px 0 14px 0"></div>
+                  <input id="otp-input" type="text" class="ted-input" inputmode="numeric" maxlength="6" placeholder="Código OTP (6 dígitos)" data-kb="num" />                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-otp-back">Volver</button>
+                    <button class="gx-btn" type="button" id="btn-otp-confirm">Confirmar</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: Procesando -->
+              <section id="processing-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="processing-text">
+                    <span id="processing-message">Procesando</span><span class="processing-dots"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: Éxito -->
+              <section id="success-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="status-title status-title--success">¡Operación exitosa!</div>
+                  <!-- Tarjeta de resultado -->
+                  <div id="success-amount-box" class="result-box" aria-live="polite"></div>
+                  <div id="success-message" class="status-message">Listo.</div>
+                  <div class="button-group">
+                    <button class="gx-btn gx-btn--ghost" type="button" id="btn-success-exit">Salir</button>
+                    <button class="gx-btn" type="button" id="btn-success-print">Imprimir ticket</button>
+                  </div>
+                </div>
+              </section>
+
+              <!-- VISTA: Cancelado / Error -->
+              <section id="cancel-screen" class="ted-screen-view" aria-live="polite">
+                <div class="view-content view-content--centered">
+                  <div class="status-title status-title--cancel">Operación cancelada</div>
+                  <div id="cancel-sub" class="status-message">Recoja su dinero.</div>
+                  <button class="gx-btn gx-btn--ghost" type="button" id="btn-cancel-exit">Salir</button>
+                </div>
+              </section>
+            </div><!-- /ted-views-container -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel lateral (reloj + teclado) -->
+      <aside class="ted-layout-aside">
+        <div class="pad-info-card">
+          <div class="clock" id="ted-clock">--:--:--</div>
+          <div class="info-line">Nº de serie: <strong id="info-serie">—</strong></div>
+          <div class="info-line">Ubicación: <strong id="info-ubicacion">—</strong></div>
+        </div>
+
+        <div class="pad-bezel">
+          <div class="ted-pad" aria-label="Teclado">
+
+            <!-- Estilos específicos SOLO del teclado -->
+            <style>
+              /* 4 columnas x 5 filas como en la imagen */
+              .ted-pad .grid{
+                display:grid;
+                grid-template-columns:repeat(4,minmax(0,1fr));
+                gap:12px;
+              }
+              /* Variantes de estilo para las teclas de acción de la última fila */
+              .ted-key--ghost{
+                background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.06));
+                border-color:rgba(255,255,255,.25);
+              }
+              .ted-key--danger{
+                background:linear-gradient(180deg, rgba(239,68,68,0.25), rgba(239,68,68,0.12));
+                border-color:rgba(239,68,68,.45);
+                box-shadow:0 12px 24px -10px rgba(239,68,68,.25), inset 0 0 0 1px rgba(255,255,255,.06);
+              }
+              .ted-key--primary{
+                background:linear-gradient(180deg, color-mix(in oklab, var(--brand) 30%, #0000), color-mix(in oklab, var(--brand) 15%, #0000));
+                border-color:color-mix(in oklab, var(--brand) 50%, #0000);
+                box-shadow:0 12px 24px -10px rgba(124,58,237,.35), inset 0 0 0 1px rgba(255,255,255,.06);
+              }
+              .ted-key .k-sub{
+                display:block; font-size:12px; opacity:.9; margin-top:2px; font-weight:700;
+              }
+            </style>
+
+            <div class="grid">
+              <!-- Fila 1 -->
+              <button class="ted-key" type="button" data-key="1">1</button>
+              <button class="ted-key" type="button" data-key="2">2</button>
+              <button class="ted-key" type="button" data-key="3">3</button>
+              <button class="ted-key" type="button" data-key="a">a</button>
+
+              <!-- Fila 2 -->
+              <button class="ted-key" type="button" data-key="4">4</button>
+              <button class="ted-key" type="button" data-key="5">5</button>
+              <button class="ted-key" type="button" data-key="6">6</button>
+              <button class="ted-key" type="button" data-key="b">b</button>
+
+              <!-- Fila 3 -->
+              <button class="ted-key" type="button" data-key="7">7</button>
+              <button class="ted-key" type="button" data-key="8">8</button>
+              <button class="ted-key" type="button" data-key="9">9</button>
+              <button class="ted-key" type="button" data-key="c">c</button>
+
+              <!-- Fila 4 -->
+              <button class="ted-key" type="button" data-key="0">0</button>
+              <button class="ted-key" type="button" data-key="d">d</button>
+              <button class="ted-key" type="button" data-key="e">e</button>
+              <button class="ted-key" type="button" data-key="f">f</button>
+
+              <!-- Fila 5 (acciones) -->
+              <button class="ted-key ted-key--ghost"  type="button" data-key="minus">−<span class="k-sub"></span></button>
+              <button class="ted-key"                type="button" data-key="backspace"><span class="k-sub">Borrar</span></button>
+              <button class="ted-key ted-key--danger" type="button" data-key="clear"><span class="k-sub">Cancelar</span></button>
+              <button class="ted-key ted-key--primary" type="button" data-key="confirm"><span class="k-sub">Continuar</span></button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Ranuras -->
+    <div class="slots-container">
+      <div id="bill-slot" class="ted-slot">
+        <div class="slot-opening"></div>
+        <div class="slot-indicator"></div>
+        <div class="bill-stack">
+          <div class="bill-item" style="animation-delay:0s">$100</div>
+          <div class="bill-item" style="animation-delay:0.15s">$100</div>
+          <div class="bill-item" style="animation-delay:0.3s">$100</div>
+          <div class="bill-item" style="animation-delay:0.45s">$100</div>
+        </div>
+        <div class="slot-label">Ranura de billetes</div>
+      </div>
+
+      <div id="receipt-slot" class="ted-slot">
+        <div class="slot-opening"></div>
+        <div class="slot-indicator"></div>
+        <div class="receipt-anim">
+          <div class="receipt-paper">
+            <div class="receipt-header">GLOBAL EXCHANGE</div>
+            <div id="receipt-body"></div>
+          </div>
+        </div>
+        <div class="slot-label">Salida de tickets</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Si querés limpiar también cuando cambiás de modo u operación:
+  function resetCodigo() {
+    const $code = document.getElementById("transaction-number");
+    if ($code) $code.value = "";
+  }
+(() => {
+  const qs = (sel, el=document) => el.querySelector(sel);
+  const qsa = (sel, el=document) => [...el.querySelectorAll(sel)];
+  const FLAGS = {
+    USD:'🇺🇸', EUR:'🇪🇺', ARS:'🇦🇷', BRL:'🇧🇷', PYG:'🇵🇾', CNY:'🇨🇳', JPY:'🇯🇵',
+    GBP:'🇬🇧', UYU:'🇺🇾', CLP:'🇨🇱', COP:'🇨🇴', BOB:'🇧🇴', PEN:'🇵🇪', MXN:'🇲🇽',
+    CAD:'🇨🇦', AUD:'🇦🇺', CHF:'🇨🇭', VES:'🇻🇪', VEF:'🇻🇪', RUB:'🇷🇺', ILS:'🇮🇱',
+    CRC:'🇨🇷', DOP:'🇩🇴', NOK:'🇳🇴', SEK:'🇸🇪', DKK:'🇩🇰', ZAR:'🇿🇦', HNL:'🇭🇳',
+    GTQ:'🇬🇹', PAB:'🇵🇦', NIO:'🇳🇮', TRY:'🇹🇷', INR:'🇮🇳', KRW:'🇰🇷', SGD:'🇸🇬', HKD:'🇭🇰'
+  };
+  const flag = (code) => FLAGS[String(code||'').toUpperCase()] || '🏳️';
+  const formatAmountRaw = (a) => {
+    try{ const n = Number(a); if(Number.isFinite(n)) return n.toLocaleString('es-PY',{maximumFractionDigits:0}); }
+    catch(e){}
+    return String(a);
+  };
+  const formatAmount = (a, code)=> `${formatAmountRaw(a)} ${code}`;
+
+  const ctx = { modo:null, code:null, ubicacion:null, raw:null, reserva_id:null, ticket_url:null, tx_id:null };
+
+  // === CSRF ===
+  function getCookie(name){
+    const m = document.cookie.match(new RegExp('(^|; )'+name+'=([^;]+)'));
+    return m ? decodeURIComponent(m[2]) : null;
+  }
+  const CSRF = getCookie('csrftoken');
+
+  async function api(url, body){
+    const isPost = !!body;
+    const res = await fetch(url, {
+      method: isPost ? 'POST' : 'GET',
+      credentials:'same-origin',
+      headers: isPost ? {'Content-Type':'application/json','X-CSRFToken': CSRF || ''} : {}
+      , body: isPost ? JSON.stringify(body||{}) : undefined
+    });
+    const ct = res.headers.get('content-type') || '';
+    let payload = null;
+    if(ct.includes('application/json')){
+      try{ payload = await res.json(); }catch(_){ payload = null; }
+    }else{
+      const text = await res.text().catch(()=> '');
+      payload = { ok:false, error: text };
+    }
+    const notOk = !res.ok || (payload && payload.ok === false);
+    if(notOk){
+      let msg = (payload && (payload.error || payload.detail)) || res.statusText || 'Error';
+      if(res.status===403 && (!ct || !ct.includes('application/json'))){
+        msg = 'Protección CSRF: falta o es inválida. Refresque la página e intente de nuevo.';
+      }
+      const err = new Error(msg);
+      err.status  = res.status || 0;
+      err.payload = payload;
+      throw err;
+    }
+    return (payload && payload.data) || payload;
+  }
+
+  // 👉 Helper para POST "form" (HTML) que puede redirigir; no esperamos JSON
+  async function postForm(url, formDataObj){
+    const form = new URLSearchParams();
+    Object.entries(formDataObj||{}).forEach(([k,v])=> form.append(k, v==null?'':String(v)));
+    const res = await fetch(url, {
+      method:'POST',
+      credentials:'same-origin',
+      headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','X-CSRFToken': CSRF || ''},
+      body: form.toString(),
+      redirect:'follow'
+    });
+    // Consideramos 2xx/3xx como éxito; no parseamos cuerpo
+    if(!res.ok && (res.status<300 || res.status>=400)){
+      const t = await res.text().catch(()=> '');
+      const e = new Error(t || 'Fallo activando cliente');
+      e.status = res.status;
+      throw e;
+    }
+    return true;
+  }
+
+  const URLS = {
+    validar: "{% url 'usuarios:ted_api_validar' %}",
+    precontar: "{% url 'usuarios:ted_api_precontar' %}",
+    otp_enviar: "{% url 'usuarios:ted_api_otp_enviar' %}",
+    otp_verificar: "{% url 'usuarios:ted_api_otp_verificar' %}",
+    confirmar: "{% url 'usuarios:ted_api_confirmar' %}",
+    ubicaciones: "{% url 'usuarios:ted_api_ubicaciones' %}",
+    terminal: "{% url 'usuarios:ted_api_terminal' %}",
+    divisas: "{% url 'ted:monedas_disponibles' %}",
+    // 🆕 endpoint HTML que setea el cliente activo en la sesión
+    set_cliente: "{% url 'usuarios:seleccionar_cliente' %}"
+  };
+
+  /* Carga y pinta las divisas disponibles para RETIRO (según sucursal) */
+  async function loadRetiroCurrencies(){
+    try{
+      const cont = qs('#retiro-currencies');
+      const list = qs('#retiro-currency-list');
+      if(!cont || !list) return;
+
+      const data = await api(`${URLS.divisas}?ubicacion=${encodeURIComponent(ctx.ubicacion||'')}`);
+      const currencies = (data && (data.currencies || data.monedas)) || [];
+
+      if(currencies.length === 0){
+        list.innerHTML = '<span style="opacity:.8">Sin stock disponible.</span>';
+      }else{
+        list.innerHTML = currencies.map(c =>
+          `<span class="currency-chip" data-cur="${c}" title="${c}">${flag(c)}</span>`
+        ).join('');
+      }
+      cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+    }catch(_e){
+      const cont = qs('#retiro-currencies');
+      const list = qs('#retiro-currency-list');
+      if(cont && list){
+        list.innerHTML = '<span style="opacity:.8">No se pudo cargar el stock.</span>';
+        cont.style.display = (ctx.modo === 'retiro') ? 'block' : 'none';
+      }
+    }
+  }
+
+  /* show() + control del “Bienvenido” SOLO en Inicio */
+  const show = (id) => {
+    qsa('.ted-screen-view').forEach(el => {
+      el.classList.remove('active'); el.setAttribute('aria-hidden','true'); el.style.display='none';
+    });
+    const el = qs('#'+id);
+    if(el){
+      el.classList.add('active'); el.setAttribute('aria-hidden','false'); el.style.display='block';
+    }
+    const header = qs('.ted-header');
+    header?.classList.toggle('compact', id !== 'login-screen');
+
+    const screen = qs('.ted-screen');
+    if(screen){
+      screen.classList.toggle('is-home', id === 'login-screen');
+    }
+    const wb = qs('#welcome-badge');
+    if(wb){
+      const isHome = (id === 'login-screen');
+      wb.classList.toggle('hidden', !isHome);
+      if(isHome) wb.style.removeProperty('display');
+    }
+    const cont = qs('#retiro-currencies');
+    if(cont){
+      cont.style.display = (id === 'transaction-screen' && ctx.modo === 'retiro') ? 'block' : 'none';
+    }
+  };
+
+  function showError(stage, err){
+    let userMsg = 'Ocurrió un error inesperado.';
+    let code = `E${err.status||'000'}-DESCONOCIDO`;
+    
+    // Obtener el mensaje del error de múltiples fuentes posibles
+    const rawMsg = (err && (err.message || '')) || 
+                   (err && err.payload && (err.payload.error || err.payload.detail || err.payload.message)) || '';
+    const raw = String(rawMsg).toLowerCase();
+    
+    // Debug: ver qué mensaje viene realmente
+    console.log('showError debug:', {stage, status: err.status, raw, payload: err.payload});
+
+    switch(err.status){
+      case 404: {
+        if (raw.includes('cliente activo') || raw.includes('no pertenece')) {
+          userMsg = 'El código no pertenece al cliente activo seleccionado. Cambiá el cliente activo y volvé a intentarlo.';
+          code = 'E404-CODIGO-CLIENTE';
+        } else {
+          userMsg = (stage==='validar')
+            ? 'Código no encontrado. Verificá el número e intentá de nuevo.'
+            : (stage==='confirmar' ? 'Reserva no encontrada o expirada. Volvé a validar el código.' : 'Recurso no encontrado.');
+          code = (stage==='validar') ? 'E404-CODIGO' : 'E404-RESERVA';
+        }
+      break; }
+
+      case 409: {
+        // Imprimir el mensaje raw para debug (puedes comentar después)
+        console.log('Error 409 mensaje:', raw, 'Stage:', stage);
+        
+        // Detectar código ya usado/completado
+        if (raw.includes('ya completad') || raw.includes('ya utiliz') || raw.includes('ya proces') || 
+            raw.includes('completada') || raw.includes('utilizado') || raw.includes('procesado') ||
+            raw.includes('already') || raw.includes('completed') || raw.includes('used') ||
+            raw.includes('transaction') && raw.includes('complete')) {
+          userMsg = 'Este código ya fue utilizado en una transacción completada anteriormente.';
+          code = 'E409-COMPLETADO';
+        }
+        // Detectar tipo de operación incorrecto
+        else if (raw.includes('tipo') || raw.includes('retiro') || raw.includes('depósito') || 
+                 raw.includes('deposito') || raw.includes('withdraw') || raw.includes('deposit') ||
+                 raw.includes('operación') || raw.includes('operacion')) {
+          userMsg = 'Este código no corresponde al tipo de operación seleccionada. Verificá si es para Retiro o Depósito.';
+          code = 'E409-TIPO';
+        }
+        // Si es en la etapa de validar y no es ninguno de los anteriores, asumir código completado
+        else if (stage === 'validar') {
+          userMsg = 'Este código ya fue utilizado en una transacción completada anteriormente.';
+          code = 'E409-COMPLETADO';
+        }
+        // Por defecto: problema de stock (solo en precontar/confirmar)
+        else {
+          userMsg = 'No hay billetes suficientes en esta sucursal para ese monto.';
+          code = 'E409-STOCK';
+        }
+        break;
+      }
+
+      case 403:
+        if(raw.includes('csrf')){ userMsg = 'No autorizado: Protección CSRF. Refrescá la página e intentá de nuevo.'; code = 'E403-AUT-CSRF'; }
+        else if(raw.includes('cliente activo')){ userMsg = 'Debés seleccionar un cliente activo en tu cuenta antes de usar el TED.'; code = 'E403-CLIENTE'; }
+        else { userMsg = 'No autorizado para continuar.'; code = 'E403-AUT'; }
+        break;
+      case 410: userMsg = 'La operación expiró. Volvé a intentarlo.'; code = 'E410-EXPIRADO'; break;
+      case 400: userMsg = err.message || 'Solicitud inválida.'; code = 'E400-VALIDACION'; break;
+      default:  userMsg = err.message || userMsg;
+    }
+    qs('#cancel-sub') && (qs('#cancel-sub').textContent = `${userMsg} (${code})`);
+    show('cancel-screen');
+  }
+
+  // ====== helpers UI para limpiar estado ======
+  const codeInput = () => qs('#transaction-number');
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      const el = codeInput();
+      if (el) el.value = '';
+    }
+  });
+  const btnTxValidar = () => qs('#btn-tx-validar');
+
+  function resetTxUI() {
+    const inp = codeInput();
+    if (inp) inp.value = '';
+    const btn = btnTxValidar();
+    if (btn) btn.disabled = true;
+    ctx.code = null; ctx.raw = null; ctx.reserva_id = null; ctx.ticket_url = null; ctx.tx_id = null;
+    const box = qs('#confirm-amount-box');
+    if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+    qs('#confirm-amount-text')?.classList.remove('hidden');
+  }
+
+  // ---------------- Login (ubicación + terminal) ----------------
+  const ubicSel = qs('#select-ubicacion');
+  const btnLogin = qs('#btn-login-ingresar');
+
+  async function cargarTerminal(){
+    try{
+      const data = await api(URLS.terminal);
+      let serial = (data && data.serial) || null;
+      
+      // Si el backend devuelve LOCAL-DEV o está vacío, generar uno basado en ubicación
+      if (!serial || serial === 'LOCAL-DEV' || serial === '—') {
+        const ubicacion = ctx.ubicacion || ubicSel?.value || '';
+        if (ubicacion) {
+          // Generar código basado en las primeras 3 letras de la ubicación + hash
+          const code = ubicacion.substring(0, 3).toUpperCase();
+          const hash = ubicacion.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000;
+          serial = `TED-${code}${String(hash).padStart(3, '0')}`;
+        } else {
+          serial = 'TED-001';
+        }
+      }
+      
+      qs('#info-serie').textContent = serial;
+    }catch(_e){ 
+      qs('#info-serie').textContent = 'TED-001'; 
+    }
+  }
+  async function cargarUbicaciones(){
+    try{
+      const data = await api(URLS.ubicaciones);
+      const list = (data && data.ubicaciones) || [];
+      ubicSel.innerHTML = '<option value="">— Seleccioná una sucursal —</option>';
+      list.forEach(u=>{
+        const opt = document.createElement('option'); opt.value = u; opt.textContent = u; ubicSel.appendChild(opt);
+      });
+      if(list.length === 1){ ubicSel.value = list[0]; }
+      ctx.ubicacion = ubicSel.value || null;
+      btnLogin.disabled = !ctx.ubicacion;
+      qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
+    }catch(e){
+      ubicSel.innerHTML = '<option value="">(Sin ubicaciones cargadas)</option>';
+      btnLogin.disabled = true;
+    }
+  }
+  ubicSel?.addEventListener('change', ()=>{
+    ctx.ubicacion = ubicSel.value || null;
+    btnLogin.disabled = !ctx.ubicacion;
+    qs('#info-ubicacion').textContent = ctx.ubicacion || '—';
+    
+    // Actualizar el número de serie cuando cambia la ubicación
+    if (ctx.ubicacion) {
+      const code = ctx.ubicacion.substring(0, 3).toUpperCase();
+      const hash = ctx.ubicacion.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 1000;
+      qs('#info-serie').textContent = `TED-${code}${String(hash).padStart(3, '0')}`;
+    }
+    
+    try { loadRetiroCurrencies(); } catch(_){}
+  });
+
+  btnLogin?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
+
+  // ---------------- Menú ----------------
+  qs('#btn-menu-retirar')?.addEventListener('click', ()=>{
+    ctx.modo = 'retiro';
+    resetTxUI();
+    qs('#tx-title').textContent = 'Retiro de Dinero';
+    show('transaction-screen');
+    try { loadRetiroCurrencies(); } catch(_){}
+  });
+
+  qs('#btn-menu-deposito')?.addEventListener('click', ()=>{
+    ctx.modo = 'deposito';
+    resetTxUI();
+    qs('#tx-title').textContent = 'Depósito de Dinero';
+    show('transaction-screen');
+    const cont = qs('#retiro-currencies');
+    const list = qs('#retiro-currency-list');
+    if (cont && list) {
+      list.innerHTML = '';
+      cont.style.display = 'none';
+      cont.setAttribute('aria-hidden','true');
+    }
+  });
+
+  qs('#btn-menu-salir')?.addEventListener('click', ()=>{
+    ctx.modo = null; resetTxUI(); show('login-screen');
+  });
+
+  // ---------------- Código + validar ----------------
+  qs('#transaction-number')?.addEventListener('input', (e)=>{
+    ctx.code = (e.target.value||'').trim();
+    qs('#btn-tx-validar').disabled = !ctx.code;
+  });
+  qs('#btn-tx-cancelar')?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
+
+  qs('#btn-tx-validar')?.addEventListener('click', async ()=>{
+    try{
+      if(!ctx.modo) throw new Error('Seleccioná primero Retiro o Depósito.');
+      const info = await api(URLS.validar, { codigo: (ctx.code||'').trim(), modo: ctx.modo });
+      // Validar que el tipo de transacción coincida con el modo seleccionado
+      if (info.tipo_operacion && info.tipo_operacion !== ctx.modo) {
+        const tipoReal = info.tipo_operacion === 'retiro' ? 'Retiro' : 'Depósito';
+        const tipoEsperado = ctx.modo === 'retiro' ? 'Retiro' : 'Depósito';
+        throw Object.assign(new Error(`Este código es para ${tipoReal}, pero seleccionaste ${tipoEsperado}. Volvé al menú y elegí la operación correcta.`), {status: 400});
+      }
+      ctx.raw  = info;
+      ctx.code = (info && info.codigo) ? String(info.codigo).trim() : (ctx.code||'').trim();
+      ctx.tx_id = info && info.tx_id ? String(info.tx_id) : null;
+
+      // 🆕 Sincronizar el cliente activo de la sesión con el dueño del código
+      //    (la vista `seleccionar_cliente` guarda SESSION_KEY en la sesión)
+      const clienteId = info && (info.cliente_id || info.cliente || info.owner_id);
+      if (clienteId) {
+        try { await postForm(URLS.set_cliente + '?next=' + encodeURIComponent(location.pathname), {cliente_id: clienteId}); }
+        catch(_e){ /* si falla, continuamos: precontar devolverá 404 y lo mostraremos bonito */ }
+      }
+
+      if (ctx.modo === 'retiro') {
+        qsa('#retiro-currency-list .currency-chip').forEach(ch=>{
+          if ((ch.dataset.cur||'').toUpperCase() === String(info.moneda||'').toUpperCase()) {
+            ch.classList.add('match'); ch.classList.remove('dimmed');
+          } else {
+            ch.classList.add('dimmed'); ch.classList.remove('match');
+          }
+        });
+      }
+
+      const box = qs('#confirm-amount-box');
+      const textEl = qs('#confirm-amount-text');
+      const emoji = flag(info.moneda);
+      box.innerHTML = `
+        <div class="cb-top">
+          <span class="cb-chip"><span class="cb-flag">${emoji}</span><span class="cb-code">${info.moneda}</span></span>
+          <div class="cb-mode">${ctx.modo==='deposito'?'Depósito':'Retiro'}</div>
+        </div>
+        <div class="cb-value"><span class="cb-number">${formatAmountRaw(info.monto)}</span> <span class="cb-code">${info.moneda}</span></div>
+        <div class="cb-sub">Transacción <code>${ctx.code}</code></div>
+      `;
+      box.style.display = 'block';
+      textEl?.classList.add('hidden');
+      show('confirm-amount-screen');
+    }catch(err){ showError('validar', err); }
+  });
+
+  // ---------------- Precontar + OTP ----------------
+  qs('#btn-amount-cancel')?.addEventListener('click', ()=>{
+    resetTxUI();
+    show('menu-screen');
+  });
+  qs('#btn-amount-confirm')?.addEventListener('click', async ()=>{
+    try{
+      const payload = { codigo: ctx.code, modo: ctx.modo, ubicacion: ctx.ubicacion };
+      if (ctx.tx_id) payload.tx_id = ctx.tx_id;
+      const data = await api(URLS.precontar, payload);
+
+      ctx.reserva_id = data?.reserva_id ?? data?.reserva ?? data?.id ?? ctx.raw?.reserva_id ?? ctx.raw?.reserva ?? null;
+
+      const list = qs('#otp-summary');
+      if(list){
+        if (ctx.modo === 'retiro' && data.breakdown && data.breakdown.length > 0) {
+          const billsHTML = data.breakdown.map(b => 
+            `<div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;margin:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;font-size:14px;font-weight:600;">
+              <span style="opacity:.85;">${b.unidades}×</span>
+              <span style="color:#10b981;font-weight:800;">${b.valor}</span>
+              <span style="font-size:18px;">💵</span>
+            </div>`
+          ).join('');
+          list.innerHTML = `<div style="display:flex;flex-wrap:wrap;justify-content:center;margin:8px 0;">${billsHTML}</div>${data.diff ? `<div style="font-size:13px;opacity:.75;margin-top:6px;">Redondeo: ${formatAmount(data.diff, data.moneda)}</div>` : ''}`;
+        } else {
+          list.innerHTML = '<div style="padding:10px;opacity:.85;font-size:14px;">💰 Ingresá los billetes en la ranura</div>';
+        }
+      }
+
+      await api(URLS.otp_enviar, {reserva_id: ctx.reserva_id});
+      show('otp-screen');
+    }catch(err){ showError('precontar', err); }
+  });
+
+  // ---------------- OTP confirmar ----------------
+  qs('#btn-otp-back')?.addEventListener('click', ()=> show('confirm-amount-screen'));
+  qs('#btn-otp-confirm')?.addEventListener('click', async ()=>{
+    try{
+      const otp = (qs('#otp-input')?.value || '').trim();
+      if(!otp) throw new Error('Ingrese el código OTP.');
+      await api(URLS.otp_verificar, {reserva_id: ctx.reserva_id, otp});
+      const result = await api(URLS.confirmar, {
+        reserva_id: ctx.reserva_id,
+        codigo: ctx.code,
+        modo: ctx.modo,
+        otp
+      });
+      ctx.ticket_url = result.ticket_url || null;
+
+      qs('#success-message') && (qs('#success-message').textContent =
+        `${ctx.modo==='deposito'?'Depósito':'Retiro'} completado para la transacción ${ctx.code}.`);
+      show('success-screen');
+    }catch(err){ showError('confirmar', err); }
+  });
+
+  // ---------------- Botones de salida/imprimir ----------------
+  qs('#btn-success-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+  qs('#btn-success-print')?.addEventListener('click', ()=> { if(ctx.ticket_url){ window.open(ctx.ticket_url, 'ticket', 'width=460,height=640'); } });
+  qs('#btn-cancel-exit')?.addEventListener('click', ()=> { resetTxUI(); show('menu-screen'); });
+
+  // ---------------- Teclado virtual (delegación + foco seguro) ----------------
+  let active = null;
+
+  // Seguimos actualizando active con focus/blur por si hay más inputs con data-kb
+  qsa('input[data-kb]').forEach(inp=>{
+    inp.addEventListener('focus',()=> active=inp);
+    inp.addEventListener('blur',()=> { if(active===inp) active=null; });
+  });
+
+  // Obtiene el input destino: prioriza el enfocado; si no, usa #transaction-number visible
+  function getTargetInput(){
+    if (active && document.body.contains(active)) return active;
+    const focused = document.activeElement;
+    if (focused && focused.matches && focused.matches('input[data-kb]')) return focused;
+    const visible = qs('.ted-screen-view.active input[data-kb]') || qs('#transaction-number');
+    return visible || null;
+  }
+
+  // Delegación: un solo listener para todo el teclado
+  qs('.ted-pad')?.addEventListener('click', (ev)=>{
+    const btn = ev.target.closest('.ted-key');
+    if(!btn) return;
+
+    const input = getTargetInput();
+    if(!input) return;
+
+    const k = String(btn.dataset.key||'');
+    // Letras A-F se agregan en mayúscula
+    if (k==='a' || k==='b' || k==='c' || k==='d' || k==='e' || k==='f') {
+      input.value += k.toLowerCase();
+    }
+    else if (k==='backspace') {
+      input.value = input.value.slice(0,-1);
+    }
+    else if (k==='clear') {
+      input.value = '';
+    }
+    else if (k==='minus') {
+      input.value += '-';
+    }
+    else if (k==='confirm') {
+      const btnValidar = qs('#btn-tx-validar');
+      if (btnValidar && !btnValidar.disabled) btnValidar.click();
+      return; // no dispara 'input'
+    }
+    else {
+      // números u otros caracteres
+      input.value += k;
+    }
+
+    // Asegurar foco para que el usuario vea el cursor
+    input.focus();
+    // Notificar cambios a la UI (habilitar botón Validar, etc.)
+    input.dispatchEvent(new Event('input', { bubbles:true }));
+  });
+
+  function tick(){ const now=new Date(); qs('#ted-clock').textContent = now.toLocaleTimeString('es-PY',{hour12:false}); }
+  setInterval(tick, 1000); tick();
+
+  (async () => {
+    await Promise.all([cargarTerminal(), cargarUbicaciones()]);
+    resetTxUI();
+    show('login-screen');
+  })();
+})();
+</script>
+
+{% endblock %}

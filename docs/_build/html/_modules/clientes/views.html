@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>clientes.views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">clientes.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para clientes.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">,</span> <span class="n">DeleteView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.urls</span><span class="w"> </span><span class="kn">import</span> <span class="n">reverse_lazy</span><span class="p">,</span> <span class="n">reverse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_object_or_404</span><span class="p">,</span> <span class="n">redirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">permission_required</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span>
+
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cliente</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.forms</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClienteForm</span><span class="p">,</span> <span class="n">ClienteSearchForm</span>
+
+<div class="viewcode-block" id="ClienteListView">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteListView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClienteListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Cliente</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;clientes/lista_clientes.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;clientes&#39;</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">permission_required</span> <span class="o">=</span> <span class="s1">&#39;clientes.access_clientes_panel&#39;</span>   <span class="c1">#se agrega el permiso para que solo los roles con este permiso accedan</span>
+    
+    
+<div class="viewcode-block" id="ClienteListView.handle_no_permission">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteListView.handle_no_permission">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_no_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>  <span class="c1"># 🚀 tu menú principal</span></div>
+
+
+<div class="viewcode-block" id="ClienteListView.get_queryset">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteListView.get_queryset">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span>
+        
+        <span class="c1"># Filtros</span>
+        <span class="n">search_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">categoria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;categoria&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">activo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activo&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">search_query</span><span class="p">:</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">Q</span><span class="p">(</span><span class="n">nombre__icontains</span><span class="o">=</span><span class="n">search_query</span><span class="p">)</span> <span class="o">|</span>
+                <span class="n">Q</span><span class="p">(</span><span class="n">correo_electronico__icontains</span><span class="o">=</span><span class="n">search_query</span><span class="p">)</span>
+            <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">categoria</span><span class="p">:</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">categoria</span><span class="o">=</span><span class="n">categoria</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">activo</span><span class="p">:</span>
+            <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activo</span><span class="o">=</span><span class="p">(</span><span class="n">activo</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">))</span>
+            
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;nombre&#39;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="ClienteListView.get_context_data">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteListView.get_context_data">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;search_form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClienteSearchForm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;search_query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;categoria_filtro&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;categoria&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s1">&#39;activo_filtro&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activo&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ClienteDetailView">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDetailView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClienteDetailView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Cliente</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;clientes/detalle_cliente.html&#39;</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s1">&#39;cliente&#39;</span>
+    <span class="n">permission_required</span> <span class="o">=</span> <span class="s1">&#39;clientes.access_clientes_panel&#39;</span> 
+
+        
+<div class="viewcode-block" id="ClienteDetailView.handle_no_permission">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDetailView.handle_no_permission">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_no_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>  <span class="c1"># 🚀 tu menú principal</span></div>
+
+    
+<div class="viewcode-block" id="ClienteDetailView.get_object">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDetailView.get_object">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">cliente</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">queryset</span><span class="p">)</span>
+        <span class="n">cliente</span><span class="o">.</span><span class="n">limite_diario</span><span class="p">,</span> <span class="n">cliente</span><span class="o">.</span><span class="n">limite_mensual</span> <span class="o">=</span> <span class="n">cliente</span><span class="o">.</span><span class="n">obtener_limite_global</span>  <span class="c1"># Aplica el límite global</span>
+        <span class="k">return</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">id_cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pk&#39;</span><span class="p">])</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ClienteCreateView">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteCreateView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClienteCreateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">CreateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Cliente</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">ClienteForm</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;clientes/formulario_cliente.html&#39;</span>
+    <span class="n">permission_required</span> <span class="o">=</span> <span class="s1">&#39;clientes.access_clientes_panel&#39;</span>
+
+        
+<div class="viewcode-block" id="ClienteCreateView.handle_no_permission">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteCreateView.handle_no_permission">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_no_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>  <span class="c1"># 🚀 tu menú principal</span></div>
+
+    
+<div class="viewcode-block" id="ClienteCreateView.get_success_url">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteCreateView.get_success_url">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente creado exitosamente&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;clientes:lista&#39;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="ClienteCreateView.form_valid">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteCreateView.form_valid">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">form_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">form_valid</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ClienteUpdateView">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteUpdateView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClienteUpdateView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">UpdateView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Cliente</span>
+    <span class="n">form_class</span> <span class="o">=</span> <span class="n">ClienteForm</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;clientes/editar_cliente.html&#39;</span>
+    <span class="n">permission_required</span> <span class="o">=</span> <span class="s1">&#39;clientes.access_clientes_panel&#39;</span>
+
+        
+<div class="viewcode-block" id="ClienteUpdateView.handle_no_permission">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteUpdateView.handle_no_permission">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_no_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>  <span class="c1"># 🚀 tu menú principal</span></div>
+
+    
+
+<div class="viewcode-block" id="ClienteUpdateView.get_object">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteUpdateView.get_object">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">id_cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pk&#39;</span><span class="p">])</span></div>
+
+    
+<div class="viewcode-block" id="ClienteUpdateView.get_success_url">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteUpdateView.get_success_url">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_success_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente actualizado exitosamente&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">reverse</span><span class="p">(</span><span class="s1">&#39;clientes:lista&#39;</span><span class="p">)</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ClienteDeleteView">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDeleteView">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClienteDeleteView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">PermissionRequiredMixin</span><span class="p">,</span> <span class="n">DeleteView</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Cliente</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;clientes/confirmar_eliminacion.html&#39;</span>
+    <span class="n">success_url</span> <span class="o">=</span> <span class="n">reverse_lazy</span><span class="p">(</span><span class="s1">&#39;clientes:lista&#39;</span><span class="p">)</span>
+    <span class="n">permission_required</span> <span class="o">=</span> <span class="s1">&#39;clientes.access_clientes_panel&#39;</span>
+    
+       
+<div class="viewcode-block" id="ClienteDeleteView.handle_no_permission">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDeleteView.handle_no_permission">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_no_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">)</span>  <span class="c1"># 🚀 tu menú principal</span></div>
+
+    
+
+<div class="viewcode-block" id="ClienteDeleteView.get_object">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDeleteView.get_object">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queryset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">id_cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;pk&#39;</span><span class="p">])</span></div>
+
+    
+<div class="viewcode-block" id="ClienteDeleteView.delete">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.ClienteDeleteView.delete">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cliente eliminado exitosamente&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="es_admin">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.es_admin">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">es_admin</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span></div>
+
+
+<span class="c1"># --- Vista protegida ---</span>
+<div class="viewcode-block" id="toggle_cliente_estado">
+<a class="viewcode-back" href="../../clientes.html#clientes.views.toggle_cliente_estado">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@permission_required</span><span class="p">(</span><span class="s1">&#39;clientes.access_clientes_panel&#39;</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">toggle_cliente_estado</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Cliente</span><span class="p">,</span> <span class="n">id_cliente</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+    <span class="n">cliente</span><span class="o">.</span><span class="n">activo</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">cliente</span><span class="o">.</span><span class="n">activo</span>
+    <span class="n">cliente</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    
+    <span class="n">action</span> <span class="o">=</span> <span class="s2">&quot;activado&quot;</span> <span class="k">if</span> <span class="n">cliente</span><span class="o">.</span><span class="n">activo</span> <span class="k">else</span> <span class="s2">&quot;desactivado&quot;</span>
+    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Cliente </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s1"> exitosamente&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s1">&#39;clientes:lista&#39;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange - Tipo de Medio{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+  {% if messages %}
+    <div class="mb-6">
+      {% for message in messages %}
+        <div class="p-3 mb-2 rounded-lg 
+                    {% if 'success' in message.tags %}bg-green-100 text-green-800 border border-green-300{% endif %}
+                    {% if 'error' in message.tags %}bg-red-100 text-red-800 border border-red-300{% endif %}
+                    {% if 'warning' in message.tags %}bg-yellow-100 text-yellow-800 border border-yellow-300{% endif %}
+                    {% if 'info' in message.tags %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <header class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">
+        🏦 {% if accion == "editar" %}Editar Tipo de Medio{% else %}Crear Nuevo Tipo de Medio{% endif %}
+      </h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        {% if accion == "editar" %}
+          Modifica los detalles y campos de este tipo de medio de acreditación.
+        {% else %}
+          Completa la información para registrar un nuevo tipo y sus campos.
+        {% endif %}
+      </p>
+    </div>
+    <a href="{% url 'medios_acreditacion:tipos_list' %}"
+       class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">⬅ Volver</a>
+  </header>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <!-- Datos del Tipo -->
+    <section class="bg-white border rounded-xl shadow-sm p-6 mb-8" style="border-color:var(--line)">
+      <h2 class="text-2xl font-bold mb-4 text-[var(--ink)]">Datos del Tipo</h2>
+
+      <div class="mb-4">
+        <label for="{{ form.nombre.id_for_label }}" class="block font-semibold text-[var(--ink)]">Nombre</label>
+        {{ form.nombre }}
+      </div>
+
+      <div class="mb-4">
+        <label for="{{ form.descripcion.id_for_label }}" class="block font-semibold text-[var(--ink)]">Descripción</label>
+        {{ form.descripcion }}
+      </div>
+
+      <div class="flex items-center gap-2">
+        {{ form.activo }}
+        <label for="{{ form.activo.id_for_label }}" class="text-[var(--ink)]">Activo</label>
+      </div>
+    </section>
+
+    <!-- Campos del Tipo -->
+    <section id="campos-section" class="bg-white border rounded-xl shadow-sm p-6"
+             style="border-color:var(--line)"
+             data-mode="{{ accion|default:'crear' }}">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-[var(--ink)]">Campos del Tipo</h2>
+        <button type="button" id="add-campo"
+                class="px-4 py-2 rounded-lg font-semibold text-white shadow-sm"
+                style="background:var(--brand)">
+          ➕ Agregar campo
+        </button>
+      </div>
+
+      {% if accion == "editar" %}
+        <p class="text-sm text-[var(--muted)] mb-2">
+          ⚠️ Al desactivar un campo, ya no se pedirá en los medios de acreditación de clientes, pero no se borrará de la base de datos.
+        </p>
+      {% endif %}
+
+      {{ formset.management_form }}
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse min-w-[760px]">
+          <thead class="bg-[var(--brand)] text-white">
+            <tr>
+              <th class="px-4 py-2 text-left">Nombre del Campo</th>
+              <th class="px-4 py-2 text-left">Tipo de Dato</th>
+              <th class="px-4 py-2 text-center">Obligatorio</th>
+              <th class="px-4 py-2 text-left">Regex</th>
+              <th class="px-4 py-2 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="campos-tbody">
+            {% for subform in formset %}
+              <tr class="campo-row transition-colors"
+                  data-activo="{{ subform.instance.activo|yesno:'1,0' }}"
+                  data-haspk="{{ subform.instance.pk|yesno:'1,0' }}">
+                {% for hidden in subform.hidden_fields %}{{ hidden }}{% endfor %}
+                <td class="px-4 py-2">{{ subform.nombre }}</td>
+                <td class="px-4 py-2">{{ subform.tipo_dato }}</td>
+                <td class="px-4 py-2 text-center">{{ subform.obligatorio }}</td>
+                <td class="px-4 py-2">{{ subform.regex }}</td>
+                <td class="px-4 py-2 text-center">
+                  <span class="hidden delete-input">{{ subform.DELETE }}</span>
+                  <button type="button" class="btn-toggle-delete px-3 py-1 rounded-lg text-white"></button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+
+        </table>
+      </div>
+
+      <!-- Plantilla para nuevas filas -->
+      <template id="empty-form-template">
+        <tr class="campo-row transition-colors"
+            data-activo="1" data-haspk="0">
+          {% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+          <td class="px-4 py-2">{{ formset.empty_form.nombre }}</td>
+          <td class="px-4 py-2">{{ formset.empty_form.tipo_dato }}</td>
+          <td class="px-4 py-2 text-center">{{ formset.empty_form.obligatorio }}</td>
+          <td class="px-4 py-2">{{ formset.empty_form.regex }}</td>
+          <td class="px-4 py-2 text-center">
+            <span class="hidden delete-input">{{ formset.empty_form.DELETE }}</span>
+            <button type="button" class="btn-toggle-delete px-3 py-1 rounded-lg text-white"></button>
+          </td>
+        </tr>
+      </template>
+
+
+    </section>
+
+    <div class="flex justify-end gap-3 mt-6">
+      <a href="{% url 'medios_acreditacion:tipos_list' %}"
+         class="px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700">
+        Cancelar
+      </a>
+      <button type="submit"
+              class="px-6 py-2 rounded-lg font-bold text-white shadow-sm"
+              style="background:var(--brand)">
+        {% if accion == "editar" %}💾 Guardar Cambios{% else %}➕ Crear{% endif %}
+      </button>
+    </div>
+  </form>
+</main>
+
+<style>
+  input, select, textarea { width:100%; border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; }
+  .row-deactivated { background:#fef3c7; opacity:.9; }
+  .row-removed { display:none; } /* para filas nuevas "quitadas" */
+  .delete-input input[type="checkbox"] { position:absolute; left:-9999px; }
+</style>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const section    = document.getElementById("campos-section");
+  const mode       = (section.dataset.mode || "crear").toLowerCase();
+  const tbody      = document.getElementById("campos-tbody");
+  const tmpl       = document.getElementById("empty-form-template");
+  const totalInput = document.getElementById("id_{{ formset.prefix }}-TOTAL_FORMS");
+  const prefix     = "{{ formset.prefix }}";
+
+  // ---------- utilidades ----------
+  const qsa = (root, sel) => Array.from(root.querySelectorAll(sel));
+
+  const getPkInput = (row) =>
+    row.querySelector('input[type="hidden"][name$="-id"], input[type="hidden"][name$="-id_campo"]');
+
+  const hasPk = (row) => {
+    const pk = getPkInput(row);
+    return !!(pk && pk.value && pk.value.trim() !== "");
+  };
+
+  const setBtnStyle = (btn, variant) => {
+    btn.className = "btn-toggle-delete px-3 py-1 rounded-lg text-white " +
+      (variant === "green" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700");
+  };
+
+  // Reemplaza ...-<n>- por ...-<newIndex>- en name/id/for
+  const replaceIndex = (str, newIndex) =>
+    str.replace(new RegExp(`${prefix}-(\\d+)-`,'g'), `${prefix}-${newIndex}-`);
+
+  // Reindexa TODAS las filas visibles tras agregar/quitar
+  const reindexRows = () => {
+    const rows = qsa(tbody, "tr.campo-row:not(.row-removed)");
+    rows.forEach((row, i) => {
+      // actualizar dataset (por si esta fila es nueva)
+      if (!hasPk(row)) row.dataset.haspk = "0";
+
+      // inputs/selects/labels
+      qsa(row, "input, select, textarea, label").forEach(el => {
+        if (el.name) el.name = replaceIndex(el.name, i);
+        if (el.id)   el.id   = replaceIndex(el.id,   i);
+        if (el.htmlFor) el.htmlFor = replaceIndex(el.htmlFor, i);
+      });
+    });
+    totalInput.value = rows.length; // MUY IMPORTANTE
+  };
+
+  const attachToggle = (row) => {
+    // asegurar dataset.haspk esté correcto
+    row.dataset.haspk = row.dataset.haspk || (hasPk(row) ? "1" : "0");
+
+    const btn = row.querySelector(".btn-toggle-delete");
+    const del = row.querySelector('.delete-input input[type="checkbox"]');
+    if (!btn || !del) return;
+
+    // Inicialización: si estamos en editar y la fila tiene PK, reflejar estado actual
+    if (mode === "editar" && (row.dataset.haspk === "1" || hasPk(row))) {
+      const activo = row.dataset.activo === "1";
+      del.checked = !activo; // inactivo => DELETE marcado
+    }
+
+    const refreshUI = () => {
+      if (mode === "editar") {
+        // Activo <=> no está marcado DELETE (para filas con PK)
+        const activo = !(del.checked && (row.dataset.haspk === "1" || hasPk(row)));
+        row.classList.toggle("row-deactivated", !activo);
+        if (activo) { btn.textContent = "Desactivar"; setBtnStyle(btn, "red"); }
+        else        { btn.textContent = "Reactivar";  setBtnStyle(btn, "green"); }
+      } else {
+        btn.textContent = "Eliminar";
+        setBtnStyle(btn, "red");
+      }
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      if (mode === "editar") {
+        if (row.dataset.haspk === "1" || hasPk(row)) {
+          // Fila existente: alterna desactivación
+          del.checked = !del.checked;
+          refreshUI();
+        } else {
+          // Fila nueva en editar: quitarla y reindexar
+          row.remove();
+          reindexRows();
+        }
+      } else {
+        // Crear: si es nueva, eliminarla; si por algún motivo trae PK, marcar DELETE
+        if (row.dataset.haspk === "0" && !hasPk(row)) {
+          row.remove();
+          reindexRows();
+        } else {
+          del.checked = !del.checked;
+          refreshUI();
+        }
+      }
+    });
+
+    refreshUI();
+  };
+
+  // Wirear filas actuales
+  qsa(tbody, "tr.campo-row").forEach(attachToggle);
+
+  // Agregar fila nueva
+  document.getElementById("add-campo").addEventListener("click", (e) => {
+    e.preventDefault();
+    const idx = parseInt(totalInput.value, 10);
+    const tmp = document.createElement("tbody");
+    tmp.innerHTML = tmpl.innerHTML.replace(/__prefix__/g, idx).trim();
+    const newRow = tmp.firstElementChild;
+    tbody.appendChild(newRow);
+    totalInput.value = idx + 1;
+    attachToggle(newRow);
+    reindexRows(); // mantenemos índices contiguos
+  });
+});
+</script>
+
+
+
+{% endblock %}

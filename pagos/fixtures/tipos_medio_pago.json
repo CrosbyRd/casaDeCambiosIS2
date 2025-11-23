@@ -1,0 +1,63 @@
+[
+  {
+    "model": "pagos.tipomediopago",
+    "pk": "p1",
+    "fields": {
+      "nombre": "Transferencia Bancaria",
+      "comision_porcentaje": 1.5,
+      "descripcion": "Transferencia local en PYG",
+      "activo": true,
+      "engine": "local",
+      "engine_config": {}
+    }
+  },
+  {
+    "model": "pagos.tipomediopago",
+    "pk": "p2",
+    "fields": {
+      "nombre": "Tarjeta de Crédito",
+      "comision_porcentaje": 2.0,
+      "descripcion": "Visa/Mastercard",
+      "activo": true,
+      "engine": "local",
+      "engine_config": {"api_key": "sk_test_XXXXX"}
+    }
+  },
+  {
+    "model": "pagos.tipomediopago",
+    "pk": "p3",
+    "fields": {
+      "nombre": "Billetera Electrónica",
+      "comision_porcentaje": 1.0,
+      "descripcion": "Pago por wallet PY",
+      "activo": true,
+      "engine": "local",
+      "engine_config": {}
+    }
+  },
+  {
+    "model": "pagos.tipomediopago",
+    "pk": "p4",
+    "fields": {
+      "nombre": "Tarjeta de Debito",
+      "comision_porcentaje": 0.5,
+      "descripcion": "Cobro rápido con QR",
+      "activo": true,
+      "engine": "local",
+      "engine_config": {}
+    }
+  },
+  {
+    "model": "pagos.tipomediopago",
+    "pk": "p5",
+    "fields": {
+      "nombre": "Stripe",
+      "comision_porcentaje": 0.5,
+      "descripcion": "",
+      "activo": true,
+      "engine": "stripe",
+      "engine_config": {}
+    }
+  }
+
+]

@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pagos.models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">pagos.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para pagos.models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de modelos para la aplicación **Pagos**.</span>
+
+<span class="sd">Contiene las definiciones de los modelos relacionados con los medios de pago</span>
+<span class="sd">aceptados por los clientes, incluyendo la configuración de tipos, campos</span>
+<span class="sd">personalizados, y validaciones dinámicas por cliente.</span>
+
+<span class="sd">Modelos incluidos:</span>
+<span class="sd">    - TipoMedioPago</span>
+<span class="sd">    - CampoMedioPago</span>
+<span class="sd">    - MedioPagoCliente</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinValueValidator</span><span class="p">,</span> <span class="n">MaxValueValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># 1) TipoMedioPago: define el tipo de método de pago + comisión %</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="TipoMedioPago">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.TipoMedioPago">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TipoMedioPago</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa un **tipo de medio de pago** disponible en el sistema</span>
+<span class="sd">    (por ejemplo: transferencia bancaria, tarjeta, billetera electrónica, etc.).</span>
+
+<span class="sd">    Incluye la configuración de la comisión que aplica cada medio, el motor</span>
+<span class="sd">    de procesamiento que utiliza (manual, SIPAP, Stripe, etc.) y metadatos.</span>
+
+<span class="sd">    :param uuid id_tipo: Identificador único del tipo de medio de pago.</span>
+<span class="sd">    :param str nombre: Nombre único que identifica el medio de pago.</span>
+<span class="sd">    :param Decimal comision_porcentaje: Porcentaje de comisión aplicado (0–100).</span>
+<span class="sd">    :param str descripcion: Descripción adicional o instrucciones.</span>
+<span class="sd">    :param bool activo: Indica si el medio está disponible para uso.</span>
+<span class="sd">    :param datetime creado_en: Fecha de creación del registro.</span>
+<span class="sd">    :param datetime actualizado_en: Fecha de última actualización.</span>
+<span class="sd">    :param str engine: Motor o integración usada para procesar pagos.</span>
+<span class="sd">    :param dict engine_config: Configuración JSON específica del motor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">id_tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Comisión en porcentaje que aplica este medio (0 a 100)</span>
+    <span class="n">comision_porcentaje</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span>
+        <span class="n">max_digits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0.00&quot;</span><span class="p">),</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">MinValueValidator</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)),</span> <span class="n">MaxValueValidator</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;100&quot;</span><span class="p">))],</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Porcentaje de comisión que aplica este medio (0–100).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">descripcion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">creado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">actualizado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">ENGINE_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;manual&#39;</span><span class="p">,</span> <span class="s1">&#39;Manual&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stripe&#39;</span><span class="p">,</span> <span class="s1">&#39;Stripe&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;sipap&#39;</span><span class="p">,</span> <span class="s1">&#39;SIPAP&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;Pasarela Local&#39;</span><span class="p">),</span> <span class="c1"># Renombrado de &#39;simulador&#39; a &#39;local&#39;</span>
+    <span class="p">]</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">ENGINE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;manual&#39;</span><span class="p">)</span>
+    <span class="n">engine_config</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="TipoMedioPago.is_stripe">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.TipoMedioPago.is_stripe">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_stripe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">==</span> <span class="s1">&#39;stripe&#39;</span></div>
+
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">db_table</span> <span class="o">=</span> <span class="s2">&quot;pagos_tipo_medio&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Tipo de medio de pago&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Tipos de medios de pago&quot;</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;access_pagos_section&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede acceder a la sección de pagos&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nombre</span></div>
+
+    
+
+
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># 2) CampoMedioPago: define los campos dinámicos por tipo</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="CampoMedioPago">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.CampoMedioPago">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CampoMedioPago</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define un **campo dinámico** asociado a un tipo de medio de pago.</span>
+
+<span class="sd">    Cada tipo puede tener múltiples campos requeridos (por ejemplo,</span>
+<span class="sd">    número de cuenta, RUC, alias, email) con validaciones opcionales</span>
+<span class="sd">    mediante expresiones regulares predefinidas.</span>
+
+<span class="sd">    :param uuid id_campo: Identificador único del campo.</span>
+<span class="sd">    :param TipoMedioPago tipo: Relación con el tipo de medio de pago.</span>
+<span class="sd">    :param str nombre_campo: Nombre del campo visible o técnico.</span>
+<span class="sd">    :param str tipo_dato: Tipo de dato (texto, número, teléfono, email, RUC).</span>
+<span class="sd">    :param bool obligatorio: Indica si el campo es obligatorio.</span>
+<span class="sd">    :param str regex_opcional: Patrón regex opcional de validación.</span>
+<span class="sd">    :param bool activo: Define si el campo está activo.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CampoMedioPago.TipoDato">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.CampoMedioPago.TipoDato">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">TipoDato</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
+        <span class="n">TEXTO</span> <span class="o">=</span> <span class="s2">&quot;texto&quot;</span><span class="p">,</span> <span class="s2">&quot;Texto&quot;</span>
+        <span class="n">NUMERO</span> <span class="o">=</span> <span class="s2">&quot;numero&quot;</span><span class="p">,</span> <span class="s2">&quot;Número&quot;</span>
+        <span class="n">TELEFONO</span> <span class="o">=</span> <span class="s2">&quot;telefono&quot;</span><span class="p">,</span> <span class="s2">&quot;Teléfono&quot;</span>
+        <span class="n">EMAIL</span> <span class="o">=</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;Email&quot;</span>
+        <span class="n">RUC</span> <span class="o">=</span> <span class="s2">&quot;ruc&quot;</span><span class="p">,</span> <span class="s2">&quot;RUC&quot;</span></div>
+
+
+<div class="viewcode-block" id="CampoMedioPago.RegexOpciones">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.CampoMedioPago.RegexOpciones">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">RegexOpciones</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">TextChoices</span><span class="p">):</span>
+        <span class="n">NINGUNO</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;(sin regex)&quot;</span>
+        <span class="n">SOLO_LETRAS</span>   <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Solo letras&quot;</span> 
+        <span class="n">SOLO_NUMEROS</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^\d+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Solo números&quot;</span>
+        <span class="n">EMAIL</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[^@\s]+@[^@\s]+\.[^@\s]+$&quot;</span><span class="p">,</span> <span class="s2">&quot;Email básico&quot;</span>
+        <span class="n">TELEFONO_PY_LOCAL</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^09\d</span><span class="si">{8}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="s2">&quot;Teléfono PY (09xxxxxxxx)&quot;</span>
+        <span class="n">RUC_PY</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="s2">&quot;RUC PY (########-#)&quot;</span></div>
+
+
+    <span class="n">id_campo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">TipoMedioPago</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;campos&quot;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+    <span class="n">nombre_campo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">tipo_dato</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TEXTO</span><span class="p">)</span>
+    <span class="n">obligatorio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Solo regex predefinida</span>
+    <span class="n">regex_opcional</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">RegexOpciones</span><span class="o">.</span><span class="n">choices</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">db_table</span> <span class="o">=</span> <span class="s2">&quot;pagos_campo_medio&quot;</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="s2">&quot;Campo de medio de pago&quot;</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="s2">&quot;Campos de medios de pago&quot;</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">,</span> <span class="s2">&quot;nombre_campo&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre_campo</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># 3) MedioPagoCliente: instancia del cliente con datos dinámicos + predeterminado</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="MedioPagoCliente">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoCliente">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioPagoCliente</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa un **medio de pago configurado por un cliente**.</span>
+
+<span class="sd">    Contiene los datos específicos de ese cliente (guardados como JSON),</span>
+<span class="sd">    y permite designar un medio predeterminado para operaciones futuras.</span>
+
+<span class="sd">    :param uuid id_medio: Identificador único del medio de pago del cliente.</span>
+<span class="sd">    :param Cliente cliente: Relación con el cliente propietario.</span>
+<span class="sd">    :param TipoMedioPago tipo: Tipo de medio de pago utilizado.</span>
+<span class="sd">    :param str alias: Nombre personalizado asignado por el cliente.</span>
+<span class="sd">    :param dict datos: Información dinámica del medio (ej. número de cuenta).</span>
+<span class="sd">    :param bool activo: Indica si el medio está activo.</span>
+<span class="sd">    :param bool predeterminado: Indica si es el medio preferido por el cliente.</span>
+<span class="sd">    :param datetime creado_en: Fecha de creación.</span>
+<span class="sd">    :param datetime actualizado_en: Última modificación.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">id_medio</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># 🔴 DUEÑO CORRECTO</span>
+    <span class="n">cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;clientes.Cliente&quot;</span><span class="p">,</span>
+                                <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;medios_pago&quot;</span><span class="p">,</span>
+                                <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">)</span>
+
+    <span class="n">tipo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">TipoMedioPago</span><span class="p">,</span>
+                             <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;medios_cliente&quot;</span><span class="p">,</span>
+                             <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">)</span>
+
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">verbose_name</span><span class="o">=</span><span class="s2">&quot;Proveedor&quot;</span><span class="p">)</span>
+    <span class="n">datos</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">activo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">predeterminado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">creado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">editable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">actualizado_en</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">db_table</span> <span class="o">=</span> <span class="s2">&quot;pagos_medio_cliente&quot;</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># ✅ a lo sumo un predeterminado por CLIENTE</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">UniqueConstraint</span><span class="p">(</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cliente&quot;</span><span class="p">],</span>
+                <span class="n">condition</span><span class="o">=</span><span class="n">Q</span><span class="p">(</span><span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uniq_medio_pago_predeterminado_por_cliente&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="c1"># ✅ opcional: alias único por cliente+tipo</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">UniqueConstraint</span><span class="p">(</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cliente&quot;</span><span class="p">,</span> <span class="s2">&quot;tipo&quot;</span><span class="p">,</span> <span class="s2">&quot;alias&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uniq_alias_por_cliente_y_tipo&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Evitar RelatedObjectDoesNotExist en crear/instancias sin FK</span>
+        <span class="n">alias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tipo_nombre</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="o">.</span><span class="n">nombre</span>  <span class="c1"># puede no existir aún</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">tipo_nombre</span> <span class="o">=</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">estado</span> <span class="o">=</span> <span class="s2">&quot;(inactivo)&quot;</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;activo&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="n">tipo_nombre</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">estado</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># Validación: verificar que los datos cumplan con los campos activos del tipo</span>
+<div class="viewcode-block" id="MedioPagoCliente.clean">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoCliente.clean">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Valida que los datos JSON del medio de pago cumplan con los</span>
+<span class="sd">        campos activos y sus reglas de validación definidas.</span>
+
+<span class="sd">        :raises ValidationError: Si faltan campos obligatorios, o si</span>
+<span class="sd">                                 los valores no cumplen con el formato esperado.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">campos_activos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tipo</span><span class="o">.</span><span class="n">campos</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">datos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+        <span class="c1"># Mapeo de validadores ligeros por tipo de dato</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_valida_tipo</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="n">valor</span><span class="p">,</span> <span class="n">tipo</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">valor</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">tipo</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">NUMERO</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^-?\d+(?:[\.,]\d+)?$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">: debe ser numérico&quot;</span>
+            <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TELEFONO</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+?\d{6,15}$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">: teléfono inválido&quot;</span>
+            <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">EMAIL</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[^@\s]+@[^@\s]+\.[^@\s]+$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">: email inválido&quot;</span>
+            <span class="k">elif</span> <span class="n">tipo</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">RUC</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">: RUC inválido (########-#)&quot;</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">campo</span> <span class="ow">in</span> <span class="n">campos_activos</span><span class="p">:</span>
+            <span class="n">nombre</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span>
+            <span class="n">valor</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nombre</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">obligatorio</span> <span class="ow">and</span> <span class="p">(</span><span class="n">valor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="n">errors</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Es obligatorio&quot;</span>
+                <span class="k">continue</span>
+            <span class="c1"># Validación por tipo</span>
+            <span class="n">type_err</span> <span class="o">=</span> <span class="n">_valida_tipo</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="n">valor</span><span class="p">,</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">type_err</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_err</span>
+                <span class="k">continue</span>
+            <span class="c1"># Validación por regex (solo la predefinida)</span>
+            <span class="n">patron</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">regex_opcional</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">patron</span> <span class="ow">and</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
+                        <span class="n">errors</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Formato inválido&quot;</span>
+                <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                    <span class="n">errors</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Regex inválida en configuración&quot;</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Lógica de predeterminado y desactivación</span>
+<div class="viewcode-block" id="MedioPagoCliente.save">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoCliente.save">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Guarda el medio de pago aplicando la lógica de consistencia:</span>
+<span class="sd">        - Si se desactiva, se quita el estado de predeterminado.</span>
+<span class="sd">        - Si se marca como predeterminado, desmarca los otros medios</span>
+<span class="sd">          predeterminados del mismo cliente.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Si se inactiva, también pierde el estado de predeterminado</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">activo</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Si quedó como predeterminado, desmarcar otros del mismo cliente</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predeterminado</span><span class="p">:</span>
+            <span class="n">MedioPagoCliente</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">cliente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cliente</span><span class="p">,</span> <span class="n">predeterminado</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">predeterminado</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

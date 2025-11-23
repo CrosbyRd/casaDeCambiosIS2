@@ -1,0 +1,1002 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete monedas &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete roles" href="roles.html" />
+    <link rel="prev" title="módulo manage" href="manage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">paquete monedas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.admin">módulo monedas.admin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.apps">módulo monedas.apps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.apps.MonedasConfig"><code class="docutils literal notranslate"><span class="pre">MonedasConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.forms">módulo monedas.forms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modulo-forms-de-la-app-monedas">Módulo forms de la app monedas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.CHOICES"><code class="docutils literal notranslate"><span class="pre">CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.CURRENCIES"><code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm"><code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-0">módulo monedas.models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda"><code class="docutils literal notranslate"><span class="pre">Moneda</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion"><code class="docutils literal notranslate"><span class="pre">TedDenominacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario"><code class="docutils literal notranslate"><span class="pre">TedInventario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento"><code class="docutils literal notranslate"><span class="pre">TedMovimiento</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.tests">módulo monedas.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.urls">módulo monedas.urls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#modulo-urls-de-la-app-monedas">Módulo urls de la app monedas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-monedas.views">módulo monedas.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.views.crear_moneda"><code class="docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.views.editar_moneda"><code class="docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.views.eliminar_moneda"><code class="docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.views.listar_monedas"><code class="docutils literal notranslate"><span class="pre">listar_monedas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.views.moneda_detalle"><code class="docutils literal notranslate"><span class="pre">moneda_detalle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
+      <li class="breadcrumb-item active">paquete monedas</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/monedas.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-monedas">
+<h1>paquete monedas<a class="headerlink" href="#paquete-monedas" title="Link to this heading"></a></h1>
+<section id="submodulos">
+<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
+</section>
+<section id="module-monedas.admin">
+<span id="modulo-monedas-admin"></span><h2>módulo monedas.admin<a class="headerlink" href="#module-monedas.admin" title="Link to this heading"></a></h2>
+</section>
+<section id="module-monedas.apps">
+<span id="modulo-monedas-apps"></span><h2>módulo monedas.apps<a class="headerlink" href="#module-monedas.apps" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.apps.MonedasConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.apps.</span></span><span class="sig-name descname"><span class="pre">MonedasConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/apps.html#MonedasConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.apps.MonedasConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.apps.MonedasConfig.default_auto_field">
+<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#monedas.apps.MonedasConfig.default_auto_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.apps.MonedasConfig.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monedas'</span></em><a class="headerlink" href="#monedas.apps.MonedasConfig.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-monedas.forms">
+<span id="modulo-monedas-forms"></span><h2>módulo monedas.forms<a class="headerlink" href="#module-monedas.forms" title="Link to this heading"></a></h2>
+<section id="modulo-forms-de-la-app-monedas">
+<h3>Módulo forms de la app monedas<a class="headerlink" href="#modulo-forms-de-la-app-monedas" title="Link to this heading"></a></h3>
+<p>Este módulo define el formulario principal de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
+Incluye la definición del catálogo de monedas basado en el estándar ISO 4217,
+sus símbolos y emojis asociados, así como el formulario para la gestión de
+objetos <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> en el sistema.</p>
+<section id="contenido">
+<h4>Contenido<a class="headerlink" href="#contenido" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Constante <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code> con los códigos de monedas soportadas.</p></li>
+<li><p>Función auxiliar <code class="docutils literal notranslate"><span class="pre">_choice_label</span></code> para generar etiquetas legibles.</p></li>
+<li><p>Lista de opciones <code class="docutils literal notranslate"><span class="pre">CHOICES</span></code> derivada de <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+<li><p>Clase <code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code> para la creación y validación de monedas.</p></li>
+</ul>
+</section>
+<section id="clases">
+<h4>Clases<a class="headerlink" href="#clases" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm" title="monedas.forms.MonedaForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MonedaForm</span></code></a>: Formulario de modelo para crear y editar monedas.</p></li>
+</ul>
+</section>
+<section id="funciones">
+<h4>Funciones<a class="headerlink" href="#funciones" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">_choice_label()</span></code>: Retorna la etiqueta de selección de una moneda.</p></li>
+</ul>
+</section>
+<section id="constantes">
+<h4>Constantes<a class="headerlink" href="#constantes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.CURRENCIES" title="monedas.forms.CURRENCIES"><code class="xref py py-data docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a>: Diccionario de monedas con nombre, símbolo y emoji.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.CHOICES" title="monedas.forms.CHOICES"><code class="xref py py-data docutils literal notranslate"><span class="pre">CHOICES</span></code></a>: Lista de tuplas para representar opciones en formularios.</p></li>
+</ul>
+</section>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.forms.CHOICES">
+<span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('USD',</span> <span class="pre">'🇺🇸</span> <span class="pre">USD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">estadounidense'),</span> <span class="pre">('EUR',</span> <span class="pre">'🇪🇺</span> <span class="pre">EUR</span> <span class="pre">—</span> <span class="pre">Euro'),</span> <span class="pre">('ARS',</span> <span class="pre">'🇦🇷</span> <span class="pre">ARS</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">argentino'),</span> <span class="pre">('BRL',</span> <span class="pre">'🇧🇷</span> <span class="pre">BRL</span> <span class="pre">—</span> <span class="pre">Real</span> <span class="pre">brasileño'),</span> <span class="pre">('CLP',</span> <span class="pre">'🇨🇱</span> <span class="pre">CLP</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">chileno'),</span> <span class="pre">('COP',</span> <span class="pre">'🇨🇴</span> <span class="pre">COP</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">colombiano'),</span> <span class="pre">('MXN',</span> <span class="pre">'🇲🇽</span> <span class="pre">MXN</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">mexicano'),</span> <span class="pre">('PEN',</span> <span class="pre">'🇵🇪</span> <span class="pre">PEN</span> <span class="pre">—</span> <span class="pre">Sol</span> <span class="pre">peruano'),</span> <span class="pre">('PYG',</span> <span class="pre">'🇵🇾</span> <span class="pre">PYG</span> <span class="pre">—</span> <span class="pre">Guaraní</span> <span class="pre">paraguayo'),</span> <span class="pre">('UYU',</span> <span class="pre">'🇺🇾</span> <span class="pre">UYU</span> <span class="pre">—</span> <span class="pre">Peso</span> <span class="pre">uruguayo'),</span> <span class="pre">('GBP',</span> <span class="pre">'🇬🇧</span> <span class="pre">GBP</span> <span class="pre">—</span> <span class="pre">Libra</span> <span class="pre">esterlina'),</span> <span class="pre">('JPY',</span> <span class="pre">'🇯🇵</span> <span class="pre">JPY</span> <span class="pre">—</span> <span class="pre">Yen</span> <span class="pre">japonés'),</span> <span class="pre">('CNY',</span> <span class="pre">'🇨🇳</span> <span class="pre">CNY</span> <span class="pre">—</span> <span class="pre">Yuan</span> <span class="pre">chino'),</span> <span class="pre">('AUD',</span> <span class="pre">'🇦🇺</span> <span class="pre">AUD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">australiano'),</span> <span class="pre">('CAD',</span> <span class="pre">'🇨🇦</span> <span class="pre">CAD</span> <span class="pre">—</span> <span class="pre">Dólar</span> <span class="pre">canadiense'),</span> <span class="pre">('CHF',</span> <span class="pre">'🇨🇭</span> <span class="pre">CHF</span> <span class="pre">—</span> <span class="pre">Franco</span> <span class="pre">suizo')]</span></em><a class="headerlink" href="#monedas.forms.CHOICES" title="Link to this definition"></a></dt>
+<dd><p>Opciones generadas a partir de CURRENCIES, en formato (código, etiqueta).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.forms.CURRENCIES">
+<span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">CURRENCIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'ARS':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇦🇷',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">argentino',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'AUD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇦🇺',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">australiano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'BRL':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇧🇷',</span> <span class="pre">'name':</span> <span class="pre">'Real</span> <span class="pre">brasileño',</span> <span class="pre">'symbol':</span> <span class="pre">'R$'},</span> <span class="pre">'CAD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇦',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">canadiense',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'CHF':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇭',</span> <span class="pre">'name':</span> <span class="pre">'Franco</span> <span class="pre">suizo',</span> <span class="pre">'symbol':</span> <span class="pre">'Fr'},</span> <span class="pre">'CLP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇱',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">chileno',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'CNY':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇳',</span> <span class="pre">'name':</span> <span class="pre">'Yuan</span> <span class="pre">chino',</span> <span class="pre">'symbol':</span> <span class="pre">'¥'},</span> <span class="pre">'COP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇨🇴',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">colombiano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'EUR':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇪🇺',</span> <span class="pre">'name':</span> <span class="pre">'Euro',</span> <span class="pre">'symbol':</span> <span class="pre">'€'},</span> <span class="pre">'GBP':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇬🇧',</span> <span class="pre">'name':</span> <span class="pre">'Libra</span> <span class="pre">esterlina',</span> <span class="pre">'symbol':</span> <span class="pre">'£'},</span> <span class="pre">'JPY':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇯🇵',</span> <span class="pre">'name':</span> <span class="pre">'Yen</span> <span class="pre">japonés',</span> <span class="pre">'symbol':</span> <span class="pre">'¥'},</span> <span class="pre">'MXN':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇲🇽',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">mexicano',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'PEN':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇵🇪',</span> <span class="pre">'name':</span> <span class="pre">'Sol</span> <span class="pre">peruano',</span> <span class="pre">'symbol':</span> <span class="pre">'S/'},</span> <span class="pre">'PYG':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇵🇾',</span> <span class="pre">'name':</span> <span class="pre">'Guaraní</span> <span class="pre">paraguayo',</span> <span class="pre">'symbol':</span> <span class="pre">'₲'},</span> <span class="pre">'USD':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇺🇸',</span> <span class="pre">'name':</span> <span class="pre">'Dólar</span> <span class="pre">estadounidense',</span> <span class="pre">'symbol':</span> <span class="pre">'$'},</span> <span class="pre">'UYU':</span> <span class="pre">{'emoji':</span> <span class="pre">'🇺🇾',</span> <span class="pre">'name':</span> <span class="pre">'Peso</span> <span class="pre">uruguayo',</span> <span class="pre">'symbol':</span> <span class="pre">'$'}}</span></em><a class="headerlink" href="#monedas.forms.CURRENCIES" title="Link to this definition"></a></dt>
+<dd><p>Catálogo ISO 4217 con nombre, símbolo y emoji (bandera).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.forms.</span></span><span class="sig-name descname"><span class="pre">MonedaForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Formulario de modelo para gestionar objetos <code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code>.</p>
+<p>Este formulario:</p>
+<ul class="simple">
+<li><p>Autocompleta nombre y símbolo en base al código de moneda.</p></li>
+<li><p>Valida que la mínima denominación sea positiva.</p></li>
+<li><p>Sobrescribe <code class="docutils literal notranslate"><span class="pre">save</span></code> para garantizar consistencia con <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+</ul>
+<section id="metodos">
+<h3>Métodos<a class="headerlink" href="#metodos" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.clean_minima_denominacion" title="monedas.forms.MonedaForm.clean_minima_denominacion"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clean_minima_denominacion()</span></code></a>: Valida que la mínima denominación sea &gt; 0.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.clean" title="monedas.forms.MonedaForm.clean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">clean()</span></code></a>: Completa nombre y símbolo desde <code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code>.</p></li>
+<li><p><a class="reference internal" href="#monedas.forms.MonedaForm.save" title="monedas.forms.MonedaForm.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>: Guarda el objeto <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> con datos consistentes.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['codigo',</span> <span class="pre">'nombre',</span> <span class="pre">'simbolo',</span> <span class="pre">'decimales',</span> <span class="pre">'minima_denominacion',</span> <span class="pre">'admite_en_linea',</span> <span class="pre">'admite_terminal']</span></em><a class="headerlink" href="#monedas.forms.MonedaForm.Meta.fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#monedas.forms.MonedaForm.Meta.model" title="Link to this definition"></a></dt>
+<dd><p>alias de <a class="reference internal" href="#monedas.models.Moneda" title="monedas.models.Moneda"><code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.Meta.widgets">
+<span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'codigo':</span> <span class="pre">&lt;django.forms.widgets.Select</span> <span class="pre">object&gt;,</span> <span class="pre">'decimales':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'minima_denominacion':</span> <span class="pre">&lt;django.forms.widgets.NumberInput</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;,</span> <span class="pre">'simbolo':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#monedas.forms.MonedaForm.Meta.widgets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'admite_en_linea':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'admite_terminal':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'codigo':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'decimales':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'minima_denominacion':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'nombre':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'simbolo':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#monedas.forms.MonedaForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.clean"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.clean" title="Link to this definition"></a></dt>
+<dd><p>Sobrescribe la limpieza del formulario.</p>
+<p>Garantiza que nombre y símbolo se actualicen de acuerdo al código de moneda.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.clean_minima_denominacion">
+<span class="sig-name descname"><span class="pre">clean_minima_denominacion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.clean_minima_denominacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.clean_minima_denominacion" title="Link to this definition"></a></dt>
+<dd><p>Valida que <code class="docutils literal notranslate"><span class="pre">minima_denominacion</span></code> sea un número entero positivo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Muestra<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>forms.ValidationError</strong> – Si el valor es nulo o menor que 1.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Valor validado de mínima denominación.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#monedas.forms.MonedaForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#monedas.forms.MonedaForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.forms.MonedaForm.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/forms.html#MonedaForm.save"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.forms.MonedaForm.save" title="Link to this definition"></a></dt>
+<dd><p>Guarda el objeto <code class="docutils literal notranslate"><span class="pre">Moneda</span></code> con datos consistentes del catálogo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>commit</strong> (<em>bool</em>) – Indica si se debe guardar en base de datos inmediatamente.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instancia de <code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code> guardada o no.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#monedas.models.Moneda" title="monedas.models.Moneda">Moneda</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+<section id="module-0">
+<span id="modulo-monedas-models"></span><h2>módulo monedas.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Módulo de modelos de la aplicación <strong>monedas</strong>.</p>
+<p id="module-monedas.models">Este módulo define el modelo <a class="reference internal" href="#monedas.models.Moneda" title="monedas.models.Moneda"><code class="xref py py-class docutils literal notranslate"><span class="pre">Moneda</span></code></a>, utilizado como catálogo
+centralizado de monedas con las que opera el sistema. Incluye metadatos
+operativos (p. ej., decimales, mínima denominación) y un permiso de acceso
+a la sección de administración de monedas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.models.Moneda">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">Moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#Moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.Moneda" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Representa una <strong>moneda</strong> del sistema.</p>
+<p>Se utiliza como catálogo de monedas que pueden participar en operaciones
+(cotizaciones, calculadora, etc.). Además, define un permiso de acceso a
+la sección de administración de monedas.</p>
+<section id="atributos">
+<h3><strong>Atributos</strong><a class="headerlink" href="#atributos" title="Link to this heading"></a></h3>
+<dl>
+<dt>codigo<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Código de la moneda (p. ej. <code class="docutils literal notranslate"><span class="pre">USD</span></code>, <code class="docutils literal notranslate"><span class="pre">EUR</span></code>, <code class="docutils literal notranslate"><span class="pre">PYG</span></code>). Debe ser único.</p>
+</dd>
+<dt>nombre<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Nombre legible de la moneda (p. ej. <em>Dólar estadounidense</em>).</p>
+</dd>
+<dt>simbolo<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.CharField</span></code></span></dt><dd><p>Símbolo de la moneda (p. ej. <code class="docutils literal notranslate"><span class="pre">$</span></code>, <code class="docutils literal notranslate"><span class="pre">€</span></code>, <code class="docutils literal notranslate"><span class="pre">₲</span></code>).</p>
+</dd>
+<dt>fecha_creacion<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.DateTimeField</span></code></span></dt><dd><p>Fecha/hora de creación del registro. Se asigna automáticamente.</p>
+</dd>
+<dt>decimales<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.PositiveSmallIntegerField</span></code></span></dt><dd><p>Cantidad de decimales con los que se representa la moneda.
+Útil para formateo y validaciones. Valor por defecto: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</dd>
+<dt>minima_denominacion<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.PositiveIntegerField</span></code></span></dt><dd><p>Mínima unidad operable (p. ej., <code class="docutils literal notranslate"><span class="pre">1</span></code> para monedas enteras, <code class="docutils literal notranslate"><span class="pre">5</span></code> si
+solo se opera en múltiplos de 5). Valor por defecto: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt>ultima_actualizacion_tasa<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.DateTimeField</span></code></span></dt><dd><p>Marca temporal de la última actualización de tasa/cotización conocida.
+Puede ser nula si nunca se actualizó.</p>
+</dd>
+<dt>admite_en_linea<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.BooleanField</span></code></span></dt><dd><p>Indica si la moneda está habilitada para operaciones <strong>en línea</strong>.</p>
+</dd>
+<dt>admite_terminal<span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.BooleanField</span></code></span></dt><dd><p>Indica si la moneda está habilitada para operaciones en <strong>terminal</strong>.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Nota</p>
+<p>El permiso personalizado <code class="docutils literal notranslate"><span class="pre">monedas.access_monedas_section</span></code> permite
+controlar el acceso a las vistas de administración/listado de monedas.</p>
+</div>
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.Moneda.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.Moneda.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.Moneda.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#monedas.models.Moneda.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.admite_en_linea">
+<span class="sig-name descname"><span class="pre">admite_en_linea</span></span><a class="headerlink" href="#monedas.models.Moneda.admite_en_linea" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.admite_terminal">
+<span class="sig-name descname"><span class="pre">admite_terminal</span></span><a class="headerlink" href="#monedas.models.Moneda.admite_terminal" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.codigo">
+<span class="sig-name descname"><span class="pre">codigo</span></span><a class="headerlink" href="#monedas.models.Moneda.codigo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.cotizaciones_base">
+<span class="sig-name descname"><span class="pre">cotizaciones_base</span></span><a class="headerlink" href="#monedas.models.Moneda.cotizaciones_base" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.cotizaciones_destino">
+<span class="sig-name descname"><span class="pre">cotizaciones_destino</span></span><a class="headerlink" href="#monedas.models.Moneda.cotizaciones_destino" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.decimales">
+<span class="sig-name descname"><span class="pre">decimales</span></span><a class="headerlink" href="#monedas.models.Moneda.decimales" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.denominaciones_ted">
+<span class="sig-name descname"><span class="pre">denominaciones_ted</span></span><a class="headerlink" href="#monedas.models.Moneda.denominaciones_ted" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.fecha_creacion">
+<span class="sig-name descname"><span class="pre">fecha_creacion</span></span><a class="headerlink" href="#monedas.models.Moneda.fecha_creacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.Moneda.get_next_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.Moneda.get_next_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.Moneda.get_previous_by_fecha_creacion">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.Moneda.get_previous_by_fecha_creacion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#monedas.models.Moneda.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.minima_denominacion">
+<span class="sig-name descname"><span class="pre">minima_denominacion</span></span><a class="headerlink" href="#monedas.models.Moneda.minima_denominacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.nombre">
+<span class="sig-name descname"><span class="pre">nombre</span></span><a class="headerlink" href="#monedas.models.Moneda.nombre" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#monedas.models.Moneda.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.seguidores">
+<span class="sig-name descname"><span class="pre">seguidores</span></span><a class="headerlink" href="#monedas.models.Moneda.seguidores" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Pizza.toppings</span></code> and <code class="docutils literal notranslate"><span class="pre">Topping.pizzas</span></code> are <code class="docutils literal notranslate"><span class="pre">ManyToManyDescriptor</span></code>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.simbolo">
+<span class="sig-name descname"><span class="pre">simbolo</span></span><a class="headerlink" href="#monedas.models.Moneda.simbolo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.transacciones_destino">
+<span class="sig-name descname"><span class="pre">transacciones_destino</span></span><a class="headerlink" href="#monedas.models.Moneda.transacciones_destino" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.transacciones_origen">
+<span class="sig-name descname"><span class="pre">transacciones_origen</span></span><a class="headerlink" href="#monedas.models.Moneda.transacciones_origen" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.transactionlimit_set">
+<span class="sig-name descname"><span class="pre">transactionlimit_set</span></span><a class="headerlink" href="#monedas.models.Moneda.transactionlimit_set" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.ultima_actualizacion_tasa">
+<span class="sig-name descname"><span class="pre">ultima_actualizacion_tasa</span></span><a class="headerlink" href="#monedas.models.Moneda.ultima_actualizacion_tasa" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">TedDenominacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#TedDenominacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.TedDenominacion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Denominaciones manejadas por el TED para una moneda dada.</p>
+<p><code class="docutils literal notranslate"><span class="pre">valor</span></code> se almacena como entero en la unidad de la moneda (p. ej. 1, 2, 5, 10, 20, 50, 100).</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.activa">
+<span class="sig-name descname"><span class="pre">activa</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.activa" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.moneda">
+<span class="sig-name descname"><span class="pre">moneda</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.moneda" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.moneda_id">
+<span class="sig-name descname"><span class="pre">moneda_id</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.moneda_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.movimientos">
+<span class="sig-name descname"><span class="pre">movimientos</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.movimientos" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#monedas.models.TedDenominacion.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.stock">
+<span class="sig-name descname"><span class="pre">stock</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.stock" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedDenominacion.valor">
+<span class="sig-name descname"><span class="pre">valor</span></span><a class="headerlink" href="#monedas.models.TedDenominacion.valor" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.models.TedInventario">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">TedInventario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#TedInventario"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.TedInventario" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Stock disponible por denominación <strong>y ubicación</strong> para la terminal TED.</p>
+<div class="admonition important">
+<p class="admonition-title">Importante</p>
+<p>Desde esta versión, el inventario se particiona por <code class="docutils literal notranslate"><span class="pre">ubicacion</span></code>. Esto
+permite tener múltiples terminales (o sucursales) con stock independiente.</p>
+</div>
+<section id="restriccion-de-unicidad">
+<h3><strong>Restricción de unicidad</strong><a class="headerlink" href="#restriccion-de-unicidad" title="Link to this heading"></a></h3>
+<p>Se garantiza un único registro por combinación <code class="docutils literal notranslate"><span class="pre">(denominacion,</span> <span class="pre">ubicacion)</span></code>.</p>
+</section>
+<section id="compatibilidad">
+<h3><strong>Compatibilidad</strong><a class="headerlink" href="#compatibilidad" title="Link to this heading"></a></h3>
+<p>El <code class="docutils literal notranslate"><span class="pre">related_name</span></code> de la relación inversa se mantiene en <code class="docutils literal notranslate"><span class="pre">stock</span></code> para
+conservar compatibilidad con código existente, pero ahora referirá a un
+<em>manager</em> (conjunto de stocks) en lugar de una única instancia.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.TedInventario.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#monedas.models.TedInventario.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.cantidad">
+<span class="sig-name descname"><span class="pre">cantidad</span></span><a class="headerlink" href="#monedas.models.TedInventario.cantidad" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.denominacion">
+<span class="sig-name descname"><span class="pre">denominacion</span></span><a class="headerlink" href="#monedas.models.TedInventario.denominacion" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.denominacion_id">
+<span class="sig-name descname"><span class="pre">denominacion_id</span></span><a class="headerlink" href="#monedas.models.TedInventario.denominacion_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.get_next_by_updated_at">
+<span class="sig-name descname"><span class="pre">get_next_by_updated_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.TedInventario.get_next_by_updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.get_previous_by_updated_at">
+<span class="sig-name descname"><span class="pre">get_previous_by_updated_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">updated_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.TedInventario.get_previous_by_updated_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#monedas.models.TedInventario.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#monedas.models.TedInventario.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.ubicacion">
+<span class="sig-name descname"><span class="pre">ubicacion</span></span><a class="headerlink" href="#monedas.models.TedInventario.ubicacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedInventario.updated_at">
+<span class="sig-name descname"><span class="pre">updated_at</span></span><a class="headerlink" href="#monedas.models.TedInventario.updated_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.models.</span></span><span class="sig-name descname"><span class="pre">TedMovimiento</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/models.html#TedMovimiento"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.models.TedMovimiento" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Movimiento de inventario TED (histórico).</p>
+<p><code class="docutils literal notranslate"><span class="pre">delta</span></code> &gt; 0 incrementa stock; <code class="docutils literal notranslate"><span class="pre">delta</span></code> &lt; 0 descuenta stock.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_AJUSTE">
+<span class="sig-name descname"><span class="pre">MOTIVO_AJUSTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AJUSTE'</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_AJUSTE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_CHEQUE">
+<span class="sig-name descname"><span class="pre">MOTIVO_CHEQUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CHEQUE'</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_CHEQUE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_CHOICES">
+<span class="sig-name descname"><span class="pre">MOTIVO_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('AJUSTE',</span> <span class="pre">'Ajuste</span> <span class="pre">manual'),</span> <span class="pre">('COMPRA',</span> <span class="pre">'Compra</span> <span class="pre">cliente</span> <span class="pre">(retiro</span> <span class="pre">billetes)'),</span> <span class="pre">('VENTA',</span> <span class="pre">'Venta</span> <span class="pre">cliente</span> <span class="pre">(depósito</span> <span class="pre">billetes)'),</span> <span class="pre">('CHEQUE',</span> <span class="pre">'Depósito</span> <span class="pre">de</span> <span class="pre">cheque</span> <span class="pre">(mock)'),</span> <span class="pre">('OTRO',</span> <span class="pre">'Otro')]</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_CHOICES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_COMPRA">
+<span class="sig-name descname"><span class="pre">MOTIVO_COMPRA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COMPRA'</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_COMPRA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_OTRO">
+<span class="sig-name descname"><span class="pre">MOTIVO_OTRO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OTRO'</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_OTRO" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MOTIVO_VENTA">
+<span class="sig-name descname"><span class="pre">MOTIVO_VENTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'VENTA'</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.MOTIVO_VENTA" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.creado_por">
+<span class="sig-name descname"><span class="pre">creado_por</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.creado_por" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.creado_por_id">
+<span class="sig-name descname"><span class="pre">creado_por_id</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.creado_por_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.created_at" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.delta">
+<span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.delta" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.denominacion">
+<span class="sig-name descname"><span class="pre">denominacion</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.denominacion" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.denominacion_id">
+<span class="sig-name descname"><span class="pre">denominacion_id</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.denominacion_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.get_motivo_display">
+<span class="sig-name descname"><span class="pre">get_motivo_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">motivo&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.TedMovimiento.get_motivo_display" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.get_next_by_created_at">
+<span class="sig-name descname"><span class="pre">get_next_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.TedMovimiento.get_next_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.get_previous_by_created_at">
+<span class="sig-name descname"><span class="pre">get_previous_by_created_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created_at&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.TedMovimiento.get_previous_by_created_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.motivo">
+<span class="sig-name descname"><span class="pre">motivo</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.motivo" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#monedas.models.TedMovimiento.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.TedMovimiento.transaccion_ref">
+<span class="sig-name descname"><span class="pre">transaccion_ref</span></span><a class="headerlink" href="#monedas.models.TedMovimiento.transaccion_ref" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-monedas.tests">
+<span id="modulo-monedas-tests"></span><h2>módulo monedas.tests<a class="headerlink" href="#module-monedas.tests" title="Link to this heading"></a></h2>
+</section>
+<section id="module-monedas.urls">
+<span id="modulo-monedas-urls"></span><h2>módulo monedas.urls<a class="headerlink" href="#module-monedas.urls" title="Link to this heading"></a></h2>
+<section id="modulo-urls-de-la-app-monedas">
+<h3>Módulo urls de la app monedas<a class="headerlink" href="#modulo-urls-de-la-app-monedas" title="Link to this heading"></a></h3>
+<p>Este módulo define las rutas de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
+Cada URL se asocia a una vista correspondiente en <a class="reference internal" href="#module-monedas.views" title="monedas.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monedas.views</span></code></a>.
+Las vistas requieren autenticación para acceder, excepto el detalle de moneda
+que igualmente valida permisos en la vista.</p>
+<section id="id1">
+<h4>Contenido<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">listar_monedas</span></code>: Lista todas las monedas registradas.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crear_moneda</span></code>: Formulario para crear una nueva moneda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">editar_moneda</span></code>: Formulario para editar una moneda existente.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eliminar_moneda</span></code>: Confirma y elimina una moneda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moneda_detalle</span></code>: Muestra la información detallada de una moneda.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h4>Constantes<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><a class="reference internal" href="#monedas.urls.app_name" title="monedas.urls.app_name"><code class="xref py py-data docutils literal notranslate"><span class="pre">app_name</span></code></a>: Define el namespace de la aplicación.</p></li>
+<li><p><a class="reference internal" href="#monedas.urls.urlpatterns" title="monedas.urls.urlpatterns"><code class="xref py py-data docutils literal notranslate"><span class="pre">urlpatterns</span></code></a>: Lista de rutas URL.</p></li>
+</ul>
+</section>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.urls.app_name">
+<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">app_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monedas'</span></em><a class="headerlink" href="#monedas.urls.app_name" title="Link to this definition"></a></dt>
+<dd><p>Namespace de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="monedas.urls.urlpatterns">
+<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">urlpatterns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;URLPattern</span> <span class="pre">''</span> <span class="pre">[name='listar_monedas']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'crear/'</span> <span class="pre">[name='crear_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'editar/&lt;int:pk&gt;/'</span> <span class="pre">[name='editar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'eliminar/&lt;int:pk&gt;/'</span> <span class="pre">[name='eliminar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'ver/&lt;int:pk&gt;/'</span> <span class="pre">[name='moneda_detalle']&gt;]</span></em><a class="headerlink" href="#monedas.urls.urlpatterns" title="Link to this definition"></a></dt>
+<dd><p>Definición de patrones de URL para la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="module-monedas.views">
+<span id="modulo-monedas-views"></span><h2>módulo monedas.views<a class="headerlink" href="#module-monedas.views" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="monedas.views.crear_moneda">
+<span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">crear_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#crear_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.crear_moneda" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="monedas.views.editar_moneda">
+<span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">editar_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#editar_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.editar_moneda" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="monedas.views.eliminar_moneda">
+<span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">eliminar_moneda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#eliminar_moneda"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.eliminar_moneda" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="monedas.views.listar_monedas">
+<span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">listar_monedas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#listar_monedas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.listar_monedas" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="monedas.views.moneda_detalle">
+<span class="sig-prename descclassname"><span class="pre">monedas.views.</span></span><span class="sig-name descname"><span class="pre">moneda_detalle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/views.html#moneda_detalle"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.views.moneda_detalle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="contenido-del-modulo">
+<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
+<span class="target" id="module-monedas"></span></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="manage.html" class="btn btn-neutral float-left" title="módulo manage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="roles.html" class="btn btn-neutral float-right" title="paquete roles" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

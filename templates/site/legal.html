@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Global Exchange{% endblock %}
+{% block extra_head %}
+<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">
+{% endblock %}
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+<h1 class="h1 mb-6">Legal</h1>
+
+<div class="grid md:grid-cols-3 gap-6">
+  <nav class="border border-neutral-200 rounded-lg p-6">
+    <ul class="grid gap-3">
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#terms">Términos de servicio</a></li>
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#privacy">Política de privacidad</a></li>
+      <li><a class="hover:text-brand focus-visible:ring-4 focus-visible:ring-brand" href="#cookies">Política de cookies</a></li>
+    </ul>
+  </nav>
+
+<section class="md:col-span-2 grid gap-6">
+  <!-- Términos -->
+  <article id="terms" class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">Términos de servicio</h2>
+    <ul class="list-disc pl-6 space-y-2 text-neutral-700">
+      <li>Plataforma para cotizar y cambiar divisas.</li>
+      <li>Cuenta: mayor de edad, datos veraces; protege tus credenciales/2FA.</li>
+      <li>Operaciones: KYC/AML, límites y comisiones variables hasta la confirmación; se envía comprobante.</li>
+      <li>Prohibido: fraude, suplantación, scraping o uso que afecte al servicio.</li>
+      <li>Servicio “tal cual”; puede interrumpirse; no respondemos por bancos/pasarelas.</li>
+      <li>Podemos suspender por incumplimiento y actualizar términos.</li>
+    </ul>
+  </article>
+
+  <!-- Privacidad -->
+  <article id="privacy" class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">Política de privacidad</h2>
+    <ul class="list-disc pl-6 space-y-2 text-neutral-700">
+      <li>Datos: identidad/verificación, pagos/transferencias, soporte, IP y cookies.</li>
+      <li>Fines: prestar y facturar, cumplir ley (KYC/AML), seguridad y métricas.</li>
+      <li>Base legal: contrato, obligación legal, interés legítimo y consentimiento.</li>
+      <li>Cesiones: proveedores de pago, hosting y correo bajo acuerdos; transferencias con garantías.</li>
+      <li>Derechos: acceso, rectificación, supresión, oposición y portabilidad.</li>
+      <li>Contacto: <a href="mailto:globalexchangeparaguay@gmail.com" class="underline">globalexchangeparaguay@gmail.com</a></li>
+    </ul>
+  </article>
+
+  <!-- Cookies -->
+  <article id="cookies" class="border border-neutral-200 rounded-lg p-6">
+    <h2 class="h2 mb-3">Política de cookies</h2>
+    <ul class="list-disc pl-6 space-y-2 text-neutral-700">
+      <li>Tipos: necesarias, preferencias, analíticas y marketing (con tu consentimiento).</li>
+      <li>Gestión: banner y “Centro de preferencias” o desde tu navegador.</li>
+      <li>Vigencia: de sesión o hasta 24 meses.</li>
+      <li>Si las desactivas, algunas funciones pueden fallar.</li>
+      <li>Detalle completo en el Centro de preferencias.</li>
+    </ul>
+  </article>
+</section>
+
+</div>
+</main>
+{% endblock %}

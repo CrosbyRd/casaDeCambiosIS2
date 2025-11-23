@@ -1,0 +1,665 @@
+[
+  {
+    "model": "monedas.tedinventario",
+    "pk": 1,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 1,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 2,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 1,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 3,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 1,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 4,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 1,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 5,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 1,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 6,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 5,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 7,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 5,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 8,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 5,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 9,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 5,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 10,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 5,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 11,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 10,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 12,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 10,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 13,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 14,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 15,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 16,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 20,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+    {
+    "model": "monedas.tedinventario",
+    "pk": 17,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 20,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 18,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 19,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 20,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 21,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 50,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 22,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 50,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 23,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 24,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 25,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 26,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 100,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 27,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 100,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 28,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 29,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 30,
+    "fields": {
+      "moneda_codigo": "USD",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+    {
+    "model": "monedas.tedinventario",
+    "pk": 31,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 100,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 32,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 500,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 33,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 1000,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 34,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 100,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 35,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 500,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 36,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 1000,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 37,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 38,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 500,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 39,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 1000,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 40,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 41,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 500,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 0,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 42,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 1000,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 500,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 43,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 100,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 44,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 500,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 45,
+    "fields": {
+      "moneda_codigo": "ARS",
+      "valor_denominacion": 1000,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+    {
+    "model": "monedas.tedinventario",
+    "pk": 46,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 10,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 47,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 20,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 48,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 50,
+      "ubicacion": "Campus, San Lorenzo – Paraguay",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 49,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 10,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 50,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 20,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 55,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 51,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 50,
+      "ubicacion": "Clinica, San Lorenzo – Paraguay",
+      "cantidad": 500,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 52,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 50,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 53,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 30,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 54,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Central - Asunción",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 55,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 56,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 100,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 57,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Ciudad del Este",
+      "cantidad": 150,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 58,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 10,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 15,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 59,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 20,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 10,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  },
+  {
+    "model": "monedas.tedinventario",
+    "pk": 60,
+    "fields": {
+      "moneda_codigo": "BRL",
+      "valor_denominacion": 50,
+      "ubicacion": "Sucursal Encarnación",
+      "cantidad": 10,
+      "updated_at": "2025-10-30T15:00:00Z"
+    }
+  }
+
+
+
+]

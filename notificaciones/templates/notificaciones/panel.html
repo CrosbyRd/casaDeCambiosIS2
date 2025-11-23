@@ -1,0 +1,31 @@
+<!-- notificaciones/templates/notificaciones/panel.html -->
+{% extends "base.html" %}
+{% block title %}Notificaciones{% endblock %}
+
+{% block content %}
+<main class="max-w-[900px] mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Mis Notificaciones</h1>
+    {% if notificaciones %}
+        <ul class="space-y-2">
+            {% for n in notificaciones %}
+            <li class="border p-4 rounded-lg {% if not n.leida %}bg-purple-50{% else %}bg-white{% endif %}">
+                <div class="flex justify-between">
+                    <div>
+                        <span class="font-bold">{{ n.get_tipo_display }}</span> - {{ n.titulo }}
+                        <p class="text-sm text-neutral-500">{{ n.mensaje }}</p>
+                        <p class="text-xs text-neutral-400">{{ n.creada_en|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    {% if not n.leida %}
+                    <a href="{% url 'notificaciones:marcar_leida' n.pk %}" class="text-sm font-semibold text-purple-700 hover:underline">
+                        Marcar leída
+                    </a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tienes notificaciones.</p>
+    {% endif %}
+</main>
+{% endblock %}

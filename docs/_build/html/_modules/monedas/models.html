@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>monedas.models &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">monedas.models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para monedas.models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># monedas/models.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Módulo de modelos de la aplicación **monedas**.</span>
+
+<span class="sd">.. module:: monedas.models</span>
+<span class="sd">   :synopsis: Catálogo de monedas y metadatos asociados.</span>
+
+<span class="sd">Este módulo define el modelo :class:`Moneda`, utilizado como catálogo</span>
+<span class="sd">centralizado de monedas con las que opera el sistema. Incluye metadatos</span>
+<span class="sd">operativos (p. ej., decimales, mínima denominación) y un permiso de acceso</span>
+<span class="sd">a la sección de administración de monedas.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+
+<div class="viewcode-block" id="Moneda">
+<a class="viewcode-back" href="../../monedas.html#monedas.forms.Moneda">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Moneda</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Representa una **moneda** del sistema.</span>
+
+<span class="sd">    Se utiliza como catálogo de monedas que pueden participar en operaciones</span>
+<span class="sd">    (cotizaciones, calculadora, etc.). Además, define un permiso de acceso a</span>
+<span class="sd">    la sección de administración de monedas.</span>
+
+<span class="sd">    **Atributos**</span>
+<span class="sd">    -------------</span>
+<span class="sd">    codigo : :class:`django.db.models.CharField`</span>
+<span class="sd">        Código de la moneda (p. ej. ``USD``, ``EUR``, ``PYG``). Debe ser único.</span>
+<span class="sd">    nombre : :class:`django.db.models.CharField`</span>
+<span class="sd">        Nombre legible de la moneda (p. ej. *Dólar estadounidense*).</span>
+<span class="sd">    simbolo : :class:`django.db.models.CharField`</span>
+<span class="sd">        Símbolo de la moneda (p. ej. ``$``, ``€``, ``₲``).</span>
+<span class="sd">    fecha_creacion : :class:`django.db.models.DateTimeField`</span>
+<span class="sd">        Fecha/hora de creación del registro. Se asigna automáticamente.</span>
+<span class="sd">    decimales : :class:`django.db.models.PositiveSmallIntegerField`</span>
+<span class="sd">        Cantidad de decimales con los que se representa la moneda.</span>
+<span class="sd">        Útil para formateo y validaciones. Valor por defecto: ``2``.</span>
+<span class="sd">    minima_denominacion : :class:`django.db.models.PositiveIntegerField`</span>
+<span class="sd">        Mínima unidad operable (p. ej., ``1`` para monedas enteras, ``5`` si</span>
+<span class="sd">        solo se opera en múltiplos de 5). Valor por defecto: ``1``.</span>
+<span class="sd">    ultima_actualizacion_tasa : :class:`django.db.models.DateTimeField`</span>
+<span class="sd">        Marca temporal de la última actualización de tasa/cotización conocida.</span>
+<span class="sd">        Puede ser nula si nunca se actualizó.</span>
+<span class="sd">    admite_en_linea : :class:`django.db.models.BooleanField`</span>
+<span class="sd">        Indica si la moneda está habilitada para operaciones **en línea**.</span>
+<span class="sd">    admite_terminal : :class:`django.db.models.BooleanField`</span>
+<span class="sd">        Indica si la moneda está habilitada para operaciones en **terminal**.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">       El permiso personalizado ``monedas.access_monedas_section`` permite</span>
+<span class="sd">       controlar el acceso a las vistas de administración/listado de monedas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">codigo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Código ISO/corto de la moneda (p. ej. USD, EUR, PYG). Debe ser único.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nombre</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Nombre legible de la moneda (p. ej. Dólar estadounidense).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">simbolo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Símbolo de la moneda (p. ej. $, €, ₲).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Fecha y hora de creación del registro (asignado automáticamente).&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Requerimientos ERS</span>
+    <span class="n">decimales</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveSmallIntegerField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Cantidad de decimales con los que se representa la moneda (por defecto: 2).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">minima_denominacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Mínima denominación operable (p. ej., 1, 5, 10).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ultima_actualizacion_tasa</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Última fecha/hora en la que se actualizó la tasa/cotización. Puede ser nulo.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">admite_en_linea</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Si está activo, la moneda puede usarse en operaciones en línea.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">admite_terminal</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Si está activo, la moneda puede usarse en operaciones de terminal.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Metadatos del modelo :class:`Moneda`.</span>
+
+<span class="sd">        Define un permiso específico para restringir el acceso a la sección de</span>
+<span class="sd">        administración de monedas.</span>
+
+<span class="sd">        **Permisos**</span>
+<span class="sd">        ------------</span>
+<span class="sd">        - ``access_monedas_section``: *Puede acceder a la sección de Monedas*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;access_monedas_section&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede acceder a la sección de Monedas&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Representación legible de la moneda.</span>
+
+<span class="sd">        :return: Cadena con el formato ``\&quot;{nombre} ({codigo})\&quot;``.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<span class="c1"># ==============================</span>
+<span class="c1"># Inventario TED (en app monedas)</span>
+<span class="c1"># ==============================</span>
+
+<div class="viewcode-block" id="TedDenominacion">
+<a class="viewcode-back" href="../../monedas.html#monedas.forms.TedDenominacion">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TedDenominacion</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Denominaciones manejadas por el TED para una moneda dada.</span>
+
+<span class="sd">    ``valor`` se almacena como entero en la unidad de la moneda (p. ej. 1, 2, 5, 10, 20, 50, 100).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">moneda</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">Moneda</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;denominaciones_ted&quot;</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Moneda a la que pertenece la denominación.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">valor</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Valor facial (entero) de la denominación. Ej.: 1, 2, 5, 10, 20, 50, 100.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">activa</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;moneda&quot;</span><span class="p">,</span> <span class="s2">&quot;valor&quot;</span><span class="p">),)</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;moneda__codigo&quot;</span><span class="p">,</span> <span class="s2">&quot;valor&quot;</span><span class="p">]</span>
+        <span class="n">permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;access_ted_inventory&quot;</span><span class="p">,</span> <span class="s2">&quot;Puede gestionar el inventario del TED&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">moneda</span><span class="o">.</span><span class="n">codigo</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">valor</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TedInventario">
+<a class="viewcode-back" href="../../monedas.html#monedas.forms.TedInventario">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TedInventario</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stock disponible por denominación **y ubicación** para la terminal TED.</span>
+
+<span class="sd">    .. important::</span>
+<span class="sd">       Desde esta versión, el inventario se particiona por ``ubicacion``. Esto</span>
+<span class="sd">       permite tener múltiples terminales (o sucursales) con stock independiente.</span>
+
+<span class="sd">    **Restricción de unicidad**</span>
+<span class="sd">    ---------------------------</span>
+<span class="sd">    Se garantiza un único registro por combinación ``(denominacion, ubicacion)``.</span>
+
+<span class="sd">    **Compatibilidad**</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    El ``related_name`` de la relación inversa se mantiene en ``stock`` para</span>
+<span class="sd">    conservar compatibilidad con código existente, pero ahora referirá a un</span>
+<span class="sd">    *manager* (conjunto de stocks) en lugar de una única instancia.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">denominacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">TedDenominacion</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;stock&quot;</span><span class="p">,</span>  <span class="c1"># se mantiene el nombre histórico</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Denominación cuyo stock se registra.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ubicacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Ubicación física/lógica del TED (ej.: &#39;Campus, San Lorenzo – Paraguay&#39;).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">cantidad</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">updated_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;denominacion__moneda__codigo&quot;</span><span class="p">,</span> <span class="s2">&quot;denominacion__valor&quot;</span><span class="p">,</span> <span class="s2">&quot;ubicacion&quot;</span><span class="p">]</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">UniqueConstraint</span><span class="p">(</span>
+                <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;denominacion&quot;</span><span class="p">,</span> <span class="s2">&quot;ubicacion&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uniq_tedinventario_den_ubicacion&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ubicacion&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;idx_tedinv_ubicacion&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Stock </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">denominacion</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ubicacion</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cantidad</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TedMovimiento">
+<a class="viewcode-back" href="../../monedas.html#monedas.forms.TedMovimiento">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TedMovimiento</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Movimiento de inventario TED (histórico).</span>
+
+<span class="sd">    ``delta`` &gt; 0 incrementa stock; ``delta`` &lt; 0 descuenta stock.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MOTIVO_AJUSTE</span> <span class="o">=</span> <span class="s2">&quot;AJUSTE&quot;</span>
+    <span class="n">MOTIVO_COMPRA</span> <span class="o">=</span> <span class="s2">&quot;COMPRA&quot;</span>  <span class="c1"># Cliente compra USD/EUR → retiro billetes</span>
+    <span class="n">MOTIVO_VENTA</span> <span class="o">=</span> <span class="s2">&quot;VENTA&quot;</span>    <span class="c1"># Cliente vende USD/EUR → depósito billetes</span>
+    <span class="n">MOTIVO_CHEQUE</span> <span class="o">=</span> <span class="s2">&quot;CHEQUE&quot;</span>  <span class="c1"># Depósito de cheque (mock)</span>
+    <span class="n">MOTIVO_OTRO</span> <span class="o">=</span> <span class="s2">&quot;OTRO&quot;</span>
+
+    <span class="n">MOTIVO_CHOICES</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">MOTIVO_AJUSTE</span><span class="p">,</span> <span class="s2">&quot;Ajuste manual&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">MOTIVO_COMPRA</span><span class="p">,</span> <span class="s2">&quot;Compra cliente (retiro billetes)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">MOTIVO_VENTA</span><span class="p">,</span> <span class="s2">&quot;Venta cliente (depósito billetes)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">MOTIVO_CHEQUE</span><span class="p">,</span> <span class="s2">&quot;Depósito de cheque (mock)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">MOTIVO_OTRO</span><span class="p">,</span> <span class="s2">&quot;Otro&quot;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">denominacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">TedDenominacion</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;movimientos&quot;</span>
+    <span class="p">)</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Variación de stock. Positivo suma, negativo resta.&quot;</span><span class="p">)</span>
+    <span class="n">motivo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">MOTIVO_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">MOTIVO_OTRO</span><span class="p">)</span>
+    <span class="n">creado_por</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">AUTH_USER_MODEL</span><span class="p">,</span>
+        <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">SET_NULL</span><span class="p">,</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;movimientos_ted&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># Referencia opcional a transacción (placeholder mientras el módulo está en mock)</span>
+    <span class="n">transaccion_ref</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Referencia textual/ID externo de la transacción (opcional).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-created_at&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">signo</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;-&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="si">:</span><span class="s2">%Y-%m-%d %H:%M</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">denominacion</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">signo</span><span class="si">}{</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">motivo</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

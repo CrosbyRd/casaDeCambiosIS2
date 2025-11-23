@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Global Exchange{% endblock %}
+{% block header_auth %}{% endblock %}
+
+{% block content %}
+<main id="main" class="max-w-[1200px] mx-auto px-6 py-8">
+  <h1 class="h1 mb-6">Iniciar sesión</h1>
+
+  <div class="grid md:grid-cols-2 gap-6 items-start">
+    <!-- Columna izquierda: formulario -->
+    <section>
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+          {% for message in messages %}
+            <div class="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 font-semibold text-purple-800 shadow-sm">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form class="border border-neutral-200 rounded-lg p-6" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next|default_if_none:'' }}"/>
+
+        <label class="block mb-2 font-medium" for="id_username">Correo electrónico</label>
+        <input id="id_username" name="username" type="email" required autofocus autocomplete="email"
+               class="w-full h-11 px-4 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" />
+
+        <label class="block mb-2 font-medium mt-6" for="id_password">Contraseña</label>
+        <div class="relative">
+          <input id="id_password" name="password" type="password" required autocomplete="current-password" data-pw-enhanced="1"
+                 class="w-full h-11 px-4 pr-12 border border-neutral-300 rounded-md focus-visible:ring-4 focus-visible:ring-brand" />
+          <!-- Botón ojo -->
+          <button type="button" id="pwToggleLogin"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-9 w-9 rounded-md text-neutral-500 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand"
+                  aria-label="Mostrar contraseña" aria-pressed="false">
+            <!-- Ojo cerrado -->
+            <svg class="h-5 w-5" id="iconEyeOffLogin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M9.88 3.49A9.53 9.53 0 0112 3c4.86 0 8.25 1.99 9.96 5.32a10.64 10.64 0 01-1.35 1.9M6.22 6.22C4.24 7.35 2.83 8.91 2.04 10.68 3.75 14.01 7.14 16 12 16c.66 0 1.3-.05 1.92-.16M10.59 10.59a3 3 0 004.24 4.24"/>
+            </svg>
+            <!-- Ojo abierto -->
+            <svg class="h-5 w-5 hidden" id="iconEyeOnLogin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32C3.75 8.99 7.14 7 12 7s8.25 1.99 9.96 5.32C20.25 15.65 16.86 17.64 12 17.64s-8.25-1.99-9.96-5.32z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="mt-3">
+          <a href="{% url 'site_forgot_password' %}" class="text-brand hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <button type="submit" class="btn mt-4 w-full">Ingresar</button>
+
+        <a class="btn-secondary mt-3 w-full inline-flex justify-center" href="{% url 'site_signup' %}">
+          Crear cuenta
+        </a>
+      </form>
+    </section>
+
+    <!-- Columna derecha: info seguridad OTP -->
+    <aside class="border border-neutral-200 rounded-lg p-6 bg-white self-start">
+      <h2 class="h2 mb-3">Protección por OTP</h2>
+      <p class="text-neutral-700">
+        Para mantener tu cuenta segura, al iniciar sesión te pediremos un
+        <strong>código de un solo uso (OTP)</strong> que enviaremos a tu correo.
+      </p>
+
+      <ul class="mt-4 space-y-2 text-neutral-700">
+        <li class="flex gap-3"><span class="select-none">🔐</span> Código de <strong>6 dígitos</strong> válido por tiempo limitado.</li>
+        <li class="flex gap-3"><span class="select-none">✉️</span> Lo recibirás en el email asociado a tu cuenta.</li>
+        <li class="flex gap-3"><span class="select-none">🚫</span> No compartas tu código con nadie.</li>
+      </ul>
+
+      <div class="mt-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-purple-800">
+        Si no te llega el código, revisa tu carpeta de spam o solicita reenviar desde la pantalla de verificación.
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script>
+  // Toggle de contraseña SOLO para este template (idéntico al de signup)
+  (function(){
+    const btn   = document.getElementById('pwToggleLogin');
+    const input = document.getElementById('id_password');
+    const eyeOn  = document.getElementById('iconEyeOnLogin');
+    const eyeOff = document.getElementById('iconEyeOffLogin');
+
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', () => {
+      const shown = input.type === 'text';
+      input.type = shown ? 'password' : 'text';
+      btn.setAttribute('aria-pressed', String(!shown));
+      btn.setAttribute('aria-label', shown ? 'Mostrar contraseña' : 'Ocultar contraseña');
+      eyeOn.classList.toggle('hidden', shown);
+      eyeOff.classList.toggle('hidden', !shown);
+      input.focus({ preventScroll:true });
+    });
+  })();
+</script>
+{% endblock %}

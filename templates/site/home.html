@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% block title %}Global Exchange{% endblock %}
+
+{% block content %}
+<section class="max-w-[1200px] mx-auto px-6 py-10">
+  <div class="grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-start">
+    <div class="self-start">
+      <h1 class="h1">Cambia dinero sin complicaciones</h1>
+      <p class="lead">Global Exchange te ofrece tipos de cambio competitivos, transparencia y soporte humano.</p>
+      <div class="mt-8 flex items-center gap-3">
+        <a href="{% url 'site_calculator' %}" class="btn">Empezar a cotizar</a>
+        <a href="{% url 'site_how_it_works' %}" class="btn-secondary">Ver cómo funciona</a>
+      </div>
+    </div>
+
+    <!-- Cotizaciones destacadas (dinámicas) -->
+    <div class="bg-neutral-50 rounded-lg p-6">
+      {% if cotizaciones_destacadas %}
+        <div class="grid gap-5">
+          <div class="grid grid-cols-[auto_1fr_5rem_5rem] items-center px-1 text-xs text-neutral-500 font-medium mb-2">
+            <span class="text-left">Divisa</span><span></span>
+            <span class="text-right">Compra</span>
+            <span class="text-right">Venta</span>
+          </div>
+          {% for c in cotizaciones_destacadas %}
+            <div class="grid grid-cols-[auto_1fr_5rem_5rem] items-center rate-row"
+                data-code="{{ c.moneda_destino.codigo }}"
+                data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+                data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
+              <span class="font-medium">
+                <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                {{ c.moneda_destino.codigo }}
+              </span>
+              <span></span>
+              <span class="text-brand font-semibold tabular-nums text-right">
+                <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+              </span>
+              <span class="font-semibold tabular-nums text-right">
+                <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+              </span>
+            </div>
+          {% endfor %}
+
+          <a href="{% url 'site_rates' %}" class="btn-secondary">Ver todos los tipos</a>
+        </div>
+      {% else %}
+        <p class="muted">Aún no hay cotizaciones cargadas.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="max-w-[1200px] mx-auto px-6 py-6">
+  <h2 class="h2 mb-6">Por qué elegirnos</h2>
+  <div class="grid md:grid-cols-3 gap-6">
+    <article class="box">
+      <h3 class="box-title">Transparencia total</h3>
+      <p class="muted">Sin costos escondidos. Ves el total antes de confirmar.</p>
+    </article>
+    <article class="box">
+      <h3 class="box-title">Velocidad</h3>
+      <p class="muted">Operaciones rápidas a cuentas locales.</p>
+    </article>
+    <article class="box">
+      <h3 class="box-title">Soporte humano</h3>
+      <p class="muted">Agentes reales por correo electronico cuando lo necesites.</p>
+    </article>
+  </div>
+</section>
+
+<script>
+(function(){
+  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
+  document.querySelectorAll('.currency-emoji').forEach(el=>{
+    const code = String(el.dataset.code||'').toUpperCase();
+    el.textContent = (MAP[code] || "💱") + " ";
+  });
+    // Indicadores de variación (cotizaciones destacadas) con persistencia de 12h
+  const TTL = 12 * 60 * 60 * 1000; // 12 horas en ms
+  const featuredRows = document.querySelectorAll('.rate-row[data-code]');
+
+  featuredRows.forEach(row => {
+    const code = String(row.dataset.code || '').toUpperCase();
+
+    ['compra', 'venta'].forEach(field => {
+      const el = row.querySelector(`.rate[data-field="${field}"]`);
+      if (!el) return;
+
+      const nowVal = Number(row.dataset[field] || (el.textContent || '').replace(/\D+/g, ''));
+      const key = `rates:${code}:${field}`;
+      const nowTs = Date.now();
+
+      let data = null;
+      try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) {}
+
+      const prevVal = (data && typeof data.value === 'number') ? data.value : null;
+      let lastChange = data && data.lastChange ? data.lastChange : null; // {time, dir:'up'|'down'}
+
+      // ¿Qué mostrar?
+      let showDir = null;
+      if (prevVal !== null && nowVal !== prevVal) {
+        showDir = nowVal > prevVal ? 'up' : 'down';
+        lastChange = { time: nowTs, dir: showDir };
+      } else if (lastChange && (nowTs - lastChange.time) < TTL) {
+        showDir = lastChange.dir;
+      }
+
+      if (showDir) {
+        const badge = document.createElement('span');
+        badge.textContent = showDir === 'up' ? '▲' : '▼';
+        badge.className = 'ml-1 text-xs opacity-70 align-middle';
+        badge.classList.add(showDir === 'up' ? 'text-emerald-600' : 'text-red-600');
+        // microajuste vertical
+        badge.style.position = 'relative';
+        badge.style.top = '-1px';
+        el.after(badge);
+      }
+
+      // Persistir valor y último cambio si no venció el TTL
+      const persisted = lastChange && (nowTs - lastChange.time) < TTL ? lastChange : null;
+      localStorage.setItem(key, JSON.stringify({ value: nowVal, lastChange: persisted }));
+    });
+  });
+})();
+</script>
+{% endblock %}
