@@ -70,7 +70,9 @@ INSTALLED_APPS = [
     "ganancias", # Nueva app para el módulo de ganancias
     "widget_tweaks",
     "cotizaciones.apps.CotizacionesConfig",
+
     'reportes',
+
 ]
 
 # --- Middleware ---
