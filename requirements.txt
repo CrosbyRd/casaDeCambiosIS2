@@ -22,3 +22,8 @@ stripe
 python-dotenv
 celery
 django-widget-tweaks
+
+
+openpyxl==3.1.3
+reportlab==4.1.4
+
