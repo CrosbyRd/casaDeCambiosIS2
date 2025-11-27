@@ -68,6 +68,14 @@
                 <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
                 <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
                 <p><strong>Referencia de Pago:</strong> {{ pago.referencia_comercio }}</p>
+                {% if transaccion.datos_medio_pago_snapshot %}
+                    <h3 style="margin-top: 20px; color: #0056b3;">Detalles del Método de Pago:</h3>
+                    <p><strong>Tipo de Medio de Pago:</strong> {{ transaccion.datos_medio_pago_snapshot.tipo_nombre }}</p>
+                    <p><strong>Proveedor:</strong> {{ transaccion.datos_medio_pago_snapshot.alias }}</p>
+                    {% for key, value in transaccion.datos_medio_pago_snapshot.datos_campos.items %}
+                        <p><strong>{{ key|title }}:</strong> {{ value }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
             
             <form action="{% url 'simuladores:confirmar_pago' pago.id %}" method="post" class="actions">
