@@ -33,6 +33,26 @@ from decimal import Decimal, ROUND_HALF_UP # Para manejar decimales y redondeo
 from ted.logic import ajustar_monto_a_denominaciones_disponibles # Importar la lógica de ajuste
 from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion # Alias para evitar conflicto
 
+@login_required
+def cancelar_transaccion(request, transaccion_id):
+    cliente_activo = get_cliente_activo(request)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+
+    estados_cancelables = [
+        'pendiente_confirmacion_pago',
+        'pendiente_pago_cliente',
+        'pendiente_pago_stripe',
+    ]
+
+    if transaccion.estado in estados_cancelables:
+        transaccion.estado = 'cancelada'
+        transaccion.save()
+        messages.success(request, f"La operación {transaccion.codigo_operacion_tauser} ha sido cancelada exitosamente.")
+    else:
+        messages.error(request, f"La operación {transaccion.codigo_operacion_tauser} no puede ser cancelada en su estado actual ({transaccion.get_estado_display()}).")
+
+    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
+
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
     resultado = None

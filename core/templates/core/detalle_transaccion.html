@@ -237,6 +237,21 @@
         Volver al Dashboard
       </a>
     </div>
+    
+    {% if transaccion.estado == 'pendiente_confirmacion_pago' or transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_pago_stripe' %}
+    <div class="text-center mt-4">
+      <form action="{% url 'core:cancelar_transaccion' transaccion.id %}" method="post" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta operación? Esta acción no se puede deshacer.');">
+        {% csrf_token %}
+        <button type="submit" class="gx-btn gx-btn--danger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Cancelar Operación
+        </button>
+      </form>
+    </div>
+    {% endif %}
   {% endif %}
 </main>
 

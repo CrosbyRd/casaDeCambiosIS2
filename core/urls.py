@@ -15,4 +15,5 @@ urlpatterns = [
     path('transaccion/<uuid:transaccion_id>/', views.detalle_transaccion, name='detalle_transaccion'),
     path('transaccion/<uuid:transaccion_id>/iniciar-pago-stripe/', views.iniciar_pago_stripe, name='iniciar_pago_stripe'),
     path('historial/', views.historial_transacciones, name='historial_transacciones'),
+    path('cancelar-transaccion/<uuid:transaccion_id>/', views.cancelar_transaccion, name='cancelar_transaccion'),
 ]
