@@ -216,24 +216,43 @@
         </div>
 
         <!-- Información de Pago/Acreditación -->
-        {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado or transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
+        {% if transaccion.datos_medio_pago_snapshot or transaccion.datos_medio_acreditacion_snapshot %}
           <div class="bg-white border rounded-xl p-6 shadow-sm" style="border-color: var(--line);">
             <h3 class="flex items-center gap-2 text-lg font-bold mb-5 pb-4 border-b" style="color: var(--ink); border-color: var(--line);">
               <span class="text-xl">💰</span>
-              <span>Pago/Acreditación</span>
+              <span>Detalles de Pago/Acreditación</span>
             </h3>
             <div class="space-y-4">
-              {% if transaccion.tipo_operacion == 'venta' and transaccion.medio_pago_utilizado %}
+              {% if transaccion.datos_medio_pago_snapshot %}
                 <div class="flex justify-between items-start gap-4">
-                  <span class="text-sm font-semibold" style="color: var(--muted);">Medio de Pago</span>
-                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.medio_pago_utilizado.nombre }}</span>
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Tipo de Medio de Pago</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.datos_medio_pago_snapshot.tipo_nombre }}</span>
                 </div>
-              {% endif %}
-              {% if transaccion.tipo_operacion == 'compra' and transaccion.medio_acreditacion_cliente %}
                 <div class="flex justify-between items-start gap-4">
-                  <span class="text-sm font-semibold" style="color: var(--muted);">Medio de Acreditación</span>
-                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.medio_acreditacion_cliente.alias }} ({{ transaccion.medio_acreditacion_cliente.canal_financiero.nombre }})</span>
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Proveedor</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.datos_medio_pago_snapshot.alias }}</span>
                 </div>
+                {% for key, value in transaccion.datos_medio_pago_snapshot.datos_campos.items %}
+                  <div class="flex justify-between items-start gap-4">
+                    <span class="text-sm font-semibold" style="color: var(--muted);">{{ key|title }}</span>
+                    <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ value }}</span>
+                  </div>
+                {% endfor %}
+              {% elif transaccion.datos_medio_acreditacion_snapshot %}
+                <div class="flex justify-between items-start gap-4">
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Tipo de Medio de Acreditación</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.datos_medio_acreditacion_snapshot.tipo_nombre }}</span>
+                </div>
+                <div class="flex justify-between items-start gap-4">
+                  <span class="text-sm font-semibold" style="color: var(--muted);">Proveedor</span>
+                  <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ transaccion.datos_medio_acreditacion_snapshot.alias }}</span>
+                </div>
+                {% for key, value in transaccion.datos_medio_acreditacion_snapshot.datos_campos.items %}
+                  <div class="flex justify-between items-start gap-4">
+                    <span class="text-sm font-semibold" style="color: var(--muted);">{{ key|title }}</span>
+                    <span class="text-sm font-bold text-right" style="color: var(--ink);">{{ value }}</span>
+                  </div>
+                {% endfor %}
               {% endif %}
             </div>
           </div>

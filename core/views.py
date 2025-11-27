@@ -252,10 +252,26 @@ def iniciar_operacion(request):
             operacion_data['monto_origen'] = str(resultado_simulacion['monto_origen'])
         
         if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
-            operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
+            medio_pago_cliente_obj = form.cleaned_data['medio_pago']
+            operacion_data['medio_pago_id'] = str(medio_pago_cliente_obj.id_medio)
+            operacion_data['datos_medio_pago_snapshot'] = {
+                'id_original': str(medio_pago_cliente_obj.id_medio),
+                'tipo_nombre': medio_pago_cliente_obj.tipo.nombre,
+                'alias': medio_pago_cliente_obj.alias,
+                'datos_campos': medio_pago_cliente_obj.datos
+            }
         
         if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
-            operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion']
+            medio_acreditacion_id = form.cleaned_data['medio_acreditacion']
+            operacion_data['medio_acreditacion_id'] = medio_acreditacion_id
+            if medio_acreditacion_id != 'efectivo':
+                medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                operacion_data['datos_medio_acreditacion_snapshot'] = {
+                    'id_original': str(medio_acreditacion_cliente_obj.id_medio),
+                    'tipo_nombre': medio_acreditacion_cliente_obj.tipo.nombre,
+                    'alias': medio_acreditacion_cliente_obj.alias,
+                    'datos_campos': medio_acreditacion_cliente_obj.datos
+                }
         
         # Asegurarse de que el metodo_entrega se guarde si está presente en el formulario
         # independientemente de la condición específica de moneda, ya que la visibilidad
@@ -357,6 +373,8 @@ def iniciar_operacion(request):
                 modalidad_tasa=modalidad_tasa,
                 medio_pago_utilizado=medio_pago_obj,
                 medio_acreditacion_cliente=medio_acreditacion_obj,
+                datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
+                datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
             )
 
             if tipo_operacion == 'compra':
@@ -764,6 +782,8 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
                     tasa_garantizada_hasta=tasa_garantizada_hasta,
                     modalidad_tasa=modalidad_tasa,
                     medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+                    datos_medio_pago_snapshot=operacion_pendiente.get('datos_medio_pago_snapshot'),
+                    datos_medio_acreditacion_snapshot=operacion_pendiente.get('datos_medio_acreditacion_snapshot'),
                 )
                 request.session.pop('operacion_pendiente', None) # Limpiar sesión
 
