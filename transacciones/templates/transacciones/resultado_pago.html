@@ -5,87 +5,551 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultado de la Operación</title>
     <style>
-        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; text-align: center; }
-        .container { max-width: 700px; margin: auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { margin-bottom: 20px; }
-        .status-success { color: #28a745; }
-        .status-danger { color: #dc3545; }
-        .status-warning { color: #ffc107; }
-        .transaction-details { text-align: left; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; }
-        .transaction-details p { font-size: 1.1em; margin: 10px 0; }
-        .transaction-details strong { color: #555; }
-        .code { background-color: #e9ecef; padding: 10px; border-radius: 5px; font-size: 1.2em; font-weight: bold; color: #0056b3; }
-        .actions { margin-top: 30px; }
-        .btn { padding: 12px 25px; border-radius: 5px; text-decoration: none; font-size: 1em; font-weight: bold; }
-        .btn-primary { background-color: #007bff; color: white; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e9e4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container { 
+            max-width: 750px; 
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(138, 99, 210, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 32px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .header.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .header.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 { 
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 15px;
+            opacity: 0.95;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .content-wrapper {
+            padding: 32px 30px;
+        }
+
+        .code-section {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .code-label {
+            font-size: 14px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .transaction-details {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: right;
+            flex: 1;
+        }
+
+        .operation-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .operation-badge.compra {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .operation-badge.venta {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .actions { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn { 
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e5e5e5;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d4d4d4;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #1e40af;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .transaction-id {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .content-wrapper {
+                padding: 24px 20px;
+            }
+
+            .code {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         {% if transaccion.estado == 'pendiente_retiro_tauser' %}
-            <h1 class="status-success">¡Pago Exitoso!</h1>
-            <p>Tu pago ha sido confirmado. Ya puedes retirar tus divisas en el TED más cercano.</p>
-            <div class="transaction-details">
-                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
-                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
-                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
-                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
-                <p><strong>Tu código de retiro es:</strong></p>
-                <p class="code">{{ transaccion.codigo_operacion_tauser }}</p>
+            <div class="header success">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <h1>¡Pago Exitoso!</h1>
+                <p class="header-subtitle">Tu pago ha sido confirmado. Ya puedes retirar tus divisas en el TED más cercano.</p>
             </div>
+
+            <div class="content-wrapper">
+                <div class="code-section">
+                    <p class="code-label">Tu código de retiro es:</p>
+                    <div class="code" id="codigoRetiro">{{ transaccion.codigo_operacion_tauser }}</div>
+                </div>
+
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo de Operación</span>
+                        <span class="detail-value">
+                            {% if transaccion.tipo_operacion == 'compra' %}
+                                <span class="operation-badge compra">Compra</span>
+                            {% else %}
+                                <span class="operation-badge venta">Venta</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Origen</span>
+                        <span class="detail-value">{{ transaccion.moneda_origen.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto de Origen</span>
+                        <span class="detail-value" id="montoOrigen">{{ transaccion.monto_origen }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Destino</span>
+                        <span class="detail-value">{{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Recibir</span>
+                        <span class="detail-value" id="montoDestino">{{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tasa de Cambio</span>
+                        <span class="detail-value" id="tasaCambio">{{ transaccion.tasa_cambio_aplicada }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Comisión</span>
+                        <span class="detail-value" id="comision">{{ transaccion.comision_aplicada }} PYG</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'core:historial_transacciones' %}" class="btn btn-primary">Ver Historial de Transacciones</a>
+                    <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary">Volver a Detalles de Operación</a>
+                </div>
+
+                <div class="transaction-id">
+                    ID de Transacción: {{ transaccion.id }}
+                </div>
+            </div>
+
         {% elif transaccion.estado == 'cancelada' %}
-            <h1 class="status-danger">Pago Rechazado</h1>
-            <p>La operación fue cancelada y el pago no se procesó.</p>
-             <div class="transaction-details">
-                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
-                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
-                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
-                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
+            <div class="header danger">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                    </svg>
+                </div>
+                <h1>Pago Rechazado</h1>
+                <p class="header-subtitle">La operación fue cancelada y el pago no se procesó.</p>
             </div>
+
+            <div class="content-wrapper">
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo de Operación</span>
+                        <span class="detail-value">
+                            {% if transaccion.tipo_operacion == 'compra' %}
+                                <span class="operation-badge compra">Compra</span>
+                            {% else %}
+                                <span class="operation-badge venta">Venta</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Origen</span>
+                        <span class="detail-value">{{ transaccion.moneda_origen.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto de Origen</span>
+                        <span class="detail-value" id="montoOrigen2">{{ transaccion.monto_origen }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Destino</span>
+                        <span class="detail-value">{{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Recibir</span>
+                        <span class="detail-value" id="montoDestino2">{{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tasa de Cambio</span>
+                        <span class="detail-value" id="tasaCambio2">{{ transaccion.tasa_cambio_aplicada }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Comisión</span>
+                        <span class="detail-value" id="comision2">{{ transaccion.comision_aplicada }} PYG</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'core:historial_transacciones' %}" class="btn btn-primary">Ver Historial de Transacciones</a>
+                    <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary">Volver a Detalles de Operación</a>
+                </div>
+
+                <div class="transaction-id">
+                    ID de Transacción: {{ transaccion.id }}
+                </div>
+            </div>
+
         {% elif transaccion.estado == 'pendiente_pago_cliente' and url_continuar_pago %}
-            <h1 class="status-warning">Pago Pendiente</h1>
-            <p>Tu operación está pendiente de pago. Haz clic en el botón para continuar con el proceso de pago.</p>
-            <div class="transaction-details">
-                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
-                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
-                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
+            <div class="header warning">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                </div>
+                <h1>Pago Pendiente</h1>
+                <p class="header-subtitle">Tu operación está pendiente de pago. Haz clic en el botón para continuar con el proceso de pago.</p>
             </div>
-            <div class="actions">
-                <a href="{{ url_continuar_pago }}" class="btn btn-primary">Continuar Pago</a>
+
+            <div class="content-wrapper">
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo de Operación</span>
+                        <span class="detail-value">
+                            {% if transaccion.tipo_operacion == 'compra' %}
+                                <span class="operation-badge compra">Compra</span>
+                            {% else %}
+                                <span class="operation-badge venta">Venta</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Origen</span>
+                        <span class="detail-value">{{ transaccion.moneda_origen.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Pagar</span>
+                        <span class="detail-value" id="montoOrigen3">{{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Destino</span>
+                        <span class="detail-value">{{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Recibir</span>
+                        <span class="detail-value" id="montoDestino3">{{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tasa de Cambio</span>
+                        <span class="detail-value" id="tasaCambio3">{{ transaccion.tasa_cambio_aplicada }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Comisión</span>
+                        <span class="detail-value" id="comision3">{{ transaccion.comision_aplicada }} PYG</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="{{ url_continuar_pago }}" class="btn btn-primary">Continuar Pago</a>
+                    <a href="{% url 'core:historial_transacciones' %}" class="btn btn-secondary">Ver Historial de Transacciones</a>
+                    <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary">Volver a Detalles de Operación</a>
+                </div>
+
+                <div class="transaction-id">
+                    ID de Transacción: {{ transaccion.id }}
+                </div>
             </div>
+
         {% else %}
-            <h1 class="status-warning">Operación Pendiente</h1>
-            <p>El estado de tu operación aún se está procesando. Por favor, espera unos momentos y revisa tu historial.</p>
-             <div class="transaction-details">
-                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> {% if transaccion.tipo_operacion == 'compra' %}Compra de Divisa (Tú vendes, Casa de Cambio compra){% else %}Venta de Divisa (Tú compras, Casa de Cambio vende){% endif %}</p>
-                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Monto de Origen:</strong> {{ transaccion.monto_origen }}</p>
-                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
-                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
-                <p><strong>Estado Actual:</strong> {{ transaccion.get_estado_display }}</p>
+            <div class="header warning">
+                <div class="header-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <h1>Operación Pendiente</h1>
+                <p class="header-subtitle">El estado de tu operación aún se está procesando. Por favor, espera unos momentos y revisa tu historial.</p>
+            </div>
+
+            <div class="content-wrapper">
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo de Operación</span>
+                        <span class="detail-value">
+                            {% if transaccion.tipo_operacion == 'compra' %}
+                                <span class="operation-badge compra">Compra</span>
+                            {% else %}
+                                <span class="operation-badge venta">Venta</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Origen</span>
+                        <span class="detail-value">{{ transaccion.moneda_origen.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto de Origen</span>
+                        <span class="detail-value" id="montoOrigen4">{{ transaccion.monto_origen }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Moneda de Destino</span>
+                        <span class="detail-value">{{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Recibir</span>
+                        <span class="detail-value" id="montoDestino4">{{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tasa de Cambio</span>
+                        <span class="detail-value" id="tasaCambio4">{{ transaccion.tasa_cambio_aplicada }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Comisión</span>
+                        <span class="detail-value" id="comision4">{{ transaccion.comision_aplicada }} PYG</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Estado Actual</span>
+                        <span class="detail-value">{{ transaccion.get_estado_display }}</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'core:historial_transacciones' %}" class="btn btn-primary">Ver Historial de Transacciones</a>
+                    <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary">Volver a Detalles de Operación</a>
+                </div>
+
+                <div class="transaction-id">
+                    ID de Transacción: {{ transaccion.id }}
+                </div>
             </div>
         {% endif %}
-
-        <div class="actions">
-            <a href="{% url 'core:historial_transacciones' %}" class="btn btn-primary">Ver Historial de Transacciones</a>
-            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary" style="background-color: #6c757d; color: white;">Volver a Detalles de Operación</a>
-        </div>
     </div>
+
+    <script>
+        // Función para formatear números con puntos de miles y comas decimales
+        function formatearNumero(numero) {
+            let partes = numero.toString().split('.');
+            let parteEntera = partes[0];
+            let parteDecimal = partes[1] || '00';
+            
+            if (parteDecimal.length === 1) parteDecimal += '0';
+            if (parteDecimal.length === 0) parteDecimal = '00';
+            
+            parteEntera = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            return parteEntera + ',' + parteDecimal;
+        }
+
+        // Formatear montos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función auxiliar para formatear elementos
+            function formatearElemento(id, incluirMoneda = false) {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    const texto = elemento.textContent.trim();
+                    const partes = texto.split(' ');
+                    
+                    if (incluirMoneda && partes.length >= 2) {
+                        const numero = parseFloat(partes[0]);
+                        const moneda = partes.slice(1).join(' ');
+                        elemento.textContent = formatearNumero(numero) + ' ' + moneda;
+                    } else {
+                        const numero = parseFloat(texto);
+                        if (!isNaN(numero)) {
+                            elemento.textContent = formatearNumero(numero);
+                        }
+                    }
+                }
+            }
+
+            // Formatear todos los montos de los diferentes estados
+            for (let i = 1; i <= 4; i++) {
+                const suffix = i === 1 ? '' : i;
+                formatearElemento('montoOrigen' + suffix);
+                formatearElemento('montoDestino' + suffix, true);
+                formatearElemento('tasaCambio' + suffix);
+                formatearElemento('comision' + suffix, true);
+            }
+        });
+    </script>
 </body>
 </html>
