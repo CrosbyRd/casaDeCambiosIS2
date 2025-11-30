@@ -191,3 +191,12 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
 
         self.instance.datos = datos
         return cleaned
+
+class MedioAcreditacionClienteInOperacionForm(MedioAcreditacionClienteForm):
+    """
+    Formulario especializado para crear un MedioAcreditacionCliente desde la pasarela
+    de `iniciar_operacion`. Hereda toda la lógica y campos del formulario base.
+    Actualmente no requiere modificaciones, pero se crea para permitir futuras
+    personalizaciones sin afectar el formulario original.
+    """
+    pass

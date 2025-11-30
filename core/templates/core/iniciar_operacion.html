@@ -340,6 +340,14 @@
         color: #333;
     }
 
+    #form-nuevo-medio-pago, #form-nuevo-medio-acreditacion {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e5e5e5;
+        margin-top: 16px;
+    }
+
     /* Input oculto real */
     #id_monto {
         position: absolute;
@@ -498,7 +506,7 @@
             
             <form method="post" id="form-operacion" novalidate {% if form.non_field_errors or messages %} data-has-errors="1"{% endif %}>
                 {% csrf_token %}
-
+                
                 <div class="form-group hidden">
                     <label for="{{ form.tipo_operacion.id_for_label }}" class="form-label">
                         Tipo de Operación
@@ -577,17 +585,44 @@
                     <label for="{{ form.medio_pago.id_for_label }}" class="form-label">
                         {{ form.medio_pago.label }}
                     </label>
-                    <div style="display: flex; align-items: center;">
-                        <div style="flex-grow: 1;">
-                            {{ form.medio_pago }}
+                    <div id="selector-medio-pago-existente">
+                        <div style="display: flex; align-items: center;">
+                            <div style="flex-grow: 1;">
+                                {{ form.medio_pago }}
+                            </div>
+                            <button type="button" id="btn-mostrar-form-pago" class="add-link">
+                                + Nuevo
+                            </button>
                         </div>
-                        <a href="{% url 'pagos:clientes_create' %}?next={{ request.get_full_path|urlencode }}" class="add-link">
-                            + Nuevo
-                        </a>
+                        {% if form.medio_pago.errors %}
+                            <span class="error-text">{{ form.medio_pago.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
                     </div>
-                    {% if form.medio_pago.errors %}
-                        <span class="error-text">{{ form.medio_pago.errors.as_text|cut:"* " }}</span>
-                    {% endif %}
+
+                    <div id="form-nuevo-medio-pago" class="hidden {% if medio_pago_form.errors or medio_pago_form.non_field_errors %}has-errors{% endif %}">
+                        <h4 style="font-weight: 600; margin-bottom: 16px;">
+                            Nuevo Medio de Pago 
+                            <button type="button" id="btn-cancelar-nuevo-pago" style="font-size: 12px; color: #8b5cf6; background: none; border: none; cursor: pointer; float: right;">
+                                (Cancelar)
+                            </button>
+                        </h4>
+                        {% for field in medio_pago_form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="error-text">{{ field.errors.as_text|cut:"* " }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                         {% if medio_pago_form.non_field_errors %}
+                            <div class="limit-error">
+                                {% for error in medio_pago_form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
 
                     <div id="medio-pago-detalles" class="detail-box hidden">
                         <div class="detail-row-text">Proveedor: <strong id="detalle-alias-pago"></strong></div>
@@ -606,17 +641,45 @@
                     <label for="{{ form.medio_acreditacion.id_for_label }}" class="form-label">
                         {{ form.medio_acreditacion.label }}
                     </label>
-                    <div style="display: flex; align-items: center;">
-                        <div style="flex-grow: 1;">
-                            {{ form.medio_acreditacion }}
+                    <div id="selector-medio-acreditacion-existente">
+                        <div style="display: flex; align-items: center;">
+                            <div style="flex-grow: 1;">
+                                {{ form.medio_acreditacion }}
+                            </div>
+                             <button type="button" id="btn-mostrar-form-acreditacion" class="add-link">
+                                + Nuevo
+                            </button>
                         </div>
-                        <a href="{% url 'medios_acreditacion:clientes_create' %}?next={{ request.get_full_path|urlencode }}" class="add-link">
-                            + Nuevo
-                        </a>
+                        {% if form.medio_acreditacion.errors %}
+                            <span class="error-text">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
                     </div>
-                    {% if form.medio_acreditacion.errors %}
-                        <span class="error-text">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</span>
-                    {% endif %}
+
+                    <div id="form-nuevo-medio-acreditacion" class="hidden {% if medio_acreditacion_form.errors or medio_acreditacion_form.non_field_errors %}has-errors{% endif %}">
+                         <h4 style="font-weight: 600; margin-bottom: 16px;">
+                            Nuevo Medio de Acreditación
+                            <button type="button" id="btn-cancelar-nuevo-acreditacion" style="font-size: 12px; color: #8b5cf6; background: none; border: none; cursor: pointer; float: right;">
+                                (Cancelar)
+                            </button>
+                        </h4>
+                        {% for field in medio_acreditacion_form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <span class="error-text">{{ field.errors.as_text|cut:"* " }}</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% if medio_acreditacion_form.non_field_errors %}
+                            <div class="limit-error">
+                                {% for error in medio_acreditacion_form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
 
                     <div id="medio-acreditacion-detalles" class="detail-box hidden">
                         <div class="detail-row-text">Proveedor: <strong id="detalle-alias-acreditacion"></strong></div>
@@ -666,6 +729,11 @@
 (function () {
     // Aplicamos clase 'styled-input' a todos los selects/inputs generados por Django
     document.querySelectorAll('select, input:not([type="radio"]):not([type="hidden"]):not(#id_monto_visible)').forEach(el => {
+        el.classList.add('styled-input');
+    });
+
+    // Aplicar también a los selects dentro de los forms de nuevo medio
+    document.querySelectorAll('#form-nuevo-medio-pago select, #form-nuevo-medio-acreditacion select').forEach(el => {
         el.classList.add('styled-input');
     });
 
@@ -884,6 +952,100 @@
     }
     formatNumbersIn(document.getElementById('limit-error-box'));
     formatNumbersIn(document.getElementById('flash-messages'));
+
+    /* === Lógica para mostrar/ocultar formularios de nuevos medios === */
+    function setupToggleForm(btnShowId, btnCancelId, selectorContainerId, formContainerId, selectElementId, isPagoForm) {
+        const btnShow = document.getElementById(btnShowId);
+        const btnCancel = document.getElementById(btnCancelId);
+        const selectorContainer = document.getElementById(selectorContainerId);
+        const formContainer = document.getElementById(formContainerId);
+        const selectElement = document.getElementById(selectElementId); // El select del medio existente
+        
+        // El selector del tipo de medio DENTRO del formulario de nuevo medio
+        const tipoNuevoMedioSelect = document.getElementById( (isPagoForm ? 'id_new_mp-tipo' : 'id_new_ma-tipo') );
+        const mainForm = document.getElementById('form-operacion');
+
+        // Función para mostrar el formulario de nuevo medio
+        const showNewMediaForm = () => {
+            selectorContainer.classList.add('hidden');
+            formContainer.classList.remove('hidden');
+            if(selectElement) {
+                let option = selectElement.querySelector('option[value="nuevo"]');
+                if (!option) {
+                    option = new Option('** Nuevo Medio **', 'nuevo', true, true);
+                    selectElement.add(option);
+                }
+                option.selected = true;
+            }
+        };
+
+        // Función para ocultar el formulario de nuevo medio
+        const hideNewMediaForm = () => {
+            selectorContainer.classList.remove('hidden');
+            formContainer.classList.add('hidden');
+            if(selectElement) {
+                let option = selectElement.querySelector('option[value="nuevo"]');
+                if (option) {
+                    selectElement.remove(option.index);
+                }
+                if (selectElement.options.length > 0) {
+                     selectElement.options[0].selected = true;
+                }
+                // Disparar el evento change para actualizar los detalles
+                selectElement.dispatchEvent(new Event('change'));
+            }
+        };
+
+        if (btnShow) {
+            btnShow.addEventListener('click', showNewMediaForm);
+        }
+        if (btnCancel) {
+            btnCancel.addEventListener('click', hideNewMediaForm);
+        }
+
+        // Lógica para actualizar campos dinámicos al cambiar el tipo de medio en el formulario anidado
+        if (tipoNuevoMedioSelect) {
+            tipoNuevoMedioSelect.addEventListener('change', () => {
+                // Creamos un campo oculto temporal para indicar que solo queremos refrescar el form de medio
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'action_type';
+                hiddenInput.value = isPagoForm ? 'update_new_mp_form' : 'update_new_ma_form';
+                mainForm.appendChild(hiddenInput);
+                mainForm.submit();
+            });
+        }
+
+        // Lógica para mantener visible el form de nuevo medio si hubo errores de validación
+        // Lógica para mantener visible el form de nuevo medio si hubo errores de validación o si fue seleccionado 'nuevo'
+        const formNuevoMedioPagoContainer = document.getElementById('form-nuevo-medio-pago');
+        const formNuevoMedioAcreditacionContainer = document.getElementById('form-nuevo-medio-acreditacion');
+
+        if (formNuevoMedioPagoContainer && (formNuevoMedioPagoContainer.classList.contains('has-errors') || medioPagoSelect?.value === 'nuevo')) {
+             showNewMediaForm();
+        }
+        if (formNuevoMedioAcreditacionContainer && (formNuevoMedioAcreditacionContainer.classList.contains('has-errors') || medioAcreditacionSelect?.value === 'nuevo')) {
+            showNewMediaForm();
+        }
+    }
+
+    setupToggleForm(
+        'btn-mostrar-form-pago', 
+        'btn-cancelar-nuevo-pago', 
+        'selector-medio-pago-existente', 
+        'form-nuevo-medio-pago',
+        'id_medio_pago',
+        true // Es un formulario de pago
+    );
+
+    setupToggleForm(
+        'btn-mostrar-form-acreditacion', 
+        'btn-cancelar-nuevo-acreditacion', 
+        'selector-medio-acreditacion-existente', 
+        'form-nuevo-medio-acreditacion',
+        'id_medio_acreditacion',
+        false // Es un formulario de acreditación
+    );
 
 })();
 </script>
