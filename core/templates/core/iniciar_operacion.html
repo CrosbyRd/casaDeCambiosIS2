@@ -1,588 +1,889 @@
-{% extends "base.html" %}
 {% load static %}
 {% load configuracion_extras %}
-{% block title %}Iniciar Operación - Global Exchange{% endblock %}
+
+
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-6 py-6">
-
-  <header class="mb-4">
-    <h1 class="text-4xl font-extrabold mb-1 text-[var(--ink)]">💱 Iniciar Operación</h1>
-    <p class="text-base leading-relaxed max-w-2xl text-[var(--muted)]">
-      Seleccioná el tipo de operación y completá los datos para continuar con la confirmación.
-    </p>
-  </header>
-
-  {% if messages %}
-    <div id="flash-messages" class="mb-3 space-y-2">
-      {% for message in messages %}
-        <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <div class="grid md:grid-cols-2 gap-4 mb-4">
-    <div>
-      <h2 class="text-base font-semibold text-[var(--ink)]">Límite Disponible</h2>
-      <p class="text-sm text-[var(--muted)]">
-        El límite disponible para realizar operaciones es de
-        <strong>{{ limite_disponible|floatformat:0|formatear_moneda }} PYG</strong>
-      </p>
-    </div>
-    <div>
-      <h2 class="text-base font-semibold text-[var(--ink)]">Información del Cliente</h2>
-      <p class="text-sm text-[var(--muted)]">
-        Cliente: <strong>{{ cliente.nombre }}</strong><br>
-        Categoría: <strong>{{ cliente.get_categoria_display }}</strong><br>
-        Estado: <strong>{{ cliente.esta_activo|yesno:"Activo,Inactivo" }}</strong>
-      </p>
-    </div>
-  </div>
-
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <form method="post" id="form-operacion" novalidate
-          {% if form.non_field_errors or messages %} data-has-errors="1"{% endif %}>
-      {% csrf_token %}
-
-      <div class="px-4 py-3 font-semibold text-white" style="background:var(--brand);">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <span class="text-white">Tipo de operación</span>
-          <div class="w-full md:w-auto">
-            <label for="{{ form.tipo_operacion.id_for_label }}" class="sr-only">
-              {{ form.tipo_operacion.label }}
-            </label>
-            {{ form.tipo_operacion }}
-          </div>
-        </div>
-      </div>
-      {% if form.tipo_operacion.errors %}
-        <div class="px-4 pt-2">
-          <p class="text-sm text-red-600">{{ form.tipo_operacion.errors.as_text|cut:"* " }}</p>
-        </div>
-      {% endif %}
-
-      <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <label for="{{ form.moneda_origen.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-            {{ form.moneda_origen.label }}
-          </label>
-          {{ form.moneda_origen }}
-          {% if form.moneda_origen.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.moneda_origen.errors.as_text|cut:"* " }}</p>
-          {% endif %}
-        </div>
-        <div>
-          <label for="{{ form.moneda_destino.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-            {{ form.moneda_destino.label }}
-          </label>
-          {{ form.moneda_destino }}
-          {% if form.moneda_destino.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.moneda_destino.errors.as_text|cut:"* " }}</p>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Monto</div>
-          <div class="p-4">
-            <label for="{{ form.monto.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-              {{ form.monto.label }}
-            </label>
-
-            {{ form.monto }}
-
-            <input
-              type="text"
-              id="id_monto_visible"
-              inputmode="numeric"
-              autocomplete="off"
-              placeholder="0"
-              class="mt-2 w-full"
-              style="width:100%; border:1.5px solid var(--line); border-radius:12px;
-                     padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
-                     transition: box-shadow .15s ease, border-color .15s ease;"
-            />
-
-            {% if form.monto.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.monto.errors.as_text|cut:"* " }}</p>
-            {% endif %}
-            <p class="mt-2 text-sm text-[var(--muted)]">
-              La operación debe involucrar PYG. El monto mínimo puede depender de la denominación de la moneda.
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Modalidad de Tasa</div>
-          <div class="p-4">
-            <label for="{{ form.modalidad_tasa.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-              {{ form.modalidad_tasa.label }}
-            </label>
-            {{ form.modalidad_tasa }}
-            {% if form.modalidad_tasa.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.modalidad_tasa.errors.as_text|cut:"* " }}</p>
-            {% endif %}
-            <p class="mt-2 text-sm text-[var(--muted)]">
-              {{ form.modalidad_tasa.help_text }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div id="medio-pago-block" class="hidden">
-        <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Método de pago</div>
-        <div class="p-4">
-          <label for="{{ form.medio_pago.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-            {{ form.medio_pago.label }}
-          </label>
-          <div class="flex items-center gap-2">
-            {{ form.medio_pago }}
-            <a href="{% url 'pagos:clientes_create' %}?next={{ request.get_full_path|urlencode }}"
-               class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap"
-               style="background:var(--brand-soft); color:var(--brand-dark);">
-              ➕ Agregar
-            </a>
-          </div>
-          {% if form.medio_pago.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.medio_pago.errors.as_text|cut:"* " }}</p>
-          {% endif %}
-
-          <div id="medio-pago-detalles" class="mt-3 p-3 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
-            <h3 class="text-sm font-semibold text-[var(--ink)] mb-1">Detalles del Método de pago</h3>
-            <p class="text-sm text-[var(--muted)]">Proveedor: <strong id="detalle-alias-pago"></strong></p>
-            <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo-pago"></strong></p>
-            <div id="detalle-campos-dinamicos-pago" class="mt-1 space-y-1"></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="medio-acreditacion-block" class="hidden">
-        <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">Medio de Acreditación</div>
-        <div class="p-4">
-          <label for="{{ form.medio_acreditacion.id_for_label }}" class="block text-sm font-medium text-[var(--ink)] mb-1">
-            {{ form.medio_acreditacion.label }}
-          </label>
-          <div class="flex items-center gap-2">
-            {{ form.medio_acreditacion }}
-            <a href="{% url 'medios_acreditacion:clientes_create' %}?next={{ request.get_full_path|urlencode }}"
-               class="inline-flex items-center px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap"
-               style="background:var(--brand-soft); color:var(--brand-dark);">
-              ➕ Agregar
-            </a>
-          </div>
-          {% if form.medio_acreditacion.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</p>
-          {% endif %}
-
-          <div id="medio-acreditacion-detalles" class="mt-3 p-3 border rounded-xl bg-gray-50 hidden" style="border-color:var(--line);">
-            <h3 class="text-sm font-semibold text-[var(--ink)] mb-1">Detalles del Medio de Acreditación</h3>
-            <p class="text-sm text-[var(--muted)]">Proveedor: <strong id="detalle-alias-acreditacion"></strong></p>
-            <p class="text-sm text-[var(--muted)]">Tipo: <strong id="detalle-tipo-acreditacion"></strong></p>
-            <div id="detalle-campos-dinamicos-acreditacion" class="mt-1 space-y-1"></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="metodo-entrega-block" class="hidden">
-        <div class="px-4 py-2 font-semibold text-white" style="background:var(--brand);">{{ form.metodo_entrega.label }}</div>
-        <div class="p-4">
-          <div class="flex flex-col gap-2" id="id_metodo_entrega_container">
-              {{ form.metodo_entrega }}
-          </div>
-          {% if form.metodo_entrega.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.metodo_entrega.errors.as_text|cut:"* " }}</p>
-          {% endif %}
-        </div>
-      </div>
-      {% if form.non_field_errors %}
-        <div class="p-4">
-          <div id="limit-error-box" class="px-3 py-2 rounded-xl border bg-red-50 border-red-300 text-red-800">
-            {% for error in form.non_field_errors %}
-              <p class="text-sm">{{ error }}</p>
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
-
-      <!-- INICIO: Bloque de Resumen de Operación (movido desde confirmar_operacion.html) -->
-      {% if resultado_simulacion and not resultado_simulacion.error %}
-      <div id="resumen-operacion-block" class="p-4 border-t" style="border-color:var(--line)">
-        <h3 class="text-xl font-bold mb-4 text-[var(--ink)]">✅ Resumen de la Operación</h3>
-        <div class="gx-summary">
-          <div class="gx-row">
-            <span class="gx-label">Tipo de operación</span>
-            <span class="gx-value">
-              {% if form.tipo_operacion.value == 'compra' %}
-                Compra de divisa (vos vendés, la casa compra)
-              {% else %}
-                Venta de divisa (vos comprás, la casa vende)
-              {% endif %}
-            </span>
-          </div>
-
-          <div class="gx-row">
-            <span class="gx-label">Monto que entregas</span>
-            <span class="gx-value">
-                {{ form.monto.value|floatformat:2|formatear_moneda }}
-                <span class="gx-badge">{{ form.moneda_origen.value }}</span>
-            </span>
-          </div>
-          
-          <div class="gx-row gx-row--highlight">
-            <span class="gx-label">Monto a recibir</span>
-            <span class="gx-value gx-amount">
-                {{ resultado_simulacion.monto_recibido|floatformat:2|formatear_moneda }}
-                <span class="gx-badge" style="font-size: 0.9rem; font-weight: 700;">{{ form.moneda_destino.value }}</span>
-            </span>
-          </div>
-          
-          <div class="gx-row">
-            <span class="gx-label">Tasa aplicada</span>
-            <span class="gx-value">{{ resultado_simulacion.tasa_aplicada|floatformat:4 }}</span>
-          </div>
-
-          <div class="gx-row">
-            <span class="gx-label">Bonificación aplicada</span>
-            <span class="gx-value">{{ resultado_simulacion.bonificacion_aplicada|floatformat:2|formatear_moneda }} PYG</span>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-      <!-- FIN: Bloque de Resumen de Operación -->
-
-      <div class="p-4 border-t sticky-actions" style="border-color:var(--line)">
-        <div class="flex flex-col md:flex-row gap-2 md:justify-end">
-          <a href="{% url 'home' %}"
-             class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
-             style="background:#e11d48; color:#fff;">
-            Cancelar
-          </a>
-          <button id="btn-submit" type="submit"
-                  class="inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
-                  style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
-            <span id="btn-submit-text">Proceder a Confirmación</span>
-          </button>
-        </div>
-      </div>
-    </form>
-  </section>
-</main>
-
 <style>
-  /* Estilos del resumen de operación (copiados de confirmar_operacion.html) */
-  .gx-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .gx-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--line-soft, #f0f0f0);
-  }
-  .gx-row:last-child { border-bottom: none; }
-  .gx-row--highlight {
-    background-color: var(--brand-soft, #f8f5ff);
-    margin: 0 -1rem;
-    padding: 12px 1rem;
-    border-radius: 8px;
-  }
-  .gx-label { font-size: 1rem; color: var(--muted, #666); }
-  .gx-value { font-size: 1rem; font-weight: 600; color: var(--ink, #333); }
-  .gx-badge {
-    background-color: var(--brand-soft, #f8f5ff);
-    color: var(--brand-dark, #5c20cf);
-    padding: 4px 10px;
-    border-radius: 99px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 8px;
-  }
-  .gx-amount { font-size: 1.125rem; font-weight: 800; color: var(--brand, #7c3aed); }
+    /* Reset básico y variables alineadas al sistema de diseño */
+    * { box-sizing: border-box; }
 
-  #id_monto, #id_tipo_operacion, #id_moneda_origen, #id_moneda_destino, #id_modalidad_tasa, #id_medio_pago, #id_medio_acreditacion {
-    width:100%; border:1.5px solid var(--line); border-radius:12px;
-    padding:10px 12px; height:42px; font-size:.95rem; color:var(--ink); background:#fff;
-    transition: box-shadow .15s ease, border-color .15s ease;
-  }
-  #id_monto:focus, #id_tipo_operacion:focus, #id_moneda_origen:focus, #id_moneda_destino:focus,
-  #id_modalidad_tasa:focus, #id_medio_pago:focus, #id_medio_acreditacion:focus {
-    outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(124,58,237,.18);
-  }
+    /* Fondo principal y contenedor central */
+    /* *** CAMBIO 3: Fondo Lila Global *** */
+    body { 
+        background: linear-gradient(135deg, #f5f3ff 0%, #e9e4ff 100%) !important;
+        /* Aseguramos que body tenga el fondo, no main */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: #1a1a1a;
+    }
 
-  /* Input real de monto oculto visualmente (POST intacto) */
-  #id_monto {
-    position: absolute !important;
-    left: -99999px !important;
-    width: 1px !important;
-    height: 1px !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-  
-  /* Estilos para los radio buttons de metodo_entrega */
-  #id_metodo_entrega_container ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  #id_metodo_entrega_container li {
-    display: block;
-  }
-  #id_metodo_entrega_container label {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border: 1.5px solid var(--line);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  #id_metodo_entrega_container input[type="radio"] {
-    margin-right: 0.75rem;
-  }
-  #id_metodo_entrega_container input[type="radio"]:checked + label {
-    border-color: var(--brand);
-    background-color: color-mix(in oklab, var(--brand-soft) 85%, white);
-    box-shadow: 0 0 0 3px rgba(124,58,237,.18);
-  }
+    /* Ajuste de main para centrado */
+    main {
+        display: flex;
+        justify-content: center;
+        padding: 0; /* Ya tiene padding el body */
+        min-height: 80vh; 
+        width: 100%; /* Aseguramos que main ocupe el espacio */
+    }
 
-  .sticky-actions {
-    position: sticky; bottom: 0;
-    background: #fff;
-    backdrop-filter: saturate(1.1) blur(4px);
-    box-shadow: 0 -6px 16px rgba(0,0,0,0.06);
-    z-index: 20;
-  }
+    .container-card { 
+        max-width: 800px; 
+        width: 100%;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(138, 99, 210, 0.15);
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    /* Header con gradiente violeta */
+    .header-section {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+        padding: 32px 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .header-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-icon svg {
+        width: 32px;
+        height: 32px;
+        fill: white;
+    }
+
+    .header-title { 
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+        color: white;
+    }
+
+    .header-subtitle {
+        font-size: 15px;
+        opacity: 0.95;
+        font-weight: 400;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .content-wrapper {
+        padding: 32px 30px;
+    }
+
+    /* Mensajes Flash */
+    .flash-messages { margin-bottom: 24px; }
+    .flash-message {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        color: #0c4a6e;
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    /* Bloques de información (Cliente / Límite) */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .info-card {
+        background: #fafafa;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    .info-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #666;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .info-value {
+        font-size: 15px;
+        color: #1a1a1a;
+        font-weight: 600;
+    }
+
+    /* Títulos de sección internos */
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .section-title svg {
+        width: 20px;
+        height: 20px;
+        fill: #8b5cf6;
+    }
+
+    /* Estilos de Formulario */
+    .form-group { margin-bottom: 20px; }
+    
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    /* Inputs estilizados */
+    .styled-input, select.styled-input {
+        width: 100%;
+        border: 2px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 15px;
+        color: #1a1a1a;
+        background: #ffffff;
+        transition: all 0.3s ease;
+        height: 48px; /* Altura consistente */
+    }
+
+    .styled-input:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    }
+
+    /* Input de monto destacado */
+    #id_monto_visible {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #8b5cf6;
+    }
+
+    /* Grid de dos columnas para inputs */
+    .input-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .input-col { flex: 1; }
+
+    /* Bloques dinámicos (Pagos, etc) */
+    .dynamic-block {
+        background: #f8f6ff;
+        border: 1px solid #e9e4ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .detail-box {
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 12px;
+    }
+
+    .detail-row-text {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 4px;
+    }
+    .detail-row-text strong { color: #333; }
+
+    /* Link de agregar */
+    .add-link {
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        color: #8b5cf6;
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 8px;
+        padding: 4px 8px;
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    .add-link:hover { background: rgba(139, 92, 246, 0.2); }
+
+    /* Estilos de estado para cliente */
+    .status-activo {
+        color: #059669;
+        font-weight: 600;
+    }
+    .status-inactivo {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    /* Errores */
+    .error-text {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 6px;
+        display: block;
+    }
+    
+    .limit-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-top: 16px;
+    }
+
+    /* Resumen (estilo confirmacion_final_pago.html) */
+    .summary-section {
+        background: #fafafa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 0; /* Aseguramos que no tenga margen superior excesivo */
+        margin-bottom: 24px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e5e5e5;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    
+    .summary-highlight {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 1px solid #86efac;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 12px 0;
+    }
+
+    /* Botones */
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+        box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+    }
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #666;
+        border: 2px solid #e5e5e5;
+    }
+    .btn-secondary:hover {
+        background: #fafafa;
+        border-color: #d4d4d4;
+        color: #333;
+    }
+
+    /* Input oculto real */
+    #id_monto {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    /* Helpers */
+    .hidden { display: none !important; }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Estilos para Radio buttons de método de entrega */
+    #id_metodo_entrega_container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    #id_metodo_entrega_container label {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: white;
+        border: 1.5px solid #e5e5e5;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    #id_metodo_entrega_container input[type="radio"] {
+        margin-right: 12px;
+        accent-color: #8b5cf6;
+        width: 18px;
+        height: 18px;
+    }
+    #id_metodo_entrega_container input[type="radio"]:checked + label {
+        border-color: #8b5cf6;
+        background: #f8f6ff;
+        color: #7c3aed;
+    }
+
+    @media (max-width: 640px) {
+        .info-grid { grid-template-columns: 1fr; }
+        .input-row { flex-direction: column; gap: 20px; }
+        .actions { flex-direction: column-reverse; }
+        .btn { width: 100%; }
+    }
 </style>
+
+<main>
+    <div class="container-card">
+        <div class="header-section">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                </svg>
+            </div>
+            <h1 class="header-title">Iniciar Operación</h1>
+            <p class="header-subtitle">
+                Configura los detalles de tu compra o venta de divisas.
+            </p>
+        </div>
+
+        <div class="content-wrapper">
+            
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <span class="info-label">Límite Disponible</span>
+                    <div class="info-value" style="color: #059669;">
+                        {{ limite_disponible|floatformat:0|formatear_moneda }} PYG
+                    </div>
+                </div>
+                <div class="info-card">
+                    <span class="info-label">Cliente Activo</span>
+                    <div class="info-value">
+                        {{ cliente.nombre }}
+                    </div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                        {{ cliente.get_categoria_display }} • 
+                        <span class="{% if cliente.esta_activo %}status-activo{% else %}status-inactivo{% endif %}">
+                            {{ cliente.esta_activo|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            {% if resultado_simulacion and not resultado_simulacion.error %}
+            <div id="resumen-operacion-block" class="summary-section">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Resumen de la Operación
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label" style="color:#666; font-size:14px;">Tipo de operación</span>
+                    <span class="detail-value" style="font-weight:600;">
+                        {% if form.tipo_operacion.value == 'compra' %}
+                            Compra (Vos vendés)
+                        {% else %}
+                            Venta (Vos comprás)
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label" style="color:#666; font-size:14px;">Monto que entregas</span>
+                    <span class="detail-value" style="font-weight:600;">
+                        {{ form.monto.value|floatformat:2|formatear_moneda }}
+                        <span style="background:#f3f4f6; color:#1f2937; padding:2px 6px; border-radius:4px; font-size:12px;">
+                            {{ form.moneda_origen.value }}
+                        </span>
+                    </span>
+                </div>
+
+                <div class="summary-highlight">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color:#065f46; font-weight:600;">Monto a recibir</span>
+                        <span style="color:#059669; font-weight:700; font-size:18px;">
+                            {{ resultado_simulacion.monto_recibido|floatformat:2|formatear_moneda }}
+                            <span style="font-size:14px;">{{ form.moneda_destino.value }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label" style="color:#666; font-size:14px;">Tasa aplicada</span>
+                    <span class="detail-value" style="font-weight:600;">{{ resultado_simulacion.tasa_aplicada|floatformat:4 }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label" style="color:#666; font-size:14px;">Bonificación</span>
+                    <span class="detail-value" style="color:#8b5cf6; font-weight:600;">
+                        {{ resultado_simulacion.bonificacion_aplicada|floatformat:2|formatear_moneda }} PYG
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <form method="post" id="form-operacion" novalidate {% if form.non_field_errors or messages %} data-has-errors="1"{% endif %}>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="{{ form.tipo_operacion.id_for_label }}" class="form-label">
+                        Tipo de Operación
+                    </label>
+                    {{ form.tipo_operacion }} 
+                    {% if form.tipo_operacion.errors %}
+                        <span class="error-text">{{ form.tipo_operacion.errors.as_text|cut:"* " }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.89 11.1c-1.78-.59-2.64-.96-2.64-1.9 0-1.02 1.11-1.39 1.81-1.39 1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.45-.82-1.92-2.63-2.36V4h-2.28v2.01c-1.92.5-3.08 1.93-3.08 3.55 0 2.5 2.19 3.39 4.3 4.14 1.78.63 2.65.95 2.65 1.95 0 1.14-1.21 1.54-2.02 1.54-1.63 0-2.32-1.1-2.48-1.57l-1.62.61c.21.6 1.05 2.16 2.94 2.57V21h2.28v-2.06c2.09-.45 3.35-1.92 3.35-3.69 0-2.61-2.24-3.52-4.36-4.15z"/>
+                    </svg>
+                    Divisas y Montos
+                </div>
+
+                <div class="input-row">
+                    <div class="input-col">
+                        <label for="{{ form.moneda_origen.id_for_label }}" class="form-label">
+                            {{ form.moneda_origen.label }}
+                        </label>
+                        {{ form.moneda_origen }}
+                        {% if form.moneda_origen.errors %}
+                            <span class="error-text">{{ form.moneda_origen.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="input-col">
+                        <label for="{{ form.moneda_destino.id_for_label }}" class="form-label">
+                            {{ form.moneda_destino.label }}
+                        </label>
+                        {{ form.moneda_destino }}
+                        {% if form.moneda_destino.errors %}
+                            <span class="error-text">{{ form.moneda_destino.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-col">
+                        <label for="{{ form.monto.id_for_label }}" class="form-label">
+                            {{ form.monto.label }}
+                        </label>
+                        
+                        <input type="hidden" id="{{ form.monto.id_for_label }}" name="{{ form.monto.html_name }}" value="{{ form.monto.value|default_if_none:'0' }}">
+                        <input type="text" id="id_monto_visible" inputmode="numeric" autocomplete="off" placeholder="0" class="styled-input">
+                        
+                        {% if form.monto.errors %}
+                            <span class="error-text">{{ form.monto.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
+                        <p style="font-size: 12px; color: #999; margin-top: 6px;">
+                            Ingresa el monto sin puntos. Se formateará automáticamente.
+                        </p>
+                    </div>
+                    <div class="input-col">
+                        <label for="{{ form.modalidad_tasa.id_for_label }}" class="form-label">
+                            {{ form.modalidad_tasa.label }}
+                        </label>
+                        {{ form.modalidad_tasa }}
+                        {% if form.modalidad_tasa.errors %}
+                            <span class="error-text">{{ form.modalidad_tasa.errors.as_text|cut:"* " }}</span>
+                        {% endif %}
+                        <p style="font-size: 12px; color: #666; margin-top: 6px;">
+                            {{ form.modalidad_tasa.help_text }}
+                        </p>
+                    </div>
+                </div>
+
+                <div id="medio-pago-block" class="dynamic-block hidden">
+                    <div class="section-title" style="margin-top: 0;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </svg>
+                        Método de Pago
+                    </div>
+                    <label for="{{ form.medio_pago.id_for_label }}" class="form-label">
+                        {{ form.medio_pago.label }}
+                    </label>
+                    <div style="display: flex; align-items: center;">
+                        <div style="flex-grow: 1;">
+                            {{ form.medio_pago }}
+                        </div>
+                        <a href="{% url 'pagos:clientes_create' %}?next={{ request.get_full_path|urlencode }}" class="add-link">
+                            + Nuevo
+                        </a>
+                    </div>
+                    {% if form.medio_pago.errors %}
+                        <span class="error-text">{{ form.medio_pago.errors.as_text|cut:"* " }}</span>
+                    {% endif %}
+
+                    <div id="medio-pago-detalles" class="detail-box hidden">
+                        <div class="detail-row-text">Proveedor: <strong id="detalle-alias-pago"></strong></div>
+                        <div class="detail-row-text">Tipo: <strong id="detalle-tipo-pago"></strong></div>
+                        <div id="detalle-campos-dinamicos-pago" style="margin-top: 8px;"></div>
+                    </div>
+                </div>
+
+                <div id="medio-acreditacion-block" class="dynamic-block hidden">
+                    <div class="section-title" style="margin-top: 0;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09L9 13.5l1.41-1.41 2.29 2.29 4.89-4.89 1.41 1.41-6.3 6.3z"/>
+                        </svg>
+                        Medio de Acreditación
+                    </div>
+                    <label for="{{ form.medio_acreditacion.id_for_label }}" class="form-label">
+                        {{ form.medio_acreditacion.label }}
+                    </label>
+                    <div style="display: flex; align-items: center;">
+                        <div style="flex-grow: 1;">
+                            {{ form.medio_acreditacion }}
+                        </div>
+                        <a href="{% url 'medios_acreditacion:clientes_create' %}?next={{ request.get_full_path|urlencode }}" class="add-link">
+                            + Nuevo
+                        </a>
+                    </div>
+                    {% if form.medio_acreditacion.errors %}
+                        <span class="error-text">{{ form.medio_acreditacion.errors.as_text|cut:"* " }}</span>
+                    {% endif %}
+
+                    <div id="medio-acreditacion-detalles" class="detail-box hidden">
+                        <div class="detail-row-text">Proveedor: <strong id="detalle-alias-acreditacion"></strong></div>
+                        <div class="detail-row-text">Tipo: <strong id="detalle-tipo-acreditacion"></strong></div>
+                        <div id="detalle-campos-dinamicos-acreditacion" style="margin-top: 8px;"></div>
+                    </div>
+                </div>
+
+                <div id="metodo-entrega-block" class="dynamic-block hidden">
+                    <div class="section-title" style="margin-top: 0;">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 13H5v-2h14v2z"/>
+                        </svg>
+                        {{ form.metodo_entrega.label }}
+                    </div>
+                    <div id="id_metodo_entrega_container">
+                        {{ form.metodo_entrega }}
+                    </div>
+                    {% if form.metodo_entrega.errors %}
+                        <span class="error-text">{{ form.metodo_entrega.errors.as_text|cut:"* " }}</span>
+                    {% endif %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="limit-error" id="limit-error-box">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="actions">
+                    <a href="{% url 'home' %}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                    <button id="btn-submit" type="submit" class="btn btn-primary">
+                        <span id="btn-submit-text">Simular y Continuar</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
 
 <script>
 (function () {
-  const tipo = document.getElementById('id_tipo_operacion');
-  const ori  = document.getElementById('id_moneda_origen');
-  const dst  = document.getElementById('id_moneda_destino');
-  const monto= document.getElementById('id_monto');
-  const btn  = document.getElementById('btn-submit');
-
-  const medioPagoBlock = document.getElementById('medio-pago-block');
-  const medioPagoSelect = document.getElementById('id_medio_pago');
-  const medioPagoDetalles = document.getElementById('medio-pago-detalles');
-  const detalleAliasPago = document.getElementById('detalle-alias-pago');
-  const detalleTipoPago = document.getElementById('detalle-tipo-pago');
-  const detalleCamposDinamicosPago = document.getElementById('detalle-campos-dinamicos-pago');
-
-  const medioAcreditacionBlock = document.getElementById('medio-acreditacion-block');
-  const medioAcreditacionSelect = document.getElementById('id_medio_acreditacion');
-  const medioAcreditacionDetalles = document.getElementById('medio-acreditacion-detalles');
-  const detalleAliasAcreditacion = document.getElementById('detalle-alias-acreditacion');
-  const detalleTipoAcreditacion = document.getElementById('detalle-tipo-acreditacion');
-  const detalleCamposDinamicosAcreditacion = document.getElementById('detalle-campos-dinamicos-acreditacion');
-
-  const metodoEntregaBlock = document.getElementById('metodo-entrega-block'); // <-- NUEVO
-
-  const form = document.getElementById('form-operacion');
-  const hasErrors = form && form.dataset.hasErrors === '1';
-
-  const resumenBlock = document.getElementById('resumen-operacion-block');
-  const btnSubmitText = document.getElementById('btn-submit-text');
-
-  // Si el bloque de resumen existe, la simulación fue exitosa. Cambiamos el texto del botón.
-  if (resumenBlock && btnSubmitText) {
-    btnSubmitText.textContent = 'Confirmar Operación';
-  }
-
-  const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
-
-  const mediosPagoData = JSON.parse('{{ medios_pago_json|default:"{}"|escapejs }}');
-  const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|default:"{}"|escapejs }}');
-
-  const isPYG = v => String(v||'').toUpperCase()==='PYG';
-  const isForeign = v => v && !isPYG(v);
-
-  function enforce() {
-    let ok = true;
-    const t = tipo?.value || '';
-    const o = ori?.value  || '';
-    const d = dst?.value  || '';
-    const m = parseFloat(monto?.value || '0');
-
-    /* Visibilidad según tipo */
-    if (t === 'venta') {
-      medioPagoBlock?.classList.remove('hidden');
-      medioAcreditacionBlock?.classList.add('hidden');
-      medioAcreditacionDetalles?.classList.add('hidden');
-    } else if (t === 'compra') {
-      medioAcreditacionBlock?.classList.remove('hidden');
-      medioPagoBlock?.classList.add('hidden');
-      medioPagoDetalles?.classList.add('hidden');
-    } else {
-      medioPagoBlock?.classList.add('hidden');
-      medioPagoDetalles?.classList.add('hidden');
-      medioAcreditacionBlock?.classList.add('hidden');
-      medioAcreditacionDetalles?.classList.add('hidden');
-    }
-    
-    // --- LÓGICA MODIFICADA ---
-    // La condición clave: solo mostrar el selector de Stripe si es Compra Y USD -> PYG
-    if (t === 'compra' && o === 'USD' && d === 'PYG') {
-      metodoEntregaBlock?.classList.remove('hidden');
-    } else {
-      metodoEntregaBlock?.classList.add('hidden');
-    }
-
-    /* En caso de errores/mensajes (límite, etc.), MANTENER SOLO el que corresponde al tipo actual */
-    if (hasErrors) {
-      if (t === 'venta') {
-        medioPagoBlock?.classList.remove('hidden');
-        medioAcreditacionBlock?.classList.add('hidden');
-      } else if (t === 'compra') {
-        medioAcreditacionBlock?.classList.remove('hidden');
-        medioPagoBlock?.classList.add('hidden');
-      }
-    }
-    // -------------------------------------------------------------
-
-    /* Habilitación del botón (lógica visual) */
-    if (t === 'compra') {
-      if (isPYG(o) || isForeign(d)) ok = false;
-    } else if (t === 'venta') {
-      if (isForeign(o) || isPYG(d)) ok = false;
-    } else {
-      ok = false;
-    }
-    if (!t || !o || !d || o === d || !(m > 0)) ok = false;
-    if (btn) btn.disabled = !ok;
-  }
-  ['change','input'].forEach(ev=>{
-    tipo?.addEventListener(ev, enforce);
-    ori?.addEventListener(ev, enforce);
-    dst?.addEventListener(ev, enforce);
-    monto?.addEventListener(ev, enforce);
-  });
-
-  function mostrarDetallesMedioPago() {
-    const id = medioPagoSelect?.value;
-    if (id && mediosPagoData[id]) {
-      const medio = mediosPagoData[id];
-      detalleAliasPago.textContent = medio.alias || '';
-      detalleTipoPago.textContent = medio.tipo_nombre || '';
-      detalleCamposDinamicosPago.innerHTML = '';
-      (medio.campos || []).forEach(campo=>{
-        const p = document.createElement('p');
-        p.className = 'text-sm text-[var(--muted)]';
-        p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
-        detalleCamposDinamicosPago.appendChild(p);
-      });
-      medioPagoDetalles?.classList.remove('hidden');
-    } else {
-      medioPagoDetalles?.classList.add('hidden');
-    }
-  }
-
-  function mostrarDetallesMedioAcreditacion() {
-    const id = medioAcreditacionSelect?.value;
-    if (id && mediosAcreditacionData[id]) {
-      const medio = mediosAcreditacionData[id];
-      detalleAliasAcreditacion.textContent = medio.alias || '';
-      detalleTipoAcreditacion.textContent = medio.tipo_nombre || '';
-      detalleCamposDinamicosAcreditacion.innerHTML = '';
-      (medio.campos || []).forEach(campo=>{
-        const p = document.createElement('p');
-        p.className = 'text-sm text-[var(--muted)]';
-        p.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
-        detalleCamposDinamicosAcreditacion.appendChild(p);
-      });
-      medioAcreditacionDetalles?.classList.remove('hidden');
-    } else {
-      medioAcreditacionDetalles?.classList.add('hidden');
-    }
-  }
-
-  medioPagoSelect?.addEventListener('change', mostrarDetallesMedioPago);
-  medioAcreditacionSelect?.addEventListener('change', mostrarDetallesMedioAcreditacion);
-
-  enforce();
-  mostrarDetallesMedioPago();
-  mostrarDetallesMedioAcreditacion();
-
-  /* === Formateo visual del monto (input espejo) === */
-  function cleanFormat(str) {
-    return String(str || '').replace(/\./g, '').replace(/\s+/g, '').replace(/[^0-9]/g, '');
-  }
-  function applyFormat(rawStr) {
-    const clean = cleanFormat(rawStr);
-    if (!clean) return '';
-    const normalized = clean.replace(/^0+(?=\d)/, '');
-    return nfPY.format(Number(normalized));
-  }
-  function setFormattedValuePreservingCaret(input, nextFormatted) {
-    const prev = input.value;
-    const start = input.selectionStart || 0;
-    const digitsBefore = prev.slice(0, start).replace(/\D/g, '').length;
-    input.value = nextFormatted;
-    let pos = 0, consumed = 0;
-    while (pos < nextFormatted.length && consumed < digitsBefore) {
-      if (/\d/.test(nextFormatted[pos])) consumed++;
-      pos++;
-    }
-    input.setSelectionRange(pos, pos);
-  }
-
-  const inputHidden  = document.getElementById('id_monto');
-  const inputVisible = document.getElementById('id_monto_visible');
-
-  if (inputHidden && inputVisible) {
-    const initial = inputHidden.value || '';
-    inputVisible.value = applyFormat(initial);
-
-    inputVisible.addEventListener('focus', () => {
-      inputVisible.style.borderColor = 'var(--brand)';
-      inputVisible.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18)';
-    });
-    inputVisible.addEventListener('blur', () => {
-      inputVisible.style.borderColor = 'var(--line)';
-      inputVisible.style.boxShadow = 'none';
+    // Aplicamos clase 'styled-input' a todos los selects/inputs generados por Django
+    document.querySelectorAll('select, input:not([type="radio"]):not([type="hidden"]):not(#id_monto_visible)').forEach(el => {
+        el.classList.add('styled-input');
     });
 
-    inputVisible.addEventListener('input', () => {
-      const formatted = applyFormat(inputVisible.value);
-      setFormattedValuePreservingCaret(inputVisible, formatted);
-      inputHidden.value = cleanFormat(formatted);            // limpio para POST
-      inputHidden.dispatchEvent(new Event('input',  {bubbles:true}));
-      inputHidden.dispatchEvent(new Event('change', {bubbles:true}));
-    });
+    const tipo = document.getElementById('id_tipo_operacion');
+    const ori  = document.getElementById('id_moneda_origen');
+    const dst  = document.getElementById('id_moneda_destino');
+    const monto= document.getElementById('id_monto');
+    const btn  = document.getElementById('btn-submit');
 
-    inputHidden.addEventListener('change', () => {
-      inputVisible.value = applyFormat(inputHidden.value);
-    });
-  }
+    const medioPagoBlock = document.getElementById('medio-pago-block');
+    const medioPagoSelect = document.getElementById('id_medio_pago');
+    const medioPagoDetalles = document.getElementById('medio-pago-detalles');
+    const detalleAliasPago = document.getElementById('detalle-alias-pago');
+    const detalleTipoPago = document.getElementById('detalle-tipo-pago');
+    const detalleCamposDinamicosPago = document.getElementById('detalle-campos-dinamicos-pago');
 
-  /* === Formateo de números con miles en mensajes/errores === */
-  function formatNumbersIn(container){
-    if (!container) return;
-    const nf = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
-    container.querySelectorAll('*').forEach(node=>{
-      node.childNodes?.forEach(ch=>{
-        if (ch.nodeType === Node.TEXT_NODE) {
-          const text = ch.nodeValue;
-          const replaced = text.replace(/\b(\d{4,})\b/g, (m)=> nf.format(Number(m)));
-          if (replaced !== text) ch.nodeValue = replaced;
+    const medioAcreditacionBlock = document.getElementById('medio-acreditacion-block');
+    const medioAcreditacionSelect = document.getElementById('id_medio_acreditacion');
+    const medioAcreditacionDetalles = document.getElementById('medio-acreditacion-detalles');
+    const detalleAliasAcreditacion = document.getElementById('detalle-alias-acreditacion');
+    const detalleTipoAcreditacion = document.getElementById('detalle-tipo-acreditacion');
+    const detalleCamposDinamicosAcreditacion = document.getElementById('detalle-campos-dinamicos-acreditacion');
+
+    const metodoEntregaBlock = document.getElementById('metodo-entrega-block'); 
+
+    const form = document.getElementById('form-operacion');
+    const hasErrors = form && form.dataset.hasErrors === '1';
+
+    const resumenBlock = document.getElementById('resumen-operacion-block');
+    const btnSubmitText = document.getElementById('btn-submit-text');
+
+    // Cambiar texto si ya hay resumen
+    if (resumenBlock && btnSubmitText) {
+        btnSubmitText.textContent = 'Confirmar Operación';
+    }
+
+    const nfPY = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
+
+    const mediosPagoData = JSON.parse('{{ medios_pago_json|default:"{}"|escapejs }}');
+    const mediosAcreditacionData = JSON.parse('{{ medios_acreditacion_json|default:"{}"|escapejs }}');
+
+    const isPYG = v => String(v||'').toUpperCase()==='PYG';
+    const isForeign = v => v && !isPYG(v);
+
+    function enforce() {
+        let ok = true;
+        const t = tipo?.value || '';
+        const o = ori?.value  || '';
+        const d = dst?.value  || '';
+        const m = parseFloat(monto?.value || '0');
+
+        /* Visibilidad según tipo */
+        if (t === 'venta') {
+            medioPagoBlock?.classList.remove('hidden');
+            medioAcreditacionBlock?.classList.add('hidden');
+            medioAcreditacionDetalles?.classList.add('hidden');
+        } else if (t === 'compra') {
+            medioAcreditacionBlock?.classList.remove('hidden');
+            medioPagoBlock?.classList.add('hidden');
+            medioPagoDetalles?.classList.add('hidden');
+        } else {
+            medioPagoBlock?.classList.add('hidden');
+            medioPagoDetalles?.classList.add('hidden');
+            medioAcreditacionBlock?.classList.add('hidden');
+            medioAcreditacionDetalles?.classList.add('hidden');
         }
-      });
+        
+        // Lógica de Stripe (Compra USD -> PYG)
+        if (t === 'compra' && o === 'USD' && d === 'PYG') {
+            metodoEntregaBlock?.classList.remove('hidden');
+        } else {
+            metodoEntregaBlock?.classList.add('hidden');
+        }
+
+        /* Mantener errores visibles según contexto */
+        if (hasErrors) {
+            if (t === 'venta') {
+                medioPagoBlock?.classList.remove('hidden');
+                medioAcreditacionBlock?.classList.add('hidden');
+            } else if (t === 'compra') {
+                medioAcreditacionBlock?.classList.remove('hidden');
+                medioPagoBlock?.classList.add('hidden');
+            }
+        }
+
+        /* Habilitación lógica básica */
+        if (t === 'compra') {
+            if (isPYG(o) || isForeign(d)) ok = false;
+        } else if (t === 'venta') {
+            if (isForeign(o) || isPYG(d)) ok = false;
+        } else {
+            ok = false;
+        }
+        if (!t || !o || !d || o === d || !(m > 0)) ok = false;
+        
+        // El botón siempre activo para permitir validación del server, 
+        // o desactivarlo visualmente si prefieres:
+        if (btn) btn.disabled = !ok;
+    }
+
+    ['change','input'].forEach(ev=>{
+        tipo?.addEventListener(ev, enforce);
+        ori?.addEventListener(ev, enforce);
+        dst?.addEventListener(ev, enforce);
+        monto?.addEventListener(ev, enforce);
     });
-  }
-  formatNumbersIn(document.getElementById('limit-error-box'));
-  formatNumbersIn(document.getElementById('flash-messages'));
+
+    function mostrarDetallesMedioPago() {
+        const id = medioPagoSelect?.value;
+        if (id && mediosPagoData[id]) {
+            const medio = mediosPagoData[id];
+            detalleAliasPago.textContent = medio.alias || '';
+            detalleTipoPago.textContent = medio.tipo_nombre || '';
+            detalleCamposDinamicosPago.innerHTML = '';
+            (medio.campos || []).forEach(campo=>{
+                const div = document.createElement('div');
+                div.className = 'detail-row-text';
+                div.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
+                detalleCamposDinamicosPago.appendChild(div);
+            });
+            medioPagoDetalles?.classList.remove('hidden');
+        } else {
+            medioPagoDetalles?.classList.add('hidden');
+        }
+    }
+
+    function mostrarDetallesMedioAcreditacion() {
+        const id = medioAcreditacionSelect?.value;
+        if (id && mediosAcreditacionData[id]) {
+            const medio = mediosAcreditacionData[id];
+            detalleAliasAcreditacion.textContent = medio.alias || '';
+            detalleTipoAcreditacion.textContent = medio.tipo_nombre || '';
+            detalleCamposDinamicosAcreditacion.innerHTML = '';
+            (medio.campos || []).forEach(campo=>{
+                const div = document.createElement('div');
+                div.className = 'detail-row-text';
+                div.innerHTML = `${campo.nombre_campo}: <strong>${campo.valor}</strong>`;
+                detalleCamposDinamicosAcreditacion.appendChild(div);
+            });
+            medioAcreditacionDetalles?.classList.remove('hidden');
+        } else {
+            medioAcreditacionDetalles?.classList.add('hidden');
+        }
+    }
+
+    medioPagoSelect?.addEventListener('change', mostrarDetallesMedioPago);
+    medioAcreditacionSelect?.addEventListener('change', mostrarDetallesMedioAcreditacion);
+
+    enforce();
+    mostrarDetallesMedioPago();
+    mostrarDetallesMedioAcreditacion();
+
+    /* === Formateo visual del monto === */
+    function cleanFormat(str) {
+        return String(str || '').replace(/\./g, '').replace(/\s+/g, '').replace(/[^0-9]/g, '');
+    }
+    function applyFormat(rawStr) {
+        const clean = cleanFormat(rawStr);
+        if (!clean) return '';
+        const normalized = clean.replace(/^0+(?=\d)/, '');
+        return nfPY.format(Number(normalized));
+    }
+    function setFormattedValuePreservingCaret(input, nextFormatted) {
+        const prev = input.value;
+        const start = input.selectionStart || 0;
+        const digitsBefore = prev.slice(0, start).replace(/\D/g, '').length;
+        input.value = nextFormatted;
+        let pos = 0, consumed = 0;
+        while (pos < nextFormatted.length && consumed < digitsBefore) {
+            if (/\d/.test(nextFormatted[pos])) consumed++;
+            pos++;
+        }
+        input.setSelectionRange(pos, pos);
+    }
+
+    const inputHidden  = document.getElementById('id_monto');
+    const inputVisible = document.getElementById('id_monto_visible');
+
+    if (inputHidden && inputVisible) {
+        const initial = inputHidden.value || '';
+        inputVisible.value = applyFormat(initial);
+
+        inputVisible.addEventListener('focus', () => {
+            inputVisible.style.borderColor = '#8b5cf6';
+            inputVisible.style.boxShadow = '0 0 0 4px rgba(139, 92, 246, 0.1)';
+        });
+        inputVisible.addEventListener('blur', () => {
+            inputVisible.style.borderColor = '#e5e5e5';
+            inputVisible.style.boxShadow = 'none';
+        });
+
+        inputVisible.addEventListener('input', () => {
+            const formatted = applyFormat(inputVisible.value);
+            setFormattedValuePreservingCaret(inputVisible, formatted);
+            inputHidden.value = cleanFormat(formatted);
+        });
+
+        inputHidden.addEventListener('change', () => {
+            inputVisible.value = applyFormat(inputHidden.value);
+        });
+    }
+
+    /* === Formateo de números en mensajes === */
+    function formatNumbersIn(container){
+        if (!container) return;
+        const nf = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 });
+        container.querySelectorAll('*').forEach(node=>{
+            node.childNodes?.forEach(ch=>{
+                if (ch.nodeType === Node.TEXT_NODE) {
+                    const text = ch.nodeValue;
+                    const replaced = text.replace(/\b(\d{4,})\b/g, (m)=> nf.format(Number(m)));
+                    if (replaced !== text) ch.nodeValue = replaced;
+                }
+            });
+        });
+    }
+    formatNumbersIn(document.getElementById('limit-error-box'));
+    formatNumbersIn(document.getElementById('flash-messages'));
 
 })();
 </script>

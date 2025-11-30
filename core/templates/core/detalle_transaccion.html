@@ -144,20 +144,26 @@
           <h3 class="tx-action-card__title">Acción Requerida</h3>
         </div>
         <p class="tx-action-card__text">Tu operación de venta está pendiente de confirmación. Por favor, procede con el pago para finalizarla.</p>
-        <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="gx-btn gx-btn--full">
-          Continuar con el Pago
-        </a>
+        {% if transaccion.modalidad_tasa == 'flotante' %}
+          <a href="{% url 'core:confirmacion_final_pago' transaccion.id %}" class="gx-btn gx-btn--full">
+           Continuar con el Pago
+          </a>
+        {% else %}
+          <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="gx-btn gx-btn--full">
+            Continuar con el Pago
+          </a>
+        {% endif %}
       </div>
-    {% elif transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
+    {% elif transaccion.estado == 'pendiente_pago_cliente' %}
       <div class="tx-action-card">
         <div class="tx-action-card__header">
           <span class="tx-action-card__icon">✓</span>
-          <h3 class="tx-action-card__title">Confirmar Pago</h3>
+          <h3 class="tx-action-card__title">Procesar Pago</h3>
         </div>
-        <p class="tx-action-card__text">Estás a un paso de completar tu operación.</p>
+        <p class="tx-action-card__text">Estás a un paso de completar tu operación. Procede con el pago.</p>
         <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
           {% csrf_token %}
-          <button type="submit" class="gx-btn gx-btn--full">Confirmar Pago</button>
+          <button type="submit" class="gx-btn gx-btn--full">Continuar con el Pago</button>
         </form>
       </div>
     {% endif %}

@@ -377,10 +377,22 @@ def iniciar_operacion(request):
                 datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
             )
 
-            if tipo_operacion == 'compra':
-                messages.success(request, "Operación de compra iniciada. Realiza el pago en el Tauser.")
-                return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
-            else:
+            if tipo_operacion == 'compra' and modalidad_tasa == 'flotante':
+                # Guardar en sesión y redirigir a verificación OTP para compra flotante
+                request.session['operacion_pendiente_compra_flotante'] = operacion_data
+                messages.info(request, "Por favor, verifica tu identidad para confirmar la compra.")
+                return redirect('core:verificar_otp_compra_flotante')
+            elif tipo_operacion == 'compra':
+                # Esto es para compra con tasa bloqueada (ya cubierta por el flujo OTP de reserva)
+                # o para cualquier otra compra que no sea flotante (si las hubiera).
+                # Por el momento, la lógica de tasa bloqueada ya redirige a verificar_otp_reserva
+                # Si llegamos aquí para una compra NO flotante y NO es bloqueada (lo cual no debería pasar
+                # si las únicas modalidades son bloqueada y flotante), mantendríamos el flujo actual
+                # o agregaríamos un manejo de error.
+                # Para ser explícitos: si la compra no es flotante, debería haber pasado por OTP de reserva.
+                messages.error(request, "Modalidad de tasa inválida para operación de compra.")
+                return redirect('core:iniciar_operacion')
+            else: # tipo_operacion == 'venta'
                 messages.info(request, "Operación de venta iniciada. Confirma el pago.")
                 return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
 
@@ -392,6 +404,111 @@ def iniciar_operacion(request):
         'medios_pago_json': medios_pago_json,
         'medios_acreditacion_json': medios_acreditacion_json,
     })
+
+# --- Nueva vista para verificación OTP de compra flotante ---
+class VerificarOtpCompraFlotanteView(LoginRequiredMixin, View):
+    template_name = 'core/verificar_otp.html'
+
+    def get(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente_compra_flotante')
+        if not operacion_pendiente:
+            messages.error(request, "No hay una operación de compra flotante pendiente para verificar.")
+            return redirect('core:iniciar_operacion')
+        
+        cliente_activo = get_cliente_activo(request)
+        if not cliente_activo:
+            messages.info(request, "Seleccioná con qué cliente querés operar.")
+            return redirect("usuarios:seleccionar_cliente")
+
+        send_otp_email(
+            request.user,
+            "Confirmación de Compra de Divisas (Tasa Flotante)",
+            "Tu código de verificación para confirmar la compra de divisas con tasa flotante es: {code}. Válido por {minutes} minutos."
+        )
+        messages.info(request, f"Hemos enviado un código de verificación a tu email ({request.user.email}).")
+        form = VerificacionForm()
+        # Pasar operacion_pendiente a la plantilla para mostrar los detalles
+        return render(request, self.template_name, {'form': form, 'email': request.user.email, 'operacion': operacion_pendiente})
+
+    def post(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente_compra_flotante')
+        if not operacion_pendiente:
+            messages.error(request, "Sesión de operación inválida para compra flotante.")
+            return redirect('core:iniciar_operacion')
+
+        form = VerificacionForm(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo']
+            if validate_otp_code(request.user, codigo):
+                cliente_activo = get_cliente_activo(request)
+                try:
+                    moneda_origen_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_origen_codigo'])
+                    moneda_destino_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_destino_codigo'])
+                except Moneda.DoesNotExist:
+                    messages.error(request, "Error al encontrar las monedas para la transacción.")
+                    return redirect('core:iniciar_operacion')
+
+                # Obtener MedioAcreditacionCliente de la sesión
+                medio_acreditacion_id = operacion_pendiente.get('medio_acreditacion_id')
+                medio_acreditacion_para_transaccion = None
+                if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
+                    try:
+                        # Primero obtenemos la instancia de MedioAcreditacionCliente
+                        medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
+                        
+                        # Luego, necesitamos obtener la instancia de clientes.MedioAcreditacion.
+                        from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion
+                        
+                        alias_cliente_ma = medio_acreditacion_cliente_obj.alias
+                        identificador_cliente_ma = medio_acreditacion_cliente_obj.datos.get('identificador', '')
+
+                        try:
+                            medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.get(
+                                cliente=request.user,
+                                identificador=identificador_cliente_ma,
+                                alias=alias_cliente_ma
+                            )
+                        except ClientesMedioAcreditacion.DoesNotExist:
+                            medio_acreditacion_para_transaccion = None
+                            messages.warning(request, "No se pudo vincular el medio de acreditación al cliente interno. La transacción continuará sin esta referencia directa.")
+                        
+                    except MedioAcreditacionCliente.DoesNotExist:
+                        messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (MedioAcreditacionCliente no encontrado).")
+                        return redirect('core:iniciar_operacion')
+                    except Exception as e:
+                        messages.error(request, f"Error inesperado al obtener el medio de acreditación: {e}")
+                        return redirect('core:iniciar_operacion')
+
+                # Crear la transacción
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente_activo,
+                    usuario_operador=request.user,
+                    tipo_operacion=operacion_pendiente['tipo_operacion'],
+                    estado='pendiente_pago_cliente', # Estado inicial para compra flotante
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']),
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_pendiente['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_pendiente.get('comision_cotizacion', '0.0')), # Usar .get con default
+                    codigo_operacion_tauser=str(uuid.uuid4())[:10],
+                    tasa_garantizada_hasta=None, # Tasa flotante, no garantizada
+                    modalidad_tasa='flotante',
+                    medio_acreditacion_cliente=medio_acreditacion_para_transaccion, # Para compras
+                    datos_medio_acreditacion_snapshot=operacion_pendiente.get('datos_medio_acreditacion_snapshot'),
+                )
+                request.session.pop('operacion_pendiente_compra_flotante', None) # Limpiar sesión
+
+                messages.success(request, f"Compra de divisas con tasa flotante iniciada y confirmada. Operación {transaccion.codigo_operacion_tauser}. Por favor, realiza el pago en el Tauser.")
+                return redirect('core:operacion_iniciada_aviso', transaccion_id=transaccion.id)
+
+            else:
+                messages.error(request, "Código OTP incorrecto o expirado.")
+        else:
+            messages.error(request, "Por favor, ingresa un código válido.")
+        
+        return render(request, self.template_name, {'form': form, 'email': request.user.email, 'operacion': operacion_pendiente})
 
 @login_required
 def confirmar_operacion(request):
@@ -791,9 +908,9 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
                 # Redirigir al inicio del pago (que ahora puede ser la pasarela o el detalle)
                 if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
                     return redirect('transacciones:iniciar_pago', transaccion_id=transaccion.id)
-                elif transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
-                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
-                else:
+                elif transaccion.tipo_operacion == 'compra': # Para compras (tasa bloqueada)
+                    return redirect('core:operacion_iniciada_aviso', transaccion_id=transaccion.id)
+                else: # Flujo predeterminado para otros casos, si los hubiera, aunque ahora las compras se redirigen
                     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
             else:
@@ -951,3 +1068,15 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             transaccion.save() # Save the updated amounts for these cases
             messages.success(request, "Operación actualizada con la tasa de cambio actual. Procediendo al pago.")
             return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)
+
+
+class OperacionIniciadaAvisoView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/operacion_iniciada_aviso.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transaccion_id = kwargs['transaccion_id']
+        cliente_activo = get_cliente_activo(self.request)
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+        context['transaccion'] = transaccion
+        return context
