@@ -42,7 +42,7 @@ def reporte_ganancias(request):
     # 📌 Trae TODAS las transacciones COMPLETADAS (compra y venta)
     transacciones = Transaccion.objects.filter(estado='completada').order_by('-fecha_creacion')
 
-    # --- FILTROS (NO TOCO NADA) ---
+    # --- FILTROS  ---
     tipo = request.GET.get('tipo')
     if tipo in ['compra', 'venta']:
         transacciones = transacciones.filter(tipo_operacion=tipo)
