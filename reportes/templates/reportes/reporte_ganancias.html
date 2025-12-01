@@ -83,7 +83,7 @@
 
   <!-- FILTROS -->
   <section class="filter-section">
-    <h2 class="text-lg font-semibold mb-2">Filtrar flujo de ganancias</h2>
+    <h2 class="text-lg font-semibold mb-2">Filtros de Búsqueda</h2>
     <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
       <div>
         <label>Fecha Inicio</label>
@@ -94,17 +94,17 @@
         <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}">
       </div>
       <div>
-        <label>Tipo de operación</label>
+        <label>Tipo de Operación</label>
         <select name="tipo" onchange="this.form.submit()">
-          <option value="">-- Todos --</option>
+          <option value="">Ganancias Generales</option>
           <option value="venta" {% if request.GET.tipo == 'venta' %}selected{% endif %}>Venta de Divisa</option>
           <option value="compra" {% if request.GET.tipo == 'compra' %}selected{% endif %}>Compra de Divisa</option>
         </select>
       </div>
       <div>
-        <label>Moneda</label>
+        <label>Moneda Operada</label>
         <select name="moneda" onchange="this.form.submit()">
-          <option value="">-- Todas --</option>
+          <option value="">Todas las monedas</option>
           {% for m in monedas %}
             {% if m.codigo != "PYG" %}
               <option value="{{ m.codigo }}" {% if request.GET.moneda == m.codigo %}selected{% endif %}>
@@ -119,7 +119,7 @@
         <input type="text" name="cliente" value="{{ request.GET.cliente }}" placeholder="Nombre cliente">
       </div>
       <div class="flex space-x-2">
-        <button type="submit" class="btn-primary">Filtrar</button>
+        <button type="submit" class="btn-primary">Aplicar</button>
         <a href="{% url 'reportes:reporte_ganancias' %}" class="btn-secondary">Limpiar</a>
       </div>
     </form>
@@ -207,7 +207,7 @@
           <td class="text-right">{{ t.tasa_cambio_aplicada|floatformat:0|format_miles }}</td>
           <td class="text-right">{{ t.monto_destino|floatformat:0|format_miles }}</td>
           <td class="text-right">{{ t.comision_aplicada|floatformat:0|format_miles }}</td>
-          <<td class="text-right {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ t.ganancia|floatformat:0|format_miles }}</td>
+          <td class="text-right {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ t.ganancia|floatformat:0|format_miles }}</td>
           <td>{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
         </tr>
         {% empty %}

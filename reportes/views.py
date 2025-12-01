@@ -53,20 +53,23 @@ def reporte_ganancias(request):
             Q(moneda_origen__codigo=moneda) | Q(moneda_destino__codigo=moneda)
         )
 
-    fecha_desde = request.GET.get('desde')
-    fecha_hasta = request.GET.get('hasta')
+    fecha_desde = request.GET.get('fecha_inicio')
+    fecha_hasta = request.GET.get('fecha_fin')
 
     if fecha_desde:
         transacciones = transacciones.filter(fecha_creacion__date__gte=fecha_desde)
 
     if fecha_hasta:
         transacciones = transacciones.filter(fecha_creacion__date__lte=fecha_hasta)
-
+    cliente = request.GET.get('cliente')
+    if cliente:
+        transacciones = transacciones.filter(cliente__nombre__icontains=cliente)
     # --- CÁLCULOS ---
     total_ventas = Decimal('0')
     total_compras = Decimal('0')
     total_general = Decimal('0')
 
+   # dentro del loop de cálculo de ganancias
     for t in transacciones:
         try:
             registro = RegistroGanancia.objects.get(transaccion=t)
@@ -75,6 +78,7 @@ def reporte_ganancias(request):
             ganancia = Decimal('0')
 
         t.ganancia = ganancia  # se muestra luego en tabla
+        t.ganancia_negativa = ganancia < 0  # <-- nueva variable para template
 
         if t.tipo_operacion == "venta":
             total_ventas += ganancia
@@ -83,14 +87,15 @@ def reporte_ganancias(request):
 
         total_general += ganancia
 
+
     # -----------------------------
-    # 📌 PAGINACIÓN (AGREGADO)
+    # 📌 PAGINACIÓN 
     # -----------------------------
     paginator = Paginator(transacciones, 20)  # ← 20 items por página
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # 🔥 Importantísimo: reemplaza transacciones por page_obj
+    # 
     # -----------------------------
 
     context = {
