@@ -496,8 +496,8 @@ def reporte_transacciones_pdf(request):
             str(t.cliente),
             t.get_tipo_operacion_display(),
             moneda_codigo,
-            f"{t.monto_origen:,.2f}",
-            f"{t.monto_destino:,.2f}",
+            f"{t.monto_origen:,.0f}",
+            f"{t.monto_destino:,.0f}",
             t.get_estado_display(),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M")
         ])

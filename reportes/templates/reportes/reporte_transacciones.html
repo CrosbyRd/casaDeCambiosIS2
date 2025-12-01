@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Reporte de Transacciones{% endblock %}
-
+{% load format_miles %}
 {% block content %}
 <main class="max-w-7xl mx-auto p-8">
  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -134,8 +134,8 @@
             {{ t.moneda_destino.codigo }}
           {% endif %}
         </td>
-        <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:2 }}</td>
-        <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:2 }}</td>
+        <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:0 |format_miles  }}</td>
+        <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:0 |format_miles }}</td>
         <td class="px-4 py-2">{{ t.get_estado_display_dinamico }}</td>
         <td class="px-4 py-2">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
       </tr>
