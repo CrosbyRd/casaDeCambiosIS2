@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Reporte de Ganancias{% endblock %}
-
+{% load format_miles %}
 {% block content %}
 <main class="max-w-7xl mx-auto p-8">
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -101,20 +101,20 @@
     <div class="bg-gradient-to-b from-green-50 to-white shadow rounded-lg p-4 text-center border border-green-200">
       <p class="text-gray-500">Total General</p>
       <p class="text-xl font-bold {% if total_ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">
-        {{ total_ganancia|floatformat:0 }} Gs
+        {{ total_ganancia|floatformat:0|format_miles}} Gs
       </p>
       <p class="text-xs text-gray-400">Balance neto del flujo global</p>
     </div>
 
     <div class="bg-gradient-to-b from-blue-50 to-white shadow rounded-lg p-4 text-center border border-blue-200">
       <p class="text-gray-500">Total Ventas</p>
-      <p class="text-xl font-bold text-green-600">{{ total_ventas|floatformat:0 }} Gs</p>
+      <p class="text-xl font-bold text-green-600">{{ total_ventas|floatformat:0 |format_miles}} Gs</p>
       <p class="text-xs text-gray-400">💰 Corriente de ingresos</p>
     </div>
 
     <div class="bg-gradient-to-b from-red-50 to-white shadow rounded-lg p-4 text-center border border-red-200">
       <p class="text-gray-500">Total Compras</p>
-      <p class="text-xl font-bold text-red-600">{{ total_compras|floatformat:0 }} Gs</p>
+      <p class="text-xl font-bold text-red-600">{{ total_compras|floatformat:0|format_miles }} Gs</p>
       <p class="text-xs text-gray-400">🛒 Corriente de egresos</p>
     </div>
   </section>
@@ -156,7 +156,7 @@
             {% endif %}
           </td>
 
-          <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:0 }}</td>
+          <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:0|format_miles }}</td>
 
           <td class="px-4 py-2 text-right">
             {% if t.tipo_operacion == 'venta' %}
@@ -166,13 +166,13 @@
             {% endif %}
           </td>
 
-          <td class="px-4 py-2 text-right">{{ t.tasa_cambio_aplicada|floatformat:0 }}</td>
+          <td class="px-4 py-2 text-right">{{ t.tasa_cambio_aplicada|floatformat:0 |format_miles}}</td>
 
-          <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:0 }}</td>
-          <td class="px-4 py-2 text-right">{{ t.comision_aplicada|floatformat:0 }}</td>
+          <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:0 |format_miles}}</td>
+          <td class="px-4 py-2 text-right">{{ t.comision_aplicada|floatformat:0 |format_miles}}</td>
 
           <td class="px-4 py-2 text-right {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">
-            {{ t.ganancia|floatformat:0 }}
+            {{ t.ganancia|floatformat:0 |format_miles}}
           </td>
 
           <td class="px-4 py-2">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
