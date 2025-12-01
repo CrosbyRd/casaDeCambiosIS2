@@ -644,7 +644,14 @@
                     <div id="selector-medio-acreditacion-existente">
                         <div style="display: flex; align-items: center;">
                             <div style="flex-grow: 1;">
-                                {{ form.medio_acreditacion }}
+                                <select name="{{ form.medio_acreditacion.html_name }}" id="{{ form.medio_acreditacion.id_for_label }}" class="styled-input">
+                                    <option value="">--- Seleccione un medio de acreditación ---</option>
+                                    {% for value, label in form.medio_acreditacion.field.choices %}
+                                        {% if value %} {# Excluir la opción vacía que ya agregamos manualmente #}
+                                            <option value="{{ value }}"{% if value == form.medio_acreditacion.value|stringformat:"s" %} selected{% endif %}>{{ label }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
                             </div>
                              <button type="button" id="btn-mostrar-form-acreditacion" class="add-link">
                                 + Nuevo

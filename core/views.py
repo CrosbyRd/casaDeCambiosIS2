@@ -185,23 +185,57 @@ def iniciar_operacion(request):
 
     # Validar que existan medios si es necesario (para el flujo inicial)
     if initial_data.get('tipo_operacion') == 'venta' and not medios_pago_cliente.exists():
-        # No redirigir aquí, sino mostrar el formulario de creación de medio
         messages.info(request, "Necesitas tener al menos un medio de pago creado para realizar una venta. Por favor, crea uno.")
-        # Ajustamos initial_data para que el selector de medio de pago muestre "nuevo"
         initial_data['medio_pago'] = 'nuevo'
     
     if initial_data.get('tipo_operacion') == 'compra' and not medios_acreditacion_cliente.exists():
-        # No redirigir aquí, sino mostrar el formulario de creación de medio
         messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra. Por favor, crea uno.")
-        # Ajustamos initial_data para que el selector de medio de acreditación muestre "nuevo"
         initial_data['medio_acreditacion'] = 'nuevo'
-
 
     # Inicializar formularios
     form = OperacionForm(request.POST or initial_data, cliente=cliente)
     # Importante: usar prefijos para los formularios anidados
     medio_pago_form = MedioPagoClienteInOperacionForm(request.POST or None, user=request.user, prefix='new_mp')
-    medio_acreditacion_form = MedioAcreditacionClienteInOperacionForm(request.POST or None, user=request.user, prefix='new_ma')
+    
+    # Lógica para preseleccionar el tipo en el formulario anidado si ya hay una selección
+    tipo_medio_acreditacion_id_para_form_anidado = None
+    if request.POST.get('new_ma-tipo'): # Si el tipo ya se envió en el POST (ej. al cambiar el select de tipo)
+        tipo_medio_acreditacion_id_para_form_anidado = request.POST.get('new_ma-tipo')
+    elif initial_data.get('medio_acreditacion') == 'nuevo' and request.POST.get('new_ma-tipo'):
+        # Si se vino de una redirección después de crear uno y se seleccionó "nuevo", pero el tipo específico ya se envió.
+        tipo_medio_acreditacion_id_para_form_anidado = request.POST.get('new_ma-tipo')
+    elif initial_data.get('medio_acreditacion') == 'nuevo' and not request.POST.get('new_ma-tipo'):
+        # Si se seleccionó "nuevo" pero aún no se ha elegido un tipo específico.
+        # En este caso, no pre-inicializamos el tipo, dejamos que el formulario se construya con el valor por defecto o vacío.
+        pass
+    
+    medio_acreditacion_form = MedioAcreditacionClienteInOperacionForm(
+        request.POST or None, 
+        user=request.user, 
+        prefix='new_ma',
+        initial={'tipo': tipo_medio_acreditacion_id_para_form_anidado} if tipo_medio_acreditacion_id_para_form_anidado else {}
+    )
+
+    # Asegurarse de que el select de medio_acreditacion no tenga una opción preseleccionada si no hay valor
+    # Esta lógica es importante para el select principal (form.medio_acreditacion)
+    if not form.data.get('medio_acreditacion') and not initial_data.get('medio_acreditacion'):
+        # Si el usuario NO seleccionó "nuevo" y tampoco hay un medio existente en data o initial
+        if form.fields['medio_acreditacion'].choices: # si hay opciones
+            # Insertar una opción vacía al principio si no hay selección
+            form.fields['medio_acreditacion'].choices = [('', '--- Seleccione un medio de acreditación ---')] + list(form.fields['medio_acreditacion'].choices)
+        else:
+            form.fields['medio_acreditacion'].choices = [('', '--- No hay medios de acreditación disponibles ---')]
+        form.initial['medio_acreditacion'] = '' # Asegurar que el valor inicial sea vacío
+    elif form.data.get('medio_acreditacion') == 'nuevo' or initial_data.get('medio_acreditacion') == 'nuevo':
+        # Si se seleccionó 'nuevo' en el formulario principal, necesitamos asegurarnos de que el select muestre esa opción.
+        # La plantilla ya lo maneja inyectando la opción "** Nuevo Medio **"
+        # y la vista debe asegurarse de que si el 'action_type' fue para actualizar el sub-form,
+        # entonces 'mostrar_form_acreditacion' sea True.
+        if form.fields['medio_acreditacion'].choices:
+             form.fields['medio_acreditacion'].choices = [('', '--- Seleccione un medio de acreditación ---')] + list(form.fields['medio_acreditacion'].choices)
+        else:
+            form.fields['medio_acreditacion'].choices = [('', '--- No hay medios de acreditación disponibles ---')]
+        form.initial['medio_acreditacion'] = 'nuevo' # Asegurar que el valor inicial sea 'nuevo'
 
     # Si es GET y ya se hizo una simulación, usar ese resultado
     if request.method == 'GET' and 'monto_recibido_simulacion' in initial_data:
@@ -277,6 +311,13 @@ def iniciar_operacion(request):
             if mostrar_form_acreditacion:
                 form.data['medio_acreditacion'] = 'nuevo'
 
+            # Reinstanciar los formularios con request.POST para asegurar que los campos dinámicos se generen
+            # correctamente al cambiar el tipo de medio en el formulario anidado.
+            if action_type == 'update_new_mp_form':
+                medio_pago_form = MedioPagoClienteInOperacionForm(request.POST, user=request.user, prefix='new_mp')
+            elif action_type == 'update_new_ma_form':
+                medio_acreditacion_form = MedioAcreditacionClienteInOperacionForm(request.POST, user=request.user, prefix='new_ma')
+                
             print(f"DEBUG: MedioPagoClienteInOperacionForm fields (action_type: {action_type}): {medio_pago_form.fields.keys()}")
             print(f"DEBUG: MedioAcreditacionClienteInOperacionForm fields (action_type: {action_type}): {medio_acreditacion_form.fields.keys()}")
 
@@ -343,12 +384,26 @@ def iniciar_operacion(request):
 
         if form.data.get('medio_acreditacion') == 'nuevo': # Si se eligió crear un nuevo medio de acreditación
             if medio_acreditacion_form.is_valid():
-                nuevo_medio_acreditacion_creado = medio_acreditacion_form.save(commit=False)
-                nuevo_medio_acreditacion_creado.cliente = cliente
-                nuevo_medio_acreditacion_creado.activo = True
-                nuevo_medio_acreditacion_creado.predeterminado = False # Asignar por defecto
-                nuevo_medio_acreditacion_creado.save()
-                messages.success(request, f"Medio de acreditación '{nuevo_medio_acreditacion_creado.alias}' creado exitosamente.")
+                try:
+                    nuevo_medio_acreditacion_creado = medio_acreditacion_form.save(commit=False)
+                    nuevo_medio_acreditacion_creado.cliente = cliente
+                    nuevo_medio_acreditacion_creado.activo = True
+                    nuevo_medio_acreditacion_creado.predeterminado = False # Asignar por defecto
+                    nuevo_medio_acreditacion_creado.save()
+                    messages.success(request, f"Medio de acreditación '{nuevo_medio_acreditacion_creado.alias}' creado exitosamente.")
+                except Exception as e:
+                    print(f"ERROR al guardar nuevo medio de acreditación: {e}")
+                    messages.error(request, f"Error al crear nuevo medio de acreditación: {e}")
+                    # Re-renderizar para mostrar el error específico de la base de datos
+                    return render(request, 'core/iniciar_operacion.html', {
+                        'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                        'medio_acreditacion_form': medio_acreditacion_form,
+                        'resultado_simulacion': resultado_simulacion,
+                        'limite_disponible': limite_disponible,
+                        'medios_pago_json': medios_pago_json,
+                        'medios_acreditacion_json': medios_acreditacion_json,
+                        'mostrar_form_acreditacion': True,
+                    })
                 
                 # Capturar los datos actuales de la simulación para la redirección
                 current_monto = request.GET.get('monto') or form.data.get('monto')
@@ -358,19 +413,23 @@ def iniciar_operacion(request):
                 current_modalidad_tasa = form.data.get('modalidad_tasa') # Capturar modalidad_tasa
 
                 # Preparar parámetros para la redirección GET
-                query_params = {
-                    'monto': current_monto,
-                    'moneda_origen': current_moneda_origen,
-                    'moneda_destino': current_moneda_destino,
-                    'tipo_operacion': current_tipo_operacion,
-                    'modalidad_tasa': current_modalidad_tasa, # Incluir modalidad_tasa
-                    'medio_acreditacion': str(nuevo_medio_acreditacion_creado.id_medio), # Seleccionar el nuevo medio
-                }
+                # Incluir todos los datos del formulario principal para mantener el estado
+                query_params = {k: v for k, v in form.data.items() if k not in ['csrfmiddlewaretoken', 'new_ma-tipo']}
+                
+                # Actualizar el medio_acreditacion con el ID del recién creado
+                query_params['medio_acreditacion'] = str(nuevo_medio_acreditacion_creado.id_medio)
+                
+                # Asegurar que el 'tipo' del medio de acreditación del nuevo form se mantenga en la URL
+                if request.POST.get('new_ma-tipo'):
+                    query_params['new_ma-tipo'] = request.POST.get('new_ma-tipo')
+
+
                 # Codificar y redirigir
                 redirect_url = f"{reverse('core:iniciar_operacion')}?{urlencode(query_params)}"
                 return redirect(redirect_url)
             else:
-                messages.error(request, "Error al crear nuevo medio de acreditación.")
+                print(f"Errores al crear nuevo medio de acreditación: {medio_acreditacion_form.errors}") # Línea de depuración
+                messages.error(request, "Error al crear nuevo medio de acreditación. Por favor, verifica los campos.")
                 return render(request, 'core/iniciar_operacion.html', {
                     'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
                     'medio_acreditacion_form': medio_acreditacion_form,
@@ -526,17 +585,28 @@ def iniciar_operacion(request):
                             return redirect('core:iniciar_operacion')
                 elif tipo_operacion == 'compra':
                     medio_acreditacion_id = operacion_data.get('medio_acreditacion_id')
+                    medio_acreditacion_obj = None # Inicializar a None
+
                     if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
                         try:
-                            # Similar al medio de pago, obtenemos la instancia del MedioAcreditacionCliente
-                            # y luego su alias y otros datos para buscar en ClientesMedioAcreditacion.
-                            ma_cliente = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                            ma_cliente_from_medios_acreditacion = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                            # Ahora buscamos la instancia correspondiente en clientes.MedioAcreditacion
+                            # Asumimos que podemos encontrarla por alias y por el cliente (request.user)
+                            # Si 'identificador' es un campo clave, lo incluiríamos también.
                             medio_acreditacion_obj = ClientesMedioAcreditacion.objects.filter(
-                                cliente=request.user, 
-                                alias=ma_cliente.alias
+                                cliente=request.user, # Usamos request.user porque el campo es ForeignKey(settings.AUTH_USER_MODEL)
+                                alias=ma_cliente_from_medios_acreditacion.alias
                             ).first()
+
+                            if not medio_acreditacion_obj:
+                                messages.warning(request, "No se encontró un medio de acreditación correspondiente en el perfil del cliente (clientes.MedioAcreditacion).")
+                                # Opcional: Podríamos crear uno nuevo aquí si la lógica de negocio lo permite
+                                # Pero por ahora, si no se encuentra, medio_acreditacion_obj permanecerá None.
                         except MedioAcreditacionCliente.DoesNotExist:
-                            messages.error(request, "El medio de acreditación ya no es válido.")
+                            messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (medios_acreditacion.MedioAcreditacionCliente no encontrado).")
+                            return redirect('core:iniciar_operacion')
+                        except Exception as e:
+                            messages.error(request, f"Error inesperado al buscar el medio de acreditación: {e}")
                             return redirect('core:iniciar_operacion')
                 
                 estado_inicial = 'pendiente_pago_cliente' if tipo_operacion == 'compra' else 'pendiente_confirmacion_pago'
@@ -556,7 +626,7 @@ def iniciar_operacion(request):
                     codigo_operacion_tauser=codigo_operacion_tauser,
                     modalidad_tasa=modalidad_tasa,
                     medio_pago_utilizado=medio_pago_obj,
-                    medio_acreditacion_cliente=medio_acreditacion_obj,
+                    medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
                     datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
                     datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
                 )
@@ -638,24 +708,31 @@ class VerificarOtpCompraFlotanteView(LoginRequiredMixin, View):
                 medio_acreditacion_para_transaccion = None
                 if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
                     try:
-                        # Primero obtenemos la instancia de MedioAcreditacionCliente
-                        medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
+                        ma_cliente_from_medios_acreditacion = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
                         
-                        # Luego, necesitamos obtener la instancia de clientes.MedioAcreditacion.
-                        from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion
-                        
-                        alias_cliente_ma = medio_acreditacion_cliente_obj.alias
-                        identificador_cliente_ma = medio_acreditacion_cliente_obj.datos.get('identificador', '')
+                        # Buscamos la instancia correspondiente en clientes.MedioAcreditacion
+                        # Asumimos que podemos encontrarla por alias y por el cliente (request.user)
+                        alias_cliente_ma = ma_cliente_from_medios_acreditacion.alias
+                        # Si hay un identificador u otro campo clave en datos, podemos usarlo también
+                        identificador_cliente_ma = ma_cliente_from_medios_acreditacion.datos.get('identificador', '')
 
-                        try:
-                            medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.get(
+                        # Importamos solo cuando sea necesario, para evitar conflictos de importación cíclica si no se usa
+                        from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion 
+
+                        medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.filter(
+                            cliente=request.user, # El cliente de clientes.MedioAcreditacion es el usuario autenticado
+                            alias=alias_cliente_ma
+                        ).first()
+
+                        if identificador_cliente_ma: # Si tenemos un identificador, lo usamos para ser más precisos
+                             medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.filter(
                                 cliente=request.user,
-                                identificador=identificador_cliente_ma,
-                                alias=alias_cliente_ma
-                            )
-                        except ClientesMedioAcreditacion.DoesNotExist:
-                            medio_acreditacion_para_transaccion = None
-                            messages.warning(request, "No se pudo vincular el medio de acreditación al cliente interno. La transacción continuará sin esta referencia directa.")
+                                alias=alias_cliente_ma,
+                                identificador=identificador_cliente_ma
+                            ).first()
+
+                        if not medio_acreditacion_para_transaccion:
+                            messages.warning(request, "No se pudo vincular el medio de acreditación al perfil del cliente. La transacción continuará sin esta referencia directa.")
                         
                     except MedioAcreditacionCliente.DoesNotExist:
                         messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (MedioAcreditacionCliente no encontrado).")

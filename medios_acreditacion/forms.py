@@ -96,13 +96,21 @@ class MedioAcreditacionClienteForm(forms.ModelForm):
         fields = ("tipo", "alias", "activo", "predeterminado")
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop("user", None)
+        user = kwargs.pop("user", None) # Capturar el usuario si se pasa
         super().__init__(*args, **kwargs)
 
         tipo_obj = None
-        raw_tipo = self.data.get("tipo") or (
-            self.initial.get("tipo") if isinstance(self.initial, dict) else None
-        )
+        raw_tipo = None
+
+        # Intentar obtener el tipo de los datos enviados (POST) primero, considerando el prefijo
+        if self.is_bound and self.prefix:
+            raw_tipo = self.data.get(f"{self.prefix}-tipo")
+        elif self.is_bound:
+            raw_tipo = self.data.get("tipo")
+        
+        # Si no se encontró en self.data, intentar en initial
+        if not raw_tipo:
+            raw_tipo = self.initial.get("tipo") if isinstance(self.initial, dict) else None
 
         if isinstance(raw_tipo, TipoMedioAcreditacion):
             tipo_obj = raw_tipo
@@ -196,7 +204,16 @@ class MedioAcreditacionClienteInOperacionForm(MedioAcreditacionClienteForm):
     """
     Formulario especializado para crear un MedioAcreditacionCliente desde la pasarela
     de `iniciar_operacion`. Hereda toda la lógica y campos del formulario base.
-    Actualmente no requiere modificaciones, pero se crea para permitir futuras
-    personalizaciones sin afectar el formulario original.
+    Se personaliza para ocultar campos administrativos y preestablecer valores.
     """
-    pass
+    class Meta(MedioAcreditacionClienteForm.Meta):
+        # Excluir 'activo' y 'predeterminado' ya que no deben ser manipulados por el usuario
+        # en este contexto de creación rápida. Sus valores se establecerán programáticamente.
+        exclude = ('activo', 'predeterminado',) 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asegurar que estos campos se preestablecen al crear la instancia
+        if self.instance and not self.instance.pk: # Solo para nuevas instancias
+            self.instance.activo = True
+            self.instance.predeterminado = False
