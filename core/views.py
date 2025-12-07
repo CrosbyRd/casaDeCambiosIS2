@@ -337,8 +337,12 @@ def iniciar_operacion(request):
         # Primero, procesar los formularios de nuevos medios si están activos
         nuevo_medio_pago_creado = None
         nuevo_medio_acreditacion_creado = None
+
+        # Lee el tipo de operación directamente del POST
+        tipo_operacion_post = form.data.get('tipo_operacion') or request.POST.get('tipo_operacion')
         
-        if form.data.get('medio_pago') == 'nuevo': # Si se eligió crear un nuevo medio de pago
+        # SOLO crear medios de pago cuando la operación es una VENTA
+        if tipo_operacion_post == 'venta' and form.data.get('medio_pago') == 'nuevo':
             if medio_pago_form.is_valid():
                 nuevo_medio_pago_creado = medio_pago_form.save(commit=False)
                 nuevo_medio_pago_creado.cliente = cliente
@@ -382,7 +386,8 @@ def iniciar_operacion(request):
                     'mostrar_form_pago': True, # Para que la plantilla sepa que debe mostrar el form de nuevo medio de pago
                 })
 
-        if form.data.get('medio_acreditacion') == 'nuevo': # Si se eligió crear un nuevo medio de acreditación
+            # SOLO crear medios de acreditación cuando la operación es una COMPRA
+        if tipo_operacion_post == 'compra' and form.data.get('medio_acreditacion') == 'nuevo':
             if medio_acreditacion_form.is_valid():
                 try:
                     nuevo_medio_acreditacion_creado = medio_acreditacion_form.save(commit=False)
