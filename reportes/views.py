@@ -163,7 +163,7 @@ def reporte_ganancias_pdf(request):
     elements.append(Spacer(1, 18))
 
     # Encabezado tabla
-    data = [["#", "Cliente", "Tipo", "Moneda","Tasa aplicada", "Monto", "Ganancia (Gs)", "Fecha"]]
+    data = [["#", "Cliente", "Tipo", "Moneda","Tasa aplicada", "Monto","Comisión", "Ganancia (Gs)", "Fecha"]]
 
     total_ventas = Decimal('0')
     total_compras = Decimal('0')
@@ -207,6 +207,7 @@ def reporte_ganancias_pdf(request):
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
             f"{Decimal(monto):,.0f}".replace(',', '.'),
+            f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
             f"{ganancia:,.0f}".replace(',', '.'),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
         ])
@@ -214,9 +215,9 @@ def reporte_ganancias_pdf(request):
     # ============================
     # TOTALES
     # ============================
-    data.append(["", "", "", "", "", "Total Ventas:", f"{total_ventas:,.0f}".replace(',', '.'), ""])
-    data.append(["", "", "", "", "", "Total Compras:", f"{total_compras:,.0f}".replace(',', '.'), ""])
-    data.append(["", "", "", "", "", "Total General:", f"{total_general:,.0f}".replace(',', '.'), ""])
+    data.append(["", "", "", "", "","", "Total Ventas:", f"{total_ventas:,.0f}".replace(',', '.'), ""])
+    data.append(["", "", "", "", "","", "Total Compras:", f"{total_compras:,.0f}".replace(',', '.'), ""])
+    data.append(["", "", "", "", "", "","Total General:", f"{total_general:,.0f}".replace(',', '.'), ""])
 
 
     table = Table(data, hAlign="CENTER")
@@ -265,7 +266,7 @@ def reporte_ganancias_excel(request):
     ws.title = "Reporte de Ganancias"
 
     ws.append(["N°", "Cliente", "Tipo Operación", "Moneda","Tasa aplicada",
-               "Monto", "Ganancia (Gs)", "Fecha"])
+               "Monto","Comisión", "Ganancia (Gs)", "Fecha"])
    
     # Estilos encabezado
     for cell in ws[1]:
@@ -322,6 +323,7 @@ def reporte_ganancias_excel(request):
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
             monto_excel,
+            f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
             ganancia_excel,
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
         ])
@@ -336,9 +338,9 @@ def reporte_ganancias_excel(request):
     # ==============================
     ws.append([])  # línea en blanco
 
-    ws.append(["", "", "", "", "Total Ventas", "", total_ventas])
-    ws.append(["", "", "", "", "Total Compras", "", total_compras])
-    ws.append(["", "", "", "", "Total General", "", total_general])
+    ws.append(["", "", "", "","","", "Total Ventas", total_ventas])
+    ws.append(["", "", "", "","","","Total Compras", total_compras])
+    ws.append(["", "", "", "","", "","Total General", total_general])
 
     fila_tv = ws.max_row - 2
     fila_tc = ws.max_row - 1
