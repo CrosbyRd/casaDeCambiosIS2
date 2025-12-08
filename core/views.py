@@ -612,25 +612,6 @@ def iniciar_operacion(request):
                 
                 estado_inicial = 'pendiente_pago_cliente' if tipo_operacion == 'compra' else 'pendiente_confirmacion_pago'
                 
-                transaccion = Transaccion.objects.create(
-                    cliente=cliente,
-                    usuario_operador=request.user,
-                    tipo_operacion=tipo_operacion,
-                    estado=estado_inicial,
-                    moneda_origen=moneda_origen_obj,
-                    monto_origen=Decimal(operacion_data['monto_origen']),
-                    moneda_destino=moneda_destino_obj,
-                    monto_destino=Decimal(operacion_data['monto_recibido']),
-                    tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
-                    comision_aplicada=Decimal(operacion_data['comision_aplicada']),
-                    comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
-                    codigo_operacion_tauser=codigo_operacion_tauser,
-                    modalidad_tasa=modalidad_tasa,
-                    medio_pago_utilizado=medio_pago_obj,
-                    medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
-                    datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
-                    datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
-                )
 
                 if tipo_operacion == 'compra' and modalidad_tasa == 'flotante':
                     # Guardar en sesión y redirigir a verificación OTP para compra flotante
@@ -641,6 +622,26 @@ def iniciar_operacion(request):
                     messages.error(request, "Modalidad de tasa inválida para operación de compra.")
                     return redirect('core:iniciar_operacion')
                 else: # tipo_operacion == 'venta'
+                    transaccion = Transaccion.objects.create(
+                        cliente=cliente,
+                        usuario_operador=request.user,
+                        tipo_operacion=tipo_operacion,
+                        estado=estado_inicial,
+                        moneda_origen=moneda_origen_obj,
+                        monto_origen=Decimal(operacion_data['monto_origen']),
+                        moneda_destino=moneda_destino_obj,
+                        monto_destino=Decimal(operacion_data['monto_recibido']),
+                        tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                        comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                        comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                        codigo_operacion_tauser=codigo_operacion_tauser,
+                        modalidad_tasa=modalidad_tasa,
+                        medio_pago_utilizado=medio_pago_obj,
+                        medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
+                        datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
+                        datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
+                    )
+
                     messages.info(request, "Operación de venta iniciada. Confirma el pago.")
                     return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
         else: # Si el formulario principal no es válido
