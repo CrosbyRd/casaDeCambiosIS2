@@ -352,7 +352,7 @@ def iniciar_operacion(request):
                 messages.success(request, f"Medio de pago '{nuevo_medio_pago_creado.alias}' creado exitosamente.")
                 # Actualizar el campo 'medio_pago' del formulario principal con la nueva instancia
                 nuevo_medio_pago_creado.save()
-                messages.success(request, f"Medio de pago '{nuevo_medio_pago_creado.alias}' creado exitosamente.")
+    
 
                 # Capturar los datos actuales de la simulación para la redirección
                 current_monto = request.GET.get('monto') or form.data.get('monto')
@@ -603,10 +603,6 @@ def iniciar_operacion(request):
                                 alias=ma_cliente_from_medios_acreditacion.alias
                             ).first()
 
-                            if not medio_acreditacion_obj:
-                                messages.warning(request, "No se encontró un medio de acreditación correspondiente en el perfil del cliente (clientes.MedioAcreditacion).")
-                                # Opcional: Podríamos crear uno nuevo aquí si la lógica de negocio lo permite
-                                # Pero por ahora, si no se encuentra, medio_acreditacion_obj permanecerá None.
                         except MedioAcreditacionCliente.DoesNotExist:
                             messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (medios_acreditacion.MedioAcreditacionCliente no encontrado).")
                             return redirect('core:iniciar_operacion')

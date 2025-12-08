@@ -79,7 +79,7 @@
         }
 
         .header-subtitle {
-            font-size: 15px;
+            font-size: 16px;
             opacity: 0.95;
             font-weight: 400;
             line-height: 1.6;
@@ -115,7 +115,7 @@
         }
 
         .code-label {
-            font-size: 14px;
+            font-size: 16px;
             margin-bottom: 12px;
             opacity: 0.9;
             font-weight: 500;
@@ -164,7 +164,7 @@
             padding: 16px;
             border-radius: 8px;
             margin-bottom: 24px;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.6;
             color: #1e40af;
             text-align: center;
@@ -180,7 +180,7 @@
             padding: 16px 24px;
             border: none;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -304,15 +304,9 @@
 
             <div class="actions">
                 <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-primary">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                    </svg>
                     {% translate "Ver Detalles de la Operación" %}
                 </a>
                 <a href="{% url 'core:historial_transacciones' %}" class="btn btn-secondary">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
-                    </svg>
                     {% translate "Ir al Historial de Transacciones" %}
                 </a>
             </div>
