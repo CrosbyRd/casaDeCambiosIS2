@@ -69,7 +69,8 @@ def reporte_ganancias(request):
     total_ventas = Decimal('0')
     total_compras = Decimal('0')
     total_general = Decimal('0')
-    total_clientes = transacciones.values('cliente').distinct().count()
+    total_transacciones = transacciones.count()
+
    # dentro del loop de cálculo de ganancias
     for t in transacciones:
         try:
@@ -107,7 +108,7 @@ def reporte_ganancias(request):
         'total_ventas': total_ventas,
         'total_compras': total_compras,
         'total_ganancia': total_general,
-        'total_clientes': total_clientes,
+        'total_transacciones': total_transacciones,
         'monedas': Moneda.objects.all().order_by('codigo'),
     }
 
@@ -328,7 +329,6 @@ def reporte_ganancias_excel(request):
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
             f"{Decimal(monto_excel):,.0f}".replace(',', '.'),
-         
             f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
             f"{Decimal(ganancia_excel):,.0f}".replace(',', '.'),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
@@ -500,7 +500,7 @@ def reporte_transacciones_pdf(request):
     elements.append(Paragraph("<b>Reporte de Transacciones - Global Exchange</b>", styles["Title"]))
     elements.append(Spacer(1, 12))
     elements.append(Paragraph(f"Generado por: {nombre_usuario}", styles["Normal"]))
-    elements.append(Paragraph(f"Fecha: {now().strftime('%d/%m/%Y %H:%M:%S')}", styles["Normal"]))
+    elements.append(Paragraph(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", styles["Normal"]))
     elements.append(Spacer(1, 18))
 
     data = [["N°", "Cliente", "Tipo", "Moneda", "Monto Origen", "Monto Destino", "Estado", "Fecha"]]
@@ -515,8 +515,8 @@ def reporte_transacciones_pdf(request):
             str(t.cliente),
             t.get_tipo_operacion_display(),
             moneda_codigo,
-            f"{t.monto_origen:,.0f}",
-            f"{t.monto_destino:,.0f}",
+            f"{Decimal(t.monto_origen):,.0f}".replace(',', '.'),
+            f"{Decimal(t.monto_destino):,.0f}".replace(',', '.'),
             t.get_estado_display(),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M")
         ])
@@ -611,8 +611,8 @@ def reporte_transacciones_excel(request):
             str(t.cliente),
             t.get_tipo_operacion_display(),
             moneda_codigo,
-            t.monto_origen,
-            t.monto_destino,
+            f"{Decimal(t.monto_origen):,.0f}".replace(',', '.'),
+            f"{Decimal(t.monto_destino):,.0f}".replace(',', '.'),
             t.get_estado_display(),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M")
         ])
