@@ -337,8 +337,12 @@ def iniciar_operacion(request):
         # Primero, procesar los formularios de nuevos medios si están activos
         nuevo_medio_pago_creado = None
         nuevo_medio_acreditacion_creado = None
+
+        # Lee el tipo de operación directamente del POST
+        tipo_operacion_post = form.data.get('tipo_operacion') or request.POST.get('tipo_operacion')
         
-        if form.data.get('medio_pago') == 'nuevo': # Si se eligió crear un nuevo medio de pago
+        # SOLO crear medios de pago cuando la operación es una VENTA
+        if tipo_operacion_post == 'venta' and form.data.get('medio_pago') == 'nuevo':
             if medio_pago_form.is_valid():
                 nuevo_medio_pago_creado = medio_pago_form.save(commit=False)
                 nuevo_medio_pago_creado.cliente = cliente
@@ -348,7 +352,7 @@ def iniciar_operacion(request):
                 messages.success(request, f"Medio de pago '{nuevo_medio_pago_creado.alias}' creado exitosamente.")
                 # Actualizar el campo 'medio_pago' del formulario principal con la nueva instancia
                 nuevo_medio_pago_creado.save()
-                messages.success(request, f"Medio de pago '{nuevo_medio_pago_creado.alias}' creado exitosamente.")
+    
 
                 # Capturar los datos actuales de la simulación para la redirección
                 current_monto = request.GET.get('monto') or form.data.get('monto')
@@ -382,7 +386,8 @@ def iniciar_operacion(request):
                     'mostrar_form_pago': True, # Para que la plantilla sepa que debe mostrar el form de nuevo medio de pago
                 })
 
-        if form.data.get('medio_acreditacion') == 'nuevo': # Si se eligió crear un nuevo medio de acreditación
+            # SOLO crear medios de acreditación cuando la operación es una COMPRA
+        if tipo_operacion_post == 'compra' and form.data.get('medio_acreditacion') == 'nuevo':
             if medio_acreditacion_form.is_valid():
                 try:
                     nuevo_medio_acreditacion_creado = medio_acreditacion_form.save(commit=False)
@@ -598,10 +603,6 @@ def iniciar_operacion(request):
                                 alias=ma_cliente_from_medios_acreditacion.alias
                             ).first()
 
-                            if not medio_acreditacion_obj:
-                                messages.warning(request, "No se encontró un medio de acreditación correspondiente en el perfil del cliente (clientes.MedioAcreditacion).")
-                                # Opcional: Podríamos crear uno nuevo aquí si la lógica de negocio lo permite
-                                # Pero por ahora, si no se encuentra, medio_acreditacion_obj permanecerá None.
                         except MedioAcreditacionCliente.DoesNotExist:
                             messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (medios_acreditacion.MedioAcreditacionCliente no encontrado).")
                             return redirect('core:iniciar_operacion')
@@ -611,25 +612,6 @@ def iniciar_operacion(request):
                 
                 estado_inicial = 'pendiente_pago_cliente' if tipo_operacion == 'compra' else 'pendiente_confirmacion_pago'
                 
-                transaccion = Transaccion.objects.create(
-                    cliente=cliente,
-                    usuario_operador=request.user,
-                    tipo_operacion=tipo_operacion,
-                    estado=estado_inicial,
-                    moneda_origen=moneda_origen_obj,
-                    monto_origen=Decimal(operacion_data['monto_origen']),
-                    moneda_destino=moneda_destino_obj,
-                    monto_destino=Decimal(operacion_data['monto_recibido']),
-                    tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
-                    comision_aplicada=Decimal(operacion_data['comision_aplicada']),
-                    comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
-                    codigo_operacion_tauser=codigo_operacion_tauser,
-                    modalidad_tasa=modalidad_tasa,
-                    medio_pago_utilizado=medio_pago_obj,
-                    medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
-                    datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
-                    datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
-                )
 
                 if tipo_operacion == 'compra' and modalidad_tasa == 'flotante':
                     # Guardar en sesión y redirigir a verificación OTP para compra flotante
@@ -640,6 +622,26 @@ def iniciar_operacion(request):
                     messages.error(request, "Modalidad de tasa inválida para operación de compra.")
                     return redirect('core:iniciar_operacion')
                 else: # tipo_operacion == 'venta'
+                    transaccion = Transaccion.objects.create(
+                        cliente=cliente,
+                        usuario_operador=request.user,
+                        tipo_operacion=tipo_operacion,
+                        estado=estado_inicial,
+                        moneda_origen=moneda_origen_obj,
+                        monto_origen=Decimal(operacion_data['monto_origen']),
+                        moneda_destino=moneda_destino_obj,
+                        monto_destino=Decimal(operacion_data['monto_recibido']),
+                        tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                        comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                        comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                        codigo_operacion_tauser=codigo_operacion_tauser,
+                        modalidad_tasa=modalidad_tasa,
+                        medio_pago_utilizado=medio_pago_obj,
+                        medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
+                        datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
+                        datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
+                    )
+
                     messages.info(request, "Operación de venta iniciada. Confirma el pago.")
                     return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
         else: # Si el formulario principal no es válido

@@ -67,7 +67,7 @@
         }
 
         .header-subtitle {
-            font-size: 15px;
+            font-size: 16px;
             opacity: 0.95;
             font-weight: 400;
             line-height: 1.6;
@@ -88,7 +88,7 @@
             background: #f8f6ff;
             border-radius: 8px;
             margin-bottom: 24px;
-            font-size: 13px;
+            font-size: 15px;
             color: #6b4fc3;
             font-weight: 500;
         }
@@ -150,14 +150,14 @@
         }
 
         .detail-label {
-            font-size: 14px;
+            font-size: 15px;
             color: #666;
             font-weight: 500;
             flex: 1;
         }
 
         .detail-value {
-            font-size: 14px;
+            font-size: 15px;
             color: #1a1a1a;
             font-weight: 600;
             text-align: right;
@@ -190,13 +190,13 @@
         }
 
         .rate-label {
-            font-size: 15px;
+            font-size: 17px;
             color: #065f46;
             font-weight: 600;
         }
 
         .rate-value {
-            font-size: 24px;
+            font-size: 20px;
             color: #059669;
             font-weight: 700;
             letter-spacing: -0.5px;
@@ -207,24 +207,30 @@
             border-left: 4px solid #3b82f6;
             padding: 14px 16px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 15px;
             color: #1e40af;
             line-height: 1.6;
             margin-top: 16px;
         }
 
-        .actions { 
+        .actions {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 16px;
+
+            align-items: center;   /* <<< centra los botones */
+        }
+
+        .actions .btn {
+            width: 100%;   /* <<< ya no ocupa el 100% */
         }
 
         .btn { 
             padding: 16px 24px;
             border: none;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -357,6 +363,12 @@
             transform: translateY(-2px);
         }
 
+        .current-rate-section {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -437,14 +449,21 @@
                     <span class="detail-label">Tipo de Operación</span>
                     <span class="detail-value">{{ transaccion.get_tipo_operacion_display }}</span>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Monto a Pagar</span>
-                    <span class="detail-value" id="montoPagar">{{ transaccion.monto_origen|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Monto a Recibir (Estimado)</span>
-                    <span class="detail-value" id="montoRecibir">{{ transaccion.monto_destino|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</span>
-                </div>
+                
+            <div class="detail-row">
+                <span class="detail-label">Monto a Pagar</span>
+                <span class="detail-value" id="montoPagar">
+                    {{ monto_origen_actual|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Monto a Recibir (Estimado)</span>
+                <span class="detail-value" id="montoRecibir">
+                    {{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}
+                </span>
+            </div>
+
                 <div class="detail-row">
                     <span class="detail-label">Tasa Indicativa Inicial</span>
                     <span class="detail-value" id="tasaInicial">{{ transaccion.tasa_cambio_aplicada|floatformat:4 }}</span>
@@ -543,9 +562,139 @@
             formatearElemento('tasaInicial');
             formatearElemento('tasaActual');
             formatearElemento('montoFinal', true);
+
+            
+            // Agregar código de moneda a la Tasa Indicativa Inicial
+            const tasaInicialEl = document.getElementById('tasaInicial');
+            if (tasaInicialEl) {
+                tasaInicialEl.textContent = tasaInicialEl.textContent + ' PYG';
+            }
+
+            // Agregar código de moneda a la Tasa de Mercado Actual
+            const tasaActualEl = document.getElementById('tasaActual');
+            if (tasaActualEl) {
+                tasaActualEl.textContent = tasaActualEl.textContent + ' PYG';
+            }
+
+
         });
 
+
+        // Actualizar visualmente tasa, montos y "Monto a Pagar"
+        function actualizarResumenMontos(noti) {
+            const tasaActualEl  = document.getElementById('tasaActual');
+            const montoFinalEl  = document.getElementById('montoFinal');
+            const montoPagarEl  = document.getElementById('montoPagar');
+
+            // 1) Actualizar TASA ACTUAL si viene en el JSON
+            if (noti.tasa_actual && tasaActualEl) {
+                const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                if (!isNaN(tasaNum)) {
+                    tasaActualEl.textContent = formatearNumero(tasaNum) + ' PYG';
+                }
+            }
+
+            // 2) Actualizar MONTO FINAL A RECIBIR si viene en el JSON
+            if (noti.monto_destino_actual && montoFinalEl) {
+                const partesDestino = montoFinalEl.textContent.trim().split(' ');
+                const monedaDestino = partesDestino.slice(1).join(' ') || '{{ transaccion.moneda_destino.codigo }}';
+
+                const montoDestinoNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                if (!isNaN(montoDestinoNum)) {
+                    montoFinalEl.textContent = formatearNumero(montoDestinoNum) + ' ' + monedaDestino;
+                }
+            }
+
+            // 3) Calcular/actualizar MONTO A PAGAR
+            let montoOrigenNum = null;
+
+            // a) Si el backend ya envía el monto actualizado, lo usamos directo
+            if (noti.monto_origen_actual) {
+                const n = parseFloat(String(noti.monto_origen_actual).replace(',', '.'));
+                if (!isNaN(n)) {
+                    montoOrigenNum = n;
+                }
+            }
+
+            // b) Si no viene, lo calculamos como tasa_actual * monto_final
+            if (montoOrigenNum === null && tasaActualEl && montoFinalEl) {
+                const txtTasa   = tasaActualEl.textContent.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+                const txtDestino= montoFinalEl.textContent.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+                const tasaNum   = parseFloat(txtTasa);
+                const destNum   = parseFloat(txtDestino);
+                if (!isNaN(tasaNum) && !isNaN(destNum)) {
+                    montoOrigenNum = Math.round(tasaNum * destNum); // redondeamos a entero PYG
+                }
+            }
+
+            // c) Pintar el "Monto a Pagar" con formateo y moneda original
+            if (montoPagarEl && montoOrigenNum !== null) {
+                const partesOrigen = montoPagarEl.textContent.trim().split(' ');
+                const monedaOrigen = partesOrigen.slice(1).join(' ') || '{{ transaccion.moneda_origen.codigo }}';
+                montoPagarEl.textContent = formatearNumero(montoOrigenNum) + ' ' + monedaOrigen;
+            }
+        }
+
+
+        function actualizarMontosDesdeNotificacion(noti) {
+            const tasaActualEl = document.getElementById('tasaActual');
+            const montoFinalEl = document.getElementById('montoFinal');
+            const montoPagarEl = document.getElementById('montoPagar');
+
+            // 1) Actualizar TASA DE MERCADO ACTUAL (si viene del backend)
+            if (noti.tasa_actual && tasaActualEl) {
+                const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                if (!isNaN(tasaNum)) {
+                    tasaActualEl.textContent = formatearNumero(tasaNum) + ' PYG';
+                }
+            }
+
+            // 2) Actualizar MONTO FINAL A RECIBIR (si viene del backend)
+            if (noti.monto_destino_actual && montoFinalEl) {
+                const partesDestino = montoFinalEl.textContent.trim().split(' ');
+                const monedaDestino = partesDestino.slice(1).join(' ') || '{{ transaccion.moneda_destino.codigo }}';
+
+                const montoDestinoNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                if (!isNaN(montoDestinoNum)) {
+                    montoFinalEl.textContent = formatearNumero(montoDestinoNum) + ' ' + monedaDestino;
+                }
+            }
+
+            // 3) Actualizar MONTO A PAGAR
+            if (montoPagarEl) {
+                const partesOrigen = montoPagarEl.textContent.trim().split(' ');
+                const monedaOrigen = partesOrigen.slice(1).join(' ') || '{{ transaccion.moneda_origen.codigo }}';
+
+                let montoOrigenNum = null;
+
+                // a) Si el backend ya manda el monto actualizado, lo usamos directo
+                if (noti.monto_origen_actual) {
+                    const n = parseFloat(String(noti.monto_origen_actual).replace(',', '.'));
+                    if (!isNaN(n)) {
+                        montoOrigenNum = n;
+                    }
+                } else {
+                    // b) Como respaldo: tasa_actual * monto_destino_actual
+                    if (noti.tasa_actual && noti.monto_destino_actual) {
+                        const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                        const destNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                        if (!isNaN(tasaNum) && !isNaN(destNum)) {
+                            // PYG entero
+                            montoOrigenNum = Math.round(tasaNum * destNum);
+                        }
+                    }
+                }
+
+                if (montoOrigenNum !== null) {
+                    montoPagarEl.textContent = formatearNumero(montoOrigenNum) + ' ' + monedaOrigen;
+                }
+            }
+        }
+
         function mostrarPopup(noti) {
+            // 🔹 NUEVO: actualizar montos en la UI cuando llega la notificación
+            actualizarMontosDesdeNotificacion(noti);
+
             const popup = document.getElementById('popupNotificacion');
             const contenido = document.getElementById('contenidoNotificaciones');
             contenido.innerHTML = `<p>${noti.mensaje}</p>`;
@@ -587,6 +736,9 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.mensaje) {
+                        // 🔁 Actualizar tasa, montos y "Monto a Pagar" en la UI
+                        actualizarResumenMontos(data);
+                        // Mostrar el popup como siempre
                         mostrarPopup(data);
                     }
                 })

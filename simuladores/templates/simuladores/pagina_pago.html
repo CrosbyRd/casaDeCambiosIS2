@@ -57,14 +57,14 @@
         }
 
         h1 { 
-            font-size: 24px;
+            font-size: 27px;
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.5px;
         }
 
         .header-subtitle {
-            font-size: 14px;
+            font-size: 16px;
             opacity: 0.9;
             font-weight: 400;
         }
@@ -82,7 +82,7 @@
             background: #f8f6ff;
             border-radius: 8px;
             margin-bottom: 24px;
-            font-size: 13px;
+            font-size: 15px;
             color: #6b4fc3;
             font-weight: 500;
         }
@@ -123,14 +123,14 @@
         }
 
         .detail-label {
-            font-size: 14px;
+            font-size: 15px;
             color: #666;
             font-weight: 500;
             flex: 1;
         }
 
         .detail-value {
-            font-size: 14px;
+            font-size: 15px;
             color: #1a1a1a;
             font-weight: 600;
             text-align: right;
@@ -170,7 +170,7 @@
         }
 
         .payment-method-title {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 600;
             color: #1a1a1a;
             margin-bottom: 16px;
@@ -194,7 +194,7 @@
         .payment-method-row {
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
+            font-size: 15px;
         }
 
         .payment-method-row strong {
@@ -218,7 +218,7 @@
             padding: 16px 24px;
             border: none;
             border-radius: 10px;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
@@ -279,7 +279,7 @@
             display: inline-block;
             padding: 6px 12px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -393,7 +393,7 @@
                     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
                     </svg>
-                    Conexión segura y encriptada
+                    Transacción segura y encriptada
                 </div>
 
                 <div class="amount-highlight">
@@ -418,15 +418,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Tasa de Cambio</span>
-                        <span class="detail-value" id="tasaCambio">{{ transaccion.tasa_cambio_aplicada }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Comisión</span>
-                        <span class="detail-value" id="comision">{{ transaccion.comision_aplicada }} PYG</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Referencia</span>
-                        <span class="detail-value">{{ pago.referencia_comercio }}</span>
+                        <span class="detail-value" id="tasaCambio">{{ transaccion.tasa_cambio_aplicada }}  </span>
                     </div>
                 </div>
 
@@ -537,7 +529,7 @@
             const tasaCambio = document.getElementById('tasaCambio');
             if (tasaCambio) {
                 const numero = parseFloat(tasaCambio.textContent.trim());
-                tasaCambio.textContent = formatearNumero(numero);
+                tasaCambio.textContent = formatearNumero(numero) + ' PYG';
             }
 
             // Formatear comisión
