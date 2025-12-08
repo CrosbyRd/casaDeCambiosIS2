@@ -17,7 +17,7 @@ from django.shortcuts import render
 from decimal import Decimal
 from django.template.defaultfilters import floatformat
 from django.utils.formats import number_format
-
+from openpyxl.utils import get_column_letter
 # =========================
 # PANEL PRINCIPAL DE REPORTES
 # =========================
@@ -349,6 +349,20 @@ def reporte_ganancias_excel(request):
     ws[f"G{fila_tv}"].number_format = '#,##0'
     ws[f"G{fila_tc}"].number_format = '#,##0'
     ws[f"G{fila_tg}"].number_format = '#,##0'
+    # Ajustar automáticamente ancho de columnas
+    for column_cells in ws.columns:
+        max_length = 0
+        column = column_cells[0].column_letter  # Obtener letra de la columna
+        for cell in column_cells:
+            try:
+                # Convertir el valor a string y medir su longitud
+                cell_length = len(str(cell.value))
+                if cell_length > max_length:
+                    max_length = cell_length
+            except:
+                pass
+        adjusted_width = (max_length + 2)  # +2 para un poco de espacio extra
+        ws.column_dimensions[column].width = adjusted_width
 
     # ==============================
     # EXPORTAR
