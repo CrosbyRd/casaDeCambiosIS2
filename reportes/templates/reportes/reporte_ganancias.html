@@ -167,17 +167,16 @@
   </div>
 
   <!-- TABLA -->
-  <div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-100">
-    <table>
+<div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-100">
+    <table class="min-w-full">
       <thead>
         <tr>
           <th>#</th>
           <th>Cliente</th>
-          <th>Tipo</th>
-          <th>Monto Origen</th>
+          <th>Tipo</th> 
           <th>Moneda</th>
           <th>Tasa aplicada</th>
-          <th>Monto Destino</th>
+          <th>Monto</th>
           <th>Comisión</th>
           <th>Ganancia (PYG)</th>
           <th>Fecha</th>
@@ -195,19 +194,23 @@
               <span class="text-red-700 font-semibold">Compra</span>
             {% endif %}
           </td>
-          <td class="text-right">{{ t.monto_origen|floatformat:0|format_miles }}</td>
-          <td>
+          <td class="text-center">
             {% if t.tipo_operacion == "venta" %}
               {{ t.moneda_destino.codigo }}
             {% else %}
               {{ t.moneda_origen.codigo }}
             {% endif %}
           </td>
-
-          <td class="text-right">{{ t.tasa_cambio_aplicada|floatformat:0|format_miles }}</td>
-          <td class="text-right">{{ t.monto_destino|floatformat:0|format_miles }}</td>
-          <td class="text-right">{{ t.comision_aplicada|floatformat:0|format_miles }}</td>
-          <td class="text-right {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ t.ganancia|floatformat:0|format_miles }}</td>
+          <td class="text-center">{{ t.tasa_cambio_aplicada|floatformat:0|format_miles }}</td>
+          <td class="text-center">
+            {% if t.tipo_operacion == "venta" %}
+              {{  t.monto_destino|floatformat:0|format_miles }} 
+            {% else %}
+              {{ t.monto_origen|floatformat:0|format_miles }}
+            {% endif %}
+          </td>
+          <td class="text-center">{{ t.comision_final|floatformat:0|format_miles }}</td>
+          <td class="text-center {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ t.ganancia|floatformat:0|format_miles }}</td>
           <td>{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
         </tr>
         {% empty %}
