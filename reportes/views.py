@@ -17,7 +17,8 @@ from django.shortcuts import render
 from decimal import Decimal
 from django.template.defaultfilters import floatformat
 from django.utils.formats import number_format
-from openpyxl.utils import get_column_letter
+
+
 # =========================
 # PANEL PRINCIPAL DE REPORTES
 # =========================
@@ -68,7 +69,7 @@ def reporte_ganancias(request):
     total_ventas = Decimal('0')
     total_compras = Decimal('0')
     total_general = Decimal('0')
-
+    total_clientes = transacciones.values('cliente').distinct().count()
    # dentro del loop de cálculo de ganancias
     for t in transacciones:
         try:
@@ -91,7 +92,7 @@ def reporte_ganancias(request):
     # -----------------------------
     # 📌 PAGINACIÓN 
     # -----------------------------
-    paginator = Paginator(transacciones, 20)  # ← 20 items por página
+    paginator = Paginator(transacciones, 10)  # ← 20 items por página
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -106,6 +107,7 @@ def reporte_ganancias(request):
         'total_ventas': total_ventas,
         'total_compras': total_compras,
         'total_ganancia': total_general,
+        'total_clientes': total_clientes,
         'monedas': Moneda.objects.all().order_by('codigo'),
     }
 
@@ -235,6 +237,8 @@ def reporte_ganancias_pdf(request):
 # =========================
 # REPORTE DE GANANCIAS EXCEL 
 # =========================
+from openpyxl.utils import get_column_letter
+
 @login_required
 def reporte_ganancias_excel(request):
 
@@ -261,108 +265,102 @@ def reporte_ganancias_excel(request):
             Q(moneda_destino__codigo=moneda)
         )
 
+    # --- Excel ---
     wb = Workbook()
     ws = wb.active
     ws.title = "Reporte de Ganancias"
 
-    ws.append(["N°", "Cliente", "Tipo Operación", "Moneda","Tasa aplicada",
-               "Monto","Comisión", "Ganancia (Gs)", "Fecha"])
-   
-    # Estilos encabezado
-    for cell in ws[1]:
+    # ==============================
+    # ENCABEZADO (como reporte transacciones)
+    # ==============================
+    ws.merge_cells('A1:I1')
+    ws['A1'] = "Reporte de Ganancias - Global Exchange"
+    ws['A1'].font = Font(size=14, bold=True)
+    ws['A1'].alignment = Alignment(horizontal='center')
+
+    user = request.user
+    nombre_usuario = getattr(user, "nombre", None) or getattr(user, "email", "Usuario desconocido")
+    ws['A3'] = f"Generado por: {nombre_usuario}"
+    ws['A4'] = f"Fecha: {now().strftime('%d/%m/%Y %H:%M:%S')}"
+    ws.append([])
+
+    # ==============================
+    # ENCABEZADO TABLA
+    # ==============================
+    headers = ["N°", "Cliente", "Tipo Operación", "Moneda","Tasa aplicada",
+               "Monto","Comisión", "Ganancia (Gs)", "Fecha"]
+    ws.append(headers)
+
+    # Estilo encabezado tabla
+    header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+    for cell in ws[ws.max_row]:
         cell.font = Font(bold=True)
         cell.alignment = Alignment(horizontal="center")
-        cell.fill = PatternFill("solid", fgColor="DDDDDD")
+        cell.fill = header_fill
 
+    
     total_ventas = Decimal('0')
     total_compras = Decimal('0')
     total_general = Decimal('0')
 
-    # ==============================
-    # RECORRER TRANSACCIONES
-    # ==============================
     for idx, t in enumerate(transacciones, start=1):
-
-        # Intentar recuperar la ganancia registrada
         try:
             registro = RegistroGanancia.objects.get(transaccion=t)
             ganancia = registro.ganancia_registrada
         except RegistroGanancia.DoesNotExist:
             ganancia = Decimal('0')
-        # Moneda mostrada
-        moneda_codigo = (
-            t.moneda_destino.codigo if t.tipo_operacion == "venta"
-            else t.moneda_origen.codigo
-        )
 
-        # Monto mostrado
-        monto = (
-            t.monto_destino if t.tipo_operacion == "venta"
-            else t.monto_origen
-        )
-
-        # ============================
-        # Redondeo a 0 decimales
-        # ============================
+        moneda_codigo = t.moneda_destino.codigo if t.tipo_operacion == "venta" else t.moneda_origen.codigo
+        monto = t.monto_destino if t.tipo_operacion == "venta" else t.monto_origen
         monto_excel = Decimal(monto).quantize(Decimal("1"))
         ganancia_excel = Decimal(ganancia).quantize(Decimal("1"))
 
-        # Acumular totales
         if t.tipo_operacion == "venta":
             total_ventas += ganancia_excel
         else:
             total_compras += ganancia_excel
-
         total_general += ganancia_excel
 
-        # Agregar fila al Excel
         ws.append([
             idx,
             str(t.cliente),
             t.get_tipo_operacion_display(),
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
-            monto_excel,
+            f"{Decimal(monto_excel):,.0f}".replace(',', '.'),
+         
             f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
-            ganancia_excel,
+            f"{Decimal(ganancia_excel):,.0f}".replace(',', '.'),
             t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
         ])
 
-        # Formato numérico con separador de miles
-        fila = ws.max_row
-        ws[f"F{fila}"].number_format = '#,##0'
-        ws[f"G{fila}"].number_format = '#,##0'
+    # ==============================
+    # TOTALES
+    # ==============================
+    ws.append([])
+    ws.append(["", "", "", "","","", "Total Ventas", f"{total_ventas:,.0f}".replace(',', '.')])
+    ws.append(["", "", "", "","","","Total Compras", f"{total_compras:,.0f}".replace(',', '.')])
+    ws.append(["", "", "", "","", "","Total General", f"{total_general:,.0f}".replace(',', '.')])
 
     # ==============================
-    #           TOTALES
+    # AJUSTE DE ANCHO DE COLUMNAS
     # ==============================
-    ws.append([])  # línea en blanco
-
-    ws.append(["", "", "", "","","", "Total Ventas", total_ventas])
-    ws.append(["", "", "", "","","","Total Compras", total_compras])
-    ws.append(["", "", "", "","", "","Total General", total_general])
-
-    fila_tv = ws.max_row - 2
-    fila_tc = ws.max_row - 1
-    fila_tg = ws.max_row
-
-    ws[f"G{fila_tv}"].number_format = '#,##0'
-    ws[f"G{fila_tc}"].number_format = '#,##0'
-    ws[f"G{fila_tg}"].number_format = '#,##0'
-    # Ajustar automáticamente ancho de columnas
-    for column_cells in ws.columns:
+  # Ajustar automáticamente ancho de columnas
+    for i, column_cells in enumerate(ws.columns, 1):
+        column_letter = get_column_letter(i)
+        if i == 1:  # Columna N°
+            ws.column_dimensions[column_letter].width = 5  # ancho fijo para N°
+            continue
         max_length = 0
-        column = column_cells[0].column_letter  # Obtener letra de la columna
         for cell in column_cells:
             try:
-                # Convertir el valor a string y medir su longitud
-                cell_length = len(str(cell.value))
-                if cell_length > max_length:
-                    max_length = cell_length
+                if cell.value:
+                    cell_length = len(str(cell.value))
+                    if cell_length > max_length:
+                        max_length = cell_length
             except:
                 pass
-        adjusted_width = (max_length + 2)  # +2 para un poco de espacio extra
-        ws.column_dimensions[column].width = adjusted_width
+        ws.column_dimensions[column_letter].width = max_length + 2
 
     # ==============================
     # EXPORTAR
