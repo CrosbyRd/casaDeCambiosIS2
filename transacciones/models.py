@@ -107,10 +107,28 @@ class Transaccion(models.Model):
     # Detalles financieros
     tasa_cambio_aplicada = models.DecimalField(max_digits=10, decimal_places=4)
     comision_aplicada = models.DecimalField(max_digits=10, decimal_places=2)
+    comision_cotizacion = models.DecimalField(
+        max_digits=10,
+        decimal_places=4,
+        default=0,
+        help_text="Comisión de compra/venta de la cotización en el momento de la transacción."
+    )
 
     # Información operativa
     medio_acreditacion_cliente = models.ForeignKey('clientes.MedioAcreditacion', on_delete=models.PROTECT, null=True, blank=True, help_text="Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).")
     medio_pago_utilizado = models.ForeignKey(TipoMedioPago, on_delete=models.PROTECT, null=True, blank=True, help_text="Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).")
+    
+    # Nuevo campo para la instantánea de los datos del medio de pago
+    datos_medio_pago_snapshot = models.JSONField(
+        default=dict, blank=True, null=True,
+        help_text="Instantánea de los datos del medio de pago del cliente al momento de la transacción."
+    )
+    # Nuevo campo para la instantánea de los datos del medio de acreditación
+    datos_medio_acreditacion_snapshot = models.JSONField(
+        default=dict, blank=True, null=True,
+        help_text="Instantánea de los datos del medio de acreditación del cliente al momento de la transacción."
+    )
+
     tauser_utilizado = models.ForeignKey(Tauser, on_delete=models.PROTECT, null=True, blank=True, help_text="Terminal donde se realizó el depósito/retiro físico.")
     codigo_operacion_tauser = models.CharField(max_length=10, unique=True, help_text="Código único para que el cliente opere en el Tauser.")
 
@@ -220,3 +238,10 @@ class Transaccion(models.Model):
             raise ValidationError(
                 f"Límite mensual excedido: {acumulado_mes + monto_pyg} / {limite.monto_mensual} PYG"
             )
+    @property
+    def comision_final(self):
+        """
+        Comisión final calculada como:
+            comision_cotizacion - comision_aplicada
+        """
+        return (self.comision_cotizacion or 0) - (self.comision_aplicada or 0)

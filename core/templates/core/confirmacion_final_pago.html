@@ -1,164 +1,752 @@
-{% extends "base.html" %}
 {% load static %}
 {% load configuracion_extras %}
 
-{% block title %}Confirmar Pago - Global Exchange{% endblock %}
-#original
-{% block content %}
-<main class="max-w-md mx-auto px-6 py-6">
-    <header class="mb-6 text-center">
-        <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">✅ Confirmar Operación</h1>
-        <p class="text-base leading-relaxed text-[var(--muted)]">
-            Estás a punto de confirmar una operación de **Tasa Flotante**. La tasa de cambio puede variar hasta el momento exacto del pago.
-        </p>
-    </header>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Pago - Global Exchange</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    {% if messages %}
-        <div id="flash-messages" class="mb-4 space-y-2">
-            {% for message in messages %}
-                <div class="px-3 py-2 rounded-xl border" style="background:#fff; border-color:var(--line); color:var(--ink);">
-                    {{ message }}
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e9e4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container { 
+            max-width: 750px; 
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(138, 99, 210, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            padding: 32px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 { 
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content-wrapper {
+            padding: 32px 30px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f6ff;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            color: #6b4fc3;
+            font-weight: 500;
+        }
+
+        .security-badge svg {
+            width: 16px;
+            height: 16px;
+            fill: #6b4fc3;
+        }
+
+        .flash-messages {
+            margin-bottom: 24px;
+        }
+
+        .flash-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 22px;
+            height: 22px;
+            fill: #8b5cf6;
+        }
+
+        .transaction-details {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 15px;
+            color: #666;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: right;
+            flex: 1;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e5e5;
+            margin: 20px 0;
+        }
+
+        .current-rate-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .rate-highlight {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .rate-highlight:last-child {
+            margin-bottom: 0;
+        }
+
+        .rate-label {
+            font-size: 17px;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .rate-value {
+            font-size: 20px;
+            color: #059669;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .info-note {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1e40af;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+
+            align-items: center;   /* <<< centra los botones */
+        }
+
+        .actions .btn {
+            width: 100%;   /* <<< ya no ocupa el 100% */
+        }
+
+        .btn { 
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e5e5e5;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d4d4d4;
+        }
+
+        .transaction-id {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .popup-contenido {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .popup-contenido h2 {
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-size: 22px;
+        }
+
+        .popup-contenido p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .popup-btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .popup-btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .popup-btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .popup-btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .current-rate-section {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .header {
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .content-wrapper {
+                padding: 24px 20px;
+            }
+
+            .rate-value {
+                font-size: 20px;
+            }
+
+            .popup-buttons {
+                flex-direction: column;
+            }
+
+            .popup-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                </svg>
+            </div>
+            <h1>Confirmar Operación</h1>
+            <p class="header-subtitle">
+                Estás a punto de confirmar una operación de <strong>Tasa Flotante</strong>. La tasa de cambio puede variar hasta el momento exacto del pago.
+            </p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="security-badge">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+                Transacción segura y encriptada
+            </div>
+
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+            {% endif %}
 
-    <section class="bg-white border rounded-xl shadow-sm p-6 mb-6" style="border-color:var(--line)">
-        <h2 class="text-xl font-bold text-[var(--ink)] mb-4">Detalles de la Operación</h2>
-        <div class="space-y-2 text-[var(--ink)]">
-            <p><strong>Tipo de Operación:</strong> {{ transaccion.get_tipo_operacion_display }}</p>
-            <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}</p>
-            <p><strong>Monto a Recibir (Estimado):</strong> {{ transaccion.monto_destino|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</p>
-            <p><strong>Tasa Indicativa Inicial:</strong> {{ transaccion.tasa_cambio_aplicada|floatformat:4 }}</p>
-            <hr class="my-3" style="border-color:var(--line);">
-            <p class="text-lg font-bold">
-                Tasa de Mercado Actual: <span class="text-[var(--brand-dark)]">{{ tasa_actual|floatformat:4 }}</span>
-            </p>
-            <p class="text-lg font-bold">
-                Monto Final a Recibir: <span class="text-[var(--brand-dark)]">{{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</span>
-            </p>
-            <p class="text-sm text-[var(--muted)] mt-2">
-                Esta es la tasa actual del mercado. Al confirmar, esta tasa será la aplicada a tu operación.
-            </p>
-        </div>
-    </section>
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+                Detalles de la Operación
+            </div>
 
-    <section class="bg-white border rounded-xl shadow-sm p-6" style="border-color:var(--line)">
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit"
-                    class="w-full inline-flex justify-center items-center px-4 py-3 rounded-xl font-semibold"
-                    style="background:var(--brand); color:#fff; box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);">
-                Confirmar y Pagar Ahora
-            </button>
-        </form>
-        <div class="mt-4 text-center">
-            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="text-sm text-[var(--brand-dark)] hover:underline">
+            <div class="transaction-details">
+                <div class="detail-row">
+                    <span class="detail-label">Tipo de Operación</span>
+                    <span class="detail-value">{{ transaccion.get_tipo_operacion_display }}</span>
+                </div>
+                
+            <div class="detail-row">
+                <span class="detail-label">Monto a Pagar</span>
+                <span class="detail-value" id="montoPagar">
+                    {{ monto_origen_actual|floatformat:0|formatear_moneda }} {{ transaccion.moneda_origen.codigo }}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Monto a Recibir (Estimado)</span>
+                <span class="detail-value" id="montoRecibir">
+                    {{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}
+                </span>
+            </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Tasa Indicativa Inicial</span>
+                    <span class="detail-value" id="tasaInicial">{{ transaccion.tasa_cambio_aplicada|floatformat:4 }}</span>
+                </div>
+            </div>
+
+            <div class="current-rate-section">
+                <div class="rate-highlight">
+                    <span class="rate-label">Tasa de Mercado Actual:</span>
+                    <span class="rate-value" id="tasaActual">{{ tasa_actual|floatformat:4 }}</span>
+                </div>
+                <div class="rate-highlight">
+                    <span class="rate-label">Monto Final a Recibir:</span>
+                    <span class="rate-value" id="montoFinal">{{ monto_destino_actual|floatformat:2|formatear_moneda }} {{ transaccion.moneda_destino.codigo }}</span>
+                </div>
+
+                <div class="info-note">
+                    Esta es la tasa actual del mercado. Al confirmar, esta tasa será la aplicada a tu operación.
+                </div>
+            </div>
+
+            <form method="post" class="actions">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    Confirmar y Pagar Ahora
+                </button>
+            </form>
+
+            <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary" style="display: block;">
                 Volver al detalle de la transacción
             </a>
-        </div>
-    </section>
-</main>
 
-<!-- Popup de notificaciones -->
-<div id="popupNotificacion" class="popup-overlay" style="display:none;">
-    <div class="popup-contenido">
-        <h2>📈 Cambio de Tasa</h2>
-        <div id="contenidoNotificaciones"></div>
-        <div class="mt-4 flex justify-center gap-4">
-            <button id="cerrarPopup">Cerrar</button>
-            <button id="cancelarOperacion" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
-                Cancelar Operación
-            </button>
+            <div class="transaction-id">
+                ID de Transacción: {{ transaccion.id }}
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Estilos del popup -->
-<style>
-.popup-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-.popup-contenido {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    max-width: 400px;
-}
-#cerrarPopup {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-</style>
+    <!-- Popup de notificaciones -->
+    <div id="popupNotificacion" class="popup-overlay">
+        <div class="popup-contenido">
+            <h2>📈 Cambio de Tasa</h2>
+            <div id="contenidoNotificaciones"></div>
+            <div class="popup-buttons">
+                <button id="cerrarPopup" class="popup-btn popup-btn-primary">Cerrar</button>
+                <button id="cancelarOperacion" class="popup-btn popup-btn-danger">
+                    Cancelar Operación
+                </button>
+            </div>
+        </div>
+    </div>
 
-<!-- Script para manejar notificaciones dinámicas -->
-<script>
-function mostrarPopup(noti) {
-    const popup = document.getElementById('popupNotificacion');
-    const contenido = document.getElementById('contenidoNotificaciones');
-    contenido.innerHTML = `<p>${noti.mensaje}</p>`;
-    popup.style.display = 'flex';
+    <script>
+        // Función para formatear números con puntos de miles y comas decimales
+        function formatearNumero(numero) {
+            let partes = numero.toString().split('.');
+            let parteEntera = partes[0];
+            let parteDecimal = partes[1] || '00';
+            
+            if (parteDecimal.length === 1) parteDecimal += '0';
+            if (parteDecimal.length === 0) parteDecimal = '00';
+            
+            parteEntera = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            return parteEntera + ',' + parteDecimal;
+        }
 
-    document.getElementById('cerrarPopup').onclick = () => {
-        popup.style.display = 'none';
-        fetch("{% url 'notificaciones:marcar_leidas' %}", {
-            method: "POST",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": "{{ csrf_token }}"
+        // Formatear montos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            function formatearElemento(id, incluirMoneda = false) {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    const texto = elemento.textContent.trim();
+                    const partes = texto.split(' ');
+                    
+                    if (incluirMoneda && partes.length >= 2) {
+                        const numeroTexto = partes[0].replace(/\./g, '').replace(',', '.');
+                        const numero = parseFloat(numeroTexto);
+                        const moneda = partes.slice(1).join(' ');
+                        if (!isNaN(numero)) {
+                            elemento.textContent = formatearNumero(numero) + ' ' + moneda;
+                        }
+                    } else {
+                        const numeroTexto = texto.replace(/\./g, '').replace(',', '.');
+                        const numero = parseFloat(numeroTexto);
+                        if (!isNaN(numero)) {
+                            elemento.textContent = formatearNumero(numero);
+                        }
+                    }
+                }
             }
+
+            // Formatear todos los montos
+            formatearElemento('montoPagar', true);
+            formatearElemento('montoRecibir', true);
+            formatearElemento('tasaInicial');
+            formatearElemento('tasaActual');
+            formatearElemento('montoFinal', true);
+
+            
+            // Agregar código de moneda a la Tasa Indicativa Inicial
+            const tasaInicialEl = document.getElementById('tasaInicial');
+            if (tasaInicialEl) {
+                tasaInicialEl.textContent = tasaInicialEl.textContent + ' PYG';
+            }
+
+            // Agregar código de moneda a la Tasa de Mercado Actual
+            const tasaActualEl = document.getElementById('tasaActual');
+            if (tasaActualEl) {
+                tasaActualEl.textContent = tasaActualEl.textContent + ' PYG';
+            }
+
+
         });
-    };
 
-    document.getElementById('cancelarOperacion').onclick = () => {
-        fetch("{% url 'transacciones:cancelar_por_tasa' transaccion.id %}", {
-            method: "POST",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": "{{ csrf_token }}"
+
+        // Actualizar visualmente tasa, montos y "Monto a Pagar"
+        function actualizarResumenMontos(noti) {
+            const tasaActualEl  = document.getElementById('tasaActual');
+            const montoFinalEl  = document.getElementById('montoFinal');
+            const montoPagarEl  = document.getElementById('montoPagar');
+
+            // 1) Actualizar TASA ACTUAL si viene en el JSON
+            if (noti.tasa_actual && tasaActualEl) {
+                const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                if (!isNaN(tasaNum)) {
+                    tasaActualEl.textContent = formatearNumero(tasaNum) + ' PYG';
+                }
             }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success){
-                window.location.href = "{% url 'usuarios:dashboard' %}";
-            } else {
-                alert("Error al cancelar la operación.");
+
+            // 2) Actualizar MONTO FINAL A RECIBIR si viene en el JSON
+            if (noti.monto_destino_actual && montoFinalEl) {
+                const partesDestino = montoFinalEl.textContent.trim().split(' ');
+                const monedaDestino = partesDestino.slice(1).join(' ') || '{{ transaccion.moneda_destino.codigo }}';
+
+                const montoDestinoNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                if (!isNaN(montoDestinoNum)) {
+                    montoFinalEl.textContent = formatearNumero(montoDestinoNum) + ' ' + monedaDestino;
+                }
             }
-        })
-        .catch(err => console.error(err));
-    };
-}
 
-function checkNotificaciones() {
-    fetch("{% url 'notificaciones:ver_nuevas' %}")
-        .then(res => res.json())
-        .then(data => {
-            if (data.mensaje) {
-                mostrarPopup(data);
+            // 3) Calcular/actualizar MONTO A PAGAR
+            let montoOrigenNum = null;
+
+            // a) Si el backend ya envía el monto actualizado, lo usamos directo
+            if (noti.monto_origen_actual) {
+                const n = parseFloat(String(noti.monto_origen_actual).replace(',', '.'));
+                if (!isNaN(n)) {
+                    montoOrigenNum = n;
+                }
             }
-        })
-        .catch(err => console.error(err));
-}
 
-setInterval(checkNotificaciones, 5000);
-checkNotificaciones();
+            // b) Si no viene, lo calculamos como tasa_actual * monto_final
+            if (montoOrigenNum === null && tasaActualEl && montoFinalEl) {
+                const txtTasa   = tasaActualEl.textContent.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+                const txtDestino= montoFinalEl.textContent.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+                const tasaNum   = parseFloat(txtTasa);
+                const destNum   = parseFloat(txtDestino);
+                if (!isNaN(tasaNum) && !isNaN(destNum)) {
+                    montoOrigenNum = Math.round(tasaNum * destNum); // redondeamos a entero PYG
+                }
+            }
+
+            // c) Pintar el "Monto a Pagar" con formateo y moneda original
+            if (montoPagarEl && montoOrigenNum !== null) {
+                const partesOrigen = montoPagarEl.textContent.trim().split(' ');
+                const monedaOrigen = partesOrigen.slice(1).join(' ') || '{{ transaccion.moneda_origen.codigo }}';
+                montoPagarEl.textContent = formatearNumero(montoOrigenNum) + ' ' + monedaOrigen;
+            }
+        }
 
 
+        function actualizarMontosDesdeNotificacion(noti) {
+            const tasaActualEl = document.getElementById('tasaActual');
+            const montoFinalEl = document.getElementById('montoFinal');
+            const montoPagarEl = document.getElementById('montoPagar');
 
+            // 1) Actualizar TASA DE MERCADO ACTUAL (si viene del backend)
+            if (noti.tasa_actual && tasaActualEl) {
+                const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                if (!isNaN(tasaNum)) {
+                    tasaActualEl.textContent = formatearNumero(tasaNum) + ' PYG';
+                }
+            }
 
+            // 2) Actualizar MONTO FINAL A RECIBIR (si viene del backend)
+            if (noti.monto_destino_actual && montoFinalEl) {
+                const partesDestino = montoFinalEl.textContent.trim().split(' ');
+                const monedaDestino = partesDestino.slice(1).join(' ') || '{{ transaccion.moneda_destino.codigo }}';
 
-</script>
+                const montoDestinoNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                if (!isNaN(montoDestinoNum)) {
+                    montoFinalEl.textContent = formatearNumero(montoDestinoNum) + ' ' + monedaDestino;
+                }
+            }
 
-{% endblock %}
+            // 3) Actualizar MONTO A PAGAR
+            if (montoPagarEl) {
+                const partesOrigen = montoPagarEl.textContent.trim().split(' ');
+                const monedaOrigen = partesOrigen.slice(1).join(' ') || '{{ transaccion.moneda_origen.codigo }}';
+
+                let montoOrigenNum = null;
+
+                // a) Si el backend ya manda el monto actualizado, lo usamos directo
+                if (noti.monto_origen_actual) {
+                    const n = parseFloat(String(noti.monto_origen_actual).replace(',', '.'));
+                    if (!isNaN(n)) {
+                        montoOrigenNum = n;
+                    }
+                } else {
+                    // b) Como respaldo: tasa_actual * monto_destino_actual
+                    if (noti.tasa_actual && noti.monto_destino_actual) {
+                        const tasaNum = parseFloat(String(noti.tasa_actual).replace(',', '.'));
+                        const destNum = parseFloat(String(noti.monto_destino_actual).replace(',', '.'));
+                        if (!isNaN(tasaNum) && !isNaN(destNum)) {
+                            // PYG entero
+                            montoOrigenNum = Math.round(tasaNum * destNum);
+                        }
+                    }
+                }
+
+                if (montoOrigenNum !== null) {
+                    montoPagarEl.textContent = formatearNumero(montoOrigenNum) + ' ' + monedaOrigen;
+                }
+            }
+        }
+
+        function mostrarPopup(noti) {
+            // 🔹 NUEVO: actualizar montos en la UI cuando llega la notificación
+            actualizarMontosDesdeNotificacion(noti);
+
+            const popup = document.getElementById('popupNotificacion');
+            const contenido = document.getElementById('contenidoNotificaciones');
+            contenido.innerHTML = `<p>${noti.mensaje}</p>`;
+            popup.style.display = 'flex';
+
+            document.getElementById('cerrarPopup').onclick = () => {
+                popup.style.display = 'none';
+                fetch("{% url 'notificaciones:marcar_leidas' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                });
+            };
+
+            document.getElementById('cancelarOperacion').onclick = () => {
+                fetch("{% url 'transacciones:cancelar_por_tasa' transaccion.id %}", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success){
+                        window.location.href = "{% url 'usuarios:dashboard' %}";
+                    } else {
+                        alert("Error al cancelar la operación.");
+                    }
+                })
+                .catch(err => console.error(err));
+            };
+        }
+
+        function checkNotificaciones() {
+            fetch("{% url 'notificaciones:ver_nuevas' %}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.mensaje) {
+                        // 🔁 Actualizar tasa, montos y "Monto a Pagar" en la UI
+                        actualizarResumenMontos(data);
+                        // Mostrar el popup como siempre
+                        mostrarPopup(data);
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        setInterval(checkNotificaciones, 5000);
+        checkNotificaciones();
+    </script>
+</body>
+</html>

@@ -22,7 +22,7 @@ class RegistroGanancia(models.Model):
         related_name='ganancias_por_moneda',
         help_text="Moneda extranjera de la transacción (ej. USD, EUR)."
     )
-    fecha_registro = models.DateTimeField(auto_now_add=True, db_index=True)
+    fecha_registro = models.DateTimeField(db_index=True)
 
     def __str__(self):
         return f"Ganancia para Transacción {self.transaccion.id}: {self.ganancia_registrada} {self.moneda_ganancia.codigo} (Operada: {self.moneda_operada.codigo})"
