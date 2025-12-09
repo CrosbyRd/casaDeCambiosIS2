@@ -167,60 +167,87 @@
   </div>
 
   <!-- TABLA -->
-<div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-100">
-    <table class="min-w-full">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Cliente</th>
-          <th>Tipo</th> 
-          <th>Moneda</th>
-          <th>Tasa aplicada</th>
-          <th>Monto</th>
-          <th>Comisión</th>
-          <th>Ganancia (PYG)</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in page_obj %}
-        <tr>
-          <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
-          <td>{{ t.cliente }}</td>
-          <td>
-            {% if t.tipo_operacion == "venta" %}
-              <span class="text-green-700 font-semibold">Venta</span>
-            {% else %}
-              <span class="text-red-700 font-semibold">Compra</span>
-            {% endif %}
-          </td>
-          <td class="text-center">
-            {% if t.tipo_operacion == "venta" %}
-              {{ t.moneda_destino.codigo }}
-            {% else %}
-              {{ t.moneda_origen.codigo }}
-            {% endif %}
-          </td>
-          <td class="text-center">{{ t.tasa_cambio_aplicada|floatformat:0|format_miles }}</td>
-          <td class="text-center">
-            {% if t.tipo_operacion == "venta" %}
-              {{  t.monto_destino|floatformat:0|format_miles }} 
-            {% else %}
-              {{ t.monto_origen|floatformat:0|format_miles }}
-            {% endif %}
-          </td>
-          <td class="text-center">{{ t.comision_final|floatformat:0|format_miles }}</td>
-          <td class="text-center {% if t.ganancia < 0 %}text-red-600{% else %}text-green-600{% endif %}">{{ t.ganancia|floatformat:0|format_miles }}</td>
-          <td>{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="10" class="text-center text-gray-500">🌀 No se registran flujos financieros en este período.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+ <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[900px]">
+      <thead style="background:var(--brand); color:#fff">
+  <tr>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">#</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Cliente</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Tipo</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Moneda</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Tasa aplicada</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Monto</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Comisión</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Ganancia (PYG)</th>
+    <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Fecha</th>
+  </tr>
+</thead>
+    <!-- CUERPO -->
+    <tbody class="bg-white divide-y divide-[var(--line)]">
+      {% for t in page_obj %}
+      <tr class="hover:bg-[var(--brand-soft)]/40 transition-colors">
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {{ forloop.counter0|add:page_obj.start_index }}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {{ t.cliente }}
+        </td>
+
+        <td class="px-6 py-4">
+          {% if t.tipo_operacion == "venta" %}
+            <span class="px-2 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-md">Venta</span>
+          {% else %}
+            <span class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-md">Compra</span>
+          {% endif %}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {% if t.tipo_operacion == "venta" %}
+            {{ t.moneda_destino.codigo }}
+          {% else %}
+            {{ t.moneda_origen.codigo }}
+          {% endif %}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {{ t.tasa_cambio_aplicada|floatformat:0|format_miles }}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {% if t.tipo_operacion == "venta" %}
+            {{ t.monto_destino|floatformat:0|format_miles }}
+          {% else %}
+            {{ t.monto_origen|floatformat:0|format_miles }}
+          {% endif %}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--ink)]">
+          {{ t.comision_final|floatformat:0|format_miles }}
+        </td>
+
+        <td class="px-6 py-4 font-semibold 
+                   {% if t.ganancia < 0 %}text-red-700{% else %}text-green-700{% endif %}">
+          {{ t.ganancia|floatformat:0|format_miles }}
+        </td>
+
+        <td class="px-6 py-4 text-[var(--muted)]">
+          {{ t.fecha_creacion|date:"d/m/Y H:i" }}
+        </td>
+      </tr>
+
+      {% empty %}
+      <tr>
+        <td colspan="10" class="px-6 py-6 text-center text-[var(--muted)]">
+          🌀 No se registran flujos financieros en este período.
+        </td>
+      </tr>
+      {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <!-- PAGINACIÓN -->
   <div class="flex justify-center mt-4 gap-2 pagination">
