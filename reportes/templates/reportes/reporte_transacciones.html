@@ -1,168 +1,188 @@
 {% extends "base.html" %}
+{% load format_miles %}
+
 {% block title %}Reporte de Transacciones{% endblock %}
 
+{% block extra_head %}
+<style>
+    :root {
+        --brand:#7c3aed;
+        --brand-soft:#ede9fe;
+        --brand-hover:#6d28d9;
+        --ink:#111827;
+        --muted:#6b7280;
+        --line:#e5e7eb;
+        --shadow-sm:0 2px 8px rgba(124,58,237,.08);
+        --shadow-md:0 4px 12px rgba(124,58,237,.12);
+        --shadow-lg:0 20px 40px rgba(124,58,237,.15);
+    }
+
+    main { max-width:1360px; margin:0 auto; padding:2rem; }
+
+    header h1 { color: var(--ink); }
+    header p { color: var(--muted); }
+
+    /* Botones */
+    .btn-primary { background:var(--brand); color:#fff; font-weight:600; padding:.6rem 1.2rem; border-radius:10px; transition:.2s; }
+    .btn-primary:hover { background:var(--brand-hover); transform:translateY(-1px); }
+    .btn-secondary { background:#fff; border:2px solid var(--line); color:var(--muted); padding:.6rem 1.2rem; border-radius:10px; transition:.2s; }
+    .btn-secondary:hover { border-color:var(--brand); color:var(--brand); background:var(--brand-soft); }
+
+    /* Filtros */
+    .filter-section { background:#fff; border-radius:12px; padding:1.25rem; box-shadow:var(--shadow-sm); border:1px solid var(--line); margin-bottom:1.5rem; }
+    .filter-section label { font-weight:600; color:var(--muted); font-size:.875rem; }
+    .filter-section input, .filter-section select { width:100%; padding:.5rem .75rem; border-radius:8px; border:1px solid var(--line); transition:.2s; }
+    .filter-section input:focus, .filter-section select:focus { border-color:var(--brand); outline:none; box-shadow:0 0 0 3px rgba(124,58,237,.15); }
+
+    /* Tabla */
+    table { width:100%; border-collapse:collapse; border-radius:10px; overflow:hidden; }
+    thead { background:var(--brand-soft); }
+    th { padding:.75rem 1rem; text-align:left; font-size:.75rem; text-transform:uppercase; color:var(--brand); font-weight:700; }
+    td { padding:.65rem 1rem; border-bottom:1px solid var(--line); }
+    tbody tr:hover { background:var(--brand-soft); }
+
+    /* Paginación */
+    .pagination a { padding:.5rem .8rem; border-radius:6px; background:#f3f4f6; transition:.2s; text-decoration:none; color:var(--ink); }
+    .pagination a:hover { background:var(--brand-soft); color:var(--brand); }
+</style>
+{% endblock %}
+
 {% block content %}
-<main class="max-w-7xl mx-auto p-8">
- <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-  <div class="text-center sm:text-left">
-    <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">📄 Reporte de Transacciones</h1>
-    <p class="text-lg leading-relaxed max-w-xl mx-auto sm:mx-0" style="color:var(--muted)">
-      Visualiza y filtra el historial de transacciones realizadas en el sistema para analizar el pulso financiero de tus operaciones.
-    </p>
-  </div>
+<main>
 
-  <div class="flex justify-center sm:justify-end mt-4 sm:mt-0 gap-3">
-    <a href="{% url 'reportes:panel_reportes' %}"
-       class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95 transition"
-       style="color:var(--brand-dark)">
-       ⬅ Volver al Panel de Reportes
-    </a>
-  </div>
-</header>
-
-
-  <!-- 🌐 FILTROS con diseño -->
-<section class="bg-white shadow rounded-lg p-4 mb-6 border border-blue-100">
-  <h2 class="text-lg font-semibold text-gray-700 mb-2 flex items-center">
-    Filtrar flujo de transacciones
-  </h2>
-  <p class="text-sm text-gray-500 mb-4">
-    Ajusta los filtros para visualizar el pulso financiero de tus operaciones.
-  </p>
-  <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Fecha inicio</label>
-      <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div class="text-center sm:text-left">
+      <h1 class="text-4xl font-extrabold">📄 Reporte de Transacciones</h1>
+      <p class="text-lg leading-relaxed max-w-xl mx-auto sm:mx-0">
+        Visualiza y filtra el historial de transacciones realizadas en el sistema para analizar el pulso financiero de tus operaciones.
+      </p>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Fecha fin</label>
-      <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+    <div class="flex justify-center sm:justify-end mt-4 sm:mt-0 gap-3">
+      <a href="{% url 'reportes:panel_reportes' %}" class="btn-secondary">⬅ Volver al Panel de Reportes</a>
     </div>
+  </header>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Estado</label>
-      <select name="estado" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" onchange="this.form.submit()">
-        <option value="">-- Todos --</option>
-        {% for code, name in estados %}
-          <option value="{{ code }}" {% if request.GET.estado == code %}selected{% endif %}>{{ name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Tipo de operación</label>
-      <select name="tipo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" onchange="this.form.submit()">
-        <option value="">-- Todos --</option>
-        {% for value, name in tipos_operacion %}
-          <option value="{{ value }}" {% if request.GET.tipo == value %}selected{% endif %}>{{ name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Cliente</label>
-      <input type="text" name="cliente" value="{{ request.GET.cliente }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2" placeholder="Nombre cliente">
-    </div>
-
+  <!-- FILTROS -->
+  <section class="filter-section">
+    <h2 class="text-lg font-semibold mb-2">Filtros de Búsqueda</h2>
+    <form method="get" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
       <div>
-          <label class="block text-sm font-medium text-gray-700">Moneda</label>
-          <select name="moneda" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" onchange="this.form.submit()">
-            <option value="">-- Todas --</option>
-            {% for m in monedas %}
-              {% if m.codigo != "PYG" %}
-                <option value="{{ m.codigo }}" {% if request.GET.moneda == m.codigo %}selected{% endif %}>
-                  {{ m.nombre }} ({{ m.codigo }})
-                </option>
-              {% endif %}
-            {% endfor %}
-          </select>
+        <label>Fecha Inicio</label>
+        <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}">
+      </div>
+      <div>
+        <label>Fecha Fin</label>
+        <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}">
+      </div>
+      <div>
+        <label>Estado</label>
+        <select name="estado" onchange="this.form.submit()">
+          <option value="">Todos los estados</option>
+          {% for code, name in estados %}
+            <option value="{{ code }}" {% if request.GET.estado == code %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Tipo de Operación</label>
+        <select name="tipo" onchange="this.form.submit()">
+          <option value="">Generales</option>
+          {% for value, name in tipos_operacion %}
+            <option value="{{ value }}" {% if request.GET.tipo == value %}selected{% endif %}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Cliente</label>
+        <input type="text" name="cliente" value="{{ request.GET.cliente }}" placeholder="Nombre cliente">
+      </div>
+      <div>
+        <label>Moneda Operada</label>
+        <select name="moneda" onchange="this.form.submit()">
+          <option value="">Todas las monedas</option>
+          {% for m in monedas %}
+            {% if m.codigo != "PYG" %}
+              <option value="{{ m.codigo }}" {% if request.GET.moneda == m.codigo %}selected{% endif %}>
+                {{ m.nombre }} ({{ m.codigo }})
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
       </div>
 
+       <div class="col-span-6 flex justify-start space-x-2 mt-2 md:mt-0">
+        <button type="submit" class="btn-primary">Aplicar</button>
+        <a href="{% url 'reportes:reporte_transacciones' %}" class="btn-secondary">Limpiar</a>
+      </div>
+    </form>
+  </section>
 
-    <!-- Botones filtrar / limpiar -->
-    <div class="flex space-x-2 mt-2 md:mt-0">
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-        Filtrar
-      </button>
-      <a href="{% url 'reportes:reporte_transacciones' %}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
-        Limpiar
-      </a>
-    </div>
-  </form>
-</section>
-
-
-  <!-- Botones PDF/Excel -->
- <div class="flex justify-end items-center mb-4 space-x-2">
-    <a href="{% url 'reportes:reporte_transacciones_pdf' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">📄 Descargar PDF</a>
-    <a href="{% url 'reportes:reporte_transacciones_excel' %}?{{ request.GET.urlencode }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">📊 Exportar Excel</a>
+  <!-- Descarga PDF/Excel -->
+  <div class="flex justify-end items-center mb-4 space-x-2">
+    <a href="{% url 'reportes:reporte_transacciones_pdf' %}?{{ request.GET.urlencode }}" class="btn-primary">📄 Descargar PDF</a>
+    <a href="{% url 'reportes:reporte_transacciones_excel' %}?{{ request.GET.urlencode }}" class="btn-primary">📊 Exportar Excel</a>
   </div>
 
-  <!-- Tabla de transacciones -->
-
-<div class="overflow-x-auto bg-white shadow rounded-lg border border-gray-100 min-h-[300px]">
-  <table class="min-w-full divide-y divide-gray-200">
-    <thead class="bg-blue-50">
-      <tr>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">#</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Cliente</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Tipo</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Moneda</th>
-        <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Monto Origen</th>
-        <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Monto Destino</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Estado</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Fecha</th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
-      {% for t in page_obj %}
-      <tr class="hover:bg-blue-50 transition {% cycle 'bg-white' 'bg-gray-50' %}">
-        <td class="px-4 py-2">{{ forloop.counter0|add:page_obj.start_index }}</td>
-        <td class="px-4 py-2 font-medium text-gray-800">{{ t.cliente }}</td>
-        <td class="px-4 py-2">
-          {% if t.tipo_operacion == 'venta' %}
-            <span class="text-green-700 font-semibold">Venta de Divisa </span>
-          {% else %}
-            <span class="text-red-700 font-semibold">Compra de Divisa </span>
-          {% endif %}
-        </td>
-        <td class="px-4 py-2">
-          {% if t.tipo_operacion == 'compra' %}
-            {{ t.moneda_origen.codigo }}
-          {% else %}
-            {{ t.moneda_destino.codigo }}
-          {% endif %}
-        </td>
-        <td class="px-4 py-2 text-right">{{ t.monto_origen|floatformat:2 }}</td>
-        <td class="px-4 py-2 text-right">{{ t.monto_destino|floatformat:2 }}</td>
-        <td class="px-4 py-2">{{ t.get_estado_display_dinamico }}</td>
-        <td class="px-4 py-2">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="8" class="px-4 py-4 text-center text-gray-500">
-          💤 No se registran flujos financieros en este período.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-
-    <!-- PAGINACIÓN -->
-    <div class="flex justify-center mt-4 gap-2 text-sm">
-      {% if page_obj.has_previous %}
-        <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">⬅ Anterior</a>
-      {% endif %}
-
-      <span class="px-3 py-1">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-
-      {% if page_obj.has_next %}
-        <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">Siguiente ➡</a>
-      {% endif %}
+  <!-- TABLA -->
+ <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[900px]">
+      <thead style="background:var(--brand); color:#fff">
+        <tr>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">#</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Cliente</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Tipo</th>
+         <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Monto Origen</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Moneda</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Monto Destino</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Estado</th>
+          <th class="px-6 py-4 text-xs font-extrabold tracking-wide uppercase text-white">Fecha</th>
+        </tr>
+      </thead>
+       <tbody class="bg-white divide-y divide-[var(--line)]">
+        {% for t in page_obj %}
+        <tr>
+          <td class="px-6 py-4 text-[var(--ink)]">{{ forloop.counter0|add:page_obj.start_index }}</td>
+          <td class="px-6 py-4 text-[var(--ink)]">{{ t.cliente }}</td>
+          <td class="px-6 py-4">
+            {% if t.tipo_operacion == "venta" %}
+              <span class="px-2 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-md">Venta</span>
+            {% else %}
+                <span class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-md">Compra</span>
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-[var(--ink)]">{{ t.monto_origen|floatformat:0|format_miles }}</td>
+          <td class="px-6 py-4 text-[var(--ink)]">
+            {% if t.tipo_operacion == "venta" %}
+              {{ t.moneda_destino.codigo }}
+            {% else %}
+              {{ t.moneda_origen.codigo }}
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-[var(--ink)]">{{ t.monto_destino|floatformat:0|format_miles }}</td>
+          <td class="px-6 py-4 text-[var(--ink)]">{{ t.get_estado_display_dinamico }}</td>
+          <td class="px-6 py-4 text-[var(--muted)]">{{ t.fecha_creacion|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-gray-500">🌀 No se registran transacciones en este período.</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </section>
+  <!-- PAGINACIÓN -->
+  <div class="flex justify-center mt-4 gap-2 pagination">
+    {% if page_obj.has_previous %}
+      <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">⬅ Anterior</a>
+    {% endif %}
+    <span class="px-3 py-1">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Siguiente ➡</a>
+    {% endif %}
   </div>
+
 </main>
 {% endblock %}

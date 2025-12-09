@@ -238,3 +238,10 @@ class Transaccion(models.Model):
             raise ValidationError(
                 f"Límite mensual excedido: {acumulado_mes + monto_pyg} / {limite.monto_mensual} PYG"
             )
+    @property
+    def comision_final(self):
+        """
+        Comisión final calculada como:
+            comision_cotizacion - comision_aplicada
+        """
+        return (self.comision_cotizacion or 0) - (self.comision_aplicada or 0)
