@@ -23,7 +23,9 @@ import json
 from payments.stripe_service import create_payment_intent
 from urllib.parse import urlencode
 from pagos.models import TipoMedioPago, MedioPagoCliente, CampoMedioPago
+from pagos.forms import MedioPagoClienteInOperacionForm # Importar el nuevo formulario
 from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente, CampoMedioAcreditacion
+from medios_acreditacion.forms import MedioAcreditacionClienteInOperacionForm # Importar el nuevo formulario
 from django.urls import reverse
 from django.views.generic import View, TemplateView # Para las nuevas vistas basadas en clases
 from django.contrib.auth.mixins import LoginRequiredMixin # Para las nuevas vistas
@@ -32,6 +34,26 @@ from cotizaciones.models import Cotizacion # Para obtener la tasa en tiempo real
 from decimal import Decimal, ROUND_HALF_UP # Para manejar decimales y redondeo
 from ted.logic import ajustar_monto_a_denominaciones_disponibles # Importar la lógica de ajuste
 from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion # Alias para evitar conflicto
+
+@login_required
+def cancelar_transaccion(request, transaccion_id):
+    cliente_activo = get_cliente_activo(request)
+    transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+
+    estados_cancelables = [
+        'pendiente_confirmacion_pago',
+        'pendiente_pago_cliente',
+        'pendiente_pago_stripe',
+    ]
+
+    if transaccion.estado in estados_cancelables:
+        transaccion.estado = 'cancelada'
+        transaccion.save()
+        messages.success(request, f"La operación {transaccion.codigo_operacion_tauser} ha sido cancelada exitosamente.")
+    else:
+        messages.error(request, f"La operación {transaccion.codigo_operacion_tauser} no puede ser cancelada en su estado actual ({transaccion.get_estado_display()}).")
+
+    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
 def calculadora_view(request):
     form = SimulacionForm(request.POST or None)
@@ -88,52 +110,133 @@ def iniciar_operacion(request):
         messages.info(request, "Seleccioná con qué cliente querés operar.")
         return redirect("usuarios:seleccionar_cliente")
 
-    initial_data = {}
+    # Obtener el `next_url` para redirecciones internas
+    next_url = request.path
+    if request.GET:
+        next_url += f"?{request.GET.urlencode()}"
 
+    initial_data = {}
+    resultado_simulacion_from_session = request.session.get('current_simulation_result')
+    resultado_simulacion = None
+
+    if resultado_simulacion_from_session:
+        # Convertir valores de string a Decimal al recuperar de la sesión
+        resultado_simulacion = {k: Decimal(v) if isinstance(v, str) and k != 'monto_ajustado' else v for k, v in resultado_simulacion_from_session.items()}
+        if resultado_simulacion.get('error'): # Si hay un error persistido, no lo mostramos
+            resultado_simulacion = None
+    
+    # Manejo de GET para simulación inicial y pre-carga de datos
     if request.method == 'GET':
         monto_from_url = request.GET.get('monto')
         moneda_origen_from_url = request.GET.get('moneda_origen')
         moneda_destino_from_url = request.GET.get('moneda_destino')
-
+        tipo_operacion_from_url = request.GET.get('tipo_operacion') # Nuevo
+        modalidad_tasa_from_url = request.GET.get('modalidad_tasa') # Nuevo
+        medio_pago_from_url = request.GET.get('medio_pago') # Nuevo
+        medio_acreditacion_from_url = request.GET.get('medio_acreditacion') # Nuevo
+        
         if monto_from_url and moneda_origen_from_url and moneda_destino_from_url:
             initial_data = {
                 'monto': monto_from_url,
                 'moneda_origen': moneda_origen_from_url,
                 'moneda_destino': moneda_destino_from_url,
-                'tipo_operacion': 'venta' if moneda_origen_from_url == 'PYG' else 'compra'
+                'tipo_operacion': tipo_operacion_from_url or ('venta' if moneda_origen_from_url == 'PYG' else 'compra'), # Usar el de URL o inferir
+                'modalidad_tasa': modalidad_tasa_from_url or 'bloqueada', # Usar el de URL o default
             }
-            # Ejecutar simulación en GET para mostrar ajustes desde el inicio
+            if medio_pago_from_url:
+                initial_data['medio_pago'] = medio_pago_from_url
+            if medio_acreditacion_from_url:
+                initial_data['medio_acreditacion'] = medio_acreditacion_from_url
+
             monto_origen_decimal = Decimal(monto_from_url)
-            resultado_simulacion = calcular_simulacion(
+            temp_simulacion_result = calcular_simulacion(
                 monto_origen_decimal, moneda_origen_from_url, moneda_destino_from_url, user=request.user
             )
-            if resultado_simulacion and not resultado_simulacion.get('error'):
-                # Actualizar initial_data con los montos ajustados si hubo ajuste
+            if temp_simulacion_result and not temp_simulacion_result.get('error'):
+                resultado_simulacion = temp_simulacion_result # Usamos este resultado para el contexto
+                
+                # Guardar el resultado de la simulación en la sesión
+                request.session['current_simulation_result'] = {k: str(v) if isinstance(v, Decimal) else v for k, v in resultado_simulacion.items()}
+
+                # Llenar initial_data para el formulario principal (asegurarse de no sobrescribir los valores de GET)
+                if 'monto_origen' not in resultado_simulacion:
+                    resultado_simulacion['monto_origen'] = monto_origen_decimal
+                
+                # Estos campos ya deberían estar en initial_data si vinieron por GET
+                # Pero los actualizamos si el resultado de simulación tiene un monto ajustado
                 if resultado_simulacion.get('monto_ajustado'):
-                    initial_data['monto'] = str(resultado_simulacion['monto_origen']) # Monto origen ajustado
+                    initial_data['monto'] = str(resultado_simulacion['monto_origen']) # Usar el monto origen ajustado
+                
                 initial_data['monto_recibido_simulacion'] = str(resultado_simulacion['monto_recibido'])
                 initial_data['tasa_aplicada_simulacion'] = str(resultado_simulacion['tasa_aplicada'])
                 initial_data['bonificacion_aplicada_simulacion'] = str(resultado_simulacion['bonificacion_aplicada'])
-                initial_data['comision_cotizacion_simulacion'] = str(resultado_simulacion['comision_cotizacion']) # Nuevo
+                initial_data['comision_cotizacion_simulacion'] = str(resultado_simulacion['comision_cotizacion'])
                 initial_data['monto_ajustado_simulacion'] = resultado_simulacion['monto_ajustado']
                 initial_data['monto_maximo_posible_simulacion'] = str(resultado_simulacion['monto_maximo_posible'])
-            elif resultado_simulacion and resultado_simulacion.get('error'):
-                messages.error(request, resultado_simulacion['error'])
-                resultado_simulacion = None # Limpiar resultado si hay error
+                initial_data['monto_origen_simulacion'] = str(resultado_simulacion['monto_origen'])
+            elif temp_simulacion_result and temp_simulacion_result.get('error'):
+                messages.error(request, temp_simulacion_result['error'])
+                resultado_simulacion = None # No persistir error en session
+                request.session.pop('current_simulation_result', None) # Limpiar simulación con error
 
+    # Medios de pago y acreditación del cliente (existentes)
     medios_pago_cliente = MedioPagoCliente.objects.filter(cliente=cliente, activo=True)
     medios_acreditacion_cliente = MedioAcreditacionCliente.objects.filter(cliente=cliente, activo=True)
 
+    # Validar que existan medios si es necesario (para el flujo inicial)
     if initial_data.get('tipo_operacion') == 'venta' and not medios_pago_cliente.exists():
         messages.info(request, "Necesitas tener al menos un medio de pago creado para realizar una venta. Por favor, crea uno.")
-        return redirect(reverse("pagos:clientes_create"))
+        initial_data['medio_pago'] = 'nuevo'
     
     if initial_data.get('tipo_operacion') == 'compra' and not medios_acreditacion_cliente.exists():
         messages.info(request, "Necesitas tener al menos un medio de acreditación creado para realizar una compra. Por favor, crea uno.")
-        return redirect(reverse("medios_acreditacion:clientes_create"))
+        initial_data['medio_acreditacion'] = 'nuevo'
 
-
+    # Inicializar formularios
     form = OperacionForm(request.POST or initial_data, cliente=cliente)
+    # Importante: usar prefijos para los formularios anidados
+    medio_pago_form = MedioPagoClienteInOperacionForm(request.POST or None, user=request.user, prefix='new_mp')
+    
+    # Lógica para preseleccionar el tipo en el formulario anidado si ya hay una selección
+    tipo_medio_acreditacion_id_para_form_anidado = None
+    if request.POST.get('new_ma-tipo'): # Si el tipo ya se envió en el POST (ej. al cambiar el select de tipo)
+        tipo_medio_acreditacion_id_para_form_anidado = request.POST.get('new_ma-tipo')
+    elif initial_data.get('medio_acreditacion') == 'nuevo' and request.POST.get('new_ma-tipo'):
+        # Si se vino de una redirección después de crear uno y se seleccionó "nuevo", pero el tipo específico ya se envió.
+        tipo_medio_acreditacion_id_para_form_anidado = request.POST.get('new_ma-tipo')
+    elif initial_data.get('medio_acreditacion') == 'nuevo' and not request.POST.get('new_ma-tipo'):
+        # Si se seleccionó "nuevo" pero aún no se ha elegido un tipo específico.
+        # En este caso, no pre-inicializamos el tipo, dejamos que el formulario se construya con el valor por defecto o vacío.
+        pass
+    
+    medio_acreditacion_form = MedioAcreditacionClienteInOperacionForm(
+        request.POST or None, 
+        user=request.user, 
+        prefix='new_ma',
+        initial={'tipo': tipo_medio_acreditacion_id_para_form_anidado} if tipo_medio_acreditacion_id_para_form_anidado else {}
+    )
+
+    # Asegurarse de que el select de medio_acreditacion no tenga una opción preseleccionada si no hay valor
+    # Esta lógica es importante para el select principal (form.medio_acreditacion)
+    if not form.data.get('medio_acreditacion') and not initial_data.get('medio_acreditacion'):
+        # Si el usuario NO seleccionó "nuevo" y tampoco hay un medio existente en data o initial
+        if form.fields['medio_acreditacion'].choices: # si hay opciones
+            # Insertar una opción vacía al principio si no hay selección
+            form.fields['medio_acreditacion'].choices = [('', '--- Seleccione un medio de acreditación ---')] + list(form.fields['medio_acreditacion'].choices)
+        else:
+            form.fields['medio_acreditacion'].choices = [('', '--- No hay medios de acreditación disponibles ---')]
+        form.initial['medio_acreditacion'] = '' # Asegurar que el valor inicial sea vacío
+    elif form.data.get('medio_acreditacion') == 'nuevo' or initial_data.get('medio_acreditacion') == 'nuevo':
+        # Si se seleccionó 'nuevo' en el formulario principal, necesitamos asegurarnos de que el select muestre esa opción.
+        # La plantilla ya lo maneja inyectando la opción "** Nuevo Medio **"
+        # y la vista debe asegurarse de que si el 'action_type' fue para actualizar el sub-form,
+        # entonces 'mostrar_form_acreditacion' sea True.
+        if form.fields['medio_acreditacion'].choices:
+             form.fields['medio_acreditacion'].choices = [('', '--- Seleccione un medio de acreditación ---')] + list(form.fields['medio_acreditacion'].choices)
+        else:
+            form.fields['medio_acreditacion'].choices = [('', '--- No hay medios de acreditación disponibles ---')]
+        form.initial['medio_acreditacion'] = 'nuevo' # Asegurar que el valor inicial sea 'nuevo'
+
     # Si es GET y ya se hizo una simulación, usar ese resultado
     if request.method == 'GET' and 'monto_recibido_simulacion' in initial_data:
         resultado_simulacion = {
@@ -143,13 +246,14 @@ def iniciar_operacion(request):
             'comision_cotizacion': Decimal(initial_data['comision_cotizacion_simulacion']), # Nuevo
             'monto_ajustado': initial_data['monto_ajustado_simulacion'],
             'monto_maximo_posible': Decimal(initial_data['monto_maximo_posible_simulacion']),
+            'monto_origen': Decimal(initial_data.get('monto_origen_simulacion', initial_data['monto'])), # Asegurar que monto_origen esté presente
             'error': None,
         }
     else:
         resultado_simulacion = None # Resetear si no hay simulación previa en GET
 
     medios_pago_para_js = {}
-    for medio in medios_pago_cliente.prefetch_related('tipo__campos').all():
+    for medio in MedioPagoCliente.objects.filter(cliente=cliente, activo=True).prefetch_related('tipo__campos').all(): # Volver a cargar por si se creó uno nuevo
         campos_data = []
         for campo in medio.tipo.campos.filter(activo=True):
             campos_data.append({
@@ -164,8 +268,8 @@ def iniciar_operacion(request):
         }
     medios_pago_json = json.dumps(medios_pago_para_js)
 
-    medios_acreditacion_para_js = {} # Se elimina la inicialización con 'efectivo'
-    for medio in medios_acreditacion_cliente.prefetch_related('tipo__campos').all():
+    medios_acreditacion_para_js = {}
+    for medio in MedioAcreditacionCliente.objects.filter(cliente=cliente, activo=True).prefetch_related('tipo__campos').all(): # Volver a cargar por si se creó uno nuevo
         campos_data = []
         for campo in medio.tipo.campos.filter(activo=True):
             campos_data.append({
@@ -189,53 +293,360 @@ def iniciar_operacion(request):
     ).aggregate(Sum('monto_origen'))['monto_origen__sum'] or Decimal(0)
     limite_disponible -= total_transacciones_hoy
 
-    if request.method == 'POST' and form.is_valid():
-        tipo_operacion = form.cleaned_data['tipo_operacion']
-        monto_origen = form.cleaned_data['monto']
-        moneda_origen_codigo = form.cleaned_data['moneda_origen']
-        moneda_destino_codigo = form.cleaned_data['moneda_destino']
+    if request.method == 'POST':
+        action_type = request.POST.get('action_type')
+        if action_type in ['update_new_mp_form', 'update_new_ma_form']:
+            # Solicitud para actualizar campos dinámicos. Re-renderizar sin validar.
+            # Los formularios ya se instanciaron con request.POST, así que tendrán los datos correctos.
+            
+            # Forzamos que se muestre el formulario correcto en la plantilla.
+            mostrar_form_pago = action_type == 'update_new_mp_form'
+            mostrar_form_acreditacion = action_type == 'update_new_ma_form'
 
-        resultado_simulacion = calcular_simulacion(monto_origen, moneda_origen_codigo, moneda_destino_codigo, user=request.user)
+            # Es importante asegurarse de que el <select> principal tenga 'nuevo' seleccionado
+            # para que la lógica del frontend no se rompa.
+            form.data = form.data.copy() # Hacemos mutable el QueryDict
+            if mostrar_form_pago:
+                form.data['medio_pago'] = 'nuevo'
+            if mostrar_form_acreditacion:
+                form.data['medio_acreditacion'] = 'nuevo'
 
-        if resultado_simulacion.get('error'):
-            messages.error(request, resultado_simulacion['error'])
-            return render(request, 'core/iniciar_operacion.html', {'form': form, 'cliente': cliente})
+            # Reinstanciar los formularios con request.POST para asegurar que los campos dinámicos se generen
+            # correctamente al cambiar el tipo de medio en el formulario anidado.
+            if action_type == 'update_new_mp_form':
+                medio_pago_form = MedioPagoClienteInOperacionForm(request.POST, user=request.user, prefix='new_mp')
+            elif action_type == 'update_new_ma_form':
+                medio_acreditacion_form = MedioAcreditacionClienteInOperacionForm(request.POST, user=request.user, prefix='new_ma')
+                
+            print(f"DEBUG: MedioPagoClienteInOperacionForm fields (action_type: {action_type}): {medio_pago_form.fields.keys()}")
+            print(f"DEBUG: MedioAcreditacionClienteInOperacionForm fields (action_type: {action_type}): {medio_acreditacion_form.fields.keys()}")
 
-        if monto_origen > limite_disponible:
-            messages.error(request, f"El monto excede el límite disponible de {limite_disponible} PYG.")
-            return render(request, 'core/iniciar_operacion.html', {'form': form, 'cliente': cliente})
+            return render(request, 'core/iniciar_operacion.html', {
+                'form': form,
+                'resultado_simulacion': resultado_simulacion,
+                'limite_disponible': limite_disponible,
+                'cliente': cliente,
+                'medios_pago_json': medios_pago_json,
+                'medios_acreditacion_json': medios_acreditacion_json,
+                'medio_pago_form': medio_pago_form,
+                'medio_acreditacion_form': medio_acreditacion_form,
+                'mostrar_form_pago': mostrar_form_pago,
+                'mostrar_form_acreditacion': mostrar_form_acreditacion,
+            })
+            
+        # Primero, procesar los formularios de nuevos medios si están activos
+        nuevo_medio_pago_creado = None
+        nuevo_medio_acreditacion_creado = None
 
-        operacion_data = {
-            'tipo_operacion': tipo_operacion,
-            'moneda_origen_codigo': moneda_origen_codigo,
-            'monto_origen': str(monto_origen),
-            'moneda_destino_codigo': moneda_destino_codigo,
-            'monto_recibido': str(resultado_simulacion['monto_recibido']),
-            'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
-            'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
-            'comision_cotizacion': str(resultado_simulacion['comision_cotizacion']), # Nuevo
-            'modalidad_tasa': form.cleaned_data['modalidad_tasa'],
-            'monto_ajustado': resultado_simulacion.get('monto_ajustado', False), # Guardar si hubo ajuste
-            'monto_maximo_posible': str(resultado_simulacion.get('monto_maximo_posible', Decimal('0'))), # Guardar el máximo posible
-        }
-        # Usar el monto_origen ajustado si existe, de lo contrario el original del formulario
-        if resultado_simulacion.get('monto_ajustado'):
-            operacion_data['monto_origen'] = str(resultado_simulacion['monto_origen'])
+        # Lee el tipo de operación directamente del POST
+        tipo_operacion_post = form.data.get('tipo_operacion') or request.POST.get('tipo_operacion')
         
-        if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
-            operacion_data['medio_pago_id'] = str(form.cleaned_data['medio_pago'].id_medio)
-        
-        if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
-            operacion_data['medio_acreditacion_id'] = form.cleaned_data['medio_acreditacion']
-        
-        # Asegurarse de que el metodo_entrega se guarde si está presente en el formulario
-        # independientemente de la condición específica de moneda, ya que la visibilidad
-        # en el frontend ya lo controla.
-        if form.cleaned_data.get('metodo_entrega'):
-            operacion_data['metodo_entrega'] = form.cleaned_data['metodo_entrega']
+        # SOLO crear medios de pago cuando la operación es una VENTA
+        if tipo_operacion_post == 'venta' and form.data.get('medio_pago') == 'nuevo':
+            if medio_pago_form.is_valid():
+                nuevo_medio_pago_creado = medio_pago_form.save(commit=False)
+                nuevo_medio_pago_creado.cliente = cliente
+                nuevo_medio_pago_creado.activo = True
+                nuevo_medio_pago_creado.predeterminado = False # Asignar por defecto
+                nuevo_medio_pago_creado.save()
+                messages.success(request, f"Medio de pago '{nuevo_medio_pago_creado.alias}' creado exitosamente.")
+                # Actualizar el campo 'medio_pago' del formulario principal con la nueva instancia
+                nuevo_medio_pago_creado.save()
+    
 
-        request.session['operacion_pendiente'] = operacion_data
-        return redirect('core:confirmar_operacion')
+                # Capturar los datos actuales de la simulación para la redirección
+                current_monto = request.GET.get('monto') or form.data.get('monto')
+                current_moneda_origen = request.GET.get('moneda_origen') or form.data.get('moneda_origen')
+                current_moneda_destino = request.GET.get('moneda_destino') or form.data.get('moneda_destino')
+                current_tipo_operacion = form.data.get('tipo_operacion')
+                current_modalidad_tasa = form.data.get('modalidad_tasa') # Capturar modalidad_tasa
+
+                # Preparar parámetros para la redirección GET
+                query_params = {
+                    'monto': current_monto,
+                    'moneda_origen': current_moneda_origen,
+                    'moneda_destino': current_moneda_destino,
+                    'tipo_operacion': current_tipo_operacion,
+                    'modalidad_tasa': current_modalidad_tasa, # Incluir modalidad_tasa
+                    'medio_pago': str(nuevo_medio_pago_creado.id_medio), # Seleccionar el nuevo medio
+                }
+                # Codificar y redirigir
+                redirect_url = f"{reverse('core:iniciar_operacion')}?{urlencode(query_params)}"
+                return redirect(redirect_url)
+            else:
+                messages.error(request, "Error al crear nuevo medio de pago.")
+                # Si hay errores en el formulario del nuevo medio de pago, lo mostramos
+                return render(request, 'core/iniciar_operacion.html', {
+                    'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                    'medio_acreditacion_form': medio_acreditacion_form, # Pasar también el de acreditación
+                    'resultado_simulacion': resultado_simulacion,
+                    'limite_disponible': limite_disponible,
+                    'medios_pago_json': medios_pago_json,
+                    'medios_acreditacion_json': medios_acreditacion_json,
+                    'mostrar_form_pago': True, # Para que la plantilla sepa que debe mostrar el form de nuevo medio de pago
+                })
+
+            # SOLO crear medios de acreditación cuando la operación es una COMPRA
+        if tipo_operacion_post == 'compra' and form.data.get('medio_acreditacion') == 'nuevo':
+            if medio_acreditacion_form.is_valid():
+                try:
+                    nuevo_medio_acreditacion_creado = medio_acreditacion_form.save(commit=False)
+                    nuevo_medio_acreditacion_creado.cliente = cliente
+                    nuevo_medio_acreditacion_creado.activo = True
+                    nuevo_medio_acreditacion_creado.predeterminado = False # Asignar por defecto
+                    nuevo_medio_acreditacion_creado.save()
+                    messages.success(request, f"Medio de acreditación '{nuevo_medio_acreditacion_creado.alias}' creado exitosamente.")
+                except Exception as e:
+                    print(f"ERROR al guardar nuevo medio de acreditación: {e}")
+                    messages.error(request, f"Error al crear nuevo medio de acreditación: {e}")
+                    # Re-renderizar para mostrar el error específico de la base de datos
+                    return render(request, 'core/iniciar_operacion.html', {
+                        'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                        'medio_acreditacion_form': medio_acreditacion_form,
+                        'resultado_simulacion': resultado_simulacion,
+                        'limite_disponible': limite_disponible,
+                        'medios_pago_json': medios_pago_json,
+                        'medios_acreditacion_json': medios_acreditacion_json,
+                        'mostrar_form_acreditacion': True,
+                    })
+                
+                # Capturar los datos actuales de la simulación para la redirección
+                current_monto = request.GET.get('monto') or form.data.get('monto')
+                current_moneda_origen = request.GET.get('moneda_origen') or form.data.get('moneda_origen')
+                current_moneda_destino = request.GET.get('moneda_destino') or form.data.get('moneda_destino')
+                current_tipo_operacion = form.data.get('tipo_operacion')
+                current_modalidad_tasa = form.data.get('modalidad_tasa') # Capturar modalidad_tasa
+
+                # Preparar parámetros para la redirección GET
+                # Incluir todos los datos del formulario principal para mantener el estado
+                query_params = {k: v for k, v in form.data.items() if k not in ['csrfmiddlewaretoken', 'new_ma-tipo']}
+                
+                # Actualizar el medio_acreditacion con el ID del recién creado
+                query_params['medio_acreditacion'] = str(nuevo_medio_acreditacion_creado.id_medio)
+                
+                # Asegurar que el 'tipo' del medio de acreditación del nuevo form se mantenga en la URL
+                if request.POST.get('new_ma-tipo'):
+                    query_params['new_ma-tipo'] = request.POST.get('new_ma-tipo')
+
+
+                # Codificar y redirigir
+                redirect_url = f"{reverse('core:iniciar_operacion')}?{urlencode(query_params)}"
+                return redirect(redirect_url)
+            else:
+                print(f"Errores al crear nuevo medio de acreditación: {medio_acreditacion_form.errors}") # Línea de depuración
+                messages.error(request, "Error al crear nuevo medio de acreditación. Por favor, verifica los campos.")
+                return render(request, 'core/iniciar_operacion.html', {
+                    'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                    'medio_acreditacion_form': medio_acreditacion_form,
+                    'resultado_simulacion': resultado_simulacion,
+                    'limite_disponible': limite_disponible,
+                    'medios_pago_json': medios_pago_json,
+                    'medios_acreditacion_json': medios_acreditacion_json,
+                    'mostrar_form_acreditacion': True, # Para que la plantilla sepa que debe mostrar el form de nuevo medio de acreditación
+                })
+
+        # Ahora procesar el formulario principal de la operación
+        if form.is_valid():
+            tipo_operacion = form.cleaned_data['tipo_operacion']
+            monto_origen = form.cleaned_data['monto']
+            moneda_origen_codigo = form.cleaned_data['moneda_origen']
+            moneda_destino_codigo = form.cleaned_data['moneda_destino']
+
+            resultado_simulacion = calcular_simulacion(monto_origen, moneda_origen_codigo, moneda_destino_codigo, user=request.user)
+
+            if resultado_simulacion.get('error'):
+                messages.error(request, resultado_simulacion['error'])
+                # Re-renderizar con los formularios y el contexto necesario
+                return render(request, 'core/iniciar_operacion.html', {
+                    'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                    'medio_acreditacion_form': medio_acreditacion_form,
+                    'resultado_simulacion': resultado_simulacion,
+                    'limite_disponible': limite_disponible,
+                    'medios_pago_json': medios_pago_json,
+                    'medios_acreditacion_json': medios_acreditacion_json,
+                })
+
+            if monto_origen > limite_disponible:
+                messages.error(request, f"El monto excede el límite disponible de {limite_disponible} PYG.")
+                return render(request, 'core/iniciar_operacion.html', {
+                    'form': form, 'cliente': cliente, 'medio_pago_form': medio_pago_form,
+                    'medio_acreditacion_form': medio_acreditacion_form,
+                    'resultado_simulacion': resultado_simulacion,
+                    'limite_disponible': limite_disponible,
+                    'medios_pago_json': medios_pago_json,
+                    'medios_acreditacion_json': medios_acreditacion_json,
+                })
+
+            operacion_data = {
+                'tipo_operacion': tipo_operacion,
+                'moneda_origen_codigo': moneda_origen_codigo,
+                'monto_origen': str(monto_origen),
+                'moneda_destino_codigo': moneda_destino_codigo,
+                'monto_recibido': str(resultado_simulacion['monto_recibido']),
+                'tasa_aplicada': str(resultado_simulacion['tasa_aplicada']),
+                'comision_aplicada': str(resultado_simulacion['bonificacion_aplicada']),
+                'comision_cotizacion': str(resultado_simulacion['comision_cotizacion']), # Nuevo
+                'modalidad_tasa': form.cleaned_data['modalidad_tasa'],
+                'monto_ajustado': resultado_simulacion.get('monto_ajustado', False), # Guardar si hubo ajuste
+                'monto_maximo_posible': str(resultado_simulacion.get('monto_maximo_posible', Decimal('0'))), # Guardar el máximo posible
+            }
+            # Usar el monto_origen ajustado si existe, de lo contrario el original del formulario
+            if resultado_simulacion.get('monto_ajustado'):
+                operacion_data['monto_origen'] = str(resultado_simulacion['monto_origen'])
+            
+            if tipo_operacion == 'venta' and form.cleaned_data.get('medio_pago'):
+                medio_pago_cliente_obj = form.cleaned_data['medio_pago']
+                operacion_data['medio_pago_id'] = str(medio_pago_cliente_obj.id_medio)
+                operacion_data['datos_medio_pago_snapshot'] = {
+                    'id_original': str(medio_pago_cliente_obj.id_medio),
+                    'tipo_nombre': medio_pago_cliente_obj.tipo.nombre,
+                    'alias': medio_pago_cliente_obj.alias,
+                    'datos_campos': medio_pago_cliente_obj.datos
+                }
+            
+            if tipo_operacion == 'compra' and form.cleaned_data.get('medio_acreditacion'):
+                medio_acreditacion_id = form.cleaned_data['medio_acreditacion']
+                operacion_data['medio_acreditacion_id'] = medio_acreditacion_id
+                if medio_acreditacion_id != 'efectivo':
+                    medio_acreditacion_cliente_obj = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                    operacion_data['datos_medio_acreditacion_snapshot'] = {
+                        'id_original': str(medio_acreditacion_cliente_obj.id_medio),
+                        'tipo_nombre': medio_acreditacion_cliente_obj.tipo.nombre,
+                        'alias': medio_acreditacion_cliente_obj.alias,
+                        'datos_campos': medio_acreditacion_cliente_obj.datos
+                    }
+            
+            # Asegurarse de que el metodo_entrega se guarde si está presente en el formulario
+            # independientemente de la condición específica de moneda, ya que la visibilidad
+            # en el frontend ya lo controla.
+            if form.cleaned_data.get('metodo_entrega'):
+                operacion_data['metodo_entrega'] = form.cleaned_data['metodo_entrega']
+
+            # --- INICIO DE LA LÓGICA UNIFICADA ---
+            # La lógica que antes estaba en confirmar_operacion se mueve aquí.
+            # Usa 'operacion_data' directamente en lugar de 'operacion_pendiente' de la sesión.
+
+            modalidad_tasa = operacion_data.get('modalidad_tasa', 'bloqueada')
+            metodo_entrega = operacion_data.get('metodo_entrega')
+            
+            # Lógica para Stripe
+            if tipo_operacion == 'compra' and moneda_origen_codigo == 'USD' and moneda_destino_codigo == 'PYG' and metodo_entrega == 'stripe':
+                try:
+                    moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                    moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+                    tipo_medio_pago_stripe = TipoMedioPago.objects.get(engine='stripe')
+                except (Moneda.DoesNotExist, TipoMedioPago.DoesNotExist) as e:
+                    messages.error(request, f"Error de configuración interna: {e}")
+                    return redirect('core:iniciar_operacion')
+
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente,
+                    usuario_operador=request.user,
+                    tipo_operacion=tipo_operacion,
+                    estado='pendiente_pago_stripe',
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_data['monto_origen']),
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_data['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                    codigo_operacion_tauser=str(uuid.uuid4())[:10],
+                    tasa_garantizada_hasta=timezone.now() + timedelta(hours=2),
+                    modalidad_tasa=modalidad_tasa,
+                    medio_pago_utilizado=tipo_medio_pago_stripe,
+                )
+                messages.info(request, "Operación registrada. Procede al pago con tarjeta.")
+                return redirect('core:iniciar_pago_stripe', transaccion_id=transaccion.id)
+
+            # Lógica para Flujo A (Tasa Bloqueada necesita OTP)
+            elif modalidad_tasa == 'bloqueada':
+                request.session['operacion_pendiente'] = operacion_data
+                return redirect('core:verificar_otp_reserva')
+
+            # Lógica para Flujo B (Tasa Flotante)
+            else:
+                try:
+                    moneda_origen_obj = Moneda.objects.get(codigo=moneda_origen_codigo)
+                    moneda_destino_obj = Moneda.objects.get(codigo=moneda_destino_codigo)
+                except Moneda.DoesNotExist:
+                    messages.error(request, "Error al encontrar las monedas para la transacción.")
+                    return redirect('core:iniciar_operacion')
+
+                codigo_operacion_tauser = str(uuid.uuid4())[:10]
+                medio_pago_obj = None
+                medio_acreditacion_obj = None
+
+                if tipo_operacion == 'venta':
+                    medio_pago_id = operacion_data.get('medio_pago_id')
+                    if medio_pago_id:
+                        try:
+                            # Aquí, medio_pago_id ya debería ser el ID del MedioPagoCliente o del nuevo creado.
+                            # Necesitamos la instancia del TipoMedioPago para la Transaccion.
+                            mp_cliente = MedioPagoCliente.objects.get(id_medio=medio_pago_id, cliente=cliente)
+                            medio_pago_obj = mp_cliente.tipo
+                        except MedioPagoCliente.DoesNotExist:
+                            messages.error(request, "El medio de pago ya no es válido.")
+                            return redirect('core:iniciar_operacion')
+                elif tipo_operacion == 'compra':
+                    medio_acreditacion_id = operacion_data.get('medio_acreditacion_id')
+                    medio_acreditacion_obj = None # Inicializar a None
+
+                    if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
+                        try:
+                            ma_cliente_from_medios_acreditacion = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente)
+                            # Ahora buscamos la instancia correspondiente en clientes.MedioAcreditacion
+                            # Asumimos que podemos encontrarla por alias y por el cliente (request.user)
+                            # Si 'identificador' es un campo clave, lo incluiríamos también.
+                            medio_acreditacion_obj = ClientesMedioAcreditacion.objects.filter(
+                                cliente=request.user, # Usamos request.user porque el campo es ForeignKey(settings.AUTH_USER_MODEL)
+                                alias=ma_cliente_from_medios_acreditacion.alias
+                            ).first()
+
+                        except MedioAcreditacionCliente.DoesNotExist:
+                            messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (medios_acreditacion.MedioAcreditacionCliente no encontrado).")
+                            return redirect('core:iniciar_operacion')
+                        except Exception as e:
+                            messages.error(request, f"Error inesperado al buscar el medio de acreditación: {e}")
+                            return redirect('core:iniciar_operacion')
+                
+                estado_inicial = 'pendiente_pago_cliente' if tipo_operacion == 'compra' else 'pendiente_confirmacion_pago'
+                
+
+                if tipo_operacion == 'compra' and modalidad_tasa == 'flotante':
+                    # Guardar en sesión y redirigir a verificación OTP para compra flotante
+                    request.session['operacion_pendiente_compra_flotante'] = operacion_data
+                    messages.info(request, "Por favor, verifica tu identidad para confirmar la compra.")
+                    return redirect('core:verificar_otp_compra_flotante')
+                elif tipo_operacion == 'compra':
+                    messages.error(request, "Modalidad de tasa inválida para operación de compra.")
+                    return redirect('core:iniciar_operacion')
+                else: # tipo_operacion == 'venta'
+                    transaccion = Transaccion.objects.create(
+                        cliente=cliente,
+                        usuario_operador=request.user,
+                        tipo_operacion=tipo_operacion,
+                        estado=estado_inicial,
+                        moneda_origen=moneda_origen_obj,
+                        monto_origen=Decimal(operacion_data['monto_origen']),
+                        moneda_destino=moneda_destino_obj,
+                        monto_destino=Decimal(operacion_data['monto_recibido']),
+                        tasa_cambio_aplicada=Decimal(operacion_data['tasa_aplicada']),
+                        comision_aplicada=Decimal(operacion_data['comision_aplicada']),
+                        comision_cotizacion=Decimal(operacion_data['comision_cotizacion']),
+                        codigo_operacion_tauser=codigo_operacion_tauser,
+                        modalidad_tasa=modalidad_tasa,
+                        medio_pago_utilizado=medio_pago_obj,
+                        medio_acreditacion_cliente=medio_acreditacion_obj, # Ahora es la instancia de clientes.MedioAcreditacion
+                        datos_medio_pago_snapshot=operacion_data.get('datos_medio_pago_snapshot'),
+                        datos_medio_acreditacion_snapshot=operacion_data.get('datos_medio_acreditacion_snapshot'),
+                    )
+
+                    messages.info(request, "Operación de venta iniciada. Confirma el pago.")
+                    return redirect('core:confirmacion_final_pago', transaccion_id=transaccion.id)
+        else: # Si el formulario principal no es válido
+             messages.error(request, "Por favor, corrige los errores en el formulario de la operación.")
+
 
     return render(request, 'core/iniciar_operacion.html', {
         'form': form,
@@ -244,7 +655,124 @@ def iniciar_operacion(request):
         'cliente': cliente,
         'medios_pago_json': medios_pago_json,
         'medios_acreditacion_json': medios_acreditacion_json,
+        'medio_pago_form': medio_pago_form,
+        'medio_acreditacion_form': medio_acreditacion_form,
+        # Variables para controlar la visibilidad de los formularios de nuevo medio
+        'mostrar_form_pago': form.data.get('medio_pago') == 'nuevo',
+        'mostrar_form_acreditacion': form.data.get('medio_acreditacion') == 'nuevo',
     })
+
+# --- Nueva vista para verificación OTP de compra flotante ---
+class VerificarOtpCompraFlotanteView(LoginRequiredMixin, View):
+    template_name = 'core/verificar_otp.html'
+
+    def get(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente_compra_flotante')
+        if not operacion_pendiente:
+            messages.error(request, "No hay una operación de compra flotante pendiente para verificar.")
+            return redirect('core:iniciar_operacion')
+        
+        cliente_activo = get_cliente_activo(request)
+        if not cliente_activo:
+            messages.info(request, "Seleccioná con qué cliente querés operar.")
+            return redirect("usuarios:seleccionar_cliente")
+
+        send_otp_email(
+            request.user,
+            "Confirmación de Compra de Divisas (Tasa Flotante)",
+            "Tu código de verificación para confirmar la compra de divisas con tasa flotante es: {code}. Válido por {minutes} minutos."
+        )
+        messages.info(request, f"Hemos enviado un código de verificación a tu email ({request.user.email}).")
+        form = VerificacionForm()
+        # Pasar operacion_pendiente a la plantilla para mostrar los detalles
+        return render(request, self.template_name, {'form': form, 'email': request.user.email, 'operacion': operacion_pendiente})
+
+    def post(self, request, *args, **kwargs):
+        operacion_pendiente = request.session.get('operacion_pendiente_compra_flotante')
+        if not operacion_pendiente:
+            messages.error(request, "Sesión de operación inválida para compra flotante.")
+            return redirect('core:iniciar_operacion')
+
+        form = VerificacionForm(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo']
+            if validate_otp_code(request.user, codigo):
+                cliente_activo = get_cliente_activo(request)
+                try:
+                    moneda_origen_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_origen_codigo'])
+                    moneda_destino_obj = Moneda.objects.get(codigo=operacion_pendiente['moneda_destino_codigo'])
+                except Moneda.DoesNotExist:
+                    messages.error(request, "Error al encontrar las monedas para la transacción.")
+                    return redirect('core:iniciar_operacion')
+
+                # Obtener MedioAcreditacionCliente de la sesión
+                medio_acreditacion_id = operacion_pendiente.get('medio_acreditacion_id')
+                medio_acreditacion_para_transaccion = None
+                if medio_acreditacion_id and medio_acreditacion_id != 'efectivo':
+                    try:
+                        ma_cliente_from_medios_acreditacion = MedioAcreditacionCliente.objects.get(id_medio=medio_acreditacion_id, cliente=cliente_activo)
+                        
+                        # Buscamos la instancia correspondiente en clientes.MedioAcreditacion
+                        # Asumimos que podemos encontrarla por alias y por el cliente (request.user)
+                        alias_cliente_ma = ma_cliente_from_medios_acreditacion.alias
+                        # Si hay un identificador u otro campo clave en datos, podemos usarlo también
+                        identificador_cliente_ma = ma_cliente_from_medios_acreditacion.datos.get('identificador', '')
+
+                        # Importamos solo cuando sea necesario, para evitar conflictos de importación cíclica si no se usa
+                        from clientes.models import MedioAcreditacion as ClientesMedioAcreditacion 
+
+                        medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.filter(
+                            cliente=request.user, # El cliente de clientes.MedioAcreditacion es el usuario autenticado
+                            alias=alias_cliente_ma
+                        ).first()
+
+                        if identificador_cliente_ma: # Si tenemos un identificador, lo usamos para ser más precisos
+                             medio_acreditacion_para_transaccion = ClientesMedioAcreditacion.objects.filter(
+                                cliente=request.user,
+                                alias=alias_cliente_ma,
+                                identificador=identificador_cliente_ma
+                            ).first()
+
+                        if not medio_acreditacion_para_transaccion:
+                            messages.warning(request, "No se pudo vincular el medio de acreditación al perfil del cliente. La transacción continuará sin esta referencia directa.")
+                        
+                    except MedioAcreditacionCliente.DoesNotExist:
+                        messages.error(request, "El medio de acreditación seleccionado ya no es válido o no pertenece a este cliente (MedioAcreditacionCliente no encontrado).")
+                        return redirect('core:iniciar_operacion')
+                    except Exception as e:
+                        messages.error(request, f"Error inesperado al obtener el medio de acreditación: {e}")
+                        return redirect('core:iniciar_operacion')
+
+                # Crear la transacción
+                transaccion = Transaccion.objects.create(
+                    cliente=cliente_activo,
+                    usuario_operador=request.user,
+                    tipo_operacion=operacion_pendiente['tipo_operacion'],
+                    estado='pendiente_pago_cliente', # Estado inicial para compra flotante
+                    moneda_origen=moneda_origen_obj,
+                    monto_origen=Decimal(operacion_pendiente['monto_origen']),
+                    moneda_destino=moneda_destino_obj,
+                    monto_destino=Decimal(operacion_pendiente['monto_recibido']),
+                    tasa_cambio_aplicada=Decimal(operacion_pendiente['tasa_aplicada']),
+                    comision_aplicada=Decimal(operacion_pendiente['comision_aplicada']),
+                    comision_cotizacion=Decimal(operacion_pendiente.get('comision_cotizacion', '0.0')), # Usar .get con default
+                    codigo_operacion_tauser=str(uuid.uuid4())[:10],
+                    tasa_garantizada_hasta=None, # Tasa flotante, no garantizada
+                    modalidad_tasa='flotante',
+                    medio_acreditacion_cliente=medio_acreditacion_para_transaccion, # Para compras
+                    datos_medio_acreditacion_snapshot=operacion_pendiente.get('datos_medio_acreditacion_snapshot'),
+                )
+                request.session.pop('operacion_pendiente_compra_flotante', None) # Limpiar sesión
+
+                messages.success(request, f"Compra de divisas con tasa flotante iniciada y confirmada. Operación {transaccion.codigo_operacion_tauser}. Por favor, realiza el pago en el Tauser.")
+                return redirect('core:operacion_iniciada_aviso', transaccion_id=transaccion.id)
+
+            else:
+                messages.error(request, "Código OTP incorrecto o expirado.")
+        else:
+            messages.error(request, "Por favor, ingresa un código válido.")
+        
+        return render(request, self.template_name, {'form': form, 'email': request.user.email, 'operacion': operacion_pendiente})
 
 @login_required
 def confirmar_operacion(request):
@@ -635,6 +1163,8 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
                     tasa_garantizada_hasta=tasa_garantizada_hasta,
                     modalidad_tasa=modalidad_tasa,
                     medio_pago_utilizado=medio_pago_cliente_obj.tipo if medio_pago_cliente_obj else None,
+                    datos_medio_pago_snapshot=operacion_pendiente.get('datos_medio_pago_snapshot'),
+                    datos_medio_acreditacion_snapshot=operacion_pendiente.get('datos_medio_acreditacion_snapshot'),
                 )
                 request.session.pop('operacion_pendiente', None) # Limpiar sesión
 
@@ -642,9 +1172,9 @@ class VerificarOtpReservaView(LoginRequiredMixin, View):
                 # Redirigir al inicio del pago (que ahora puede ser la pasarela o el detalle)
                 if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente':
                     return redirect('transacciones:iniciar_pago', transaccion_id=transaccion.id)
-                elif transaccion.tipo_operacion == 'compra' and operacion_pendiente.get('medio_acreditacion_id') == 'efectivo':
-                    return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
-                else:
+                elif transaccion.tipo_operacion == 'compra': # Para compras (tasa bloqueada)
+                    return redirect('core:operacion_iniciada_aviso', transaccion_id=transaccion.id)
+                else: # Flujo predeterminado para otros casos, si los hubiera, aunque ahora las compras se redirigen
                     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
             else:
@@ -802,3 +1332,15 @@ class ConfirmacionFinalPagoView(LoginRequiredMixin, TemplateView):
             transaccion.save() # Save the updated amounts for these cases
             messages.success(request, "Operación actualizada con la tasa de cambio actual. Procediendo al pago.")
             return redirect('transacciones:iniciar_pago', transaccion_id=transaccion_id)
+
+
+class OperacionIniciadaAvisoView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/operacion_iniciada_aviso.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transaccion_id = kwargs['transaccion_id']
+        cliente_activo = get_cliente_activo(self.request)
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id, cliente=cliente_activo)
+        context['transaccion'] = transaccion
+        return context

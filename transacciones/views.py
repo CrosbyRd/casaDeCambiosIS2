@@ -93,7 +93,7 @@ class IniciarPagoTransaccionView(LoginRequiredMixin, View):
                     
                     transaccion.estado = 'pendiente_pago_cliente' # Cambiar estado de la transacción a pendiente de pago
                     transaccion.save(update_fields=['estado']) # Guardar solo el estado en la transacción
-                    messages.success(request, "Código OTP verificado. Procediendo con el pago.")
+                    #messages.success(request, "Código OTP verificado. Procediendo con el pago.")
                     return self._iniciar_cobro(request, transaccion)
                 else:
                     messages.error(request, "Código OTP incorrecto o expirado.")
