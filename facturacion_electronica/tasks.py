@@ -225,8 +225,8 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     dDVRec_val = "" # No informar si D201 = 2
 
     # Usamos tipo de documento 5 ("otro"), válido para montos altos si hay un nombre real
-    iTipIDRec_val = "5"     # 5=Innominado
-    dNumIDRec_val = "1"     # numero permitido por SIFEN
+    iTipIDRec_val = "1"     # existe
+    dNumIDRec_val = "9999999"     # numero permitido por SIFEN
     dNomRec_val =  nombre_cliente  # Si es Innominado, completar con "Sin Nombre"
     email_cliente = email_receptor or "receptor@test.com" # El email del receptor sigue siendo obligatorio para Factura Segura
 
@@ -380,6 +380,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "dTiCam": "", # No informar dTiCam si cMoneOpe es PYG
         "iCondOpe": "1",  # 1=Contado
         # Receptor
+        "iTipOper": "1",  # <- ESTA ES LA LÍNEA QUE SOLUCIONA EL ERROR 1321
         "iNatRec": iNatRec_val,
         "iTiOpe": iTiOpe_val,
         "cPaisRec": cPaisRec_val,
@@ -424,7 +425,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "dTBasGraIVA": _format_decimal_to_str(dTBasGraIVA),
         "dTotalGs": _format_decimal_to_str(dTotalGs) if codigo_dest != "PYG" and dTotalGs else "", # Calculated if cMoneOpe != PYG
         # Info adicional
-        "dInfAdic": f"Tx {transaccion.id} • {getattr(transaccion, 'tipo_operacion', '')} • Estado {getattr(transaccion, 'estado', '')}",
+        "dInfAdic": "",
         # Placeholders
         "CDC": "0", "dCodSeg": "0", "dDVId": "0", "dSisFact": "1",
     }
