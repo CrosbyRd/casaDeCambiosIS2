@@ -117,24 +117,14 @@
       </a>
     </section>
 
-    <!-- Emisores -->
+    <!-- Facturación Electrónica -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-orange-600 text-5xl mb-4">🏢</div>
-      <h2 class="text-xl font-bold mb-2">Emisores</h2>
-      <p class="text-gray-500 mb-4">Administra los emisores de documentos electrónicos.</p>
-      <a href="{% url 'facturacion_electronica:emisor_list' %}"
-         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
-         style="background:var(--brand);">
-        Acceder
-      </a>
-    </section>
-
-    <!-- Documentos Electrónicos -->
-    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-cyan-600 text-5xl mb-4">📄</div>
-      <h2 class="text-xl font-bold mb-2">Documentos Electrónicos</h2>
-      <p class="text-gray-500 mb-4">Visualiza y gestiona los documentos electrónicos generados.</p>
-      <a href="{% url 'facturacion_electronica:documento_list' %}"
+      <div class="text-orange-600 text-5xl mb-4">📄</div>
+      <h2 class="text-xl font-bold mb-2">Facturación Electrónica</h2>
+      <p class="text-gray-500 mb-4">
+        Administra emisores y documentos electrónicos desde un solo lugar.
+      </p>
+      <a href="{% url 'facturacion_electronica:panel_facturacion' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
         Acceder
@@ -150,7 +140,7 @@
     <a href="{% url 'reportes:panel_reportes' %}"
       class="block w-full py-2 rounded-lg font-semibold text-white text-center"
       style="background:var(--brand);">
-      Ver Reportes
+      Acceder
     </a>
   </section>
 
