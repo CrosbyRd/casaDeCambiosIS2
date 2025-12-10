@@ -27,39 +27,41 @@
   }
 
   /* Cards principales */
-  .cardx{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:16px;
-    box-shadow:var(--shadow-sm);
-    overflow:hidden;
-    transition:.3s;
-  }
-  .cardx:hover{
-    box-shadow:var(--shadow-md);
-  }
-  .cardx + .cardx{
-    margin-top:1.5rem;
-  }
+.cardx{
+  background: var(--surface); 
+  border: 1px solid var(--brand-soft);
+  border-radius:16px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+  transition:.3s;
+}
+.cardx:hover{
+  box-shadow:var(--shadow-md);
+}
+.cardx + .cardx{
+  margin-top:1.5rem;
+}
 
-  .cardx-hd{
-    padding:1.25rem 1.75rem;
-    border-bottom:2px solid var(--light-gray);
-    font-weight:700;
-    font-size:1.1rem;
-    color:var(--ink);
-    background:linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
-    display:flex;
-    align-items:center;
-    gap:.75rem;
-  }
-  .cardx-hd::before{
-    font-size:1.3rem;
-  }
+/* Header del card en lila fuerte */
+.cardx-hd{
+  padding:1.25rem 1.75rem;
+  border-bottom:2px solid var(--brand-dark);
+  font-weight:700;
+  font-size:1.1rem;
+  color:#ffffff; /* texto blanco */
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+.cardx-hd::before{
+  font-size:1.3rem;
+}
 
-  .cardx-bd{
-    padding:1.75rem;
-  }
+.cardx-bd{
+  padding:1.75rem;
+}
+
 
   /* Pills de estado */
   .pill{
@@ -100,18 +102,37 @@
     border:2px solid #9ca3af;
   }
 
-  /* Header del documento */
-  .doc-header{
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:2rem;
-    align-items:start;
+
+
+  /* Hacer más grande la pill de Estado SIFEN */
+  .estado-sifen-box .pill{
+    padding: 0.85rem 2.5rem;  /* más alta y más ancha */
+    font-size: 1rem;          /* texto un poco más grande */
   }
 
-  .doc-title-section h1{
+  /* Opcional: ancho mínimo y centrado del texto */
+  .estado-sifen-box .pill-success{
+    min-width: 370px;
+    justify-content: center;
+  }
+  /* DESPUÉS: dos columnas iguales, misma altura */
+  .doc-header{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));  /* 1/2 y 1/2 */
+    gap:2rem;
+    align-items:stretch;                             /* que se estiren */
+  }
+
+  /* que cada columna del header ocupe toda la altura */
+  .doc-header > div{
+    height:100%;
+  }
+
+
+  .doc-title-section h2{
     font-size:2.5rem;
     font-weight:900;
-    color:var(--ink);
+    color:var(--surface);
     letter-spacing:.5px;
     margin:0 0 .75rem 0;
     line-height:1.1;
@@ -120,7 +141,7 @@
   .doc-number{
     font-size:1.8rem;
     font-weight:700;
-    color:var(--brand);
+    color:var(--surface);
     font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;
     letter-spacing:1px;
     margin-bottom:1.25rem;
@@ -131,7 +152,8 @@
     border:2px solid var(--line);
     border-radius:12px;
     padding:1.25rem 1.5rem;
-    margin-top:1.25rem;
+    margin-top:0;        /* quitar el margen que la bajaba */
+    height:100%;         /* misma altura que el CDC */
   }
 
   .estado-sifen-label{
@@ -167,7 +189,7 @@
     flex-direction:column;
     gap:1rem;
     box-shadow:var(--shadow-md);
-    min-height:100%;
+    height:100%;         /* misma altura que Estado SIFEN */
   }
 
   .cdc-label{
@@ -477,16 +499,40 @@
   </div>
 {% endif %}
 
+
+  <!-- TÍTULO PRINCIPAL DE LA PÁGINA -->
+
+  
+  <header class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Documento Electrónico</h1>
+    </div>
+
+    <div class="space-x-3 flex">
+      <a href="{% url 'facturacion_electronica:documento_list' %}" 
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--ink)]">
+        ⬅ Volver al Panel
+      </a>
+    </div>
+  </header>
+
   <!-- ENCABEZADO DEL DOCUMENTO -->
   <div class="cardx">
+    <!-- HEADER LILA, IGUAL QUE LAS DEMÁS SECCIONES -->
+    <div class="cardx-hd">
+      <div class="doc-title-section">
+        <h1>Número de documento</h1>
+        <div class="doc-number">
+          {{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}
+        </div>
+      </div>
+    </div>
+
+    <!-- CUERPO DEL CARD -->
     <div class="cardx-bd">
       <div class="doc-header">
-        <!-- Columna izquierda: Título y Estado -->
-        <div class="doc-title-section">
-          <h1>Documento Electrónico</h1>
-          <div class="doc-number">{{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}</div>
-
-          <!-- ESTADO SIFEN - Destacado -->
+        <!-- Columna izquierda: Estado SIFEN -->
+        <div>
           <div class="estado-sifen-box">
             <span class="estado-sifen-label">📋 ESTADO SIFEN</span>
             <div class="estado-pill-wrapper">
@@ -523,6 +569,7 @@
       </div>
     </div>
   </div>
+
 
   <!-- INFORMACIÓN GENERAL -->
   <div class="cardx">
@@ -654,7 +701,7 @@
 
         <a href="{% url 'facturacion_electronica:descargar_kude' documento.id %}"
            class="btnx btnx-ghost {% if not documento.cdc %}disabled-link{% endif %}">
-          📄 Descargar KuDE
+          📄 Descargar PDF
         </a>
 
         <a href="{% url 'facturacion_electronica:descargar_xml' documento.id %}"
@@ -677,12 +724,6 @@
     </div>
   </div>
 
-  <!-- VOLVER -->
-  <div class="volver-section">
-    <a href="{% url 'facturacion_electronica:documento_list' %}" class="btnx btnx-ghost" style="padding:1rem 2rem;font-size:1rem;">
-      ← Volver a la Lista de Documentos
-    </a>
-  </div>
 
 </div>
 {% endblock %}
