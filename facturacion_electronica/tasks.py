@@ -223,9 +223,11 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     iTiContRec_val = "" # No informar si D201 = 2
     dRucRec_val = "" # No informar si D201 = 2
     dDVRec_val = "" # No informar si D201 = 2
-    iTipIDRec_val = "5" # 5=Innominado
-    dNumIDRec_val = "0" # Si es Innominado, completar con 0
-    dNomRec_val = "Sin Nombre" # Si es Innominado, completar con "Sin Nombre"
+
+    # Usamos tipo de documento 5 ("otro"), válido para montos altos si hay un nombre real
+    iTipIDRec_val = "5"     # 5=Innominado
+    dNumIDRec_val = "1"     # numero permitido por SIFEN
+    dNomRec_val =  nombre_cliente  # Si es Innominado, completar con "Sin Nombre"
     email_cliente = email_receptor or "receptor@test.com" # El email del receptor sigue siendo obligatorio para Factura Segura
 
     # === Ítems ===

@@ -395,8 +395,8 @@ class FacturaSeguraAPIClient:
             )
 
             # Avanzar correlativo SOLO luego de éxito
-            emisor_instance.siguiente_numero_factura = numero_doc_int + 1
-            emisor_instance.save(update_fields=["siguiente_numero_factura"])
+            #emisor_instance.siguiente_numero_factura = numero_doc_int + 1
+            #emisor_instance.save(update_fields=["siguiente_numero_factura"])
 
             return doc_electronico
 
