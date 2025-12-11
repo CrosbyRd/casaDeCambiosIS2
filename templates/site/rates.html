@@ -484,11 +484,22 @@
       parsing: { xAxisKey: 'x', yAxisKey: 'y' },
       interaction: { intersect: false, mode: 'index' },
       scales: {
-        x: {
+          x: {
           type: 'time',
           time: { unit: 'day' },
           grid: { display: false, drawBorder: false },
-          ticks: { maxTicksLimit: 8 },
+          ticks: {
+            maxTicksLimit: 8,
+            callback: function(value, index, ticks) {
+              const v = ticks[index].value;      // timestamp del tick
+              const d = new Date(v);
+              // Ej: "09 dic" en español
+              return d.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: 'short'
+              });
+            }
+          },
           title: { display: true, text: 'Fecha', font: { weight: '600', size: 12 } }
         },
         y: {
