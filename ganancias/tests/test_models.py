@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from monedas.models import Moneda
 from transacciones.models import Transaccion
 from ganancias.models import RegistroGanancia
+from clientes.models import Cliente
+import uuid
 
 CustomUser = get_user_model()
 
@@ -14,29 +16,40 @@ class RegistroGananciaModelBasicsTest(TestCase):
     def setUp(self):
         self.moneda_pyg = Moneda.objects.create(codigo="PYG", nombre="Guaraní")
         self.moneda_usd = Moneda.objects.create(codigo="USD", nombre="Dólar")
-        self.transaccion = Transaccion.objects.create(
-            estado="completada",
-            tipo_operacion="venta",
-            moneda_origen=self.moneda_usd,
-            moneda_destino=self.moneda_usd,
-            monto_origen=Decimal("100.00"),
-            monto_destino=Decimal("100.00"),
-            comision_cotizacion=Decimal("0.05"),
-            comision_aplicada=Decimal("0.01"),
-            tasa_cambio_aplicada=Decimal("7300.00"),
+        self.cliente = Cliente.objects.create(
+            nombre="Cliente Test",
+            categoria=Cliente.Categoria.MINORISTA,
+            activo=True
         )
-        self.registro = RegistroGanancia.objects.create(
-            transaccion=self.transaccion,
+        self.operador = CustomUser.objects.create_user(
+            email="operador@test.com",
+            password="12345",
+            first_name="Op",
+            last_name="Erador",
+            is_active=True
+        )
+
+    def test_str_contains_transaccion_id(self):
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("100.00"), monto_destino=Decimal("100.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
             ganancia_registrada=Decimal("4.00"),
             moneda_ganancia=self.moneda_pyg,
             moneda_operada=self.moneda_usd,
             fecha_registro=timezone.now()
         )
-
-    def test_str_contains_transaccion_id(self):
-        text = str(self.registro)
+        text = str(registro)
         self.assertIn("Ganancia para Transacción", text)
-        self.assertIn(str(self.transaccion.id), text)
+        self.assertIn(str(tx.id), text)
 
     def test_verbose_names(self):
         self.assertEqual(str(RegistroGanancia._meta.verbose_name), "Registro de Ganancia")
@@ -46,19 +59,104 @@ class RegistroGananciaModelBasicsTest(TestCase):
         self.assertEqual(RegistroGanancia._meta.ordering, ['-fecha_registro'])
 
     def test_relacion_one_to_one_con_transaccion(self):
-        self.assertEqual(self.registro.transaccion, self.transaccion)
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("50.00"), monto_destino=Decimal("50.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
+            ganancia_registrada=Decimal("2.00"),
+            moneda_ganancia=self.moneda_pyg,
+            moneda_operada=self.moneda_usd,
+            fecha_registro=timezone.now()
+        )
+        self.assertEqual(registro.transaccion, tx)
 
     def test_moneda_ganancia_codigo(self):
-        self.assertEqual(self.registro.moneda_ganancia.codigo, "PYG")
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("60.00"), monto_destino=Decimal("60.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
+            ganancia_registrada=Decimal("3.00"),
+            moneda_ganancia=self.moneda_pyg,
+            moneda_operada=self.moneda_usd,
+            fecha_registro=timezone.now()
+        )
+        self.assertEqual(registro.moneda_ganancia.codigo, "PYG")
 
     def test_moneda_operada_codigo(self):
-        self.assertEqual(self.registro.moneda_operada.codigo, "USD")
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("70.00"), monto_destino=Decimal("70.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
+            ganancia_registrada=Decimal("4.00"),
+            moneda_ganancia=self.moneda_pyg,
+            moneda_operada=self.moneda_usd,
+            fecha_registro=timezone.now()
+        )
+        self.assertEqual(registro.moneda_operada.codigo, "USD")
 
     def test_ganancia_registrada_tipo_decimal(self):
-        self.assertIsInstance(self.registro.ganancia_registrada, Decimal)
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("80.00"), monto_destino=Decimal("80.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
+            ganancia_registrada=Decimal("5.00"),
+            moneda_ganancia=self.moneda_pyg,
+            moneda_operada=self.moneda_usd,
+            fecha_registro=timezone.now()
+        )
+        self.assertIsInstance(registro.ganancia_registrada, Decimal)
 
     def test_fecha_registro_no_nulo(self):
-        self.assertIsNotNone(self.registro.fecha_registro)
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_usd, moneda_destino=self.moneda_usd,
+            monto_origen=Decimal("90.00"), monto_destino=Decimal("90.00"),
+            comision_cotizacion=Decimal("0.05"), comision_aplicada=Decimal("0.01"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
+        registro = RegistroGanancia.objects.create(
+            transaccion=tx,
+            ganancia_registrada=Decimal("6.00"),
+            moneda_ganancia=self.moneda_pyg,
+            moneda_operada=self.moneda_usd,
+            fecha_registro=timezone.now()
+        )
+        self.assertIsNotNone(registro.fecha_registro)
 
     def test_transaccion_es_primary_key(self):
         pk_field = RegistroGanancia._meta.get_field('transaccion')
@@ -69,6 +167,18 @@ class RegistroGananciaFieldValidationTest(TestCase):
     def setUp(self):
         self.moneda_pyg = Moneda.objects.create(codigo="PYG", nombre="Guaraní")
         self.moneda_eur = Moneda.objects.create(codigo="EUR", nombre="Euro")
+        self.cliente = Cliente.objects.create(
+            nombre="Cliente Test",
+            categoria=Cliente.Categoria.MINORISTA,
+            activo=True
+        )
+        self.operador = CustomUser.objects.create_user(
+            email="operador@test.com",
+            password="12345",
+            first_name="Op",
+            last_name="Erador",
+            is_active=True
+        )
         self.transaccion = Transaccion.objects.create(
             estado="completada",
             tipo_operacion="compra",
@@ -79,9 +189,13 @@ class RegistroGananciaFieldValidationTest(TestCase):
             comision_cotizacion=Decimal("0.02"),
             comision_aplicada=Decimal("0.00"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
 
     def test_no_permite_moneda_ganancia_nula(self):
+        RegistroGanancia.objects.filter(transaccion=self.transaccion).delete()
         with self.assertRaises(Exception):
             RegistroGanancia.objects.create(
                 transaccion=self.transaccion,
@@ -92,6 +206,7 @@ class RegistroGananciaFieldValidationTest(TestCase):
             )
 
     def test_no_permite_moneda_operada_nula(self):
+        RegistroGanancia.objects.filter(transaccion=self.transaccion).delete()
         with self.assertRaises(Exception):
             RegistroGanancia.objects.create(
                 transaccion=self.transaccion,
@@ -102,6 +217,7 @@ class RegistroGananciaFieldValidationTest(TestCase):
             )
 
     def test_no_permite_ganancia_registrada_nula(self):
+        RegistroGanancia.objects.filter(transaccion=self.transaccion).delete()
         with self.assertRaises(Exception):
             RegistroGanancia.objects.create(
                 transaccion=self.transaccion,
@@ -112,6 +228,7 @@ class RegistroGananciaFieldValidationTest(TestCase):
             )
 
     def test_no_permite_fecha_registro_nula(self):
+        RegistroGanancia.objects.filter(transaccion=self.transaccion).delete()
         with self.assertRaises(Exception):
             RegistroGanancia.objects.create(
                 transaccion=self.transaccion,
@@ -122,8 +239,18 @@ class RegistroGananciaFieldValidationTest(TestCase):
             )
 
     def test_decimal_precision_maxima(self):
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_eur, moneda_destino=self.moneda_eur,
+            monto_origen=Decimal("50.00"), monto_destino=Decimal("50.00"),
+            comision_cotizacion=Decimal("0.01"), comision_aplicada=Decimal("0.00"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
         reg = RegistroGanancia.objects.create(
-            transaccion=self.transaccion,
+            transaccion=tx,
             ganancia_registrada=Decimal("123456789012.34"),
             moneda_ganancia=self.moneda_pyg,
             moneda_operada=self.moneda_eur,
@@ -132,17 +259,27 @@ class RegistroGananciaFieldValidationTest(TestCase):
         self.assertEqual(reg.ganancia_registrada, Decimal("123456789012.34"))
 
     def test_no_accepta_mas_de_dos_decimales_por_definicion(self):
+        tx = Transaccion.objects.create(
+            estado="completada", tipo_operacion="venta",
+            moneda_origen=self.moneda_eur, moneda_destino=self.moneda_eur,
+            monto_origen=Decimal("60.00"), monto_destino=Decimal("60.00"),
+            comision_cotizacion=Decimal("0.01"), comision_aplicada=Decimal("0.00"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente, usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
         reg = RegistroGanancia.objects.create(
-            transaccion=self.transaccion,
+            transaccion=tx,
             ganancia_registrada=Decimal("1.999"),
             moneda_ganancia=self.moneda_pyg,
             moneda_operada=self.moneda_eur,
             fecha_registro=timezone.now()
         )
-        # Dependiendo de tu DB backend, puede redondear. Validamos que no explote.
         self.assertIsInstance(reg.ganancia_registrada, Decimal)
 
     def test_requiere_transaccion_unica(self):
+        RegistroGanancia.objects.filter(transaccion=self.transaccion).delete()
         RegistroGanancia.objects.create(
             transaccion=self.transaccion,
             ganancia_registrada=Decimal("4.00"),
@@ -164,6 +301,18 @@ class RegistroGananciaOrderingTest(TestCase):
     def setUp(self):
         self.moneda_pyg = Moneda.objects.create(codigo="PYG", nombre="Guaraní")
         self.moneda_usd = Moneda.objects.create(codigo="USD", nombre="Dólar")
+        self.cliente = Cliente.objects.create(
+            nombre="Cliente Test",
+            categoria=Cliente.Categoria.MINORISTA,
+            activo=True
+        )
+        self.operador = CustomUser.objects.create_user(
+            email="operador@test.com",
+            password="12345",
+            first_name="Op",
+            last_name="Erador",
+            is_active=True
+        )
 
         self.t1 = Transaccion.objects.create(
             estado="completada",
@@ -175,6 +324,9 @@ class RegistroGananciaOrderingTest(TestCase):
             comision_cotizacion=Decimal("0.1"),
             comision_aplicada=Decimal("0.0"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
         self.t2 = Transaccion.objects.create(
             estado="completada",
@@ -186,7 +338,14 @@ class RegistroGananciaOrderingTest(TestCase):
             comision_cotizacion=Decimal("0.1"),
             comision_aplicada=Decimal("0.0"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
+
+        # Usamos registros manuales controlando fechas, eliminando cualquier auto-creado
+        RegistroGanancia.objects.filter(transaccion=self.t1).delete()
+        RegistroGanancia.objects.filter(transaccion=self.t2).delete()
 
         self.r1 = RegistroGanancia.objects.create(
             transaccion=self.t1,
@@ -269,7 +428,21 @@ class RegistroGananciaEdgeValuesTest(TestCase):
     def setUp(self):
         self.pyg = Moneda.objects.create(codigo="PYG", nombre="Guaraní")
         self.usd = Moneda.objects.create(codigo="USD", nombre="Dólar")
-        self.tx = Transaccion.objects.create(
+        self.cliente = Cliente.objects.create(
+            nombre="Cliente Test",
+            categoria=Cliente.Categoria.MINORISTA,
+            activo=True
+        )
+        self.operador = CustomUser.objects.create_user(
+            email="operador@test.com",
+            password="12345",
+            first_name="Op",
+            last_name="Erador",
+            is_active=True
+        )
+
+    def test_ganancia_registrada_cero_valida(self):
+        tx = Transaccion.objects.create(
             estado="completada",
             tipo_operacion="venta",
             moneda_origen=self.usd,
@@ -279,11 +452,13 @@ class RegistroGananciaEdgeValuesTest(TestCase):
             comision_cotizacion=Decimal("0.00"),
             comision_aplicada=Decimal("0.00"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
-
-    def test_ganancia_registrada_cero_valida(self):
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
         reg = RegistroGanancia.objects.create(
-            transaccion=self.tx,
+            transaccion=tx,
             ganancia_registrada=Decimal("0.00"),
             moneda_ganancia=self.pyg,
             moneda_operada=self.usd,
@@ -292,8 +467,23 @@ class RegistroGananciaEdgeValuesTest(TestCase):
         self.assertEqual(reg.ganancia_registrada, Decimal("0.00"))
 
     def test_ganancia_registrada_valor_grande(self):
+        tx = Transaccion.objects.create(
+            estado="completada",
+            tipo_operacion="venta",
+            moneda_origen=self.usd,
+            moneda_destino=self.usd,
+            monto_origen=Decimal("0.00"),
+            monto_destino=Decimal("0.00"),
+            comision_cotizacion=Decimal("0.00"),
+            comision_aplicada=Decimal("0.00"),
+            tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
+        )
+        RegistroGanancia.objects.filter(transaccion=tx).delete()
         reg = RegistroGanancia.objects.create(
-            transaccion=self.tx,
+            transaccion=tx,
             ganancia_registrada=Decimal("999999999999.99"),
             moneda_ganancia=self.pyg,
             moneda_operada=self.usd,
@@ -302,7 +492,6 @@ class RegistroGananciaEdgeValuesTest(TestCase):
         self.assertEqual(reg.ganancia_registrada, Decimal("999999999999.99"))
 
     def test_fecha_registro_index_flag(self):
-        # Validamos que el campo esté configurado con db_index=True
         field = RegistroGanancia._meta.get_field('fecha_registro')
         self.assertTrue(field.db_index)
 
@@ -311,6 +500,18 @@ class RegistroGananciaIntegrityTest(TestCase):
     def setUp(self):
         self.pyg = Moneda.objects.create(codigo="PYG", nombre="Guaraní")
         self.usd = Moneda.objects.create(codigo="USD", nombre="Dólar")
+        self.cliente = Cliente.objects.create(
+            nombre="Cliente Test",
+            categoria=Cliente.Categoria.MINORISTA,
+            activo=True
+        )
+        self.operador = CustomUser.objects.create_user(
+            email="operador@test.com",
+            password="12345",
+            first_name="Op",
+            last_name="Erador",
+            is_active=True
+        )
         self.tx1 = Transaccion.objects.create(
             estado="completada",
             tipo_operacion="compra",
@@ -321,6 +522,9 @@ class RegistroGananciaIntegrityTest(TestCase):
             comision_cotizacion=Decimal("0.05"),
             comision_aplicada=Decimal("0.01"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
         self.tx2 = Transaccion.objects.create(
             estado="completada",
@@ -332,9 +536,14 @@ class RegistroGananciaIntegrityTest(TestCase):
             comision_cotizacion=Decimal("0.05"),
             comision_aplicada=Decimal("0.01"),
             tasa_cambio_aplicada=Decimal("7300.00"),
+            cliente=self.cliente,
+            usuario_operador=self.operador,
+            codigo_operacion_tauser=str(uuid.uuid4())[:10],
         )
 
     def test_distintas_transacciones_admiten_registros_distintos(self):
+        RegistroGanancia.objects.filter(transaccion=self.tx1).delete()
+        RegistroGanancia.objects.filter(transaccion=self.tx2).delete()
         r1 = RegistroGanancia.objects.create(
             transaccion=self.tx1,
             ganancia_registrada=Decimal("0.40"),
@@ -349,5 +558,6 @@ class RegistroGananciaIntegrityTest(TestCase):
             moneda_operada=self.usd,
             fecha_registro=timezone.now()
         )
-        self.assertNotEqual(r1.id, r2.id)
+        self.assertNotEqual(r1.transaccion_id, r2.transaccion_id)
         self.assertEqual(RegistroGanancia.objects.count(), 2)
+
