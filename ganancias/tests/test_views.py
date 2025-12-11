@@ -23,7 +23,7 @@ class DashboardGananciasAccessTest(TestCase):
 
         self.analyst = CustomUser.objects.create_user(
             email="analyst@test.com", password="12345",
-            first_name="Ana", last_name="Lista", is_active=True
+            first_name="Ana", last_name="Lista", is_active=True, is_staff=True
         )
         group = Group.objects.create(name="Analista")
         self.analyst.groups.add(group)
@@ -69,7 +69,7 @@ class DashboardGananciasMetricsTest(TestCase):
 
         self.user = CustomUser.objects.create_user(
             email="analyst@test.com", password="12345",
-            first_name="Ana", last_name="Lista", is_active=True
+            first_name="Ana", last_name="Lista", is_active=True, is_staff = True
         )
         Group.objects.create(name="Analista")
         self.user.groups.add(Group.objects.get(name="Analista"))
@@ -171,7 +171,7 @@ class DashboardGananciasFiltersTest(TestCase):
 
         self.user = CustomUser.objects.create_user(
             email="analyst@test.com", password="12345",
-            first_name="Ana", last_name="Lista", is_active=True
+            first_name="Ana", last_name="Lista", is_active=True, is_staff = True
         )
         Group.objects.create(name="Analista")
         self.user.groups.add(Group.objects.get(name="Analista"))
