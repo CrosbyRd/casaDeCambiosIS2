@@ -30,7 +30,7 @@ from __future__ import annotations
 import json
 import secrets
 from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from django.conf import settings
 from django.core.cache import cache
@@ -114,6 +114,40 @@ def _monto_y_moneda(tx: Transaccion, modo: str) -> Tuple[Decimal, Moneda]:
     return tx.monto_destino, tx.moneda_destino
 
 
+def _inferir_modo(tx: Transaccion, modo_hint: Optional[str] = None) -> str:
+    """Determina si la transacción debe operar en modo retiro o depósito."""
+
+    hint = (modo_hint or "").strip().lower() or None
+    if hint not in {"retiro", "deposito"}:
+        hint = None
+
+    estado_map = {
+        "pendiente_retiro_tauser": "retiro",
+        "pendiente_deposito_tauser": "deposito",
+    }
+    tipo_map = {
+        "venta": "retiro",
+        "compra": "deposito",
+    }
+
+    estado_actual = getattr(tx, "estado", "") or ""
+    tipo_actual = getattr(tx, "tipo_operacion", "") or ""
+
+    modo_por_estado = estado_map.get(str(estado_actual))
+    modo_por_tipo = tipo_map.get(str(tipo_actual).lower())
+
+    modo_inferido = modo_por_estado or modo_por_tipo
+    if modo_inferido:
+        if hint and hint != modo_inferido:
+            raise ValueError("MODE_MISMATCH")
+        return modo_inferido
+
+    if hint:
+        return hint
+
+    raise LookupError("MODE_UNDETERMINED")
+
+
 def _round_for_policy(amount: Decimal, modo: str) -> Decimal:
     quant = Decimal("1")
     rounding = ROUNDING_DEPOSITO if modo == "deposito" else ROUNDING_RETIRO
@@ -177,10 +211,10 @@ def validar_transaccion(request: HttpRequest) -> JsonResponse:
     """
     payload = _body_json(request)
     codigo = (payload.get("codigo") or "").strip()
-    modo = (payload.get("modo") or "").strip().lower()
+    modo_hint = (payload.get("modo") or "").strip().lower()
 
-    if not codigo or modo not in {"retiro", "deposito"}:
-        return _json_error("Faltan campos requeridos o modo inválido.", 400, code="E400-PAYLOAD")
+    if not codigo:
+        return _json_error("Debe proporcionar el código de operación.", 400, code="E400-PAYLOAD")
 
     tx = (
         Transaccion.objects
@@ -190,6 +224,21 @@ def validar_transaccion(request: HttpRequest) -> JsonResponse:
     )
     if not tx:
         return _json_error("No se encontró una transacción con ese código.", 404, code="E404-CODIGO")
+
+    try:
+        modo = _inferir_modo(tx, modo_hint)
+    except ValueError:
+        return _json_error(
+            "Este código corresponde a otro tipo de operación.",
+            409,
+            code="E409-TIPO",
+        )
+    except LookupError:
+        return _json_error(
+            "No se pudo determinar si la operación es retiro o depósito.",
+            409,
+            code="E409-MODO",
+        )
 
     allowed = getattr(settings, "TED_ALLOWED_STATES", {}).get(modo, set())
     if allowed and tx.estado not in allowed:
@@ -217,6 +266,8 @@ def validar_transaccion(request: HttpRequest) -> JsonResponse:
         "tx_id": str(tx.id),
         "cliente_id": str(getattr(tx, "cliente_id", "")) or None,
         "cliente_nombre": getattr(tx.cliente, "nombre", ""),
+        "tipo_operacion": getattr(tx, "tipo_operacion", None),
+        "estado": getattr(tx, "estado", None),
     }
     return JsonResponse(data, status=200)
 
@@ -236,9 +287,9 @@ def precontar(request: HttpRequest) -> JsonResponse:
         return _json_error("JSON inválido.", 400)
 
     codigo = (payload.get("codigo") or "").strip()  # sin upper(); buscamos con iexact
-    modo = (payload.get("modo") or "").strip().lower()
+    modo_hint = (payload.get("modo") or "").strip().lower()
     ubicacion = (payload.get("ubicacion") or "").strip()
-    if not codigo or modo not in {"retiro", "deposito"} or not ubicacion:
+    if not codigo or not ubicacion:
         return _json_error("Parámetros inválidos.", 400)
 
     cliente = None
@@ -260,6 +311,21 @@ def precontar(request: HttpRequest) -> JsonResponse:
             "Código no encontrado" + (" para el cliente activo." if STRICT_CLIENT_OWNERSHIP else "."),
             404,
             code="E404-CODIGO" if not STRICT_CLIENT_OWNERSHIP else "E404-CODIGO-CLIENTE",
+        )
+
+    try:
+        modo = _inferir_modo(tx, modo_hint)
+    except ValueError:
+        return _json_error(
+            "Este código corresponde a otro tipo de operación.",
+            409,
+            code="E409-TIPO",
+        )
+    except LookupError:
+        return _json_error(
+            "No se pudo determinar si la operación es retiro o depósito.",
+            409,
+            code="E409-MODO",
         )
 
     monto, moneda = _monto_y_moneda(tx, modo)
@@ -318,6 +384,7 @@ def precontar(request: HttpRequest) -> JsonResponse:
         {
             "ok": True,
             "data": {
+                "modo": modo,
                 "reserva_id": reserva_id,
                 "monto_solicitado": str(monto),
                 "monto_redondeado": str(monto_redondeado),
