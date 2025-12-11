@@ -1,3 +1,15 @@
+"""
+Señales de la aplicación **ganancias**.
+
+.. module:: ganancias.signals
+   :synopsis: Cálculo y registro automático de ganancias a partir de transacciones.
+
+Este módulo conecta la señal :data:`django.db.models.signals.post_save` del
+modelo :class:`transacciones.models.Transaccion` con la lógica de negocio que
+calcula y persiste instancias de :class:`ganancias.models.RegistroGanancia`.
+"""
+
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone # Importar timezone
@@ -12,7 +24,41 @@ from .models import RegistroGanancia
 @receiver(post_save, sender=Transaccion)
 def crear_o_actualizar_registro_ganancia(sender, instance, created, **kwargs):
     """
-    Crea o actualiza un RegistroGanancia cuando una Transaccion se marca como 'completada'.
+    Crea o actualiza un :class:`RegistroGanancia` cuando una transacción
+    se marca como ``completada``.
+
+    Lógica principal
+    ----------------
+    1. Verifica que ``instance.estado == 'completada'``.
+    2. Obtiene la moneda PYG (moneda base en la que se registra la ganancia).
+    3. Determina la moneda operada según el tipo de operación:
+
+       - ``venta``: se toma ``instance.moneda_destino``.
+       - ``compra``: se toma ``instance.moneda_origen``.
+
+    4. Calcula la comisión final como::
+
+           comision_final = comision_cotizacion - comision_aplicada
+
+       donde ``comision_cotizacion`` es la comisión bruta de la cotización
+       y ``comision_aplicada`` incluye eventuales bonificaciones.
+
+    5. El monto operado para la ganancia depende del tipo de operación:
+
+       - ``venta``: se usa ``instance.monto_destino``.
+       - ``compra``: se usa ``instance.monto_origen``.
+
+    6. Calcula la ganancia neta real como el producto de la comisión final
+       por el monto operado y registra el resultado en
+       :class:`RegistroGanancia` mediante :meth:`update_or_create`.
+
+    :param sender: Modelo que dispara la señal (``Transaccion``).
+    :type sender: type
+    :param instance: Instancia de transacción recién guardada.
+    :type instance: transacciones.models.Transaccion
+    :param created: Indica si la instancia fue creada (``True``) o actualizada.
+    :type created: bool
+    :param kwargs: Parámetros adicionales de la señal (no utilizados).
     """
     if instance.estado == 'completada':
         # Obtener la moneda PYG (asumiendo que es la moneda base)

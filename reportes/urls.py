@@ -1,4 +1,17 @@
 #reportes/urls.py
+
+"""
+Rutas de la aplicación de reportes.
+
+.. module:: reportes.urls
+   :synopsis: URL patterns para reportes de ganancias y transacciones.
+
+Define las rutas para:
+- Panel principal de reportes.
+- Reportes de ganancias (web, PDF y Excel).
+- Reportes de transacciones (web, PDF y Excel).
+"""
+
 from django.urls import path
 from . import views
 
