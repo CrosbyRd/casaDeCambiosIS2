@@ -517,6 +517,15 @@
     </div>
 
     <script>
+
+        function parseNumeroLocal(texto) {
+        let s = texto.trim();
+        // Quitar puntos de miles
+        s = s.replace(/\./g, '');
+        // Cambiar coma decimal por punto
+        s = s.replace(',', '.');
+        return parseFloat(s);
+    }
         // Función para formatear números con puntos de miles y comas decimales
         function formatearNumero(numero) {
             let partes = numero.toString().split('.');
@@ -541,11 +550,11 @@
                     const partes = texto.split(' ');
                     
                     if (incluirMoneda && partes.length >= 2) {
-                        const numero = parseFloat(partes[0]);
+                        const numero = parseNumeroLocal(partes[0]);   // 👈 AQUÍ
                         const moneda = partes.slice(1).join(' ');
                         elemento.textContent = formatearNumero(numero) + ' ' + moneda;
                     } else {
-                        const numero = parseFloat(texto);
+                        const numero = parseNumeroLocal(texto);  
                         if (!isNaN(numero)) {
                             elemento.textContent = formatearNumero(numero);
                         }

@@ -499,6 +499,8 @@
             return parteEntera + ',' + parteDecimal;
         }
 
+        
+
         // Formatear montos al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             // Formatear monto a pagar
@@ -525,10 +527,20 @@
                 }
             }
 
+            // Convierte "7.149,50" o "7149,50" a 7149.50 (número JS)
+            function parseNumeroLocal(texto) {
+                let s = texto.trim();
+                // Quitar puntos de miles
+                s = s.replace(/\./g, '');
+                // Cambiar coma decimal por punto
+                s = s.replace(',', '.');
+                return parseFloat(s);
+            }
+
             // Formatear tasa de cambio
             const tasaCambio = document.getElementById('tasaCambio');
             if (tasaCambio) {
-                const numero = parseFloat(tasaCambio.textContent.trim());
+                const numero = parseNumeroLocal(tasaCambio.textContent);
                 tasaCambio.textContent = formatearNumero(numero) + ' PYG';
             }
 
