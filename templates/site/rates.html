@@ -3,57 +3,223 @@
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-[1200px] mx-auto px-6 py-10">
-  <h1 class="h1 mb-6">Tipos de cambio</h1>
+<main class="container-wide py-10">
+  <style>
+    :root{
+      --brand:#7c3aed; --brand-soft:#ede9fe; --brand-hover:#6d28d9;
+      --ink:#111827; --muted:#6b7280; --light-gray:#f8f9fa; --line:#e5e7eb;
+      --shadow-sm:0 2px 8px rgba(124,58,237,.08);
+      --shadow-md:0 4px 12px rgba(124,58,237,.12);
+      --shadow-lg:0 20px 40px rgba(124,58,237,.15);
+    }
 
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <table class="w-full border-collapse">
-      <thead class="bg-[var(--brand)] text-white">
-        <tr>
-          <th class="px-4 py-3 text-left">Moneda</th>
-          <th class="px-4 py-3 text-right">Compra (PYG)</th>
-          <th class="px-4 py-3 text-right">Venta (PYG)</th>
-          <th class="px-4 py-3 text-right">Actualización</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in cotizaciones %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)"
-              data-code="{{ c.moneda_destino.codigo }}"
-              data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
-              data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
-            <td class="px-4 py-3">
-              <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-              {{ c.moneda_destino.codigo }}
-            </td>
+    .container-wide{max-width:1360px;margin:0 auto;padding:0 16px;}
+    .page-header{margin-top:22px;margin-bottom:28px;padding-top:6px;}
+    .page-header h1{margin:0 0 6px 0;}
+    .page-header p{margin:0;color:var(--muted);}
 
-            <td class="px-4 py-3 text-right font-semibold">
-              <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
-            </td>
-            <td class="px-4 py-3 text-right font-semibold">
-              <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
-            </td>
+    .filter-section{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:1.25rem;border-left:none;}
+    .filter-section h3{font-size:1.05rem;font-weight:600;color:var(--muted);margin:0 0 1rem;display:flex;gap:.5rem;align-items:center;}
+    .filter-section h3::before{content:"🔍";}
+    .filter-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
+    .filter-col{flex:1;min-width:220px}
+    .filter-form .form-label{font-weight:600;color:var(--muted);font-size:.875rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .filter-form .form-control,.filter-form .form-select{border:1px solid var(--line);border-radius:8px;padding:.625rem .875rem;transition:.2s}
+    .filter-form .form-control:focus,.filter-form .form-select:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);outline:none}
+    .filter-actions{display:flex;gap:.75rem;align-items:center}
 
-            <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="4" class="px-4 py-6 text-center text-neutral-500">Sin cotizaciones.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    .btn-primary-custom{background:var(--brand);border:none;color:#fff;padding:.625rem 1.25rem;border-radius:8px;font-weight:700;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:.2s}
+    .btn-primary-custom:hover{background:var(--brand-hover);transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
+
+    .btn-secondary-custom{background:#fff;border:2px solid var(--line);color:var(--muted);padding:.625rem 1.25rem;border-radius:8px;font-weight:700;transition:.2s}
+    .btn-secondary-custom:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+
+    .content-grid{display:grid;grid-template-columns:2.2fr 1fr;gap:1.5rem;margin-top:1.25rem}
+
+    .metric-hero{grid-column:1 / -1;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%);border-radius:20px;padding:2rem 2rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;transition:.3s}
+    .metric-hero::before{content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);border-radius:50%}
+    .metric-hero::after{content:"";position:absolute;bottom:-30%;left:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%}
+    .metric-hero:hover{transform:translateY(-3px);box-shadow:0 25px 50px rgba(124,58,237,.25)}
+
+    .metric-hero-content{text-align:center;position:relative;z-index:1}
+    .metric-hero-icon{font-size:2.3rem;margin-bottom:.35rem;display:inline-block;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    .metric-hero-label{color:rgba(255,255,255,.92);font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.35rem}
+    .metric-hero-value{color:#fff;font-size:clamp(2rem,4vw,2.8rem);font-weight:900;line-height:1.1;margin-bottom:.25rem;text-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .metric-hero-currency{color:rgba(255,255,255,.9);font-weight:800}
+  </style>
+
+  <header class="page-header">
+    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Tipos de cambio</h1>
+    <p class="text-lg leading-relaxed max-w-2xl">Visualiza la evolución de las tasas con los mismos controles del dashboard de ganancias.</p>
+  </header>
+
+  <section class="filter-section">
+    <h3>Filtros de Búsqueda</h3>
+    <form class="filter-form" id="fx-form">
+      <div class="filter-row">
+        <div class="filter-col">
+          <label for="fx-from" class="form-label">📅 Fecha Inicio</label>
+          <input type="date" id="fx-from" class="form-control" />
+        </div>
+
+        <div class="filter-col">
+          <label for="fx-to" class="form-label">📅 Fecha Fin</label>
+          <input type="date" id="fx-to" class="form-control" />
+        </div>
+
+        <div class="filter-col">
+          <label for="fx-select" class="form-label">💱 Moneda Operada</label>
+          <select id="fx-select" class="form-select form-control"></select>
+        </div>
+
+        <div class="filter-col">
+          <label class="form-label" for="fx-type">Tipo de Operación</label>
+          <select id="fx-type" class="form-select form-control">
+            <option value="">Ganancias Generales</option>
+            <option value="venta" selected>Ganancias por Venta</option>
+            <option value="compra">Ganancias por Compra</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn btn-primary-custom" id="fx-apply">✓ Aplicar</button>
+          <button type="button" class="btn btn-secondary-custom" id="fx-reset">↺ Limpiar</button>
+        </div>
+      </div>
+
+      <div class="filter-row pt-3">
+        <div class="filter-col">
+          <label class="form-label">🗓️ Agregación</label>
+          <div class="flex items-center gap-3 flex-wrap text-sm">
+            <label class="flex items-center gap-2"><input type="radio" name="agg" value="last" checked> Último por día</label>
+            <label class="flex items-center gap-2"><input type="radio" name="agg" value="avg"> Promedio diario</label>
+          </div>
+        </div>
+      </div>
+    </form>
   </section>
+
+  <div class="content-grid">
+    <section class="metric-hero">
+      <div class="metric-hero-content">
+        <div class="metric-hero-icon">💵</div>
+        <div class="metric-hero-label">Histórico de Cotizaciones</div>
+        <div class="metric-hero-value">PYG → <span id="fx-symbol">—</span></div>
+        <div class="metric-hero-currency">Filtro sincronizado con ganancias</div>
+      </div>
+    </section>
+    <section class="main-col">
+      <div class="card">
+        <div class="card-header">
+          <span>📈</span><h3>Evolución de Tasas Diarias</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="ratesChart"></canvas>
+        </div>
+        <p id="chart-empty" class="text-xs text-neutral-500 mt-3 hidden">No hay datos históricos para el rango seleccionado.</p>
+        <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>📊</span><h3>Evolución promedio del período</h3>
+        </div>
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p class="text-sm text-neutral-500 mb-1">Comparación entre el primer y último valor del rango seleccionado.</p>
+            <div class="text-lg font-semibold text-[var(--ink)]" id="fx-trend-text">Sin datos suficientes.</div>
+            <div class="text-sm text-neutral-500" id="fx-trend-detail">Selecciona un rango para ver la tendencia.</div>
+          </div>
+          <div id="fx-trend-pill" class="trend-pill flat">—</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side-col">
+      <div class="side-stack">
+        <div class="metric-card">
+          <div class="metric-card-icon-wrapper">📊</div>
+          <div>
+            <div class="metric-card-label">Días Analizados</div>
+            <div class="metric-card-value" id="fx-days">0</div>
+            <div class="metric-card-suffix">días con registro</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-icon-wrapper">💱</div>
+          <div>
+            <div class="metric-card-label">Monedas Operadas</div>
+            <div class="metric-card-value" id="fx-coins">0</div>
+            <div class="metric-card-suffix">monedas diferentes</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>📋</span><h3>Cotizaciones disponibles</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-custom w-full">
+              <thead>
+                <tr>
+                  <th class="text-left">Moneda</th>
+                  <th class="text-end">Compra (PYG)</th>
+                  <th class="text-end">Venta (PYG)</th>
+                  <th class="text-end">Actualización</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in cotizaciones %}
+                  <tr class="cursor-pointer" data-code="{{ c.moneda_destino.codigo }}"
+                      data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+                      data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
+                    <td>
+                      <span class="currency-badge">
+                        <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                        {{ c.moneda_destino.codigo }}
+                      </span>
+                    </td>
+                    <td class="text-end font-semibold">
+                      <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+                    </td>
+                    <td class="text-end font-semibold">
+                      <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+                    </td>
+                    <td class="text-end text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="4" class="px-4 py-6 text-center text-neutral-500">
+                      Sin cotizaciones.
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
 
 <script>
 (function(){
-  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
+  const MAP = {
+    USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+    MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+    CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
+  };
+
   document.querySelectorAll('.currency-emoji').forEach(el=>{
     const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
   });
-      // Indicadores de variación con persistencia de 12h
-  const TTL = 12 * 60 * 60 * 1000; // 12 horas en ms
+
+  // Indicadores de variación con persistencia de 12h
+  const TTL = 12 * 60 * 60 * 1000;
   const rows = document.querySelectorAll('tbody tr[data-code]');
 
   rows.forEach(row => {
@@ -69,19 +235,22 @@
       const nowTs = Date.now();
 
       let data = null;
-      try { data = JSON.parse(localStorage.getItem(key) || 'null'); } catch (_) {}
+      // --- Continuación del script de variaciones (final del bloque previo) ---
 
-      const prevVal = (data && typeof data.value === 'number') ? data.value : null;
-      let lastChange = data && data.lastChange ? data.lastChange : null; // {time, dir:'up'|'down'}
+      try {
+        data = JSON.parse(localStorage.getItem(key) || "null");
+      } catch(e){
+        data = null;
+      }
 
-      // ¿Qué mostrar?
+      let prevVal = data?.value ?? null;
+      let lastChange = data?.lastChange ?? null;
       let showDir = null;
-      if (prevVal !== null && nowVal !== prevVal) {
-        // Cambió: mostrar y actualizar "lastChange"
+
+      if (prevVal !== null && prevVal !== nowVal) {
         showDir = nowVal > prevVal ? 'up' : 'down';
         lastChange = { time: nowTs, dir: showDir };
       } else if (lastChange && (nowTs - lastChange.time) < TTL) {
-        // No cambió ahora, pero hubo un cambio reciente (<12h)
         showDir = lastChange.dir;
       }
 
@@ -90,52 +259,19 @@
         badge.textContent = showDir === 'up' ? '▲' : '▼';
         badge.className = 'ml-1 text-xs opacity-70 align-middle';
         badge.classList.add(showDir === 'up' ? 'text-emerald-600' : 'text-red-600');
-        // microajuste vertical
         badge.style.position = 'relative';
         badge.style.top = '-1px';
         el.after(badge);
       }
 
-      // Guardar valor actual y limpiar lastChange si ya expiró
       const persisted = lastChange && (nowTs - lastChange.time) < TTL ? lastChange : null;
       localStorage.setItem(key, JSON.stringify({ value: nowVal, lastChange: persisted }));
     });
   });
 })();
 </script>
-<!-- debajo de la tabla -->
-<section class="chart-card mt-8 p-4 bg-white border rounded-xl shadow-sm" style="border-color:var(--line)">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
-    <h2 class="text-lg font-semibold">
-      Histórico (PYG → <span id="fx-symbol">—</span>)
-    </h2>
 
-    <!-- Selector de moneda + radios -->
-    <div class="flex flex-wrap items-center gap-3 text-sm">
-      <label class="flex items-center gap-2">
-        Moneda:
-        <select id="fx-select" class="border rounded px-2 py-1">
-          <!-- se llena desde las filas de la tabla -->
-        </select>
-      </label>
-      <span class="hidden md:inline">·</span>
-      <label><input type="radio" name="campo" value="venta" checked> Venta</label>
-      <label class="ml-2"><input type="radio" name="campo" value="compra"> Compra</label>
-      <span class="hidden md:inline">·</span>
-      <label><input type="radio" name="agg" value="last" checked> Último por día</label>
-      <label class="ml-2"><input type="radio" name="agg" value="avg"> Promedio diario</label>
-    </div>
-  </div>
-
-  <!-- Contenedor con altura fija; el canvas ocupa el 100% -->
-  <div id="chartWrap" class="relative h-72 md:h-80 lg:h-96">
-    <canvas id="ratesChart" style="width:100%; height:100%"></canvas>
-  </div>
-  <p id="chart-empty" class="text-xs text-neutral-500 mt-2 hidden">No hay datos históricos para el rango seleccionado.</p>
-  <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
-</section>
-
-<!-- Chart.js + date-fns + adapter (en este orden) -->
+<!-- Chart.js + date-fns + adapter -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/date-fns@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
@@ -146,83 +282,122 @@
   const rows     = Array.from(document.querySelectorAll('tbody tr[data-code]'));
   const elSymbol = document.getElementById('fx-symbol');
   const select   = document.getElementById('fx-select');
+  const typeSel  = document.getElementById('fx-type');
+  const fromInp  = document.getElementById('fx-from');
+  const toInp    = document.getElementById('fx-to');
   const emptyMsg = document.getElementById('chart-empty');
   const ctx      = document.getElementById('ratesChart').getContext('2d');
+  const applyBtn = document.getElementById('fx-apply');
+  const resetBtn = document.getElementById('fx-reset');
+  const daysEl   = document.getElementById('fx-days');
+  const coinsEl  = document.getElementById('fx-coins');
+  const trendPill = document.getElementById('fx-trend-pill');
+  const trendText = document.getElementById('fx-trend-text');
+  const trendDetail = document.getElementById('fx-trend-detail');
 
-  // 1) Poblar selector con las monedas que aparecen en la tabla
+  // Poblar selector FX (monedas)
   const seen = new Set();
   rows.forEach(tr => {
     const code = String(tr.dataset.code || '').toUpperCase();
     if (code && !seen.has(code)) {
       seen.add(code);
       const opt = document.createElement('option');
-      opt.value = code; opt.textContent = code;
+      opt.value = code;
+      opt.textContent = code;
       select.appendChild(opt);
     }
   });
 
-  // Valor inicial (si la tabla está vacía, cae en USD como backup)
   const initial = select.options[0]?.value || rows[0]?.dataset.code || 'USD';
   select.value = initial;
-  const state = { code: initial, campo: 'venta', agg: 'last' };
+  coinsEl.textContent = seen.size || 0;
+
+  const today = new Date();
+  const ninetyAgo = new Date();
+  ninetyAgo.setDate(today.getDate() - 90);
+
+  const formatDate = (d) => d.toISOString().slice(0,10);
+  fromInp.value = formatDate(ninetyAgo);
+  toInp.value = formatDate(today);
+
+  const defaultState = {
+    code: initial,
+    campo: 'venta',
+    agg: 'last',
+    desde: fromInp.value,
+    hasta: toInp.value
+  };
+
+  const state = { ...defaultState };
   elSymbol.textContent = state.code;
 
-  // 2) Inicializar Chart
-  // 2) Inicializar Chart (usa tus variables CSS y un gradient suave)
-const css  = getComputedStyle(document.documentElement);
-const BRAND = css.getPropertyValue('--brand').trim() || '#7c3aed';
-const LINE  = css.getPropertyValue('--line').trim()  || '#e5e7eb';
-const MUTED = css.getPropertyValue('--muted').trim() || '#6b7280';
-const INK   = css.getPropertyValue('--ink').trim()   || '#111827';
+  typeSel.value = state.campo;
 
-const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(0, BRAND + '33'); // ~20% alpha
-gradient.addColorStop(1, BRAND + '00'); // 0% alpha
+  // Inicializar Chart.js
+  const css   = getComputedStyle(document.documentElement);
+  const BRAND = css.getPropertyValue('--brand').trim() || '#7c3aed';
 
-let chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    datasets: [{
-      label: 'PYG → ' + state.code,
-      data: [],
-      tension: 0.25,
-      borderWidth: 2,
-      borderColor: BRAND,
-      backgroundColor: gradient,
-      pointRadius: 4,
-      pointHoverRadius: 5,
-      pointBackgroundColor: BRAND,
-      pointBorderColor: '#fff',
-      fill: true,
-      spanGaps: true,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-    normalized: true,
-    animation: false,
-    scales: {
-      x: { type: 'time', time: { unit: 'day' }, grid: { color: LINE }, ticks: { color: MUTED } },
-      y: { beginAtZero: false, grid: { color: LINE }, ticks: { color: MUTED } }
+  Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  Chart.defaults.color = '#6c757d';
+
+  let chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'PYG → ' + state.code,
+        data: [],
+        tension: 0.4,
+        borderWidth: 3,
+        borderColor: BRAND,
+        backgroundColor: 'rgba(124,58,237,0.15)',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: BRAND,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        fill: true,
+        spanGaps: true,
+      }]
     },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: INK,
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: LINE,
-        borderWidth: 1,
-        displayColors: false
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+      interaction: { intersect: false, mode: 'index' },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: 'day' },
+          grid: { display: false, drawBorder: false },
+          ticks: { maxTicksLimit: 8 },
+          title: { display: true, text: 'Fecha', font: { weight: '600', size: 12 } }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
+          ticks: { callback: (v) => Number(v).toLocaleString('es-PY') },
+          title: { display: true, text: 'Valor (PYG)', font: { weight: '600', size: 12 } }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,.85)',
+          padding: 12,
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: BRAND,
+          borderWidth: 1,
+          displayColors: false,
+          callbacks: {
+            label: (ctx) => `Valor: ${ctx.parsed.y.toLocaleString('es-PY')} PYG`
+          }
+        }
       }
     }
-  }
-});
+  });
 
-
-  // 3) Carga de serie
+  // Cargar serie
   async function loadSeries() {
     elSymbol.textContent = state.code;
     emptyMsg.classList.add('hidden');
@@ -231,53 +406,116 @@ let chart = new Chart(ctx, {
       base: 'PYG',
       destino: state.code,
       campo: state.campo,
-      agg: state.agg
+      agg: state.agg,
+      desde: state.desde,
+      hasta: state.hasta
     });
 
     try {
       const r = await fetch(`${apiUrl}?${params.toString()}`);
       const j = await r.json();
-
       if (!j.ok) throw new Error(j.error || 'Error al obtener serie');
 
-      // Adaptar a Date (algunos adapters lo requieren)
-      const points = (j.points || []).map(p => ({ x: new Date(p.x), y: p.y }));
+      const points = (j.points || []).map(p => ({
+        x: new Date(p.x),
+        y: p.y
+      }));
 
-      chart.data.datasets[0].label = `PYG → ${state.code} (${state.campo}/${state.agg})`;
+      const campoLabel = state.campo === 'compra' ? 'Compra' : 'Venta';
+      const aggLabel = state.agg === 'avg' ? 'Promedio diario' : 'Último por día';
+
+      chart.data.datasets[0].label = `PYG → ${state.code} (${campoLabel} · ${aggLabel})`;
       chart.data.datasets[0].data  = points;
       chart.update();
 
       if (!points.length) emptyMsg.classList.remove('hidden');
-    } catch (e) {
+      updateKpis(points);
+
+    } catch(e){
       console.error(e);
       chart.data.datasets[0].data = [];
       chart.update();
       emptyMsg.textContent = 'No se pudo cargar el histórico.';
       emptyMsg.classList.remove('hidden');
+      updateKpis([]);
     }
   }
 
-  // 4) Interacciones
-  select.addEventListener('change', () => { state.code = select.value; loadSeries(); });
+  // Sincronizar estado
+  const syncState = () => {
+    state.code = select.value || defaultState.code;
+    state.campo = typeSel.value || 'venta';
+    const aggSel = document.querySelector('input[name="agg"]:checked');
+    state.agg = aggSel ? aggSel.value : 'last';
+    state.desde = fromInp.value || defaultState.desde;
+    state.hasta = toInp.value || defaultState.hasta;
+  };
 
-  // Seguir admitiendo click en filas para cambiar la moneda
+  select.addEventListener('change', () => { syncState(); loadSeries(); });
+  typeSel.addEventListener('change', () => { syncState(); loadSeries(); });
+
+  // Click en filas
   rows.forEach(tr => tr.addEventListener('click', () => {
     const code = String(tr.dataset.code || 'USD').toUpperCase();
     state.code = code;
     if (select.value !== code) select.value = code;
+    syncState();
     loadSeries();
   }));
 
-  document.querySelectorAll('input[name="campo"]').forEach(radio =>
-    radio.addEventListener('change', e => { state.campo = e.target.value; loadSeries(); })
-  );
   document.querySelectorAll('input[name="agg"]').forEach(radio =>
-    radio.addEventListener('change', e => { state.agg = e.target.value; loadSeries(); })
+    radio.addEventListener('change', () => { syncState(); loadSeries(); })
   );
 
-  // 5) Primera carga
+  if (applyBtn) applyBtn.addEventListener('click', () => { syncState(); loadSeries(); });
+
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    Object.assign(state, defaultState);
+    select.value = state.code;
+    typeSel.value = state.campo;
+    document.querySelectorAll('input[name="agg"]').forEach(r => {
+      r.checked = r.value === state.agg;
+    });
+    fromInp.value = state.desde;
+    toInp.value = state.hasta;
+    loadSeries();
+  });
+
+  // Primera carga
+  syncState();
   loadSeries();
+
+  // KPIs
+  function updateKpis(points){
+    const uniqueDays = new Set(points.map(p => new Date(p.x).toISOString().slice(0,10)));
+    daysEl.textContent = uniqueDays.size;
+
+    if (points.length < 2) {
+      trendPill.textContent = '—';
+      trendPill.className = 'trend-pill flat';
+      trendText.textContent = 'Sin datos suficientes.';
+      trendDetail.textContent = 'Selecciona un rango para ver la tendencia.';
+      return;
+    }
+
+    const sorted = [...points].sort((a,b)=>a.x-b.x);
+    const first = sorted[0].y;
+    const last  = sorted[sorted.length-1].y;
+    const diff  = last - first;
+    const pct   = first ? (diff/first)*100 : 0;
+
+    const arrow = diff>0 ? '⬆' : diff<0 ? '⬇' : '➖';
+    const dirClass = diff>0 ? 'up' : diff<0 ? 'down' : 'flat';
+
+    trendPill.textContent = `${arrow} ${diff>0?'Al alza':diff<0?'A la baja':'Estable'}`;
+    trendPill.className = `trend-pill ${dirClass}`;
+
+    const changeLabel = diff===0 ? 'sin variación' : diff>0 ? 'positivo' : 'negativo';
+    trendText.textContent = `Cambio ${changeLabel} de ${Math.abs(diff).toLocaleString('es-PY')} PYG`;
+    trendDetail.textContent = `Variación de ${pct.toFixed(2)}% entre el primer y último dato.`;
+  }
 })();
 </script>
+
 </main>
 {% endblock %}
