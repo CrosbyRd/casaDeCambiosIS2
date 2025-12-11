@@ -61,4 +61,4 @@ def crear_o_actualizar_registro_ganancia(sender, instance, created, **kwargs):
                 'fecha_registro': timezone.now(),
             }
         )
-        print(f"Registro de ganancia creado/actualizado para Transaccion {instance.id} con ganancia neta real: {ganancia_neta_real}")
+        #print(f"Registro de ganancia creado/actualizado para Transaccion {instance.id} con ganancia neta real: {ganancia_neta_real}")
