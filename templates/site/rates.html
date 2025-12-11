@@ -81,6 +81,70 @@
     .card-header h3{font-size:1.1rem;font-weight:700;color:#333;margin:0}
     .chart-container{position:relative;height:360px}
     .chart-container--compact{height:280px}
+        /* Tarjeta de tendencia del período */
+    .trend-card{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:1.25rem;
+        padding:1.25rem 1.5rem;
+        border-radius:14px;
+        background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(124,58,237,.14));
+        border:1px solid rgba(124,58,237,.15);
+    }
+    .trend-main-label{
+        font-size:.75rem;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:.2rem;
+    }
+    .trend-main-value{
+        font-size:1.35rem;
+        font-weight:800;
+        color:var(--ink);
+        margin-bottom:.2rem;
+    }
+    .trend-main-sub{
+        font-size:.85rem;
+        color:var(--muted);
+    }
+    .trend-pill{
+        min-width:210px;
+        text-align:center;
+        padding:.9rem 1.4rem;
+        border-radius:999px;
+        font-weight:700;
+        font-size:.95rem;
+        box-shadow:var(--shadow-sm);
+        background:var(--light-gray);
+        color:var(--muted);
+        transition:.2s;
+        transform:translateY(0);
+    }
+    .trend-pill.up{
+        background:rgba(16,185,129,.1);
+        color:#047857;
+        box-shadow:0 10px 25px rgba(16,185,129,.25);
+    }
+    .trend-pill.down{
+        background:rgba(239,68,68,.1);
+        color:#b91c1c;
+        box-shadow:0 10px 25px rgba(239,68,68,.25);
+    }
+    .trend-pill.flat{
+        background:var(--light-gray);
+        color:var(--muted);
+    }
+    .trend-pill:not(.flat):hover{
+        transform:translateY(-2px);
+    }
+    @media (max-width:768px){
+        .trend-card{align-items:flex-start;}
+        .trend-pill{width:100%;}
+    }
 
     /* KPIs laterales */
     .side-stack{display:flex;flex-direction:column;gap:1rem}
@@ -221,15 +285,15 @@
         <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
       </div>
 
-      <div class="card">
+            <div class="card">
         <div class="card-header">
           <span>📊</span><h3>Evolución Promedio del Período</h3>
         </div>
-        <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="trend-card">
           <div>
-            <p class="text-sm text-neutral-500 mb-1">Comparación entre el primer y último valor del rango seleccionado.</p>
-            <div class="text-lg font-semibold text-[var(--ink)]" id="fx-trend-text">Sin datos suficientes.</div>
-            <div class="text-sm text-neutral-500" id="fx-trend-detail">Selecciona un rango para ver la tendencia.</div>
+            <div class="trend-main-label">Resumen del período</div>
+            <div class="trend-main-value" id="fx-trend-text">Sin datos suficientes.</div>
+            <div class="trend-main-sub" id="fx-trend-detail">Selecciona un rango para ver la tendencia.</div>
           </div>
           <div id="fx-trend-pill" class="trend-pill flat">—</div>
         </div>
