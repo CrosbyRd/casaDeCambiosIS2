@@ -492,7 +492,7 @@
           title: { display: true, text: 'Fecha', font: { weight: '600', size: 12 } }
         },
         y: {
-          beginAtZero: true,
+          beginAtZero: false,
           grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
           ticks: { callback: (v) => Number(v).toLocaleString('es-PY') },
           title: { display: true, text: 'Valor (PYG)', font: { weight: '600', size: 12 } }
@@ -544,10 +544,26 @@
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || 'Error al obtener serie');
 
-      const points = (j.points || []).map(p => ({
+            const points = (j.points || []).map(p => ({
         x: new Date(p.x),
         y: p.y
       }));
+
+      // Ajustar dinámicamente el rango del eje Y en función de los datos
+      if (points.length) {
+        const ys = points.map(p => p.y);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        const range = maxY - minY || (minY || 1) * 0.01;
+        const padding = range * 0.1; // ~10% de margen arriba y abajo
+
+        chart.options.scales.y.min = minY - padding;
+        chart.options.scales.y.max = maxY + padding;
+      } else {
+        chart.options.scales.y.min = undefined;
+        chart.options.scales.y.max = undefined;
+      }
 
       const campoLabel = state.campo === 'compra' ? 'Compra' : 'Venta';
       const fromCode   = state.campo === 'compra' ? 'PYG' : state.code;
@@ -557,6 +573,7 @@
 
       chart.data.datasets[0].data  = points;
       chart.update();
+
 
       if (!points.length) emptyMsg.classList.remove('hidden');
       updateKpis(points);
