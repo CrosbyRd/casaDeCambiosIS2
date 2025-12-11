@@ -234,11 +234,19 @@ class Command(BaseCommand):
 
                     # Valores finales: SIEMPRE alrededor de la cotización ACTUAL
                     val_compra = (base_compra * m_compra).quantize(
-                        Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        Decimal("1"), rounding=ROUND_HALF_UP
                     )
                     val_venta = (base_venta * m_venta).quantize(
-                        Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        Decimal("1"), rounding=ROUND_HALF_UP
                     )
+
+                    # Nunca 0 ni negativos
+                    if val_compra <= 0:
+                        val_compra = Decimal("1")
+                    if val_venta <= 0:
+                        val_venta = Decimal("1")
+
+                    # Comisiones siguen siendo decimales finitos (están bien así)
                     comi_compra = (base_comi_compra * m_cc).quantize(
                         Decimal("0.0001"), rounding=ROUND_HALF_UP
                     )

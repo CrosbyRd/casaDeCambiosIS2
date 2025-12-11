@@ -273,7 +273,7 @@ def reporte_ganancias_pdf(request):
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
             f"{Decimal(monto):,.0f}".replace(',', '.'),
-            f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
+            f"{Decimal(t.comision_final).quantize(Decimal('0.0001'))}",
             f"{ganancia:,.0f}".replace(',', '.'),
             fecha_str,
         ])
@@ -408,7 +408,7 @@ def reporte_ganancias_excel(request):
             moneda_codigo,
             f"{Decimal(t.tasa_cambio_aplicada):,.0f}".replace(',', '.'),
             f"{Decimal(monto_excel):,.0f}".replace(',', '.'),
-            f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
+            t.comision_final,  # ← Decimal directo, SIN :,.0f
             f"{Decimal(ganancia_excel):,.0f}".replace(',', '.'),
             fecha_str,
         ])

@@ -24,41 +24,35 @@ from datetime import datetime, timedelta
 
 # Mixin para proteger vistas por rol (ej. 'analista' o 'administrador')
 
-def is_analista_o_staff(user):
-    """
-    Permite acceder al dashboard de ganancias solo a:
-    - Usuarios del grupo 'Analista', o
-    - Usuarios staff (administrador).
-    """
-    if not user.is_authenticated:
-        return False
-    # Coincide con lo que usan los tests: Group name = 'Analista'
-    es_analista = user.groups.filter(name="Analista").exists()
-    return es_analista or user.is_staff
-
 
 def is_analista_or_admin(user):
     """
-    Verifica si el usuario pertenece al grupo *Analista* o es staff.
+    Verifica si el usuario tiene permiso para ver el dashboard de ganancias.
 
-    Esta función se utiliza junto con :func:`django.contrib.auth.decorators.user_passes_test`
-    para proteger las vistas del módulo y evitar que usuarios no autorizados
-    accedan al dashboard de ganancias.
-
-    :param user: Usuario autenticado que se desea validar.
-    :type user: django.contrib.auth.models.User
-    :return: ``True`` si el usuario es analista o staff, ``False`` en caso contrario.
-    :rtype: bool
+    Se considera válido si:
+    - Está autenticado, y
+    - Tiene un rol M2M llamado "Analista" o "Administrador" (modelo Role del proyecto), o
+    - Pertenece al grupo de Django "Analista", o
+    - Es staff (is_staff=True).
     """
     if not user.is_authenticated:
         return False
 
-    # Intentar usar los roles del proyecto (M2M CustomUser.roles)
+    # 1) Proyecto actual: roles M2M (CustomUser.roles)
     roles_rel = getattr(user, "roles", None)
+    if roles_rel is not None and roles_rel.filter(name__in=["Analista", "Administrador"]).exists():
+        return True
 
-    if roles_rel is not None:
-        if roles_rel.filter(name__in=["Analista", "Administrador"]).exists():
-            return True
+    # 2) Compatibilidad con los tests: grupos clásicos de Django
+    if user.groups.filter(name="Analista").exists():
+        return True
+
+    # 3) Staff también tiene acceso
+    if user.is_staff:
+        return True
+
+    return False
+
 
 
 @login_required

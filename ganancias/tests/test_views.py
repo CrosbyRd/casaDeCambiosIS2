@@ -28,18 +28,10 @@ class DashboardGananciasAccessTest(TestCase):
         group = Group.objects.create(name="Analista")
         self.analyst.groups.add(group)
 
-        # ⚠️ Aseguramos que sea staff para pasar is_analista_or_admin
-        self.analyst.is_staff = True
-        self.analyst.save()
-
         self.staff = CustomUser.objects.create_user(
             email="staff@test.com", password="12345",
             first_name="Staff", last_name="User", is_active=True, is_staff=True
         )
-
-        # ⚠️ Por seguridad, nos aseguramos y guardamos
-        self.staff.is_staff = True
-        self.staff.save()
 
     def test_requires_login(self):
         url = reverse("ganancias:dashboard_ganancias")
@@ -81,11 +73,6 @@ class DashboardGananciasMetricsTest(TestCase):
         )
         Group.objects.create(name="Analista")
         self.user.groups.add(Group.objects.get(name="Analista"))
-
-        # ⚠️ Aseguramos que pase el permiso
-        self.user.is_staff = True
-        self.user.save()
-
         self.client.force_login(self.user)
 
         # Cliente y operador obligatorios
@@ -188,11 +175,6 @@ class DashboardGananciasFiltersTest(TestCase):
         )
         Group.objects.create(name="Analista")
         self.user.groups.add(Group.objects.get(name="Analista"))
-
-        # ⚠️ Aseguramos que pase el permiso
-        self.user.is_staff = True
-        self.user.save()
-
         self.client.force_login(self.user)
 
         # Cliente y operador obligatorios
