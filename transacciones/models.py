@@ -21,7 +21,7 @@ from configuracion.models import TransactionLimit
 from django.db.models import Sum
 from django.utils.timezone import now
 from pagos.models import TipoMedioPago
-
+from django.db.models import SET_NULL
 
 # Forward declaration for MedioAcreditacion
 class MedioAcreditacion(models.Model):
@@ -115,8 +115,8 @@ class Transaccion(models.Model):
     )
 
     # Información operativa
-    medio_acreditacion_cliente = models.ForeignKey('clientes.MedioAcreditacion', on_delete=models.PROTECT, null=True, blank=True, help_text="Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).")
-    medio_pago_utilizado = models.ForeignKey(TipoMedioPago, on_delete=models.PROTECT, null=True, blank=True, help_text="Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).")
+    medio_acreditacion_cliente = models.ForeignKey('clientes.MedioAcreditacion', on_delete=SET_NULL, null=True, blank=True, help_text="Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).")
+    medio_pago_utilizado = models.ForeignKey(TipoMedioPago, on_delete=SET_NULL, null=True, blank=True, help_text="Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).")
     
     # Nuevo campo para la instantánea de los datos del medio de pago
     datos_medio_pago_snapshot = models.JSONField(
