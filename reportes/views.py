@@ -18,6 +18,7 @@ from django.shortcuts import render
 from decimal import Decimal
 from django.template.defaultfilters import floatformat
 from django.utils.formats import number_format
+from django.utils.timezone import localtime
 
 
 # =========================
@@ -202,6 +203,8 @@ def reporte_ganancias_pdf(request):
             total_compras += ganancia
 
         total_general += ganancia
+        fecha_local = localtime(t.fecha_creacion)
+        fecha_str = fecha_local.strftime("%d/%m/%Y %H:%M")
 
         # Agregar fila
         data.append([
@@ -213,7 +216,7 @@ def reporte_ganancias_pdf(request):
             f"{Decimal(monto):,.0f}".replace(',', '.'),
             f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
             f"{ganancia:,.0f}".replace(',', '.'),
-            t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
+            fecha_str,
         ])
 
     # ============================
@@ -322,6 +325,8 @@ def reporte_ganancias_excel(request):
         else:
             total_compras += ganancia_excel
         total_general += ganancia_excel
+        fecha_local = localtime(t.fecha_creacion)
+        fecha_str = fecha_local.strftime("%d/%m/%Y %H:%M")
 
         ws.append([
             idx,
@@ -332,7 +337,7 @@ def reporte_ganancias_excel(request):
             f"{Decimal(monto_excel):,.0f}".replace(',', '.'),
             f"{Decimal(t.comision_final):,.0f}".replace(',', '.'),
             f"{Decimal(ganancia_excel):,.0f}".replace(',', '.'),
-            t.fecha_creacion.strftime("%d/%m/%Y %H:%M"),
+            fecha_str,
         ])
 
     # ==============================
@@ -510,7 +515,8 @@ def reporte_transacciones_pdf(request):
         moneda_codigo = (
             t.moneda_origen.codigo if t.tipo_operacion.lower() == 'compra' else t.moneda_destino.codigo
         )
-
+        fecha_local = localtime(t.fecha_creacion)
+        fecha_str = fecha_local.strftime("%d/%m/%Y %H:%M")
         data.append([
             idx,
             str(t.cliente),
@@ -519,7 +525,7 @@ def reporte_transacciones_pdf(request):
             f"{Decimal(t.monto_origen):,.0f}".replace(',', '.'),
             f"{Decimal(t.monto_destino):,.0f}".replace(',', '.'),
             t.get_estado_display(),
-            t.fecha_creacion.strftime("%d/%m/%Y %H:%M")
+            fecha_str
         ])
 
     col_widths = [30, 150, 80, 50, 90, 90, 140, 90]
@@ -606,7 +612,8 @@ def reporte_transacciones_excel(request):
         moneda_codigo = (
             t.moneda_origen.codigo if t.tipo_operacion.lower() == 'compra' else t.moneda_destino.codigo
         )
-
+        fecha_local = localtime(t.fecha_creacion)
+        fecha_str = fecha_local.strftime("%d/%m/%Y %H:%M")
         ws.append([
             i,
             str(t.cliente),
@@ -615,7 +622,7 @@ def reporte_transacciones_excel(request):
             f"{Decimal(t.monto_origen):,.0f}".replace(',', '.'),
             f"{Decimal(t.monto_destino):,.0f}".replace(',', '.'),
             t.get_estado_display(),
-            t.fecha_creacion.strftime("%d/%m/%Y %H:%M")
+            fecha_str
         ])
 
     col_widths = [5, 25, 15, 10, 18, 18, 25, 20]
