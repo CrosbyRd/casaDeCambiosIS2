@@ -1,8 +1,45 @@
+"""
+Modelos de la aplicación **ganancias**.
+
+.. module:: ganancias.models
+   :synopsis: Registros de ganancias por transacción de divisas.
+
+Este módulo define:
+
+- :class:`RegistroGanancia`: Almacena la ganancia neta obtenida por cada
+  :class:`transacciones.models.Transaccion`, expresada en una moneda base
+  (normalmente PYG) y asociada a la moneda extranjera operada.
+"""
+
+
 from django.db import models
 from transacciones.models import Transaccion
 from monedas.models import Moneda
 
 class RegistroGanancia(models.Model):
+
+    """
+    Registro de la ganancia neta asociada a una transacción de compra/venta.
+
+    Cada instancia representa el resultado económico de una
+    :class:`transacciones.models.Transaccion`, calculado a partir de la
+    comisión efectiva aplicada y el monto operado.
+
+    Campos principales
+    ------------------
+    - ``transaccion``: Llave primaria y relación 1:1 con la transacción origen.
+    - ``ganancia_registrada``: Monto de la ganancia neta en ``moneda_ganancia``.
+    - ``moneda_ganancia``: Moneda en la que se registra la ganancia
+      (por conveniencia suele ser PYG).
+    - ``moneda_operada``: Moneda extranjera involucrada en la operación
+      (por ejemplo USD, EUR).
+    - ``fecha_registro``: Fecha y hora en la que se calculó/registró la ganancia.
+
+    Este modelo se crea o actualiza automáticamente desde
+    :mod:`ganancias.signals` cuando una transacción pasa al estado
+    ``completada``.
+    """
+    
     transaccion = models.OneToOneField(
         Transaccion,
         on_delete=models.CASCADE,

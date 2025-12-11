@@ -165,28 +165,68 @@ class Command(BaseCommand):
                 base_comi_compra = self._base_comision(base_compra, c.comision_compra)
                 base_comi_venta = self._base_comision(base_venta, c.comision_venta)
 
-                # Multiplicadores iniciales
+
+                registros_nuevos = []
+
+                # Multiplicadores iniciales (partimos exactamente del valor actual)
                 m_compra = Decimal("1.0")
                 m_venta = Decimal("1.0")
                 m_cc = Decimal("1.0")
                 m_cv = Decimal("1.0")
 
-                registros_nuevos = []
-
                 current = start_date
                 while current <= end_date:
-                    # random walk suave
-                    m_compra = self._random_walk_step(m_compra)
-                    m_venta = self._random_walk_step(m_venta)
-                    m_cc = self._random_walk_step(m_cc, max_cambio_diario=Decimal("0.015"))
-                    m_cv = self._random_walk_step(m_cv, max_cambio_diario=Decimal("0.015"))
+                    es_ultimo_dia = (current == end_date)
 
-                    val_compra = (base_compra * m_compra).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
-                    val_venta = (base_venta * m_venta).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
-                    comi_compra = (base_comi_compra * m_cc).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
-                    comi_venta = (base_comi_venta * m_cv).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+                    if not es_ultimo_dia:
+                        # 🔹 Random walk MUY suave alrededor del valor actual
+                        # Precios: ±0,1 % por día, acotados a ±1 % del valor actual
+                        m_compra = self._random_walk_step(
+                            m_compra,
+                            max_cambio_diario=Decimal("0.001"),
+                            min_mult=Decimal("0.99"),
+                            max_mult=Decimal("1.01"),
+                        )
+                        m_venta = self._random_walk_step(
+                            m_venta,
+                            max_cambio_diario=Decimal("0.001"),
+                            min_mult=Decimal("0.99"),
+                            max_mult=Decimal("1.01"),
+                        )
 
-                    # Evitar 0 absoluto en comisiones simuladas
+                        # Comisiones: un poco más libres pero igual acotadas
+                        m_cc = self._random_walk_step(
+                            m_cc,
+                            max_cambio_diario=Decimal("0.004"),
+                            min_mult=Decimal("0.90"),
+                            max_mult=Decimal("1.10"),
+                        )
+                        m_cv = self._random_walk_step(
+                            m_cv,
+                            max_cambio_diario=Decimal("0.004"),
+                            min_mult=Decimal("0.90"),
+                            max_mult=Decimal("1.10"),
+                        )
+
+                        val_compra = (base_compra * m_compra).quantize(
+                            Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        )
+                        val_venta = (base_venta * m_venta).quantize(
+                            Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        )
+                        comi_compra = (base_comi_compra * m_cc).quantize(
+                            Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        )
+                        comi_venta = (base_comi_venta * m_cv).quantize(
+                            Decimal("0.0001"), rounding=ROUND_HALF_UP
+                        )
+                    else:
+                        # 🔒 Último día: CLAVA exactamente el valor actual de la cotización
+                        val_compra = base_compra
+                        val_venta = base_venta
+                        comi_compra = base_comi_compra
+                        comi_venta = base_comi_venta
+
                     if comi_compra <= 0:
                         comi_compra = Decimal("0.0001")
                     if comi_venta <= 0:
@@ -211,6 +251,8 @@ class Command(BaseCommand):
                     )
 
                     current += timedelta(days=1)
+
+
 
                 if dry_run:
                     self.stdout.write(

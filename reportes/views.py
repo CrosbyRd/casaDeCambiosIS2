@@ -1,4 +1,21 @@
 #reportes/views.py
+
+"""
+Vistas de la aplicación de reportes.
+
+.. module:: reportes.views
+   :synopsis: Vistas para reportes de ganancias y transacciones.
+
+Este módulo contiene las vistas responsables de:
+- Mostrar el panel principal de reportes.
+- Listar y filtrar transacciones y ganancias en la web.
+- Exportar reportes de ganancias y transacciones a PDF y Excel.
+
+Los datos se obtienen principalmente de los modelos
+:class:`transacciones.models.Transaccion` y
+:class:`ganancias.models.RegistroGanancia`.
+"""
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils.timezone import now
@@ -26,6 +43,19 @@ from django.utils.timezone import localtime
 # =========================
 @login_required
 def panel_reportes(request):
+
+    """
+    Panel principal de la sección de reportes.
+
+    Muestra la página inicial desde donde el usuario puede
+    navegar a los reportes de ganancias y de transacciones.
+
+    :param request: Objeto HttpRequest de la petición actual.
+    :type request: django.http.HttpRequest
+    :return: Respuesta con el template del panel de reportes.
+    :rtype: django.http.HttpResponse
+    """
+
     return render(request, 'reportes/panel_reportes.html')
 
 
@@ -42,6 +72,21 @@ from ganancias.models import RegistroGanancia
 
 @login_required
 def reporte_ganancias(request):
+
+    """
+    Reporte web de ganancias por transacción.
+
+    Lista las transacciones completadas y muestra la ganancia
+    registrada para cada una. Permite filtrar por tipo de operación,
+    moneda, rango de fechas y cliente. También calcula totales
+    separados para compras, ventas y un total general.
+
+    :param request: Objeto HttpRequest de la petición actual, incluye filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta con el template HTML del reporte de ganancias.
+    :rtype: django.http.HttpResponse
+    """
+
     # 📌 Trae TODAS las transacciones COMPLETADAS (compra y venta)
     transacciones = Transaccion.objects.filter(estado='completada').order_by('-fecha_creacion')
 
@@ -121,6 +166,20 @@ def reporte_ganancias(request):
 # =========================
 @login_required
 def reporte_ganancias_pdf(request):
+
+    """
+    Exporta el reporte de ganancias a un archivo PDF.
+
+    Aplica los mismos filtros que la vista web de ganancias y
+    genera un PDF con el detalle de cada transacción (cliente,
+    tipo de operación, moneda, monto, comisión, ganancia, fecha)
+    más los totales de compras, ventas y ganancia general.
+
+    :param request: Objeto HttpRequest de la petición actual, con filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta HTTP con el contenido PDF adjunto.
+    :rtype: django.http.HttpResponse
+    """
 
     transacciones = Transaccion.objects.filter(estado='completada').order_by('-fecha_creacion')
 
@@ -246,6 +305,20 @@ from openpyxl.utils import get_column_letter
 
 @login_required
 def reporte_ganancias_excel(request):
+
+    """
+    Exporta el reporte de ganancias a un archivo Excel.
+
+    Aplica filtros por fecha, tipo de operación, cliente y moneda,
+    y construye una planilla con el detalle de cada transacción
+    y los totales de ganancias. Usa ``openpyxl`` para dar formato
+    a encabezados y columnas.
+
+    :param request: Objeto HttpRequest de la petición actual, con filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta HTTP con el archivo ``.xlsx`` adjunto.
+    :rtype: django.http.HttpResponse
+    """
 
     transacciones = Transaccion.objects.filter(estado='completada').order_by('-fecha_creacion')
 
@@ -422,6 +495,21 @@ def panel_reportes(request):
 # =========================
 @login_required
 def reporte_transacciones(request):
+
+    """
+    Reporte web de transacciones.
+
+    Lista todas las transacciones del sistema permitiendo
+    filtrar por rango de fechas, tipo de operación, estado,
+    cliente y moneda. La lista se muestra paginada en el
+    template HTML.
+
+    :param request: Objeto HttpRequest de la petición actual, con filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta HTTP con la tabla paginada de transacciones.
+    :rtype: django.http.HttpResponse
+    """
+        
     transacciones = Transaccion.objects.all().order_by('-fecha_creacion')
 
     # --- FILTROS ---
@@ -469,6 +557,21 @@ def reporte_transacciones(request):
 # =========================
 @login_required
 def reporte_transacciones_pdf(request):
+
+    """
+    Exporta el reporte de transacciones a PDF.
+
+    Genera un documento PDF en formato apaisado con la lista
+    filtrada de transacciones (cliente, tipo, moneda, montos,
+    estado y fecha). Utiliza ``reportlab`` para construir la tabla
+    y aplicar estilos de presentación.
+
+    :param request: Objeto HttpRequest de la petición actual, con filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta HTTP con el archivo PDF adjunto.
+    :rtype: django.http.HttpResponse
+    """
+
     transacciones = Transaccion.objects.all().order_by('-fecha_creacion')
 
     # --- FILTROS ---
@@ -557,6 +660,21 @@ from openpyxl.styles import Font, Alignment, PatternFill
 
 @login_required
 def reporte_transacciones_excel(request):
+
+    """
+    Exporta el reporte de transacciones a Excel.
+
+    Aplica filtros por fecha, tipo, estado, cliente y moneda,
+    y construye una planilla de Excel con cada transacción
+    y columnas para cliente, tipo, moneda, montos, estado y fecha.
+    Da formato al encabezado y ajusta el ancho de las columnas.
+
+    :param request: Objeto HttpRequest de la petición actual, con filtros en ``GET``.
+    :type request: django.http.HttpRequest
+    :return: Respuesta HTTP con el archivo ``.xlsx`` adjunto.
+    :rtype: django.http.HttpResponse
+    """
+
     transacciones = Transaccion.objects.all().order_by('-fecha_creacion')
 
     # --- FILTROS ---
