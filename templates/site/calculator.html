@@ -1,418 +1,362 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Global Exchange{% endblock %}
+{% block title %}Global Exchange - Calculadora{% endblock %}
 {% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
 
-{% include "partials/page_header.html" with title="Calculadora" subtitle="Simulá tu conversión al instante" %}
+{% include "partials/page_header.html" with title="Calculadora" subtitle="Cotizá tu operación al instante" %}
 {% include "partials/messages.html" %}
 
-<main class="max-w-5xl mx-auto px-6 py-10">
-  <section class="bg-white border rounded-xl shadow-sm mb-4" style="border-color:var(--line)">
-    <form method="post"
-          id="form-simulador"
-          data-initial-blank="{% if form.is_bound %}0{% else %}1{% endif %}"
+<main class="max-w-3xl mx-auto px-6 py-10">
+  <section class="bg-white border rounded-2xl shadow-xl shadow-slate-200/50 mb-8 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-slate-200/60" style="border-color:var(--line)">
+    
+    <div class="border-b bg-gray-50/50 px-6 py-5" style="border-color:var(--line)">
+      <div class="flex relative bg-white border rounded-xl p-1.5 shadow-sm" style="border-color:var(--line)">
+        
+        <button type="button" class="op-switch w-1/2 py-3 rounded-lg text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2.5"
+                data-val="compra" onclick="setOperation('compra')">
+           <span class="text-xl filter drop-shadow-sm">📥</span> 
+           <span>Quiero Comprar</span>
+        </button>
+        <button type="button" class="op-switch w-1/2 py-3 rounded-lg text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2.5"
+                data-val="venta" onclick="setOperation('venta')">
+           <span class="text-xl filter drop-shadow-sm">📤</span> 
+           <span>Quiero Vender</span>
+        </button>
+      </div>
+    </div>
+
+    <form method="post" id="form-simulador" class="p-6 md:p-8"
           data-currencies='{
-            "USD":{"name":"Dólar estadounidense","symbol":"$","emoji":"🇺🇸"},
-            "EUR":{"name":"Euro","symbol":"€","emoji":"🇪🇺"},
-            "ARS":{"name":"Peso argentino","symbol":"$","emoji":"🇦🇷"},
-            "BRL":{"name":"Real brasileño","symbol":"R$","emoji":"🇧🇷"},
-            "CLP":{"name":"Peso chileno","symbol":"$","emoji":"🇨🇱"},
-            "COP":{"name":"Peso colombiano","symbol":"$","emoji":"🇨🇴"},
-            "MXN":{"name":"Peso mexicano","symbol":"$","emoji":"🇲🇽"},
-            "PEN":{"name":"Sol peruano","symbol":"S/","emoji":"🇵🇪"},
-            "PYG":{"name":"Guaraní paraguayo","symbol":"₲","emoji":"🇵🇾"},
-            "UYU":{"name":"Peso uruguayo","symbol":"$","emoji":"🇺🇾"},
-            "GBP":{"name":"Libra esterlina","symbol":"£","emoji":"🇬🇧"},
-            "JPY":{"name":"Yen japonés","symbol":"¥","emoji":"🇯🇵"},
-            "CNY":{"name":"Yuan chino","symbol":"¥","emoji":"🇨🇳"},
-            "AUD":{"name":"Dólar australiano","symbol":"$","emoji":"🇦🇺"},
-            "CAD":{"name":"Dólar canadiense","symbol":"$","emoji":"🇨🇦"},
-            "CHF":{"name":"Franco suizo","symbol":"Fr","emoji":"🇨🇭"}
+            "USD":{"name":"Dólar estadounidense","emoji":"🇺🇸"},
+            "EUR":{"name":"Euro","emoji":"🇪🇺"},
+            "ARS":{"name":"Peso argentino","emoji":"🇦🇷"},
+            "BRL":{"name":"Real brasileño","emoji":"🇧🇷"},
+            "CLP":{"name":"Peso chileno","emoji":"🇨🇱"},
+            "COP":{"name":"Peso colombiano","emoji":"🇨🇴"},
+            "MXN":{"name":"Peso mexicano","emoji":"🇲🇽"},
+            "PEN":{"name":"Sol peruano","emoji":"🇵🇪"},
+            "UYU":{"name":"Peso uruguayo","emoji":"🇺🇾"},
+            "GBP":{"name":"Libra esterlina","emoji":"🇬🇧"},
+            "JPY":{"name":"Yen japonés","emoji":"🇯🇵"},
+            "CNY":{"name":"Yuan chino","emoji":"🇨🇳"},
+            "AUD":{"name":"Dólar australiano","emoji":"🇦🇺"},
+            "CAD":{"name":"Dólar canadiense","emoji":"🇨🇦"},
+            "CHF":{"name":"Franco suizo","emoji":"🇨🇭"},
+            "PYG":{"name":"Guaraní","emoji":"🇵🇾"}
           }'>
       {% csrf_token %}
 
-      <!-- RATE CARD: Tasa de cambio actual -->
-      <div id="fx-rate-card" class="rate-card hidden" aria-live="polite">
-        <div class="flex items-center gap-3">
-          <span id="fx-emoji" style="font-size:1.35rem">💱</span>
-          <div class="rate-card__title">
-            <strong id="fx-label">Tasa de cambio</strong>
-            <span id="fx-side" class="ml-2 text-[var(--muted)] text-sm">(—)</span>
-          </div>
-        </div>
+      {{ form.tipo_operacion }} 
+      {{ form.monto }}
 
-        <div class="rate-card__value">
-          <span id="fx-rate">—</span>
-        </div>
-
-        <div class="rate-card__note">
-          Cotizaciones meramente de referencia.
-        </div>
-      </div>
-
-      <!-- JSON con tasas para el front -->
       <script id="tasas-json" type="application/json">{{ tasas_json|default:"{}"|safe }}</script>
 
-      <div class="overflow-x-auto">
-        <!-- tabla con borde redondeado -->
-        <div class="table-shell rounded-2xl overflow-hidden border" style="border-color:var(--line)">
-          <table class="w-full border-collapse min-w-[520px]">
-            <thead class="bg-[var(--brand)] text-white">
-              <tr>
-                <th class="px-4 py-3 text-left">Tengo esta moneda</th>
-                <th class="px-4 py-3 text-left">Quiero esta moneda</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="hover:bg-[var(--brand-soft)]">
-                <td class="px-4 py-3">{{ form.moneda_origen }}</td>
-                <td class="px-4 py-3">{{ form.moneda_destino }}</td>
-              </tr>
-              <tr class="hover:bg-[var(--brand-soft)]">
-                <td class="px-4 py-3">
-                  {{ form.monto }}
-                  <!-- Input visible SOLO para mostrar/editar con miles -->
-                  <input
-                    type="text"
-                    id="id_monto_visible"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    placeholder="0"
-                    class="gx-input mt-2"
-                  />
-                </td>
-                <td class="px-4 py-3">
-                  <input id="out-amount" class="gx-input" type="text" readonly
-                         value="{% if resultado and not resultado.error %}{{ resultado.monto_recibido }}{% endif %}"
-                         placeholder="0,00">
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="grid gap-8">
+        
+        <div class="group">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-2 ml-1">Divisa Extranjera</label>
+          <div class="relative">
+             {{ form.moneda }} 
+             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+             </div>
+          </div>
+          {% if form.moneda.errors %}
+            <div class="text-red-500 text-sm mt-1 ml-1 font-medium">{{ form.moneda.errors }}</div>
+          {% endif %}
         </div>
+
+        <div class="relative">
+            <label class="block text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-2 ml-1" id="label-monto">
+                Monto
+            </label>
+            <div class="relative flex items-center">
+                <input type="text" id="monto_visible" 
+                       class="gx-input text-3xl font-bold tracking-tight pr-24 h-20 pl-6 shadow-sm" 
+                       placeholder="0" inputmode="numeric" autocomplete="off"
+                       value="{{ form.monto.value|default:'' }}">
+                
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none bg-gray-100 rounded-lg px-3 py-2 border border-gray-200 flex items-center gap-2">
+                    <span id="currency-flag" class="text-2xl leading-none">🇺🇸</span>
+                    <span id="currency-code" class="font-black text-gray-600 text-lg leading-none">USD</span>
+                </div>
+            </div>
+            {% if form.monto.errors %}
+                <div class="text-red-500 text-sm mt-1 ml-1 font-medium">{{ form.monto.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div id="result-box" class="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center transition-all duration-300 opacity-60 grayscale relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--brand)] to-transparent opacity-50"></div>
+
+            <p class="text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-2" id="res-label">
+                Total Estimado en Guaraníes
+            </p>
+            
+            <div class="text-5xl font-black text-[var(--brand)] my-3 tracking-tighter flex items-baseline justify-center gap-1.5" style="text-shadow: 0 2px 10px rgba(115,60,255,0.1);">
+                <span class="text-2xl text-[var(--muted)] font-bold translate-y-[-4px]">₲</span>
+                <span id="res-value">
+                    {% if resultado %}{{ resultado.monto_final|floatformat:0 }}{% else %}0{% endif %}
+                </span>
+            </div>
+
+            <div class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mt-2">
+                <span class="text-lg animate-pulse">💱</span>
+                <span class="text-sm font-semibold text-[var(--ink)]" id="rate-display">
+                    {% if resultado %}
+                        Cotización aplicada: {{ resultado.tasa|floatformat:0 }} Gs
+                    {% else %}
+                        Seleccioná una moneda
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
       </div>
 
-      <div class="px-4 py-4">
-        <div class="btn-row" style="margin-top:18px;">
-          <button id="btn-calcular" class="gx-btn" type="submit">Calcular</button>
-          <button id="btn-clear" class="gx-btn gx-btn--ghost" type="button">Borrar</button>
-        </div>
-
-        {% if resultado %}
-          {% if resultado.error %}
-            <div class="gx-error mt-4"><strong>Error:</strong> {{ resultado.error }}</div>
-          {% else %}
-            <div class="gx-result-wrap mt-4 w-full" id="result-wrap">
-              <div class="gx-result-big">
-                Recibirás aproximadamente:
-                <span id="res-num" data-raw="{{ resultado.monto_recibido|default:'' }}">{{ resultado.monto_recibido }}</span>
-                <span id="res-flag" aria-hidden="true"></span>
-                <span id="res-code">{{ form.moneda_destino.value }}</span>
-              </div>
-            </div>
-            {% if user.is_authenticated %}
-              <div class="mt-4">
-                <button form="form-simulador" type="submit" name="proceder" class="gx-btn">Proceder a Operación</button>
-              </div>
-            {% else %}
-              <div class="mt-4">
-                <a href="{% url 'login' %}" class="gx-btn">Inicia sesión para operar</a>
-              </div>
-            {% endif %}
-          {% endif %}
+      <div class="mt-8 pt-8 border-t border-dashed" style="border-color:var(--line)">
+        {% if user.is_authenticated %}
+            <button id="btn-submit" type="submit" name="proceder" value="1" 
+                    class="gx-btn h-14 text-lg shadow-lg hover:shadow-[var(--brand)]/30 transition-all transform hover:-translate-y-0.5" disabled>
+                Continuar Operación
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}" class="gx-btn h-14 text-lg flex items-center justify-center hover:shadow-lg transition-all">
+                Iniciar sesión para operar
+            </a>
         {% endif %}
       </div>
+
     </form>
   </section>
+  
+  <div class="flex items-center justify-center gap-2 text-sm text-[var(--muted)] max-w-lg mx-auto opacity-80">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <p>Las cotizaciones se actualizarán al confirmar.</p>
+  </div>
+
 </main>
 
 <style>
-  .gx-input, .gx-select{
-    width:100%; border:1.5px solid var(--line); border-radius:12px;
-    padding:12px 14px; height:48px; font-size:1rem; color:var(--ink); background:#fff;
-    transition:box-shadow .2s ease,border-color .2s ease;
+  /* --- ESTILOS CSS MEJORADOS --- */
+  
+  /* Input y Select Base */
+  .gx-input, .gx-select {
+    width:100%; 
+    border:1.5px solid var(--line); 
+    border-radius:16px; /* Más redondeado */
+    padding:12px 16px; 
+    font-size:1.1rem; 
+    color:var(--ink); 
+    background:#fff;
+    transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .gx-input:focus, .gx-select:focus{ outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(115,60,255,.15); }
+  
+  /* Select con apariencia nativa limpia */
+  .gx-select { 
+    height: 64px; 
+    appearance: none; 
+    -webkit-appearance: none; 
+    cursor: pointer;
+    font-weight: 600;
+  } 
 
-  .gx-btn{
-    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
-    padding:12px 16px; font-size:16px; width:100%;
-    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
+  /* Estados Focus */
+  .gx-input:focus, .gx-select:focus { 
+    outline:none; 
+    border-color:var(--brand); 
+    box-shadow:0 0 0 4px rgba(115,60,255,.12); 
+    transform: translateY(-1px);
+  }
+
+  /* Botón Principal */
+  .gx-btn {
+    background:var(--brand); 
+    color:#fff; 
+    font-weight:800; 
+    border:none; 
+    border-radius:14px;
+    width:100%; 
     cursor:pointer;
   }
-  .gx-btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none;}
-
-  .gx-btn--ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; }
-  .gx-btn--ghost:hover{ background:var(--brand-soft); }
-
-  .gx-error{ background:#fee2e2; color:#991b1b; border:1px solid #fecaca; padding:12px 14px; border-radius:12px; }
-
-  .gx-result-wrap{
-    background:var(--brand-soft);
-    border:1px solid color-mix(in oklab, var(--brand) 35%, white);
-    padding:14px 16px; border-radius:14px;
-    text-align:center;
+  .gx-btn:active { transform: scale(0.98); }
+  .gx-btn:disabled { 
+    background: #f3f4f6; 
+    color: #9ca3af; 
+    cursor: not-allowed; 
+    box-shadow: none; 
+    transform: none; 
   }
-  .gx-result-big{ font-size:24px; font-weight:900; color:var(--brand); }
-  #res-flag{ margin:0 .35rem; } /* pequeño espacio alrededor de la banderita */
 
-  .btn-row{ display:grid; gap:10px; grid-template-columns:1fr; }
-  @media (min-width: 520px){ .btn-row{ grid-template-columns:1fr 1fr; } }
+  /* Switch Styles - Mejorado visualmente */
+  .op-switch { 
+    color: var(--muted); 
+    border: 1px solid transparent; 
+  }
+  .op-switch:hover { 
+    background: rgba(0,0,0,0.02); 
+    color: var(--ink); 
+  }
+  
+  .op-switch[data-val="compra"].active {
+    background: #ecfdf5; 
+    color: #047857; 
+    border-color: rgba(167, 243, 208, 0.5);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+  }
+  
+  .op-switch[data-val="venta"].active {
+    background: #fff1f2; 
+    color: #be123c; 
+    border-color: rgba(254, 205, 211, 0.5);
+    box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.1);
+  }
 
-  /* 🔒 Ocultamos SOLO visualmente el input real de monto (no rompe POST/validaciones) */
-  #id_monto{
-    position:absolute !important;
-    left:-99999px !important;
-    width:1px !important;
-    height:1px !important;
-    opacity:0 !important;
-    pointer-events:none !important;
+  /* Ocultar input real de monto (accesibilidad mantenida) */
+  #id_monto { 
+    position: absolute; width: 1px; height: 1px; padding: 0; 
+    overflow: hidden; clip: rect(0,0,0,0); border: 0; 
   }
 </style>
 
 <script>
 (function () {
-  const form   = document.getElementById('form-simulador');
-  if (!form) return;
+  // --- CONFIGURACIÓN & DOM ---
+  const form = document.getElementById('form-simulador');
+  const currencyData = JSON.parse(form.dataset.currencies || "{}");
+  
+  let tasasData = {};
+  try { 
+      const rawJson = document.getElementById('tasas-json').textContent;
+      tasasData = JSON.parse(rawJson); 
+  } catch(e){ console.error("Error parseando tasas", e); }
 
-  function toNumber(raw){
-    if (raw == null) return NaN;
-    const s = String(raw).replace(/\./g,'').replace(',','.');
-    const n = parseFloat(s);
-    return Number.isFinite(n) ? n : NaN;
-  }
-  function fmt(n){
-    const num = typeof n === 'number' ? n : toNumber(n);
-    if (!Number.isFinite(num)) return n;
-    return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const elOpInput   = document.getElementById('id_tipo_operacion'); // Hidden Django
+  const elMoneda    = document.getElementById('id_moneda');         // Select Django
+  const elMontoVis  = document.getElementById('monto_visible');     // Input JS
+  const elMontoHid  = document.getElementById('id_monto');          // Hidden Django
+  const btnSubmit   = document.getElementById('btn-submit');
+  
+  const uiFlag      = document.getElementById('currency-flag');
+  const uiCode      = document.getElementById('currency-code');
+  const uiLabelMonto= document.getElementById('label-monto');
+  const uiResBox    = document.getElementById('result-box');
+  const uiResVal    = document.getElementById('res-value');
+  const uiRateDisp  = document.getElementById('rate-display');
+  const uiResLabel  = document.getElementById('res-label');
 
-  }
-
-  const out   = document.getElementById('out-amount');
-  const res   = document.getElementById('res-num');
-  const wrap  = document.getElementById('result-wrap');
-  const resFlag = document.getElementById('res-flag');
-  const resCode = document.getElementById('res-code');
-
-  if (out && out.value) out.value = fmt(out.value);
-  if (res) { const raw = res.dataset.raw || res.textContent; res.textContent = fmt(raw); }
-
-  const data   = JSON.parse(form.dataset.currencies || "{}");
-  const selOri = document.getElementById('id_moneda_origen');
-  const selDst = document.getElementById('id_moneda_destino');
-  const monto  = document.getElementById('id_monto');
-  const btn    = document.getElementById('btn-calcular');
-  const btnClr = document.getElementById('btn-clear');
-
-  const isPYG     = (v) => String(v || '').toUpperCase() === 'PYG';
-  const isForeign = (v) => v && !isPYG(v);
-
-  function decorateSelect(sel){
-    if(!sel) return;
-    [...sel.options].forEach(opt=>{
-      const code = opt.value; if (code && data[code]) {
-        const {emoji, name} = data[code];
-        opt.textContent = `${emoji} ${code} — ${name}`;
-      }
+  // --- 1. INYECTAR EMOJIS EN SELECT ---
+  if(elMoneda) {
+    [...elMoneda.options].forEach(opt => {
+        const code = opt.value;
+        if(code && (currencyData[code] || tasasData[code])) {
+             // Prioridad: 1. Backend Tasas, 2. Dataset HTML, 3. Fallback
+             const emoji = (tasasData[code] && tasasData[code].emoji) || (currencyData[code] ? currencyData[code].emoji : '🏳️');
+             const name  = (tasasData[code] && tasasData[code].name)  || (currencyData[code] ? currencyData[code].name : '');
+             // Actualizamos el texto del select
+             opt.textContent = `${emoji} ${code} - ${name}`;
+        }
     });
-    sel.classList.add('gx-select');
   }
-  function ensurePlaceholder(sel){
-    if(!sel) return;
-    if(!sel.querySelector('option[value=""]')){
-      const ph = document.createElement('option');
-      ph.value = ''; ph.textContent = 'Seleccioná una moneda…'; ph.disabled = true; ph.hidden = true;
-      sel.insertBefore(ph, sel.firstChild);
+
+  // --- 2. SWITCH COMPRA / VENTA ---
+  window.setOperation = function(op) {
+    if(elOpInput) elOpInput.value = op; 
+    
+    document.querySelectorAll('.op-switch').forEach(btn => {
+        if(btn.dataset.val === op) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+
+    const monedaNombre = elMoneda.options[elMoneda.selectedIndex]?.text.split('-')[1]?.trim() || 'Divisa';
+    
+    // Cambiamos colores del label según operación para feedback visual
+    if (op === 'compra') {
+        uiLabelMonto.textContent = `¿Cuántos ${monedaNombre} querés COMPRAR?`;
+        uiLabelMonto.style.color = 'var(--brand)';
+        uiResLabel.textContent = "Total Aproximado a PAGAR";
+    } else {
+        uiLabelMonto.textContent = `¿Cuántos ${monedaNombre} querés VENDER?`;
+        uiLabelMonto.style.color = '#be123c'; // Rojo suave
+        uiResLabel.textContent = "Total Aproximado a RECIBIR";
     }
-  }
-
-  decorateSelect(selOri); decorateSelect(selDst);
-  ensurePlaceholder(selOri); ensurePlaceholder(selDst);
-  if (monto) monto.classList.add('gx-input');
-
-  if (form.dataset.initialBlank === '1') {
-    selOri.value = '';
-    selDst.value = '';
-  }
-
-  function updateResultFlag(){
-    if (!resFlag || !selDst) return;
-    const code = selDst.value || (resCode ? resCode.textContent.trim() : '');
-    resFlag.textContent = (data[code] && data[code].emoji) ? data[code].emoji : '';
-  }
-
-  function enforceRules(changed){
-    const o = selOri?.value || '';
-    const d = selDst?.value || '';
-
-    if (changed === 'ori' && isForeign(o)) { if (!isPYG(d)) selDst.value = 'PYG'; }
-    if (changed === 'dst' && isForeign(d)) { if (!isPYG(o)) selOri.value = 'PYG'; }
-
-    if (isPYG(selOri.value) && isPYG(selDst.value)) {
-      if (changed === 'ori') selDst.value = '';
-      else if (changed === 'dst') selOri.value = '';
-      else selDst.value = '';
-    }
-
-    const ready = selOri.value && selDst.value && selOri.value !== selDst.value &&
-                  (!monto || (toNumber(monto.value) > 0));
-    btn.disabled = !ready;
-
-    updateResultFlag();
-  }
-
-  selOri?.addEventListener('change', () => enforceRules('ori'));
-  selDst?.addEventListener('change', () => enforceRules('dst'));
-  monto?.addEventListener('input', () => enforceRules('amount'));
-  enforceRules();          // estado inicial
-  updateResultFlag();      // y bandera inicial
-
-  // BORRAR
-  btnClr?.addEventListener('click', () => {
-    if (monto) { monto.value = ''; }
-    const inputVisible = document.getElementById('id_monto_visible');
-    if (inputVisible) inputVisible.value = '';
-    if (out) out.value = '';
-    if (res) res.textContent = '';
-    if (wrap) wrap.style.display = 'none';
-    enforceRules('amount');
-    inputVisible?.focus();
-  });
-
-  /* ====== Formateo de miles en el campo de entrada (visual) ====== */
-  const inputHidden  = document.getElementById('id_monto');
-  const inputVisible = document.getElementById('id_monto_visible');
-
-  function cleanFormat(str){
-    return String(str || '').replace(/\./g,'').replace(/\s+/g,'').replace(/[^0-9]/g,'');
-  }
-  function applyFormat(rawStr){
-    const clean = cleanFormat(rawStr);
-    if (!clean) return '';
-    const normalized = clean.replace(/^0+(?=\d)/,'');
-    return new Intl.NumberFormat('es-PY', { maximumFractionDigits: 0 }).format(Number(normalized));
-  }
-  function setFormattedValuePreservingCaret(input, nextFormatted){
-    const prev = input.value;
-    const start = input.selectionStart || 0;
-    const digitsBefore = prev.slice(0,start).replace(/\D/g,'').length;
-    input.value = nextFormatted;
-    let pos = 0, consumed = 0;
-    while (pos < nextFormatted.length && consumed < digitsBefore) {
-      if (/\d/.test(nextFormatted[pos])) consumed++;
-      pos++;
-    }
-    input.setSelectionRange(pos, pos);
-  }
-
-  if (inputHidden && inputVisible) {
-    // Inicializar visible desde el hidden (si viene un valor)
-    inputVisible.value = applyFormat(inputHidden.value || '');
-
-    inputVisible.addEventListener('focus', () => {
-      inputVisible.style.borderColor = 'var(--brand)';
-      inputVisible.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18)';
-    });
-    inputVisible.addEventListener('blur', () => {
-      inputVisible.style.borderColor = 'var(--line)';
-      inputVisible.style.boxShadow = 'none';
-    });
-
-    inputVisible.addEventListener('input', () => {
-      const formatted = applyFormat(inputVisible.value);
-      setFormattedValuePreservingCaret(inputVisible, formatted);
-      inputHidden.value = cleanFormat(formatted);           // valor limpio para el POST/lógica
-      inputHidden.dispatchEvent(new Event('input', { bubbles: true }));  // mantiene la lógica existente
-      inputHidden.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    inputHidden.addEventListener('change', () => {
-      inputVisible.value = applyFormat(inputHidden.value);
-    });
-  }
-})();
-</script>
-
-<script>
-(function(){
-  // Helpers
-  const fmt = (n)=> {
-    if(n === undefined || n === null || n === '' || isNaN(Number(n))) return '—';
-    const x = Number(n);
-    return x.toLocaleString('es-PY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
+    
+    calculate();
   };
 
-  // Elementos
-  const card      = document.getElementById('fx-rate-card');
-  const elRate    = document.getElementById('fx-rate');
-  const elLabel   = document.getElementById('fx-label');
-  const elSide    = document.getElementById('fx-side');
-  const elEmoji   = document.getElementById('fx-emoji');
-
-  // Selects de la calculadora (por name para no depender de IDs del form)
-  const selFrom = document.querySelector('select[name="moneda_origen"]');
-  const selTo   = document.querySelector('select[name="moneda_destino"]');
-
-  // Tasas desde el backend
-  let tasas = {};
-  try {
-    const blob = document.getElementById('tasas-json');
-    if (blob) tasas = JSON.parse(blob.textContent || '{}');
-  } catch(e) { tasas = {}; }
-
-  // Emojis básicos por si no encontramos otro mapeo
-  const EMOJI = {USD:"🇺🇸",EUR:"🇪🇺",ARS:"🇦🇷",BRL:"🇧🇷",CLP:"🇨🇱",COP:"🇨🇴",MXN:"🇲🇽",PEN:"🇵🇪",PYG:"🇵🇾",UYU:"🇺🇾",GBP:"🇬🇧",JPY:"🇯🇵",CNY:"🇨🇳",AUD:"🇦🇺",CAD:"🇨🇦",CHF:"🇨🇭"};
-
-  function refreshCard(){
-    if(!selFrom || !selTo) return;
-
-    const from = (selFrom.value || '').toUpperCase();
-    const to   = (selTo.value   || '').toUpperCase();
-
-    // Mostramos tasa solo si el par involucra PYG (base de tu negocio)
-    // - PYG -> USD/EUR/... : el cliente COMPRA divisa; usamos tasa de VENTA (Tauser vende)
-    // - USD/EUR/... -> PYG : el cliente VENDE divisa; usamos tasa de COMPRA (Tauser compra)
-    let tasa, lado, label, emoji;
-
-    if (from === 'PYG' && to in tasas){
-      tasa  = tasas[to]?.venta;
-      lado  = 'Venta';
-      label = `1 ${to} = ${fmt(tasa)} PYG`;
-      emoji = EMOJI[to] || '💱';
-    } else if (to === 'PYG' && from in tasas){
-      tasa  = tasas[from]?.compra;
-      lado  = 'Compra';
-      label = `1 ${from} = ${fmt(tasa)} PYG`;
-      emoji = EMOJI[from] || '💱';
-    } else {
-      // Par sin PYG: ocultamos
-      card.classList.add('hidden');
-      return;
-    }
-
-    // Poblamos la tarjeta
-    elLabel.textContent = label;
-    elSide.textContent  = `(${lado})`;
-    elRate.textContent  = fmt(tasa);
-    elEmoji.textContent = emoji;
-
-    card.classList.remove('hidden');
+  // --- 3. LOGICA DE FORMATEO ---
+  if(elMontoVis) {
+      if(elMontoHid && elMontoHid.value){
+          elMontoVis.value = new Intl.NumberFormat('es-PY').format(elMontoHid.value);
+      }
+      elMontoVis.addEventListener('input', (e) => {
+        let raw = e.target.value.replace(/\D/g, '');
+        if(elMontoHid) elMontoHid.value = raw;
+        if(raw) {
+            e.target.value = new Intl.NumberFormat('es-PY').format(raw);
+        } else {
+            e.target.value = '';
+        }
+        calculate();
+      });
   }
 
-  // Eventos
-  if (selFrom) selFrom.addEventListener('change', refreshCard);
-  if (selTo)   selTo.addEventListener('change',   refreshCard);
-  // Si el server ya prellenó selects (ej. POST o redirect con params), forzamos un refresh al cargar:
-  document.addEventListener('DOMContentLoaded', refreshCard);
+  // --- 4. CALCULADORA EN TIEMPO REAL ---
+  function calculate() {
+    if(!elMoneda || !elOpInput || !elMontoHid) return;
 
-  // Primera carga
-  refreshCard();
+    const code = elMoneda.value;
+    const op = elOpInput.value;
+    const monto = parseFloat(elMontoHid.value) || 0;
+
+    // Actualizar "Badge" visual dentro del input
+    if(code) {
+        // Buscar emoji en tasasData o currencyData
+        const emoji = (tasasData[code] && tasasData[code].emoji) || 
+                      (currencyData[code] ? currencyData[code].emoji : '🏳️');
+        
+        uiFlag.textContent = emoji;
+        uiCode.textContent = code;
+    }
+
+    if(!code || monto <= 0 || !tasasData[code]) {
+        uiResBox.classList.add('opacity-60', 'grayscale');
+        if (monto <= 0) uiResVal.textContent = '0';
+        if(btnSubmit) btnSubmit.disabled = true;
+        if(code && !tasasData[code]) uiRateDisp.textContent = "Cotización no disponible";
+        return;
+    }
+
+    uiResBox.classList.remove('opacity-60', 'grayscale');
+    if(btnSubmit) btnSubmit.disabled = false;
+
+    let tasa = 0;
+    if (op === 'compra') {
+        tasa = parseFloat(tasasData[code].venta || 0);
+    } else {
+        tasa = parseFloat(tasasData[code].compra || 0);
+    }
+
+    const total = Math.round(monto * tasa);
+    
+    uiResVal.textContent = new Intl.NumberFormat('es-PY').format(total);
+    uiRateDisp.textContent = `1 ${code} = ${new Intl.NumberFormat('es-PY').format(tasa)} Gs`;
+  }
+
+  if(elMoneda) {
+      elMoneda.addEventListener('change', () => {
+          setOperation(elOpInput.value); 
+          calculate();
+      });
+  }
+
+  // Inicialización
+  const initialOp = elOpInput.value || 'compra';
+  setOperation(initialOp);
+
 })();
 </script>
-
-
 {% endblock %}
