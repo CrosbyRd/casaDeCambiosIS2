@@ -140,9 +140,8 @@
         <div class="filter-col">
           <label class="form-label" for="fx-type">Tipo de Operación</label>
           <select id="fx-type" class="form-select form-control">
-            <option value="">Ganancias Generales</option>
-            <option value="venta" selected>Ganancias por Venta</option>
-            <option value="compra">Ganancias por Compra</option>
+            <option value="venta" selected>Precio de Venta</option>
+            <option value="compra">Precio de Compra</option>
           </select>
         </div>
 
@@ -160,7 +159,7 @@
             <div class="metric-hero-content">
                 <div class="metric-hero-icon">💱</div>
                 <div class="metric-hero-label">Cotización Actual</div>
-                <div class="metric-hero-value">PYG → <span id="fx-symbol">—</span></div>
+                <div class="metric-hero-value"><span id="fx-base">PYG</span> → <span id="fx-symbol">—</span></div>
                 <div class="metric-hero-currency">Tasa de cambio en tiempo real</div>
             </div>
         </section>
@@ -338,6 +337,7 @@
   const apiUrl   = "{% url 'cotizaciones:api_serie' %}";
   const rows     = Array.from(document.querySelectorAll('tbody tr[data-code]'));
   const elSymbol = document.getElementById('fx-symbol');
+  const elBase  = document.getElementById('fx-base');
   const select   = document.getElementById('fx-select');
   const typeSel  = document.getElementById('fx-type');
   const fromInp  = document.getElementById('fx-from');
@@ -455,7 +455,16 @@
 
   // Cargar serie
   async function loadSeries() {
-    elSymbol.textContent = state.code;
+        // Actualizar la dirección de la flecha según el tipo de precio
+    if (state.campo === 'compra') {
+      // Compramos moneda destino pagando PYG: PYG → DESTINO
+      elBase.textContent   = 'PYG';
+      elSymbol.textContent = state.code;
+    } else {
+      // Vendemos moneda destino y recibimos PYG: DESTINO → PYG
+      elBase.textContent   = state.code;
+      elSymbol.textContent = 'PYG';
+    }
     emptyMsg.classList.add('hidden');
 
     const params = new URLSearchParams({
@@ -478,8 +487,11 @@
       }));
 
       const campoLabel = state.campo === 'compra' ? 'Compra' : 'Venta';
+      const fromCode   = state.campo === 'compra' ? 'PYG' : state.code;
+      const toCode     = state.campo === 'compra' ? state.code : 'PYG';
 
-      chart.data.datasets[0].label = `PYG → ${state.code} (${campoLabel})`;
+      chart.data.datasets[0].label = `${fromCode} → ${toCode} (${campoLabel})`;
+
       chart.data.datasets[0].data  = points;
       chart.update();
 
