@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from decimal import Decimal
 from django.utils.timezone import now
-from .forms import SimulacionForm, OperacionForm
+from .forms import SimulacionForm, OperacionForm, CalculadoraForm
 from .logic import calcular_simulacion
 from monedas.models import Moneda
 from cotizaciones.models import Cotizacion
@@ -56,45 +56,92 @@ def cancelar_transaccion(request, transaccion_id):
     return redirect('core:detalle_transaccion', transaccion_id=transaccion.id)
 
 def calculadora_view(request):
-    form = SimulacionForm(request.POST or None)
+    # Usamos el nuevo formulario adaptado a la UI
+    form = CalculadoraForm(request.POST or None)
     resultado = None
 
-    if request.method == 'POST' and form.is_valid():
-        monto_origen = form.cleaned_data['monto']
-        moneda_origen = form.cleaned_data['moneda_origen']
-        moneda_destino = form.cleaned_data['moneda_destino']
+    # Obtenemos las tasas para el gráfico de JS (Rate Card)
+    cotzs = Cotizacion.objects.filter(moneda_base__codigo='PYG').select_related('moneda_destino')
+    tasas_dict = {
+        c.moneda_destino.codigo: {
+            'compra': str(c.total_compra),
+            'venta':  str(c.total_venta),
+            'emoji': getattr(c.moneda_destino, 'emoji', ''), # Fallback seguro
+            'name': c.moneda_destino.nombre
+        } for c in cotzs
+    }
 
+    if request.method == 'POST' and form.is_valid():
+        operacion_usuario = form.cleaned_data['tipo_operacion'] # 'compra' o 'venta' (Perspectiva Usuario)
+        moneda_divisa = form.cleaned_data['moneda']
+        monto_usuario = form.cleaned_data['monto']
+        moneda_codigo = moneda_divisa.codigo
+
+        # --- CÁLCULO VISUAL (Para mostrar en la misma calculadora) ---
+        if operacion_usuario == 'compra':
+            # Usuario "Compra" -> Casa de Cambio "Vende" -> Origen PYG
+            # Calculamos cuántos Guaraníes necesita el usuario
+            tasa = Decimal(tasas_dict.get(moneda_codigo, {}).get('venta', 0))
+            monto_final_pyg = monto_usuario * tasa 
+            
+            resultado = {
+                'monto_final': monto_final_pyg,
+                'tasa': tasa,
+                'moneda': moneda_codigo,
+                'tipo': 'compra'
+            }
+        else: # venta
+            # Usuario "Vende" -> Casa de Cambio "Compra" -> Origen Divisa
+            # Usamos logic.py porque aquí el origen es la divisa
+            res_logic = calcular_simulacion(monto_usuario, moneda_codigo, 'PYG', user=request.user)
+            if not res_logic.get('error'):
+                resultado = {
+                    'monto_final': res_logic['monto_recibido'],
+                    'tasa': res_logic['tasa_aplicada'],
+                    'moneda': 'PYG',
+                    'tipo': 'venta'
+                }
+            else:
+                messages.error(request, res_logic['error'])
+
+        # --- REDIRECCIÓN CORREGIDA (Aquí estaba el error) ---
         if 'proceder' in request.POST:
             import urllib.parse
-            query_params = {
-                'monto': monto_origen,
-                'moneda_origen': moneda_origen,
-                'moneda_destino': moneda_destino,
-            }
+            
+            query_params = {}
+
+            if operacion_usuario == 'compra':
+                # El usuario dice "Quiero Comprar USD".
+                # Para el sistema, Tauser VENDE USD (Origen: PYG).
+                # Debemos pasar el MONTO EN GUARANÍES como 'monto' (origen).
+                query_params = {
+                    'tipo_operacion': 'venta',      # <--- CAMBIO CLAVE: Sistema Vende
+                    'moneda_origen': 'PYG',
+                    'moneda_destino': moneda_codigo,
+                    'monto': resultado['monto_final'] # Pasamos los Guaraníes calculados
+                }
+            
+            else: # operacion_usuario == 'venta'
+                # El usuario dice "Quiero Vender USD".
+                # Para el sistema, Tauser COMPRA USD (Origen: USD).
+                query_params = {
+                    'tipo_operacion': 'compra',     # <--- CAMBIO CLAVE: Sistema Compra
+                    'moneda_origen': moneda_codigo,
+                    'moneda_destino': 'PYG',
+                    'monto': monto_usuario          # Pasamos los Dólares que el usuario ingresó
+                }
+
             redirect_url = f"{reverse('core:iniciar_operacion')}?{urllib.parse.urlencode(query_params)}"
             return redirect(redirect_url)
 
-        resultado = calcular_simulacion(monto_origen, moneda_origen, moneda_destino, user=request.user)
-
-        if resultado and resultado.get('error'):
-            messages.error(request, resultado['error'])
-            resultado = None
-
     iniciar_operacion_url = request.build_absolute_uri(reverse('core:iniciar_operacion'))
-    # --- Tasas por moneda (base PYG) para el "rate card" de la calculadora ---
-    cotzs = Cotizacion.objects.filter(moneda_base__codigo='PYG').select_related('moneda_destino')
-    tasas = {
-        c.moneda_destino.codigo: {
-            'compra': str(c.total_compra),  # Tauser te compra esa divisa (vos venís con USD->PYG)
-            'venta':  str(c.total_venta),   # Tauser te vende esa divisa (vos vas PYG->USD)
-        } for c in cotzs
-    }
+    
     return render(request,
                    'site/calculator.html', 
                    {'form': form,
                     'resultado': resultado,
                     'iniciar_operacion_url': iniciar_operacion_url,
-                    'tasas_json': json.dumps(tasas)})
+                    'tasas_json': json.dumps(tasas_dict)})
 
 
 def site_rates(request):

@@ -4,6 +4,7 @@ from monedas.models import Moneda
 from transacciones.models import Transaccion
 from pagos.models import TipoMedioPago, MedioPagoCliente
 from medios_acreditacion.models import TipoMedioAcreditacion, MedioAcreditacionCliente
+from decimal import Decimal
 
 class SimulacionForm(forms.Form):
     monto = forms.DecimalField(
@@ -146,4 +147,42 @@ class OperacionForm(SimulacionForm):
                 if not medio_pago:
                     self.add_error('medio_pago', 'Debe seleccionar un medio de pago para esta operación.')
 
+        return cleaned_data
+
+
+class CalculadoraForm(forms.Form):
+    """
+    Formulario adaptado para la nueva UI de 'Quiero Comprar / Quiero Vender'.
+    Actúa como interfaz frontend pero traduce los datos para el backend.
+    """
+    OPERACION_CHOICES = [
+        ('compra', 'Quiero Comprar'), # El usuario recibe Divisa, paga PYG
+        ('venta', 'Quiero Vender'),   # El usuario entrega Divisa, recibe PYG
+    ]
+
+    tipo_operacion = forms.ChoiceField(
+        choices=OPERACION_CHOICES,
+        widget=forms.HiddenInput(),
+        initial='compra'
+    )
+    
+    # En este select excluiremos PYG, ya que la UI asume que la contraparte siempre es PYG
+    moneda = forms.ModelChoiceField(
+        queryset=Moneda.objects.exclude(codigo='PYG'),
+        label="Divisa",
+        widget=forms.Select(attrs={'class': 'gx-select'}),
+        to_field_name="codigo", # Importante para que el value sea 'USD' y no el ID
+        empty_label="Seleccioná una moneda"
+    )
+
+    monto = forms.DecimalField(
+        label="Monto",
+        min_value=Decimal('1.00'),
+        decimal_places=2,
+        widget=forms.HiddenInput() # El input real es oculto, el visible lo maneja JS
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # Aquí no necesitamos mucha validación extra porque el queryset ya excluye PYG
         return cleaned_data
