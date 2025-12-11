@@ -117,6 +117,50 @@
       </p>
     </div>
   </header>
+    <section class="card mb-6">
+    <div class="card-header">
+      <span>📋</span><h3>Cotizaciones Disponibles</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-custom w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Moneda</th>
+            <th class="text-end">Compra (PYG)</th>
+            <th class="text-end">Venta (PYG)</th>
+            <th class="text-end">Actualización</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cotizaciones %}
+            <tr class="cursor-pointer" data-code="{{ c.moneda_destino.codigo }}"
+                data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+                data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
+              <td>
+                <span class="currency-badge">
+                  <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                  {{ c.moneda_destino.codigo }}
+                </span>
+              </td>
+              <td class="text-end font-semibold">
+                <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+              </td>
+              <td class="text-end font-semibold">
+                <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+              </td>
+              <td class="text-end text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="px-4 py-6 text-center text-neutral-500">
+                Sin cotizaciones.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <section class="filter-section">
     <h3>Filtros de Búsqueda</h3>
@@ -210,51 +254,6 @@
             <div class="metric-card-label">Monedas Operadas</div>
             <div class="metric-card-value" id="fx-coins">0</div>
             <div class="metric-card-suffix">monedas diferentes</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span>📋</span><h3>Cotizaciones Disponibles</h3>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-custom w-full">
-              <thead>
-                <tr>
-                  <th class="text-left">Moneda</th>
-                  <th class="text-end">Compra (PYG)</th>
-                  <th class="text-end">Venta (PYG)</th>
-                  <th class="text-end">Actualización</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for c in cotizaciones %}
-                  <tr class="cursor-pointer" data-code="{{ c.moneda_destino.codigo }}"
-                      data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
-                      data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
-                    <td>
-                      <span class="currency-badge">
-                        <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-                        {{ c.moneda_destino.codigo }}
-                      </span>
-                    </td>
-                    <td class="text-end font-semibold">
-                      <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
-                    </td>
-                    <td class="text-end font-semibold">
-                      <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
-                    </td>
-                    <td class="text-end text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="4" class="px-4 py-6 text-center text-neutral-500">
-                      Sin cotizaciones.
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
