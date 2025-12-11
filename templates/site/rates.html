@@ -4,41 +4,67 @@
 
 {% block content %}
 <main class="container-wide py-10">
-  <style>
+<style>
     :root{
-      --brand:#7c3aed; --brand-soft:#ede9fe; --brand-hover:#6d28d9;
-      --ink:#111827; --muted:#6b7280; --light-gray:#f8f9fa; --line:#e5e7eb;
-      --shadow-sm:0 2px 8px rgba(124,58,237,.08);
-      --shadow-md:0 4px 12px rgba(124,58,237,.12);
-      --shadow-lg:0 20px 40px rgba(124,58,237,.15);
+        --brand:#7c3aed; --brand-soft:#ede9fe; --brand-hover:#6d28d9;
+        --ink:#111827; --muted:#6b7280; --light-gray:#f8f9fa; --line:#e5e7eb;
+        --shadow-sm:0 2px 8px rgba(124,58,237,.08);
+        --shadow-md:0 4px 12px rgba(124,58,237,.12);
+        --shadow-lg:0 20px 40px rgba(124,58,237,.15);
     }
 
-    .container-wide{max-width:1360px;margin:0 auto;padding:0 16px;}
-    .page-header{margin-top:22px;margin-bottom:28px;padding-top:6px;}
-    .page-header h1{margin:0 0 6px 0;}
-    .page-header p{margin:0;color:var(--muted);}
+    /* === CONTENEDORES === */
 
-    .filter-section{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:1.25rem;border-left:none;}
+    .container-wide{max-width:1360px;margin:0 auto;padding:0 16px;}
+
+    /* Header */
+    .dashboard-header{padding:1rem 0;margin-bottom:1.25rem;}
+    .dashboard-header h1{color:#000;font-size:1.75rem;font-weight:700;margin:0;padding-left:clamp(24px,5vw,120px);}
+    .page-header{
+    margin-top: 22px;
+    margin-bottom: 28px;
+    padding-top: 6px;
+    }
+    .page-header h1{
+    margin: 0 0 6px 0;
+    }
+    .page-header p{
+    margin: 0;
+    color: var(--muted);
+    }
+
+    .filter-section{
+        background:#fff;
+        border-radius:12px;
+        box-shadow:var(--shadow-sm);
+        padding:1.25rem;
+        border-left:none;
+        }
     .filter-section h3{font-size:1.05rem;font-weight:600;color:var(--muted);margin:0 0 1rem;display:flex;gap:.5rem;align-items:center;}
     .filter-section h3::before{content:"🔍";}
     .filter-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
     .filter-col{flex:1;min-width:220px}
-    .filter-form .form-label{font-weight:600;color:var(--muted);font-size:.875rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .filter-form .form-label{font-weight:600;color:var(--muted);font-size:.875rem;margin-bottom:.5rem}
     .filter-form .form-control,.filter-form .form-select{border:1px solid var(--line);border-radius:8px;padding:.625rem .875rem;transition:.2s}
     .filter-form .form-control:focus,.filter-form .form-select:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);outline:none}
     .filter-actions{display:flex;gap:.75rem;align-items:center}
 
-    .btn-primary-custom{background:var(--brand);border:none;color:#fff;padding:.625rem 1.25rem;border-radius:8px;font-weight:700;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:.2s}
+    .btn-primary-custom{background:var(--brand);border:none;color:#fff;padding:.625rem 1.25rem;border-radius:8px;font-weight:600;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:.2s}
     .btn-primary-custom:hover{background:var(--brand-hover);transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
 
-    .btn-secondary-custom{background:#fff;border:2px solid var(--line);color:var(--muted);padding:.625rem 1.25rem;border-radius:8px;font-weight:700;transition:.2s}
+    .btn-secondary-custom{background:#fff;border:2px solid var(--line);color:var(--muted);padding:.625rem 1.25rem;border-radius:8px;font-weight:600;transition:.2s}
     .btn-secondary-custom:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
 
+    /* === GRID DE CONTENIDO: main (2.2fr) + aside (1fr) === */
     .content-grid{display:grid;grid-template-columns:2.2fr 1fr;gap:1.5rem;margin-top:1.25rem}
 
-    .metric-hero{grid-column:1 / -1;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%);border-radius:20px;padding:2rem 2rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;transition:.3s}
-    .metric-hero::before{content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);border-radius:50%}
-    .metric-hero::after{content:"";position:absolute;bottom:-30%;left:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%}
+    /* Hero KPI a todo el ancho del grid */
+    .metric-hero{grid-column:1 / -1;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%);
+        border-radius:20px;padding:2rem 2rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;transition:.3s}
+    .metric-hero::before{content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;
+        background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);border-radius:50%}
+    .metric-hero::after{content:"";position:absolute;bottom:-30%;left:-10%;width:300px;height:300px;
+        background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%}
     .metric-hero:hover{transform:translateY(-3px);box-shadow:0 25px 50px rgba(124,58,237,.25)}
 
     .metric-hero-content{text-align:center;position:relative;z-index:1}
@@ -48,11 +74,48 @@
     .metric-hero-label{color:rgba(255,255,255,.92);font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.35rem}
     .metric-hero-value{color:#fff;font-size:clamp(2rem,4vw,2.8rem);font-weight:900;line-height:1.1;margin-bottom:.25rem;text-shadow:0 4px 12px rgba(0,0,0,.2)}
     .metric-hero-currency{color:rgba(255,255,255,.9);font-weight:800}
+    /* Cards y charts */
+    .card{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:1.25rem}
+    .card + .card{margin-top:1rem}
+    .card-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:2px solid var(--light-gray)}
+    .card-header h3{font-size:1.1rem;font-weight:700;color:#333;margin:0}
+    .chart-container{position:relative;height:360px}
+    .chart-container--compact{height:280px}
+
+    /* KPIs laterales */
+    .side-stack{display:flex;flex-direction:column;gap:1rem}
+    .metric-card{background:#fff;border-radius:16px;padding:1.25rem;box-shadow:var(--shadow-sm);
+        border:1px solid var(--line);display:flex;gap:1rem;align-items:center;position:relative;overflow:hidden}
+    .metric-card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--brand),var(--brand-hover))}
+    .metric-card-icon-wrapper{flex-shrink:0;width:52px;height:52px;background:linear-gradient(135deg,var(--brand-soft),rgba(255,255,255,.6));
+        border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 4px 12px rgba(124,58,237,.12)}
+    .metric-card-label{color:var(--muted);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.35rem}
+    .metric-card-value{color:var(--ink);font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:.1rem}
+    .metric-card-suffix{color:var(--brand);font-weight:600;font-size:.85rem}
+
+    /* Tabla */
+    .table-custom thead{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%)}
+    .table-custom thead th{color:#fff;font-weight:700;text-transform:uppercase;font-size:.8rem;letter-spacing:.5px;border:none;padding:.75rem 1rem}
+    .table-custom tbody td{padding:.8rem 1rem;vertical-align:middle;border-bottom:1px solid var(--line)}
+    .table-custom tbody tr:hover{background:var(--brand-soft)}
+    .currency-badge{display:inline-block;padding:.35rem .6rem;background:var(--brand-soft);color:var(--brand);border-radius:6px;font-weight:700;font-size:.85rem}
+    .amount-display{font-weight:700;color:var(--brand);font-size:1.05rem}
+
+    /* Responsivo */
+    @media (max-width:1200px){.content-grid{grid-template-columns:1.7fr 1fr}}
+    @media (max-width:992px){
+        .content-grid{grid-template-columns:1fr}
+        .chart-container{height:320px}
+    }
   </style>
 
-  <header class="page-header">
-    <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Tipos de cambio</h1>
-    <p class="text-lg leading-relaxed max-w-2xl">Visualiza la evolución de las tasas con los mismos controles del dashboard de ganancias.</p>
+  <header class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Tipos de Cambio</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Visualiza la evolución histórica de las tasas de cambio con controles avanzados de filtrado.
+      </p>
+    </div>
   </header>
 
   <section class="filter-section">
@@ -88,29 +151,22 @@
           <button type="button" class="btn btn-secondary-custom" id="fx-reset">↺ Limpiar</button>
         </div>
       </div>
-
-      <div class="filter-row pt-3">
-        <div class="filter-col">
-          <label class="form-label">🗓️ Agregación</label>
-          <div class="flex items-center gap-3 flex-wrap text-sm">
-            <label class="flex items-center gap-2"><input type="radio" name="agg" value="last" checked> Último por día</label>
-            <label class="flex items-center gap-2"><input type="radio" name="agg" value="avg"> Promedio diario</label>
-          </div>
-        </div>
-      </div>
     </form>
   </section>
 
   <div class="content-grid">
-    <section class="metric-hero">
-      <div class="metric-hero-content">
-        <div class="metric-hero-icon">💵</div>
-        <div class="metric-hero-label">Histórico de Cotizaciones</div>
-        <div class="metric-hero-value">PYG → <span id="fx-symbol">—</span></div>
-        <div class="metric-hero-currency">Filtro sincronizado con ganancias</div>
-      </div>
-    </section>
-    <section class="main-col">
+    <!-- HERO KPI a todo el ancho -->
+        <section class="metric-hero">
+            <div class="metric-hero-content">
+                <div class="metric-hero-icon">💱</div>
+                <div class="metric-hero-label">Cotización Actual</div>
+                <div class="metric-hero-value">PYG → <span id="fx-symbol">—</span></div>
+                <div class="metric-hero-currency">Tasa de cambio en tiempo real</div>
+            </div>
+        </section>
+    <!-- COLUMNA PRINCIPAL (IZQUIERDA) -->
+        <section class="main-col">
+            <!-- 1) Evolución de tasas -->
       <div class="card">
         <div class="card-header">
           <span>📈</span><h3>Evolución de Tasas Diarias</h3>
@@ -118,13 +174,13 @@
         <div class="chart-container">
           <canvas id="ratesChart"></canvas>
         </div>
-        <p id="chart-empty" class="text-xs text-neutral-500 mt-3 hidden">No hay datos históricos para el rango seleccionado.</p>
+        <p id="chart-empty" class="text-xs text-muted mt-3 hidden">No hay datos históricos para el rango seleccionado.</p>
         <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <span>📊</span><h3>Evolución promedio del período</h3>
+          <span>📊</span><h3>Evolución Promedio del Período</h3>
         </div>
         <div class="flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -137,7 +193,8 @@
       </div>
     </section>
 
-    <aside class="side-col">
+    <!-- COLUMNA DERECHA (ASIDE) -->
+        <aside class="side-col">
       <div class="side-stack">
         <div class="metric-card">
           <div class="metric-card-icon-wrapper">📊</div>
@@ -159,7 +216,7 @@
 
         <div class="card">
           <div class="card-header">
-            <span>📋</span><h3>Cotizaciones disponibles</h3>
+            <span>📋</span><h3>Cotizaciones Disponibles</h3>
           </div>
           <div class="table-responsive">
             <table class="table table-custom w-full">
@@ -323,7 +380,6 @@
   const defaultState = {
     code: initial,
     campo: 'venta',
-    agg: 'last',
     desde: fromInp.value,
     hasta: toInp.value
   };
@@ -406,7 +462,7 @@
       base: 'PYG',
       destino: state.code,
       campo: state.campo,
-      agg: state.agg,
+      agg: 'last',  // siempre usar último valor
       desde: state.desde,
       hasta: state.hasta
     });
@@ -422,9 +478,8 @@
       }));
 
       const campoLabel = state.campo === 'compra' ? 'Compra' : 'Venta';
-      const aggLabel = state.agg === 'avg' ? 'Promedio diario' : 'Último por día';
 
-      chart.data.datasets[0].label = `PYG → ${state.code} (${campoLabel} · ${aggLabel})`;
+      chart.data.datasets[0].label = `PYG → ${state.code} (${campoLabel})`;
       chart.data.datasets[0].data  = points;
       chart.update();
 
@@ -445,8 +500,6 @@
   const syncState = () => {
     state.code = select.value || defaultState.code;
     state.campo = typeSel.value || 'venta';
-    const aggSel = document.querySelector('input[name="agg"]:checked');
-    state.agg = aggSel ? aggSel.value : 'last';
     state.desde = fromInp.value || defaultState.desde;
     state.hasta = toInp.value || defaultState.hasta;
   };
@@ -463,19 +516,12 @@
     loadSeries();
   }));
 
-  document.querySelectorAll('input[name="agg"]').forEach(radio =>
-    radio.addEventListener('change', () => { syncState(); loadSeries(); })
-  );
-
   if (applyBtn) applyBtn.addEventListener('click', () => { syncState(); loadSeries(); });
 
   if (resetBtn) resetBtn.addEventListener('click', () => {
     Object.assign(state, defaultState);
     select.value = state.code;
     typeSel.value = state.campo;
-    document.querySelectorAll('input[name="agg"]').forEach(r => {
-      r.checked = r.value === state.agg;
-    });
     fromInp.value = state.desde;
     toInp.value = state.hasta;
     loadSeries();
