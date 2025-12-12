@@ -40,7 +40,7 @@ class TipoMedioPago(models.Model):
     :param str engine: Motor o integración usada para procesar pagos.
     :param dict engine_config: Configuración JSON específica del motor.
     """
-    id_tipo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, unique=True)
 
     # Comisión en porcentaje que aplica este medio (0 a 100)
@@ -52,10 +52,21 @@ class TipoMedioPago(models.Model):
         help_text="Porcentaje de comisión que aplica este medio (0–100).",
     )
 
+    # --- ### AÑADE ESTE BLOQUE DE CÓDIGO ### ---
+    # Este es el campo que existe en tu BD pero falta en tu modelo
+    bonificacion_porcentaje = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("100"))],
+        help_text="Porcentaje de bonificación que aplica este medio (0–100).",
+    )
+    # --- ### FIN DEL BLOQUE ### ---
+    
     descripcion = models.TextField(blank=True)
     activo = models.BooleanField(default=True)
-    creado_en = models.DateTimeField(default=timezone.now, editable=False)
-    actualizado_en = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     ENGINE_CHOICES = [
         ('manual', 'Manual'),
@@ -70,7 +81,6 @@ class TipoMedioPago(models.Model):
         return self.engine == 'stripe'
 
     class Meta:
-        db_table = "pagos_tipo_medio"
         verbose_name = "Tipo de medio de pago"
         verbose_name_plural = "Tipos de medios de pago"
         permissions = [
@@ -118,7 +128,7 @@ class CampoMedioPago(models.Model):
         TELEFONO_PY_LOCAL = r"^09\d{8}$", "Teléfono PY (09xxxxxxxx)"
         RUC_PY = r"^\d{6,8}-\d{1}$", "RUC PY (########-#)"
 
-    id_campo = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True)
     tipo = models.ForeignKey(TipoMedioPago, related_name="campos", on_delete=models.CASCADE)
     nombre_campo = models.CharField(max_length=100)
     tipo_dato = models.CharField(max_length=15, choices=TipoDato.choices, default=TipoDato.TEXTO)
@@ -130,7 +140,6 @@ class CampoMedioPago(models.Model):
     activo = models.BooleanField(default=True)
 
     class Meta:
-        db_table = "pagos_campo_medio"
         verbose_name = "Campo de medio de pago"
         verbose_name_plural = "Campos de medios de pago"
         unique_together = ("tipo", "nombre_campo")
@@ -159,7 +168,7 @@ class MedioPagoCliente(models.Model):
     :param datetime creado_en: Fecha de creación.
     :param datetime actualizado_en: Última modificación.
     """
-    id_medio = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.AutoField(primary_key=True)
 
     # 🔴 DUEÑO CORRECTO
     cliente = models.ForeignKey("clientes.Cliente",
@@ -176,11 +185,10 @@ class MedioPagoCliente(models.Model):
     activo = models.BooleanField(default=True)
     predeterminado = models.BooleanField(default=False)
 
-    creado_en = models.DateTimeField(default=timezone.now, editable=False)
-    actualizado_en = models.DateTimeField(auto_now=True)
-
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
-        db_table = "pagos_medio_cliente"
         constraints = [
             # ✅ a lo sumo un predeterminado por CLIENTE
             models.UniqueConstraint(
