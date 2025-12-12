@@ -162,18 +162,18 @@
             <button type="button"
                     class="btn-sm btn-choose"
                     data-choose
-                    data-url="{% url 'pagos:clientes_predeterminar' m.id_medio %}"
+                    data-url="{% url 'pagos:clientes_predeterminar' m.id %}"
                     data-name="{{ m.alias|default:m.tipo.nombre }}"
                     {% if m.predeterminado or not m.activo or not m.tipo.activo %}disabled{% endif %}>
               Elegir
             </button>
 
-            <a class="btn-sm btn-edit" href="{% url 'pagos:clientes_update' m.id_medio %}">Editar</a>
+            <a class="btn-sm btn-edit" href="{% url 'pagos:clientes_update' m.id %}">Editar</a>
 
             <button type="button"
                     class="btn-sm btn-danger"
                     data-delete
-                    data-url="{% url 'pagos:clientes_delete' m.id_medio %}"
+                    data-url="{% url 'pagos:clientes_delete' m.id %}"
                     data-name="{{ m.alias|default:m.tipo.nombre }}">
               Eliminar
             </button>
