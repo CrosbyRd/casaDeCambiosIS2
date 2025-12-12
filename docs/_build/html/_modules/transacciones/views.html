@@ -181,7 +181,7 @@
                     
                     <span class="n">transaccion</span><span class="o">.</span><span class="n">estado</span> <span class="o">=</span> <span class="s1">&#39;pendiente_pago_cliente&#39;</span> <span class="c1"># Cambiar estado de la transacción a pendiente de pago</span>
                     <span class="n">transaccion</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;estado&#39;</span><span class="p">])</span> <span class="c1"># Guardar solo el estado en la transacción</span>
-                    <span class="n">messages</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Código OTP verificado. Procediendo con el pago.&quot;</span><span class="p">)</span>
+                    <span class="c1">#messages.success(request, &quot;Código OTP verificado. Procediendo con el pago.&quot;)</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iniciar_cobro</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">transaccion</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">messages</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;Código OTP incorrecto o expirado.&quot;</span><span class="p">)</span>

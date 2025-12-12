@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete medios_acreditacion" href="medios_acreditacion.html" />
-    <link rel="prev" title="paquete usuarios" href="usuarios.html" /> 
+    <link rel="next" title="paquete core" href="core.html" />
+    <link rel="prev" title="paquete clientes" href="clientes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,58 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete configuracion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo configuracion.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm.Meta"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm.base_fields"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm.media"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-1">módulo configuracion.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.models.TransactionLimit"><code class="docutils literal notranslate"><span class="pre">TransactionLimit</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.aplica_diario"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.aplica_diario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.aplica_mensual"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.aplica_mensual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.id"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.moneda"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.moneda</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.moneda_id"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.moneda_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.monto_diario"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.monto_diario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.monto_mensual"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.monto_mensual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuracion.models.TransactionLimit.objects"><code class="docutils literal notranslate"><span class="pre">TransactionLimit.objects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.models.get_moneda_base"><code class="docutils literal notranslate"><span class="pre">get_moneda_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-2">módulo configuracion.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-3">módulo configuracion.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.views.configuracion_panel"><code class="docutils literal notranslate"><span class="pre">configuracion_panel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.views.crear_limite"><code class="docutils literal notranslate"><span class="pre">crear_limite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.views.editar_limite"><code class="docutils literal notranslate"><span class="pre">editar_limite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.views.eliminar_limite"><code class="docutils literal notranslate"><span class="pre">eliminar_limite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion.views.lista_limites"><code class="docutils literal notranslate"><span class="pre">lista_limites()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -58,12 +108,6 @@
 <li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete configuracion</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.admin">módulo configuracion.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-configuracion.apps">módulo configuracion.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#configuracion.apps.ConfiguracionConfig"><code class="docutils literal notranslate"><span class="pre">ConfiguracionConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-0">módulo configuracion.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.forms.TransactionLimitForm"><code class="docutils literal notranslate"><span class="pre">TransactionLimitForm</span></code></a></li>
 </ul>
@@ -85,7 +129,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#configuracion.views.lista_limites"><code class="docutils literal notranslate"><span class="pre">lista_limites()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
@@ -99,6 +142,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -115,7 +169,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete configuracion</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/configuracion.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -128,34 +181,6 @@
              
   <section id="paquete-configuracion">
 <h1>paquete configuracion<a class="headerlink" href="#paquete-configuracion" title="Link to this heading"></a></h1>
-<blockquote>
-<div><p>configuracion.tests</p>
-</div></blockquote>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-configuracion.admin">
-<span id="modulo-configuracion-admin"></span><h2>módulo configuracion.admin<a class="headerlink" href="#module-configuracion.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-configuracion.apps">
-<span id="modulo-configuracion-apps"></span><h2>módulo configuracion.apps<a class="headerlink" href="#module-configuracion.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuracion.apps.</span></span><span class="sig-name descname"><span class="pre">ConfiguracionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/configuracion/apps.html#ConfiguracionConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="configuracion.apps.ConfiguracionConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'configuracion'</span></em><a class="headerlink" href="#configuracion.apps.ConfiguracionConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-0">
 <span id="modulo-configuracion-forms"></span><h2>módulo configuracion.forms<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <p>Formularios de la aplicación <strong>configuracion</strong>.</p>
@@ -592,23 +617,20 @@ editar, eliminar), manejo de permisos y mensajes al usuario.</p>
 </dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-configuracion"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="usuarios.html" class="btn btn-neutral float-left" title="paquete usuarios" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="medios_acreditacion.html" class="btn btn-neutral float-right" title="paquete medios_acreditacion" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="clientes.html" class="btn btn-neutral float-left" title="paquete clientes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="core.html" class="btn btn-neutral float-right" title="paquete core" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

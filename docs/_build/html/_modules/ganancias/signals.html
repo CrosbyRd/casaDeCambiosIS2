@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ganancias.signals &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">ganancias.signals</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para ganancias.signals</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Señales de la aplicación **ganancias**.</span>
+
+<span class="sd">.. module:: ganancias.signals</span>
+<span class="sd">   :synopsis: Cálculo y registro automático de ganancias a partir de transacciones.</span>
+
+<span class="sd">Este módulo conecta la señal :data:`django.db.models.signals.post_save` del</span>
+<span class="sd">modelo :class:`transacciones.models.Transaccion` con la lógica de negocio que</span>
+<span class="sd">calcula y persiste instancias de :class:`ganancias.models.RegistroGanancia`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">post_save</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.dispatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">receiver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span> <span class="c1"># Importar timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">transacciones.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaccion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span> <span class="c1"># Importar Decimal para cálculos precisos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistroGanancia</span>
+<span class="c1"># Ya no necesitamos importar Cotizacion ni Cliente aquí, ya que la comisión se toma directamente de la transacción.</span>
+<span class="c1"># from cotizaciones.models import Cotizacion</span>
+<span class="c1"># from clientes.models import Cliente</span>
+
+<div class="viewcode-block" id="crear_o_actualizar_registro_ganancia">
+<a class="viewcode-back" href="../../ganancias.html#ganancias.signals.crear_o_actualizar_registro_ganancia">[documentos]</a>
+<span class="nd">@receiver</span><span class="p">(</span><span class="n">post_save</span><span class="p">,</span> <span class="n">sender</span><span class="o">=</span><span class="n">Transaccion</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">crear_o_actualizar_registro_ganancia</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">created</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crea o actualiza un :class:`RegistroGanancia` cuando una transacción</span>
+<span class="sd">    se marca como ``completada``.</span>
+
+<span class="sd">    Lógica principal</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    1. Verifica que ``instance.estado == &#39;completada&#39;``.</span>
+<span class="sd">    2. Obtiene la moneda PYG (moneda base en la que se registra la ganancia).</span>
+<span class="sd">    3. Determina la moneda operada según el tipo de operación:</span>
+
+<span class="sd">       - ``venta``: se toma ``instance.moneda_destino``.</span>
+<span class="sd">       - ``compra``: se toma ``instance.moneda_origen``.</span>
+
+<span class="sd">    4. Calcula la comisión final como::</span>
+
+<span class="sd">           comision_final = comision_cotizacion - comision_aplicada</span>
+
+<span class="sd">       donde ``comision_cotizacion`` es la comisión bruta de la cotización</span>
+<span class="sd">       y ``comision_aplicada`` incluye eventuales bonificaciones.</span>
+
+<span class="sd">    5. El monto operado para la ganancia depende del tipo de operación:</span>
+
+<span class="sd">       - ``venta``: se usa ``instance.monto_destino``.</span>
+<span class="sd">       - ``compra``: se usa ``instance.monto_origen``.</span>
+
+<span class="sd">    6. Calcula la ganancia neta real como el producto de la comisión final</span>
+<span class="sd">       por el monto operado y registra el resultado en</span>
+<span class="sd">       :class:`RegistroGanancia` mediante :meth:`update_or_create`.</span>
+
+<span class="sd">    :param sender: Modelo que dispara la señal (``Transaccion``).</span>
+<span class="sd">    :type sender: type</span>
+<span class="sd">    :param instance: Instancia de transacción recién guardada.</span>
+<span class="sd">    :type instance: transacciones.models.Transaccion</span>
+<span class="sd">    :param created: Indica si la instancia fue creada (``True``) o actualizada.</span>
+<span class="sd">    :type created: bool</span>
+<span class="sd">    :param kwargs: Parámetros adicionales de la señal (no utilizados).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s1">&#39;completada&#39;</span><span class="p">:</span>
+        <span class="c1"># Obtener la moneda PYG (asumiendo que es la moneda base)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">moneda_pyg</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">codigo</span><span class="o">=</span><span class="s2">&quot;PYG&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="c1"># Manejar el caso si PYG no existe, quizás loggear un error o usar un valor por defecto</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: Moneda PYG no encontrada. No se puede registrar la ganancia.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Determinar la moneda operada (la moneda extranjera de la transacción)</span>
+        <span class="n">moneda_operada</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;venta&#39;</span><span class="p">:</span>
+            <span class="n">moneda_operada</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">moneda_destino</span>
+        <span class="k">elif</span> <span class="n">instance</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;compra&#39;</span><span class="p">:</span>
+            <span class="n">moneda_operada</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">moneda_origen</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Advertencia: Tipo de operación desconocido &#39;</span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">tipo_operacion</span><span class="si">}</span><span class="s2">&#39; para Transaccion </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. No se puede registrar la ganancia.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Usar la comision_cotizacion guardada en la transacción</span>
+        <span class="n">comision_bruta_registrada</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">comision_cotizacion</span>
+        <span class="c1"># instance.comision_aplicada ahora contiene la bonificación (descuento)</span>
+        <span class="n">bonificacion_monto</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">comision_aplicada</span>
+        <span class="n">comision_final</span> <span class="o">=</span> <span class="n">comision_bruta_registrada</span> <span class="o">-</span> <span class="n">bonificacion_monto</span>
+
+        <span class="c1"># Determinar el monto de la moneda operada para calcular la ganancia</span>
+        <span class="n">monto_operado_para_ganancia</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;0.00&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;venta&#39;</span><span class="p">:</span>
+            <span class="c1"># Si la empresa vende (cliente compra), la ganancia se calcula sobre el monto de la moneda destino (ej. USD)</span>
+            <span class="n">monto_operado_para_ganancia</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">monto_destino</span>
+        <span class="k">elif</span> <span class="n">instance</span><span class="o">.</span><span class="n">tipo_operacion</span> <span class="o">==</span> <span class="s1">&#39;compra&#39;</span><span class="p">:</span>
+            <span class="c1"># Si la empresa compra (cliente vende), la ganancia se calcula sobre el monto de la moneda origen (ej. USD)</span>
+            <span class="n">monto_operado_para_ganancia</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">monto_origen</span>
+        
+        <span class="n">ganancia_neta_real</span> <span class="o">=</span> <span class="n">comision_final</span> <span class="o">*</span> <span class="n">monto_operado_para_ganancia</span>
+    
+        <span class="c1"># Crear o actualizar el RegistroGanancia</span>
+        <span class="n">RegistroGanancia</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+            <span class="n">transaccion</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;ganancia_registrada&#39;</span><span class="p">:</span> <span class="n">ganancia_neta_real</span><span class="p">,</span>
+                <span class="s1">&#39;moneda_ganancia&#39;</span><span class="p">:</span> <span class="n">moneda_pyg</span><span class="p">,</span>
+                <span class="s1">&#39;moneda_operada&#39;</span><span class="p">:</span> <span class="n">moneda_operada</span><span class="p">,</span>
+                <span class="s1">&#39;fecha_registro&#39;</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+        <span class="c1">#print(f&quot;Registro de ganancia creado/actualizado para Transaccion {instance.id} con ganancia neta real: {ganancia_neta_real}&quot;)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

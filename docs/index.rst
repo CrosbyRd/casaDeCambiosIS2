@@ -6,13 +6,31 @@
 Documentación de CasaDeCambioIS2
 ================================
 
-Agrega tu contenido usando la sintaxis ``reStructuredText``. Mira la
-`documentación de reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-para más detalles.
-
+Bienvenido a la documentación de CasaDeCambioIS2
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contenidos:
+   :caption: Contenido:
 
+   admin_panel
+   clientes
+   configuracion
+   core
+   correo
+   cotizaciones
+   facturacion_electronica
+   ganancias
+   medios_acreditacion
    modules
+   monedas
+   notificaciones
+   operaciones
+   pagos
+   payments
+   reportes
+   roles
+   simuladores
+   ted
+   transacciones
+   usuarios
+

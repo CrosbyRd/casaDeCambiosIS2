@@ -22,8 +22,8 @@ print(f"DEBUG: DJANGO_SETTINGS_MODULE = {os.environ.get('DJANGO_SETTINGS_MODULE'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'CasaDeCambioIS2 Documentation'
-copyright = '2025, Diego'
-author = 'Diego'
+copyright = '2025, Grupo 5 IS2 - FPUNA '
+author = 'Grupo 5 IS2 - FPUNA'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
