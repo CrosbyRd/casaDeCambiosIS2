@@ -141,7 +141,7 @@
                 {% else %}
                   <!-- ✅ Libre: confirmación y POST al DeleteView -->
                   <form method="post"
-                        action="{% url 'pagos:tipos_delete' t.id_tipo %}"
+                        action="{% url 'pagos:tipos_delete' t.id %}"
                         class="inline delete-form">
                     {% csrf_token %}
                     <button type="button"
