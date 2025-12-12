@@ -21,7 +21,7 @@
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="next" title="paquete clientes" href="clientes.html" />
-    <link rel="prev" title="paquete CasaDeCambioIS2" href="CasaDeCambioIS2.html" /> 
+    <link rel="prev" title="Documentación de CasaDeCambioIS2" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,23 +43,50 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete admin_panel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-admin_panel.models">módulo admin_panel.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#admin-panel-modelos">Admin Panel — modelos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions.id"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions.objects"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions.objects</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-admin_panel.urls">módulo admin_panel.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#admin-panel-enrutamiento">Admin Panel — enrutamiento</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-admin_panel.views">módulo admin_panel.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#admin-panel-vistas">Admin Panel — vistas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#requisitos-de-acceso">Requisitos de acceso</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#admin_panel.views.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete admin_panel</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.admin">módulo admin_panel.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.apps">módulo admin_panel.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#admin_panel.apps.AdminPanelConfig"><code class="docutils literal notranslate"><span class="pre">AdminPanelConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.models">módulo admin_panel.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#admin-panel-modelos">Admin Panel — modelos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#admin_panel.models.AdminPanelPermissions"><code class="docutils literal notranslate"><span class="pre">AdminPanelPermissions</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.tests">módulo admin_panel.tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-admin_panel.urls">módulo admin_panel.urls</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#admin-panel-enrutamiento">Admin Panel — enrutamiento</a></li>
 </ul>
@@ -69,7 +96,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#admin_panel.views.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
@@ -93,6 +119,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -109,7 +146,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete admin_panel</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/admin_panel.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -122,31 +158,6 @@
              
   <section id="paquete-admin-panel">
 <h1>paquete admin_panel<a class="headerlink" href="#paquete-admin-panel" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-admin_panel.admin">
-<span id="modulo-admin-panel-admin"></span><h2>módulo admin_panel.admin<a class="headerlink" href="#module-admin_panel.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-admin_panel.apps">
-<span id="modulo-admin-panel-apps"></span><h2>módulo admin_panel.apps<a class="headerlink" href="#module-admin_panel.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="admin_panel.apps.AdminPanelConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">admin_panel.apps.</span></span><span class="sig-name descname"><span class="pre">AdminPanelConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/admin_panel/apps.html#AdminPanelConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#admin_panel.apps.AdminPanelConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="admin_panel.apps.AdminPanelConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#admin_panel.apps.AdminPanelConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="admin_panel.apps.AdminPanelConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'admin_panel'</span></em><a class="headerlink" href="#admin_panel.apps.AdminPanelConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-admin_panel.models">
 <span id="modulo-admin-panel-models"></span><h2>módulo admin_panel.models<a class="headerlink" href="#module-admin_panel.models" title="Link to this heading"></a></h2>
 <section id="admin-panel-modelos">
@@ -204,9 +215,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
-<section id="module-admin_panel.tests">
-<span id="modulo-admin-panel-tests"></span><h2>módulo admin_panel.tests<a class="headerlink" href="#module-admin_panel.tests" title="Link to this heading"></a></h2>
-</section>
 <section id="module-admin_panel.urls">
 <span id="modulo-admin-panel-urls"></span><h2>módulo admin_panel.urls<a class="headerlink" href="#module-admin_panel.urls" title="Link to this heading"></a></h2>
 <section id="admin-panel-enrutamiento">
@@ -258,23 +266,20 @@ En caso contrario, redirige a la página <code class="docutils literal notransla
 </dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-admin_panel"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="CasaDeCambioIS2.html" class="btn btn-neutral float-left" title="paquete CasaDeCambioIS2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Documentación de CasaDeCambioIS2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
         <a href="clientes.html" class="btn btn-neutral float-right" title="paquete clientes" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

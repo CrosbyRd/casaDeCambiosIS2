@@ -246,28 +246,31 @@ class MedioPagoCliente(models.Model):
                     return f"{nombre}: RUC inválido (########-#)"
             return None
 
+        error_messages = [] # Cambiamos de diccionario a lista de mensajes
+
         for campo in campos_activos:
             nombre = campo.nombre_campo
             valor = datos.get(nombre)
             if campo.obligatorio and (valor is None or str(valor).strip() == ""):
-                errors[nombre] = "Es obligatorio"
+                error_messages.append(f"'{nombre}': Es obligatorio")
                 continue
             # Validación por tipo
             type_err = _valida_tipo(nombre, valor, campo.tipo_dato)
             if type_err:
-                errors[nombre] = type_err
+                error_messages.append(type_err)
                 continue
             # Validación por regex (solo la predefinida)
             patron = campo.regex_opcional or ""
             if patron and valor not in (None, ""):
                 try:
                     if not re.fullmatch(patron, str(valor)):
-                        errors[nombre] = "Formato inválido"
+                        error_messages.append(f"'{nombre}': Formato inválido")
                 except re.error:
-                    errors[nombre] = "Regex inválida en configuración"
+                    error_messages.append(f"'{nombre}': Regex inválida en configuración")
 
-        if errors:
-            raise ValidationError(errors)
+        if error_messages:
+            # Lanzamos ValidationError con una lista de mensajes
+            raise ValidationError(error_messages)
 
     # Lógica de predeterminado y desactivación
     def save(self, *args, **kwargs):

@@ -5,82 +5,471 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pasarela de Pago Simulada</title>
     <style>
-        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f9; color: #333; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #0056b3; text-align: center; }
-        .payment-details { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .payment-details p { font-size: 1.1em; margin: 10px 0; }
-        .payment-details strong { color: #555; }
-        .actions { text-align: center; }
-        .btn { padding: 15px 30px; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .btn-success { background-color: #28a745; color: white; margin-right: 15px; }
-        .btn-danger { background-color: #dc3545; color: white; }
-        .error { color: #dc3545; text-align: center; font-weight: bold; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e9e4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container { 
+            max-width: 750px; 
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(138, 99, 210, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            padding: 32px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        h1 { 
+            font-size: 27px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .content-wrapper {
+            padding: 32px 30px;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f6ff;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            color: #6b4fc3;
+            font-weight: 500;
+        }
+
+        .security-badge svg {
+            width: 16px;
+            height: 16px;
+            fill: #6b4fc3;
+        }
+
+        .error { 
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #fecaca;
+        }
+
+        .payment-details {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 15px;
+            color: #666;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #1a1a1a;
+            font-weight: 600;
+            text-align: right;
+            flex: 1;
+        }
+
+        .amount-highlight {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 2px solid #8b5cf6;
+        }
+
+        .amount-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .amount-value {
+            font-size: 32px;
+            color: #8b5cf6;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .payment-method-section {
+            background: #f8f6ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e9e4ff;
+        }
+
+        .payment-method-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-method-title svg {
+            width: 18px;
+            height: 18px;
+            fill: #8b5cf6;
+        }
+
+        .payment-method-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payment-method-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+        }
+
+        .payment-method-row strong {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .payment-method-row span {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .actions { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn { 
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-success { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-success:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger { 
+            background: white;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e5e5e5;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d4d4d4;
+        }
+
+        .transaction-id {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .operation-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .operation-badge.compra {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .operation-badge.venta {
+            background: #d1fae5;
+            color: #065f46;
+        }
 
         /* Popup */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            display: none; /* por defecto oculto */
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            backdrop-filter: blur(4px);
         }
+
         .popup-contenido {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 32px;
+            border-radius: 16px;
             text-align: center;
             max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
         }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .popup-contenido h2 {
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .popup-contenido p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
         #cerrarPopup {
-            background: #007bff;
+            background: #8b5cf6;
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
+            padding: 12px 32px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        #cerrarPopup:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .content-wrapper {
+                padding: 24px 20px;
+            }
+
+            .amount-value {
+                font-size: 28px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Confirmación de Pago</h1>
-        
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% elif pago and transaccion %}
-            <div class="payment-details">
-                <p><strong>ID de Transacción:</strong> {{ transaccion.id }}</p>
-                <p><strong>Tipo de Operación:</strong> 
-                    {% if transaccion.tipo_operacion == 'compra' %}
-                        Compra de Divisa (Tú vendes, Casa de Cambio compra)
-                    {% else %}
-                        Venta de Divisa (Tú compras, Casa de Cambio vende)
-                    {% endif %}
-                </p>
-                <p><strong>Moneda de Origen:</strong> {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Monto a Pagar:</strong> {{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</p>
-                <p><strong>Moneda de Destino:</strong> {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Monto a Recibir:</strong> {{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</p>
-                <p><strong>Tasa de Cambio Aplicada:</strong> {{ transaccion.tasa_cambio_aplicada }}</p>
-                <p><strong>Comisión Aplicada:</strong> {{ transaccion.comision_aplicada }} PYG</p>
-                <p><strong>Referencia de Pago:</strong> {{ pago.referencia_comercio }}</p>
+        <div class="header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
             </div>
-            
-            <form action="{% url 'simuladores:confirmar_pago' pago.id %}" method="post" class="actions">
-                {% csrf_token %}
-                <button type="submit" name="accion" value="pagar" class="btn btn-success">Pagar Ahora</button>
-                <button type="submit" name="accion" value="cancelar" class="btn btn-danger">Cancelar Pago</button>
-            </form>
-            <div class="actions" style="margin-top: 20px;">
-                <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn" style="background-color: #6c757d; color: white;">Volver a Detalles de Operación</a>
-            </div>
-        {% else %}
-             <p class="error">No se encontraron detalles de la transacción o del pago.</p>
-        {% endif %}
+            <h1>Confirmación de Pago</h1>
+            <p class="header-subtitle">Revisa los detalles de tu transacción</p>
+        </div>
+
+        <div class="content-wrapper">
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% elif pago and transaccion %}
+                <div class="security-badge">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                    </svg>
+                    Transacción segura y encriptada
+                </div>
+
+                <div class="amount-highlight">
+                    <div class="amount-label">Monto a Pagar</div>
+                    <div class="amount-value" id="montoAPagar">{{ transaccion.monto_origen }} {{ transaccion.moneda_origen.codigo }}</div>
+                </div>
+
+                <div class="payment-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Tipo de Operación</span>
+                        <span class="detail-value">
+                            {% if transaccion.tipo_operacion == 'compra' %}
+                                <span class="operation-badge compra">Compra</span>
+                            {% else %}
+                                <span class="operation-badge venta">Venta</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Monto a Recibir</span>
+                        <span class="detail-value" id="montoARecibir">{{ transaccion.monto_destino }} {{ transaccion.moneda_destino.codigo }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Tasa de Cambio</span>
+                        <span class="detail-value" id="tasaCambio">{{ transaccion.tasa_cambio_aplicada }}  </span>
+                    </div>
+                </div>
+
+                {% if transaccion.datos_medio_pago_snapshot %}
+                <div class="payment-method-section">
+                    <div class="payment-method-title">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </svg>
+                        Método de Pago
+                    </div>
+                    <div class="payment-method-details">
+                        <div class="payment-method-row">
+                            <strong>Tipo:</strong>
+                            <span>{{ transaccion.datos_medio_pago_snapshot.tipo_nombre }}</span>
+                        </div>
+                        <div class="payment-method-row">
+                            <strong>Proveedor:</strong>
+                            <span>{{ transaccion.datos_medio_pago_snapshot.alias }}</span>
+                        </div>
+                        {% for key, value in transaccion.datos_medio_pago_snapshot.datos_campos.items %}
+                        <div class="payment-method-row">
+                            <strong>{{ key|title }}:</strong>
+                            <span>{{ value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <form action="{% url 'simuladores:confirmar_pago' pago.id %}" method="post" class="actions">
+                    {% csrf_token %}
+                    <button type="submit" name="accion" value="pagar" class="btn btn-success">
+                        Confirmar y Pagar
+                    </button>
+                    <button type="submit" name="accion" value="cancelar" class="btn btn-danger">
+                        Cancelar Transacción
+                    </button>
+                </form>
+
+                <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-secondary" style="display: block;">
+                    Volver a Detalles
+                </a>
+
+                <div class="transaction-id">
+                    ID de Transacción: {{ transaccion.id }}
+                </div>
+            {% else %}
+                <div class="error">No se encontraron detalles de la transacción o del pago.</div>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Popup de Notificación -->
@@ -93,6 +482,81 @@
     </div>
 
     <script>
+        // Función para formatear números con puntos de miles y comas decimales
+        function formatearNumero(numero) {
+            // Convertir a string y separar parte entera de decimal
+            let partes = numero.toString().split('.');
+            let parteEntera = partes[0];
+            let parteDecimal = partes[1] || '00';
+            
+            // Asegurar dos decimales
+            if (parteDecimal.length === 1) parteDecimal += '0';
+            if (parteDecimal.length === 0) parteDecimal = '00';
+            
+            // Agregar puntos de miles
+            parteEntera = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            return parteEntera + ',' + parteDecimal;
+        }
+
+        
+
+        // Formatear montos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Formatear monto a pagar
+            const montoAPagar = document.getElementById('montoAPagar');
+            if (montoAPagar) {
+                const texto = montoAPagar.textContent.trim();
+                const partes = texto.split(' ');
+                if (partes.length >= 2) {
+                    const numero = parseFloat(partes[0]);
+                    const moneda = partes.slice(1).join(' ');
+                    montoAPagar.textContent = formatearNumero(numero) + ' ' + moneda;
+                }
+            }
+
+            // Formatear monto a recibir
+            const montoARecibir = document.getElementById('montoARecibir');
+            if (montoARecibir) {
+                const texto = montoARecibir.textContent.trim();
+                const partes = texto.split(' ');
+                if (partes.length >= 2) {
+                    const numero = parseFloat(partes[0]);
+                    const moneda = partes.slice(1).join(' ');
+                    montoARecibir.textContent = formatearNumero(numero) + ' ' + moneda;
+                }
+            }
+
+            // Convierte "7.149,50" o "7149,50" a 7149.50 (número JS)
+            function parseNumeroLocal(texto) {
+                let s = texto.trim();
+                // Quitar puntos de miles
+                s = s.replace(/\./g, '');
+                // Cambiar coma decimal por punto
+                s = s.replace(',', '.');
+                return parseFloat(s);
+            }
+
+            // Formatear tasa de cambio
+            const tasaCambio = document.getElementById('tasaCambio');
+            if (tasaCambio) {
+                const numero = parseNumeroLocal(tasaCambio.textContent);
+                tasaCambio.textContent = formatearNumero(numero) + ' PYG';
+            }
+
+            // Formatear comisión
+            const comision = document.getElementById('comision');
+            if (comision) {
+                const texto = comision.textContent.trim();
+                const partes = texto.split(' ');
+                if (partes.length >= 2) {
+                    const numero = parseFloat(partes[0]);
+                    const moneda = partes.slice(1).join(' ');
+                    comision.textContent = formatearNumero(numero) + ' ' + moneda;
+                }
+            }
+        });
+
         function mostrarPopup(notificaciones) {
             const popup = document.getElementById('popupNotificacion');
             const contenido = document.getElementById('contenidoNotificaciones');

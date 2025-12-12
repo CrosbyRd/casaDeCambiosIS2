@@ -152,6 +152,19 @@ class DocumentoElectronicoDetailView(LoginRequiredMixin, AdminRequiredMixin, Det
         return context
 
 
+@login_required
+@admin_required
+def panel_facturacion(request):
+    """
+    Panel intermedio de Facturación Electrónica.
+
+    Desde aquí se puede ir a Emisores y Documentos Electrónicos.
+    Solo redirige a la plantilla panel_facturacion.html.
+    """
+    return render(request, "facturacion_electronica/panel_facturacion.html")
+
+
+
 # Acciones para DocumentoElectronico (disparadas por POST)
 @login_required
 @admin_required  # Usar el decorador de función

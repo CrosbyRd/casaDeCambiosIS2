@@ -21,7 +21,7 @@
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="next" title="paquete simuladores" href="simuladores.html" />
-    <link rel="prev" title="facturacion_electronica" href="facturacion_electronica.html" /> 
+    <link rel="prev" title="paquete ted" href="ted.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -66,11 +75,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete notificaciones</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.apps">módulo notificaciones.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#notificaciones.apps.NotificacionesConfig"><code class="docutils literal notranslate"><span class="pre">NotificacionesConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.emails">módulo notificaciones.emails</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#notificaciones.emails.enviar_email_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">enviar_email_cambio_tasa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notificaciones.emails.enviar_email_con_adjunto"><code class="docutils literal notranslate"><span class="pre">enviar_email_con_adjunto()</span></code></a></li>
@@ -90,7 +94,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#notificaciones.signals.crear_preferencias_para_nuevo_usuario"><code class="docutils literal notranslate"><span class="pre">crear_preferencias_para_nuevo_usuario()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.tasks">módulo notificaciones.tasks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.urls">módulo notificaciones.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-notificaciones.utils">módulo notificaciones.utils</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#notificaciones.utils.crear_notificacion"><code class="docutils literal notranslate"><span class="pre">crear_notificacion()</span></code></a></li>
@@ -106,12 +109,113 @@
 <li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.ver_nuevas"><code class="docutils literal notranslate"><span class="pre">ver_nuevas()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-notificaciones">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete notificaciones</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.emails">módulo notificaciones.emails</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.emails.enviar_email_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">enviar_email_cambio_tasa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.emails.enviar_email_con_adjunto"><code class="docutils literal notranslate"><span class="pre">enviar_email_con_adjunto()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.forms">módulo notificaciones.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm.Meta"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.forms.PreferenciasNotificacionForm.media"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.models">módulo notificaciones.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.models.Notificacion"><code class="docutils literal notranslate"><span class="pre">Notificacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Notificacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Notificacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.TIPO_CHOICES"><code class="docutils literal notranslate"><span class="pre">Notificacion.TIPO_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.destinatario"><code class="docutils literal notranslate"><span class="pre">Notificacion.destinatario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.destinatario_id"><code class="docutils literal notranslate"><span class="pre">Notificacion.destinatario_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Notificacion.fecha_creacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Notificacion.get_next_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Notificacion.get_previous_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.get_tipo_display"><code class="docutils literal notranslate"><span class="pre">Notificacion.get_tipo_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.id"><code class="docutils literal notranslate"><span class="pre">Notificacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.leida"><code class="docutils literal notranslate"><span class="pre">Notificacion.leida</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.mensaje"><code class="docutils literal notranslate"><span class="pre">Notificacion.mensaje</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.objects"><code class="docutils literal notranslate"><span class="pre">Notificacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.silenciada"><code class="docutils literal notranslate"><span class="pre">Notificacion.silenciada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.tipo"><code class="docutils literal notranslate"><span class="pre">Notificacion.tipo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.Notificacion.url_destino"><code class="docutils literal notranslate"><span class="pre">Notificacion.url_destino</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.id"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.monedas_seguidas"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.monedas_seguidas</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.objects"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.recibir_email_tasa_cambio"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.recibir_email_tasa_cambio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.usuario"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.usuario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.models.PreferenciasNotificacion.usuario_id"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacion.usuario_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.signals">módulo notificaciones.signals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.signals.crear_notificacion_por_cambio_tasa"><code class="docutils literal notranslate"><span class="pre">crear_notificacion_por_cambio_tasa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.signals.crear_preferencias_para_nuevo_usuario"><code class="docutils literal notranslate"><span class="pre">crear_preferencias_para_nuevo_usuario()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.urls">módulo notificaciones.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.utils">módulo notificaciones.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.utils.crear_notificacion"><code class="docutils literal notranslate"><span class="pre">crear_notificacion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-notificaciones.views">módulo notificaciones.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.MarcarLeidaNotificacionView"><code class="docutils literal notranslate"><span class="pre">MarcarLeidaNotificacionView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.MarcarLeidaNotificacionView.post"><code class="docutils literal notranslate"><span class="pre">MarcarLeidaNotificacionView.post()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.NotificacionListView"><code class="docutils literal notranslate"><span class="pre">NotificacionListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">NotificacionListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView.get_queryset"><code class="docutils literal notranslate"><span class="pre">NotificacionListView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView.model"><code class="docutils literal notranslate"><span class="pre">NotificacionListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView.paginate_by"><code class="docutils literal notranslate"><span class="pre">NotificacionListView.paginate_by</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.NotificacionListView.template_name"><code class="docutils literal notranslate"><span class="pre">NotificacionListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.form_class"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.form_valid"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.get_object"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.get_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.model"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.success_url"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.PreferenciasNotificacionUpdateView.template_name"><code class="docutils literal notranslate"><span class="pre">PreferenciasNotificacionUpdateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.SilenciarNotificacionView"><code class="docutils literal notranslate"><span class="pre">SilenciarNotificacionView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#notificaciones.views.SilenciarNotificacionView.post"><code class="docutils literal notranslate"><span class="pre">SilenciarNotificacionView.post()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.marcar_leidas"><code class="docutils literal notranslate"><span class="pre">marcar_leidas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.marcar_notificaciones_leidas"><code class="docutils literal notranslate"><span class="pre">marcar_notificaciones_leidas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notificaciones.views.ver_nuevas"><code class="docutils literal notranslate"><span class="pre">ver_nuevas()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -141,34 +245,6 @@
              
   <section id="paquete-notificaciones">
 <h1>paquete notificaciones<a class="headerlink" href="#paquete-notificaciones" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-notificaciones.apps">
-<span id="modulo-notificaciones-apps"></span><h2>módulo notificaciones.apps<a class="headerlink" href="#module-notificaciones.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">notificaciones.apps.</span></span><span class="sig-name descname"><span class="pre">NotificacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/apps.html#NotificacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'notificaciones'</span></em><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="notificaciones.apps.NotificacionesConfig.ready">
-<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/notificaciones/apps.html#NotificacionesConfig.ready"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#notificaciones.apps.NotificacionesConfig.ready" title="Link to this definition"></a></dt>
-<dd><p>Override this method in subclasses to run code when Django starts.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-notificaciones.emails">
 <span id="modulo-notificaciones-emails"></span><h2>módulo notificaciones.emails<a class="headerlink" href="#module-notificaciones.emails" title="Link to this heading"></a></h2>
 <dl class="py function">
@@ -504,9 +580,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
-<section id="module-notificaciones.tasks">
-<span id="modulo-notificaciones-tasks"></span><h2>módulo notificaciones.tasks<a class="headerlink" href="#module-notificaciones.tasks" title="Link to this heading"></a></h2>
-</section>
 <section id="module-notificaciones.urls">
 <span id="modulo-notificaciones-urls"></span><h2>módulo notificaciones.urls<a class="headerlink" href="#module-notificaciones.urls" title="Link to this heading"></a></h2>
 <p>Módulo de enrutamiento de la aplicación de notificaciones.</p>
@@ -732,23 +805,20 @@ Una vez que se devuelve, la marca como leída para no volver a mostrarla.</p>
 </dd></dl>
 
 </section>
-<section id="module-notificaciones">
-<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-notificaciones" title="Link to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="facturacion_electronica.html" class="btn btn-neutral float-left" title="facturacion_electronica" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="ted.html" class="btn btn-neutral float-left" title="paquete ted" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
         <a href="simuladores.html" class="btn btn-neutral float-right" title="paquete simuladores" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

@@ -6,124 +6,540 @@
 {% block extra_head %}<link rel="icon" href="{% static 'img/logo.ico' %}" sizes="any">{% endblock %}
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-6 py-10">
+<main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
   {% if transaccion.is_tasa_expirada %}
-    {% include "partials/page_header.html" with title="Operación Cancelada" subtitle="El tiempo para garantizar la tasa ha expirado." %}
-  {% elif transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' or transaccion.estado == 'pendiente_pago_stripe' %}
-    {% if transaccion.modalidad_tasa == 'bloqueada' %}
-      {% include "partials/page_header.html" with title="Operación con Tasa Reservada" subtitle="Tu tasa de cambio está garantizada por un tiempo limitado." %}
-    {% elif transaccion.modalidad_tasa == 'flotante' %}
-      {% include "partials/page_header.html" with title="Operación con Tasa de Mercado" subtitle="La tasa final se definirá al momento del pago." %}
-    {% else %}
-      {% include "partials/page_header.html" with title="Detalle de Operación" %}
-    {% endif %}
-  {% else %}
-    {% include "partials/page_header.html" with title="Detalle de Operación" subtitle=transaccion.get_estado_display_dinamico %}
-  {% endif %}
-  {% include "partials/messages.html" %}
+    <!-- ============================================
+         ESTADO: OPERACIÓN EXPIRADA
+         ============================================ -->
+    <header class="mb-4">
+      <p class="text-xs font-semibold tracking-wide text-red-700 uppercase mb-1">
+        Operación cancelada
+      </p>
+      <h1 class="h1 text-red-900">
+        La tasa reservada ha expirado
+      </h1>
+      <p class="lead text-red-700">
+        El tiempo para garantizar la tasa de cambio ha finalizado.
+      </p>
+    </header>
 
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <div class="p-5">
-      {% if transaccion.is_tasa_expirada %}
-        <div class="text-center p-6 bg-red-50 text-red-700 rounded-lg">
-          <h2 class="text-xl font-bold">Operación Expirada</h2>
-          <p class="mt-2">Esta operación ha sido cancelada porque el tiempo para garantizar la tasa de cambio ha finalizado. Por favor, inicia una nueva operación.</p>
+    <section class="bg-white border border-red-200 rounded-2xl shadow-md p-6 md:p-8">
+      <div class="flex items-start gap-4 md:gap-6">
+        <div class="flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-red-100 text-red-600 text-2xl md:text-3xl shrink-0">
+          ⏱️
         </div>
+        <div class="space-y-2">
+          <h2 class="text-xl md:text-2xl font-extrabold text-red-900">
+            Operación expirada
+          </h2>
+          <p class="text-sm md:text-base text-red-800 leading-relaxed">
+            Esta operación ha sido cancelada porque el tiempo para garantizar la tasa de cambio ha finalizado. 
+            Para continuar, volvé a la calculadora o a tu panel y generá una nueva operación con una tasa actualizada.
+          </p>
+        </div>
+      </div>
+    </section>
+    
+    <div class="flex justify-center">
+      <a href="{% url 'usuarios:dashboard' %}" class="btn mt-4">
+        Volver al Dashboard
+      </a>
+    </div>
+
+  {% else %}
+  <div class="space-y-8">
+    <!-- ============================================
+         HEADER DINÁMICO SEGÚN ESTADO
+         ============================================ -->
+    <header>
+      {% if transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_deposito_tauser' or transaccion.estado == 'pendiente_pago_stripe' %}
+        {% if transaccion.modalidad_tasa == 'bloqueada' %}
+          <h1 class="h1 text-purple-950">Operación con Tasa Reservada</h1>
+          <p class="lead text-purple-700">
+            Tu tasa de cambio está garantizada por un tiempo limitado.
+          </p>
+        {% elif transaccion.modalidad_tasa == 'flotante' %}
+          <h1 class="h1 text-purple-950">Operación con Tasa de Mercado</h1>
+          <p class="lead text-purple-700">
+            La tasa final se definirá al momento del pago.
+          </p>
+        {% else %}
+          <h1 class="h1 text-purple-950">Detalle de Operación</h1>
+        {% endif %}
       {% else %}
-        <div class="text-center">
-          <p class="text-lg text-gray-600">
-            {% if transaccion.tipo_operacion == 'compra' %}
-              Nos entregarás
-            {% else %}
-              Pagarás
-            {% endif %}
-          </p>
-          <p class="text-5xl font-extrabold text-[var(--ink)] my-2">
-            {{ transaccion.monto_origen|unlocalize }} {{ transaccion.moneda_origen.codigo }}
-          </p>
-          <p class="text-lg text-gray-600">
-            Y recibirás
-          </p>
-          <p class="text-5xl font-extrabold text-[var(--brand)] my-2">
-            {{ transaccion.monto_destino|unlocalize }} {{ transaccion.moneda_destino.codigo }}
-          </p>
-          
-          <div class="max-w-md mx-auto my-6 p-4 bg-gray-50 rounded-lg border border-[var(--line-soft)]">
-            <div class="flex justify-between items-center text-sm mb-2">
-              <span class="text-gray-600">Tasa de Cambio Aplicada:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.tasa_cambio_aplicada|unlocalize }}</span>
-            </div>
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-gray-600">Bonificación:</span>
-              <span class="font-semibold text-gray-800">{{ transaccion.comision_aplicada|unlocalize }}</span>
+        <h1 class="h1 text-purple-950">Detalle de Operación</h1>
+        <p class="lead text-purple-700">
+          {{ transaccion.get_estado_display_dinamico }}
+        </p>
+      {% endif %}
+    </header>
+    
+    {% include "partials/messages.html" %}
+
+    <!-- ============================================
+         TARJETA DE MONTOS - FLUJO DE CONVERSIÓN
+         ============================================ -->
+    <section class="bg-gradient-to-br from-white to-purple-50/30 border-2 border-[#7c3aed]/20 rounded-2xl shadow-xl overflow-hidden">
+      <!-- Flujo de conversión -->
+      <div class="p-6 md:p-8">
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+          <!-- Monto Origen -->
+          <div class="flex-1 w-full">
+            <div class="bg-white border-2 border-[#7c3aed]/30 rounded-2xl p-6 md:p-8 text-center hover:border-[#7c3aed] transition-all hover:shadow-xl group">
+              <div class="text-xs font-extrabold text-[#7c3aed] uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"/>
+                </svg>
+                {% if transaccion.tipo_operacion == 'compra' %}ENTREGAS{% else %}PAGAS{% endif %}
+              </div>
+              <div class="inline-flex items-center justify-center gap-2 mb-2 px-4 py-1 bg-[#7c3aed]/10 rounded-lg">
+                <span class="text-sm font-extrabold text-[#7c3aed] tracking-wider">{{ transaccion.moneda_origen.codigo }}</span>
+              </div>
+              <div class="text-4xl md:text-5xl font-black text-gray-900 group-hover:text-[#7c3aed] transition-colors" data-amount="{{ transaccion.monto_origen|unlocalize }}"></div>
             </div>
           </div>
 
-          {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
-            <p class="text-sm text-gray-600 text-center">
-              Esta tasa está garantizada hasta: <strong>{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</strong>.
-            </p>
-          {% endif %}
+          <!-- Flecha de conversión animada -->
+          <div class="text-[#7c3aed] flex-shrink-0 transform md:rotate-0 rotate-90">
+            <div class="relative">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="animate-pulse relative z-10">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+              <div class="absolute inset-0 bg-[#7c3aed]/10 rounded-full blur-xl"></div>
+            </div>
+          </div>
 
-          {% if transaccion.tipo_operacion == 'compra' and transaccion.estado == 'pendiente_deposito_tauser' %}
-            {% if transaccion.modalidad_tasa == 'bloqueada' %}
-              <p class="text-lg text-gray-800 text-center mt-6">
-                Utilizá el siguiente código como referencia para tu depósito:
-              </p>
-              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-                {{ transaccion.codigo_operacion_tauser }}
-              </p>
-              <p class="text-sm text-gray-600 text-center">
-                Tenés hasta la fecha de expiración para realizar el depósito y mantener la tasa.
-              </p>
-            {% elif transaccion.modalidad_tasa == 'flotante' %}
-              <p class="text-lg text-gray-800 text-center mt-6">
-                Utilizá el siguiente código como referencia para tu pago:
-              </p>
-              <p class="text-4xl font-extrabold text-[var(--brand)] text-center my-4 p-4 bg-white rounded-lg border border-[var(--line)]">
-                {{ transaccion.codigo_operacion_tauser }}
-              </p>
-              <p class="text-sm text-gray-600 text-center">
-                El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
-              </p>
-            {% endif %}
-          {% endif %}
-          
-          {% if transaccion.estado == 'pendiente_pago_stripe' %}
-            <div class="mt-8 p-6 border-t border-[var(--line-soft)]">
-              <h3 class="text-xl font-bold text-[var(--ink)]">Acción Requerida</h3>
-              <p class="text-gray-600 mt-2 mb-4">Para completar tu operación, por favor realiza el pago a través de nuestra pasarela segura.</p>
-              <a href="{% url 'core:iniciar_pago_stripe' transaccion.id %}" class="gx-btn">
-                Continuar el pago en Stripe
-              </a>
+          <!-- Monto Destino -->
+          <div class="flex-1 w-full">
+            <div class="bg-gradient-to-br from-[#7c3aed]/10 to-[#7c3aed]/20 border-2 border-[#7c3aed] rounded-2xl p-6 md:p-8 text-center shadow-lg hover:shadow-2xl transition-all group">
+              <div class="text-xs font-extrabold text-[#7c3aed] uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+                </svg>
+                RECIBES
+              </div>
+              <div class="inline-flex items-center justify-center gap-2 mb-2 px-4 py-1 bg-[#7c3aed]/20 rounded-lg">
+                <span class="text-sm font-extrabold text-[#7c3aed] tracking-wider">{{ transaccion.moneda_destino.codigo }}</span>
+              </div>
+              <div class="text-4xl md:text-5xl font-black text-[#7c3aed] group-hover:scale-105 transition-transform" data-amount="{{ transaccion.monto_destino|unlocalize }}"></div>
             </div>
-          {% endif %}
-          {% if transaccion.tipo_operacion == 'venta' and transaccion.estado == 'pendiente_pago_cliente' %}
-            <div class="text-center mt-6">
-              <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="gx-btn">Confirmar Pago</button>
-              </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasa de cambio -->
+      <div class="bg-[#7c3aed]/10 border-t-2 border-[#7c3aed]/30 px-6 md:px-8 py-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <span class="text-sm font-extrabold text-[#7c3aed] uppercase tracking-wide">Tasa de cambio aplicada</span>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-gray-900" data-amount="{{ transaccion.tasa_cambio_aplicada|unlocalize }}"></span>
+            <span class="text-lg font-bold text-[#7c3aed]">PYG</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Garantía de tasa (si aplica) -->
+      {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+        <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-t-2 border-amber-300 px-6 md:px-8 py-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🔒</span>
+            <div class="flex-1">
+              <span class="text-sm font-bold text-amber-900">
+                Tasa garantizada hasta <strong class="text-amber-800">{{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs</strong>
+              </span>
             </div>
-          {% endif %}
+          </div>
         </div>
       {% endif %}
+    </section>
 
-      <div class="text-center mt-6">
-        <a href="{% url 'usuarios:dashboard' %}" class="gx-btn">Ir a mi Dashboard</a>
+    <!-- ============================================
+         CÓDIGO DE OPERACIÓN (si aplica)
+         ============================================ -->
+    {% if transaccion.tipo_operacion == 'compra' and transaccion.estado == 'pendiente_deposito_tauser' %}
+      <section class="bg-gradient-to-br from-[#7c3aed]/5 to-[#7c3aed]/10 border-2 border-[#7c3aed]/30 rounded-2xl p-6 mb-2 shadow-lg">
+        <div class="flex items-start gap-5">
+          <div class="text-4xl">🔑</div>
+          <div class="flex-1 space-y-3">
+            <h3 class="text-xl font-extrabold text-gray-900">
+              {% if transaccion.modalidad_tasa == 'bloqueada' %}
+                Código de referencia para tu depósito
+              {% else %}
+                Código de referencia para tu pago
+              {% endif %}
+            </h3>
+            <div class="bg-white border-2 border-dashed border-[#7c3aed] rounded-xl p-4 text-center">
+              <div class="text-3xl md:text-4xl font-black text-[#7c3aed] tracking-widest font-mono">
+                {{ transaccion.codigo_operacion_tauser }}
+              </div>
+            </div>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              {% if transaccion.modalidad_tasa == 'bloqueada' %}
+                Tenés hasta la fecha de expiración para realizar el depósito y mantener la tasa.
+              {% else %}
+                El monto final de divisa a recibir se calculará con la tasa vigente al momento de procesar tu pago.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- ============================================
+         ACCIONES REQUERIDAS
+         ============================================ -->
+    {% if transaccion.estado == 'pendiente_pago_stripe' %}
+      <section class="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-400 rounded-2xl p-6 shadow-lg">
+        <div class="flex items-start gap-4 mb-4">
+          <span class="text-3xl">💳</span>
+          <h3 class="text-xl font-extrabold text-orange-900">Acción requerida</h3>
+        </div>
+        <p class="text-orange-800 mb-5 leading-relaxed">
+          Para completar tu operación, por favor realizá el pago a través de nuestra pasarela segura.
+        </p>
+        <a href="{% url 'core:iniciar_pago_stripe' transaccion.id %}" class="btn w-full md:w-auto">
+          Continuar el pago en Stripe
+        </a>
+      </section>
+    {% elif transaccion.estado == 'pendiente_confirmacion_pago' %}
+      <section class="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-400 rounded-2xl p-6 shadow-lg">
+        <div class="flex items-start gap-4 mb-4">
+          <span class="text-3xl">⏳</span>
+          <h3 class="text-xl font-extrabold text-orange-900">Acción requerida</h3>
+        </div>
+        <p class="text-orange-800 mb-5 leading-relaxed">
+          Tu operación de venta está pendiente de confirmación. Por favor, procedé con el pago para finalizarla.
+        </p>
+        {% if transaccion.modalidad_tasa == 'flotante' %}
+          <a href="{% url 'core:confirmacion_final_pago' transaccion.id %}" class="btn w-full md:w-auto">
+            Continuar con el pago
+          </a>
+        {% else %}
+          <a href="{% url 'transacciones:iniciar_pago' transaccion.id %}" class="btn w-full md:w-auto">
+            Continuar con el pago
+          </a>
+        {% endif %}
+      </section>
+    {% elif transaccion.estado == 'pendiente_pago_cliente' %}
+      <section class="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-400 rounded-2xl p-6 shadow-lg">
+        <div class="flex items-start gap-4 mb-4">
+          <span class="text-3xl">✔</span>
+          <h3 class="text-xl font-extrabold text-orange-900">Procesar pago</h3>
+        </div>
+        <p class="text-orange-800 mb-5 leading-relaxed">
+          Estás a un paso de completar tu operación. Procedé con el pago.
+        </p>
+        <form action="{% url 'transacciones:iniciar_pago' transaccion.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn w-full md:w-auto">
+            Continuar con el pago
+          </button>
+        </form>
+      </section>
+    {% endif %}
+
+    <!-- ============================================
+         INFORMACIÓN DETALLADA - TABLA UNIFICADA
+         ============================================ -->
+    <section class="mb-2">
+      <h2 class="text-2xl font-extrabold text-gray-900 mb-4 flex items-center gap-3">
+        <svg class="w-7 h-7 text-[#7c3aed]" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        Detalles de la operación
+      </h2>
+
+      <!-- TABLA UNIFICADA -->
+      <div class="bg-white border-2 border-[#7c3aed]/20 rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] px-6 py-4">
+          <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Información general
+          </h3>
+        </div>
+        <div class="p-6">
+          <table class="w-full">
+            <tbody class="divide-y divide-[#7c3aed]/10">
+              <!-- TIPO DE OPERACIÓN -->
+              <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                <td class="py-4 pr-4 text-sm font-bold text-gray-700">Tipo de operación</td>
+                <td class="py-4 text-right">
+                  {% if transaccion.tipo_operacion == 'compra' %}
+                    <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-xl font-extrabold text-sm">
+                      <span class="text-base">📥</span>
+                      Compra de {{ transaccion.moneda_destino.codigo }}
+                    </span>
+                  {% else %}
+                    <span class="inline-flex items-center gap-2 bg-pink-100 text-pink-800 px-4 py-2 rounded-xl font-extrabold text-sm">
+                      <span class="text-base">📤</span>
+                      Venta de {{ transaccion.moneda_origen.codigo }}
+                    </span>
+                  {% endif %}
+                </td>
+              </tr>
+
+              <!-- ESTADO ACTUAL -->
+              <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                <td class="py-4 pr-4 text-sm font-bold text-gray-700">Estado actual</td>
+                <td class="py-4 text-right">
+                  {% with estado_lower=transaccion.estado|lower %}
+                    {% if 'completada' in estado_lower or 'aprobada' in estado_lower or 'finalizada' in estado_lower %}
+                      <span class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-2 rounded-xl font-extrabold text-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ transaccion.get_estado_display_dinamico }}
+                      </span>
+                    {% elif 'pendiente' in estado_lower or 'proceso' in estado_lower %}
+                      <span class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 border border-amber-300 px-4 py-2 rounded-xl font-extrabold text-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ transaccion.get_estado_display_dinamico }}
+                      </span>
+                    {% elif 'cancelada' in estado_lower or 'rechazada' in estado_lower or 'anulada' in estado_lower %}
+                      <span class="inline-flex items-center gap-2 bg-red-100 text-red-800 border border-red-300 px-4 py-2 rounded-xl font-extrabold text-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ transaccion.get_estado_display_dinamico }}
+                      </span>
+                    {% else %}
+                      <span class="inline-flex items-center gap-2 bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/30 px-4 py-2 rounded-xl font-extrabold text-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ transaccion.get_estado_display_dinamico }}
+                      </span>
+                    {% endif %}
+                  {% endwith %}
+                </td>
+              </tr>
+
+              <!-- FECHA DE CREACIÓN -->
+              <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                <td class="py-4 pr-4 text-sm font-bold text-gray-700">Fecha de creación</td>
+                <td class="py-4 text-sm font-extrabold text-gray-900 text-right">
+                  {{ transaccion.fecha_creacion|date:"d/m/Y H:i" }} hs
+                </td>
+              </tr>
+
+              <!-- MODALIDAD DE TASA -->
+              <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                <td class="py-4 pr-4 text-sm font-bold text-gray-700">Modalidad de tasa</td>
+                <td class="py-4 text-sm font-extrabold text-gray-900 text-right">
+                  {{ transaccion.get_modalidad_tasa_display }}
+                </td>
+              </tr>
+
+              <!-- TASA GARANTIZADA HASTA (si aplica) -->
+              {% if transaccion.modalidad_tasa == 'bloqueada' and transaccion.tasa_garantizada_hasta %}
+                <tr class="bg-[#7c3aed]/5">
+                  <td class="py-4 pr-4 text-sm font-bold text-gray-700">Tasa garantizada hasta</td>
+                  <td class="py-4 text-sm font-extrabold text-gray-900 text-right">
+                    {{ transaccion.tasa_garantizada_hasta|date:"d/m/Y H:i" }} hs
+                  </td>
+                </tr>
+              {% endif %}
+
+              <!-- CÓDIGO DE OPERACIÓN -->
+              <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                <td class="py-4 pr-4 text-sm font-bold text-gray-700">Código de operación</td>
+                <td class="py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <span id="codigoOperacion" class="text-sm font-extrabold text-gray-900 font-mono bg-gray-100 px-3 py-1.5 rounded-lg">
+                      {{ transaccion.codigo_operacion_tauser }}
+                    </span>
+                    <button type="button" onclick="copyToClipboard('codigoOperacion', this)" class="relative text-xs px-3 py-1.5 rounded-lg bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold transition-colors">
+                      Copiar
+                      <span id="copiedCheck" class="absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity duration-300 pointer-events-none">
+                        ✓
+                      </span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <!-- TABLA: INFORMACIÓN DE PAGO/ACREDITACIÓN -->
+      {% if transaccion.datos_medio_pago_snapshot or transaccion.datos_medio_acreditacion_snapshot %}
+        <div class="bg-white border-2 border-[#7c3aed]/20 rounded-2xl shadow-xl overflow-hidden mt-6">
+          <div class="bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] px-6 py-4">
+            <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
+              <span class="text-xl">💰</span>
+              <span>Detalles de pago/acreditación</span>
+            </h3>
+          </div>
+          <div class="p-6">
+            <table class="w-full">
+              <tbody class="divide-y divide-[#7c3aed]/10">
+                {% if transaccion.datos_medio_pago_snapshot %}
+                  <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                    <td class="py-4 pr-4 text-sm font-bold text-gray-700">Tipo de medio de pago</td>
+                    <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ transaccion.datos_medio_pago_snapshot.tipo_nombre }}</td>
+                  </tr>
+                  <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                    <td class="py-4 pr-4 text-sm font-bold text-gray-700">Proveedor</td>
+                    <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ transaccion.datos_medio_pago_snapshot.alias }}</td>
+                  </tr>
+                  {% for key, value in transaccion.datos_medio_pago_snapshot.datos_campos.items %}
+                    <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                      <td class="py-4 pr-4 text-sm font-bold text-gray-700">{{ key|title }}</td>
+                      <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ value }}</td>
+                    </tr>
+                  {% endfor %}
+                {% elif transaccion.datos_medio_acreditacion_snapshot %}
+                  <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                    <td class="py-4 pr-4 text-sm font-bold text-gray-700">Tipo de medio de acreditación</td>
+                    <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ transaccion.datos_medio_acreditacion_snapshot.tipo_nombre }}</td>
+                  </tr>
+                  <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                    <td class="py-4 pr-4 text-sm font-bold text-gray-700">Proveedor</td>
+                    <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ transaccion.datos_medio_acreditacion_snapshot.alias }}</td>
+                  </tr>
+                  {% for key, value in transaccion.datos_medio_acreditacion_snapshot.datos_campos.items %}
+                    <tr class="hover:bg-[#7c3aed]/5 transition-colors">
+                      <td class="py-4 pr-4 text-sm font-bold text-gray-700">{{ key|title }}</td>
+                      <td class="py-4 text-sm font-extrabold text-gray-900 text-right">{{ value }}</td>
+                    </tr>
+                  {% endfor %}
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- ============================================
+         BOTONES DE NAVEGACIÓN
+         ============================================ -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="{% url 'usuarios:dashboard' %}" class="btn-secondary inline-flex items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Volver al Dashboard
+      </a>
+      
+      {% if transaccion.estado == 'pendiente_confirmacion_pago' or transaccion.estado == 'pendiente_pago_cliente' or transaccion.estado == 'pendiente_pago_stripe' %}
+        <button type="button" id="openCancelModal" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl shadow-lg hover:shadow-xl transition-all">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Cancelar operación
+        </button>
+      {% endif %}
     </div>
-  </section>
+  </div>
+  {% endif %}
 </main>
 
-<style>
-  .gx-btn{
-    background:var(--brand); color:#fff; font-weight:800; border:none; border-radius:12px;
-    padding:12px 16px; font-size:16px; width: auto; /* Ajustado para que no ocupe todo el ancho */
-    display: inline-block; text-decoration: none;
-    box-shadow:0 8px 24px color-mix(in oklab, var(--brand) 30%, transparent);
-    cursor:pointer; transition: filter .15s ease, transform .02s ease;
+<!-- ============================================
+     MODAL DE CONFIRMACIÓN DE CANCELACIÓN
+     ============================================ -->
+<div id="cancelModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 transform transition-all">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-extrabold text-gray-900 mb-2">Confirmar cancelación</h3>
+      <p class="text-gray-600 leading-relaxed">
+        ¿Estás seguro de que deseás cancelar esta operación? Esta acción no se puede deshacer.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <button type="button" id="closeCancelModal" class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold rounded-xl transition-colors">
+        No, volver
+      </button>
+      <form action="{% url 'core:cancelar_transaccion' transaccion.id %}" method="post" class="flex-1">
+        {% csrf_token %}
+        <button type="submit" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl shadow-lg hover:shadow-xl transition-all">
+          Sí, cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// LÓGICA PARA EL MODAL DE CANCELACIÓN
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+  const openModalBtn = document.getElementById('openCancelModal');
+  const closeModalBtn = document.getElementById('closeCancelModal');
+  const cancelModal = document.getElementById('cancelModal');
+
+  if (openModalBtn && cancelModal && closeModalBtn) {
+    openModalBtn.addEventListener('click', () => {
+      cancelModal.classList.remove('hidden');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      cancelModal.classList.add('hidden');
+    });
+
+    // Cerrar modal al hacer clic fuera
+    cancelModal.addEventListener('click', (event) => {
+      if (event.target === cancelModal) {
+        cancelModal.classList.add('hidden');
+      }
+    });
   }
-  .gx-btn:hover{ filter:brightness(1.03); }
-</style>
+});
+
+// ============================================
+// FUNCIÓN PARA COPIAR AL PORTAPAPELES
+// ============================================
+function copyToClipboard(elementId, buttonElement) {
+  const element = document.getElementById(elementId);
+  const copiedCheck = buttonElement.querySelector('#copiedCheck');
+
+  if (element && copiedCheck) {
+    const textToCopy = element.textContent || element.innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      copiedCheck.classList.remove('opacity-0');
+      copiedCheck.classList.add('opacity-100');
+      setTimeout(() => {
+        copiedCheck.classList.remove('opacity-100');
+        copiedCheck.classList.add('opacity-0');
+      }, 1500);
+    }).catch(err => {
+      console.error('Error al copiar el texto: ', err);
+    });
+  }
+}
+
+// ============================================
+// FORMATEO DE NÚMEROS
+// ============================================
+function formatNumber(num) {
+  const number = parseFloat(num).toFixed(2);
+  const [integer, decimal] = number.split('.');
+  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${formattedInteger},${decimal}`;
+}
+
+// Formatear todos los elementos con data-amount al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  const amountElements = document.querySelectorAll('[data-amount]');
+  amountElements.forEach(function(el) {
+    const rawAmount = el.getAttribute('data-amount');
+    if (rawAmount) {
+      el.textContent = formatNumber(rawAmount);
+    }
+  });
+});
+</script>
 {% endblock %}

@@ -205,16 +205,37 @@ class MedioPagoClienteForm(forms.ModelForm):
             tipo_obj = self.instance.tipo
 
         # b) Si viene por POST (form enviado) o por initial / querystring
+        # 1) Determinar el 'tipo' seleccionado
+        tipo_obj = None
+
+        # a) Si estoy editando y ya hay FK
+        if getattr(self.instance, "pk", None) and getattr(self.instance, "tipo_id", None):
+            tipo_obj = self.instance.tipo
+
+        # b) Si viene por POST (form enviado) o por initial / querystring
         if tipo_obj is None:
-            tipo_pk = self.data.get("tipo") or self.initial.get("tipo")
-            print(f"DEBUG MedioPagoClienteForm: tipo_pk obtenido: {tipo_pk}") # Debugging
-            if tipo_pk:
-                try:
-                    tipo_obj = TipoMedioPago.objects.get(pk=tipo_pk, activo=True)
-                    print(f"DEBUG MedioPagoClienteForm: tipo_obj encontrado: {tipo_obj.nombre}") # Debugging
-                except TipoMedioPago.DoesNotExist:
-                    tipo_obj = None
-                    print("DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo.") # Debugging
+            # Primero intentamos obtener el tipo usando el prefijo, si existe
+            if self.prefix:
+                tipo_pk_prefixed = self.data.get(f"{self.prefix}-tipo")
+                if tipo_pk_prefixed:
+                    try:
+                        tipo_obj = TipoMedioPago.objects.get(pk=tipo_pk_prefixed, activo=True)
+                        print(f"DEBUG MedioPagoClienteForm: tipo_obj encontrado con prefijo {self.prefix}: {tipo_obj.nombre}")
+                    except TipoMedioPago.DoesNotExist:
+                        tipo_obj = None
+                        print(f"DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo con prefijo {self.prefix}.")
+
+            # Si no se encontró con prefijo, intentamos sin prefijo
+            if tipo_obj is None:
+                tipo_pk = self.data.get("tipo") or self.initial.get("tipo")
+                print(f"DEBUG MedioPagoClienteForm: tipo_pk obtenido sin prefijo: {tipo_pk}")
+                if tipo_pk:
+                    try:
+                        tipo_obj = TipoMedioPago.objects.get(pk=tipo_pk, activo=True)
+                        print(f"DEBUG MedioPagoClienteForm: tipo_obj encontrado sin prefijo: {tipo_obj.nombre}")
+                    except TipoMedioPago.DoesNotExist:
+                        tipo_obj = None
+                        print("DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo sin prefijo.")
 
         # c) Fallback UX: si no hay selección y hay al menos un tipo activo, usamos el primero
         if tipo_obj is None:
@@ -258,7 +279,6 @@ class MedioPagoClienteForm(forms.ModelForm):
         """
         cleaned = super().clean()
         datos = {}
-        errores = {}
 
         def check_regex(patron, valor):
             if not patron:
@@ -275,23 +295,41 @@ class MedioPagoClienteForm(forms.ModelForm):
             # Validación por tipo de dato liviana (se alinea con models.clean())
             if valor not in (None, ""):
                 if campo.tipo_dato == CampoMedioPago.TipoDato.NUMERO and not re.fullmatch(r"^-?\d+(?:[\.,]\d+)?$", str(valor)):
-                    errores[nombre] = "Debe ser numérico"
+                    self.add_error(campo.nombre_campo, "Debe ser numérico")
                 elif campo.tipo_dato == CampoMedioPago.TipoDato.TELEFONO and not re.fullmatch(r"^\+?\d{6,15}$", str(valor)):
-                    errores[nombre] = "Teléfono inválido"
+                    self.add_error(campo.nombre_campo, "Teléfono inválido")
                 elif campo.tipo_dato == CampoMedioPago.TipoDato.EMAIL and not re.fullmatch(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", str(valor)):
-                    errores[nombre] = "Email inválido"
+                    self.add_error(campo.nombre_campo, "Email inválido")
                 elif campo.tipo_dato == CampoMedioPago.TipoDato.RUC and not re.fullmatch(r"^\d{6,8}-\d{1}$", str(valor)):
-                    errores[nombre] = "RUC inválido (########-#)"
+                    self.add_error(campo.nombre_campo, "RUC inválido (########-#)")
 
             # Regex solo predefinida
             patron = campo.regex_opcional or ""
             if valor not in (None, "") and patron and not check_regex(patron, valor):
-                errores[nombre] = "Formato inválido"
+                self.add_error(campo.nombre_campo, "Formato inválido")
 
             datos[nombre] = valor
 
-        if errores:
-            raise forms.ValidationError(errores)
-
-        self.instance.datos = datos
+        # Si hay errores en 'self._errors', Django ya los habrá manejado, no necesitamos lanzar ValidationError
+        if not self.errors: # Solo construir 'datos' si no hay errores en los campos dinámicos
+            self.instance.datos = datos
+        
         return cleaned
+
+class MedioPagoClienteInOperacionForm(MedioPagoClienteForm):
+    """
+    Formulario especializado para crear un MedioPagoCliente desde la pasarela
+    de `iniciar_operacion`. Hereda toda la lógica y campos del formulario base,
+    pero oculta los campos 'activo' y 'predeterminado' para simplificar la UI.
+    """
+    class Meta(MedioPagoClienteForm.Meta):
+        # Excluimos los campos que no queremos mostrar en este contexto
+        exclude = ["activo", "predeterminado"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Nos aseguramos de que los campos no estén presentes en el formulario
+        if 'activo' in self.fields:
+            del self.fields['activo']
+        if 'predeterminado' in self.fields:
+            del self.fields['predeterminado']

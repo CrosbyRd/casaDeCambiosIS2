@@ -6,7 +6,13 @@ from django.contrib.auth.decorators import login_required
 from .models import Cotizacion
 from monedas.models import Moneda
 from .forms import CotizacionForm
+from django.db.models.functions import TruncDate
+from django.db.models import Avg, F, OuterRef, Subquery, DecimalField, ExpressionWrapper
+from django.utils.dateparse import parse_date
+from django.utils import timezone
+import datetime
 
+from .models import CotizacionHistorica
 
 
 @login_required
@@ -130,3 +136,80 @@ def obtener_cotizacion_api(moneda_destino_codigo):
     except Exception as e:
         print(f"Error con API {api_url}: {e}")
         return None
+
+# --- API Serie temporal (pública: no requiere login) ---
+def api_serie(request):
+    base_code = (request.GET.get("base") or "PYG").upper()
+    dest_code = (request.GET.get("destino") or "").upper()
+    campo = (request.GET.get("campo") or "venta").lower()      # "venta" | "compra"
+    agg = (request.GET.get("agg") or "last").lower()           # "last" | "avg"
+
+    if not dest_code:
+        return JsonResponse({"ok": False, "error": "Falta 'destino' (p.ej. USD)."}, status=400)
+    if campo not in ("venta", "compra"):
+        campo = "venta"
+    if agg not in ("last", "avg"):
+        agg = "last"
+
+    today = timezone.localdate()
+    default_desde = today - datetime.timedelta(days=90)
+    desde = parse_date(request.GET.get("desde") or "") or default_desde
+    hasta = parse_date(request.GET.get("hasta") or "") or today
+
+    try:
+        base = Moneda.objects.get(codigo=base_code)
+        dest = Moneda.objects.get(codigo=dest_code)
+    except Moneda.DoesNotExist:
+        return JsonResponse({"ok": False, "error": "Moneda no encontrada."}, status=404)
+
+    qs = CotizacionHistorica.objects.filter(
+        moneda_base=base, moneda_destino=dest,
+        fecha__date__gte=desde, fecha__date__lte=hasta
+    )
+
+    # total_venta = valor_venta + comision_venta
+    # total_compra = valor_compra - comision_compra
+    if campo == "venta":
+        expr = ExpressionWrapper(F("valor_venta") + F("comision_venta"),
+                                 output_field=DecimalField(max_digits=12, decimal_places=4))
+    else:
+        expr = ExpressionWrapper(F("valor_compra") - F("comision_compra"),
+                                 output_field=DecimalField(max_digits=12, decimal_places=4))
+
+    if qs.exists():
+        if agg == "avg":
+            data_qs = (qs.annotate(dia=TruncDate("fecha"))
+                         .values("dia")
+                         .annotate(valor=Avg(expr))
+                         .order_by("dia"))
+            points = [{"x": r["dia"].isoformat(), "y": float(r["valor"])} for r in data_qs]
+        else:  # "last" del día
+            # Tomar el último registro de CADA día (DISTINCT ON)
+            data_qs = (
+                qs.annotate(dia=TruncDate("fecha"))
+                .annotate(calc=expr)
+                .order_by("dia", "-fecha")   # ordenar por día y dentro del día el más reciente
+                .distinct("dia")             # nos quedamos con 1 por día
+                .values("dia", "calc")
+                .order_by("dia")
+            )
+            points = [{"x": r["dia"].isoformat(), "y": float(r["calc"])} for r in data_qs]
+
+    else:
+        # Fallback: si aún no hay histórico, devolvemos el valor actual
+        try:
+            cur = Cotizacion.objects.get(moneda_base=base, moneda_destino=dest)
+            total = (cur.valor_venta + cur.comision_venta) if campo == "venta" else (cur.valor_compra - cur.comision_compra)
+            points = [{"x": hasta.isoformat(), "y": float(total)}]
+        except Cotizacion.DoesNotExist:
+            points = []
+
+    return JsonResponse({
+        "ok": True,
+        "pair": f"{base.codigo}/{dest.codigo}",
+        "campo": campo,
+        "agg": agg,
+        "desde": desde.isoformat(),
+        "hasta": hasta.isoformat(),
+        "points": points,
+    })

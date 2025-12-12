@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete reportes &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="prev" title="paquete simuladores" href="simuladores.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete reportes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo reportes.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-1">módulo reportes.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-2">módulo reportes.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.panel_reportes"><code class="docutils literal notranslate"><span class="pre">panel_reportes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_ganancias"><code class="docutils literal notranslate"><span class="pre">reporte_ganancias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_ganancias_excel"><code class="docutils literal notranslate"><span class="pre">reporte_ganancias_excel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_ganancias_pdf"><code class="docutils literal notranslate"><span class="pre">reporte_ganancias_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_transacciones"><code class="docutils literal notranslate"><span class="pre">reporte_transacciones()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_transacciones_excel"><code class="docutils literal notranslate"><span class="pre">reporte_transacciones_excel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reportes.views.reporte_transacciones_pdf"><code class="docutils literal notranslate"><span class="pre">reporte_transacciones_pdf()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">paquete reportes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/reportes.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-reportes">
+<h1>paquete reportes<a class="headerlink" href="#paquete-reportes" title="Link to this heading"></a></h1>
+<section id="module-0">
+<span id="modulo-reportes-models"></span><h2>módulo reportes.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Modelos de la aplicación de reportes.</p>
+<p id="module-reportes.models">Actualmente esta app no define modelos propios. Todos los
+reportes se construyen a partir de los modelos de otras apps
+(por ejemplo <code class="docutils literal notranslate"><span class="pre">transacciones</span></code> y <code class="docutils literal notranslate"><span class="pre">ganancias</span></code>).</p>
+</section>
+<section id="module-1">
+<span id="modulo-reportes-urls"></span><h2>módulo reportes.urls<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
+<p>Rutas de la aplicación de reportes.</p>
+<p id="module-reportes.urls">Define las rutas para:
+- Panel principal de reportes.
+- Reportes de ganancias (web, PDF y Excel).
+- Reportes de transacciones (web, PDF y Excel).</p>
+</section>
+<section id="module-2">
+<span id="modulo-reportes-views"></span><h2>módulo reportes.views<a class="headerlink" href="#module-2" title="Link to this heading"></a></h2>
+<p>Vistas de la aplicación de reportes.</p>
+<p id="module-reportes.views">Este módulo contiene las vistas responsables de:
+- Mostrar el panel principal de reportes.
+- Listar y filtrar transacciones y ganancias en la web.
+- Exportar reportes de ganancias y transacciones a PDF y Excel.</p>
+<p>Los datos se obtienen principalmente de los modelos
+<a class="reference internal" href="transacciones.html#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><code class="xref py py-class docutils literal notranslate"><span class="pre">transacciones.models.Transaccion</span></code></a> y
+<a class="reference internal" href="ganancias.html#ganancias.models.RegistroGanancia" title="ganancias.models.RegistroGanancia"><code class="xref py py-class docutils literal notranslate"><span class="pre">ganancias.models.RegistroGanancia</span></code></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.panel_reportes">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">panel_reportes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#panel_reportes"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.panel_reportes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_ganancias">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_ganancias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_ganancias"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_ganancias" title="Link to this definition"></a></dt>
+<dd><p>Reporte web de ganancias por transacción.</p>
+<p>Lista las transacciones completadas y muestra la ganancia
+registrada para cada una. Permite filtrar por tipo de operación,
+moneda, rango de fechas y cliente. También calcula totales
+separados para compras, ventas y un total general.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, incluye filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta con el template HTML del reporte de ganancias.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_ganancias_excel">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_ganancias_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_ganancias_excel"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_ganancias_excel" title="Link to this definition"></a></dt>
+<dd><p>Exporta el reporte de ganancias a un archivo Excel.</p>
+<p>Aplica filtros por fecha, tipo de operación, cliente y moneda,
+y construye una planilla con el detalle de cada transacción
+y los totales de ganancias. Usa <code class="docutils literal notranslate"><span class="pre">openpyxl</span></code> para dar formato
+a encabezados y columnas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, con filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta HTTP con el archivo <code class="docutils literal notranslate"><span class="pre">.xlsx</span></code> adjunto.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_ganancias_pdf">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_ganancias_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_ganancias_pdf"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_ganancias_pdf" title="Link to this definition"></a></dt>
+<dd><p>Exporta el reporte de ganancias a un archivo PDF.</p>
+<p>Aplica los mismos filtros que la vista web de ganancias y
+genera un PDF con el detalle de cada transacción (cliente,
+tipo de operación, moneda, monto, comisión, ganancia, fecha)
+más los totales de compras, ventas y ganancia general.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, con filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta HTTP con el contenido PDF adjunto.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_transacciones">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_transacciones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_transacciones"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_transacciones" title="Link to this definition"></a></dt>
+<dd><p>Reporte web de transacciones.</p>
+<p>Lista todas las transacciones del sistema permitiendo
+filtrar por rango de fechas, tipo de operación, estado,
+cliente y moneda. La lista se muestra paginada en el
+template HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, con filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta HTTP con la tabla paginada de transacciones.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_transacciones_excel">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_transacciones_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_transacciones_excel"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_transacciones_excel" title="Link to this definition"></a></dt>
+<dd><p>Exporta el reporte de transacciones a Excel.</p>
+<p>Aplica filtros por fecha, tipo, estado, cliente y moneda,
+y construye una planilla de Excel con cada transacción
+y columnas para cliente, tipo, moneda, montos, estado y fecha.
+Da formato al encabezado y ajusta el ancho de las columnas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, con filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta HTTP con el archivo <code class="docutils literal notranslate"><span class="pre">.xlsx</span></code> adjunto.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reportes.views.reporte_transacciones_pdf">
+<span class="sig-prename descclassname"><span class="pre">reportes.views.</span></span><span class="sig-name descname"><span class="pre">reporte_transacciones_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reportes/views.html#reporte_transacciones_pdf"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#reportes.views.reporte_transacciones_pdf" title="Link to this definition"></a></dt>
+<dd><p>Exporta el reporte de transacciones a PDF.</p>
+<p>Genera un documento PDF en formato apaisado con la lista
+filtrada de transacciones (cliente, tipo, moneda, montos,
+estado y fecha). Utiliza <code class="docutils literal notranslate"><span class="pre">reportlab</span></code> para construir la tabla
+y aplicar estilos de presentación.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parámetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<em>django.http.HttpRequest</em>) – Objeto HttpRequest de la petición actual, con filtros en <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+</dd>
+<dt class="field-even">Devuelve<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta HTTP con el archivo PDF adjunto.</p>
+</dd>
+<dt class="field-odd">Tipo del valor devuelto<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="simuladores.html" class="btn btn-neutral float-left" title="paquete simuladores" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

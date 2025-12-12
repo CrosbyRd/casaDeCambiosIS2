@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Panel de Reportes{% endblock %}
+
+{% block content %}
+<main class="max-w-[1200px] mx-auto px-6 py-10">
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-4xl font-extrabold mb-2" style="color:var(--ink)">📊 Panel de Reportes</h1>
+    <p class="text-lg leading-relaxed max-w-xl" style="color:var(--muted)">
+      Accede a todos los reportes disponibles y analiza la información financiera de tus operaciones.
+    </p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <a href="{% url 'admin_panel:dashboard' %}"
+       class="px-4 py-2 rounded-xl font-bold bg-[var(--brand-soft)] hover:brightness-95"
+       style="color:var(--brand-dark)">
+       ⬅ Volver al Panel
+    </a>
+  </div>
+</header>
+
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+
+    <!-- Reporte de Ganancias -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-green-600 text-5xl mb-4">💹</div>
+      <h2 class="text-xl font-bold mb-2">Reporte de Ganancias</h2>
+      <p class="text-gray-500 mb-4">Visualiza y descarga las ganancias totales.</p>
+      <a href="{% url 'reportes:reporte_ganancias' %}"
+            class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+            style="background:var(--brand);">
+            Ver Reporte
+        </a>
+    </section>
+
+    <!-- Reporte de Transacciones -->
+    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+      <div class="text-blue-600 text-5xl mb-4">💱</div>
+      <h2 class="text-xl font-bold mb-2">Reporte de Transacciones</h2>
+      <p class="text-gray-500 mb-4">Consulta las operaciones realizadas.</p>
+        <a href="{% url 'reportes:reporte_transacciones' %}"
+            class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+            style="background:var(--brand);">
+            Ver Reporte
+        </a>
+    </section>
+
+  </div>
+</main>
+{% endblock %}

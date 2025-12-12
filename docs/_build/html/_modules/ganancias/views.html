@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ganancias.views &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">casaDeCambiosIS2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código de módulo</a></li>
+      <li class="breadcrumb-item active">ganancias.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código fuente para ganancias.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Vistas de la aplicación **ganancias**.</span>
+
+<span class="sd">.. module:: ganancias.views</span>
+<span class="sd">   :synopsis: Dashboard analítico de ganancias para analistas y administradores.</span>
+
+<span class="sd">Este módulo ofrece:</span>
+
+<span class="sd">- :func:`is_analista_or_admin`: Helper de autorización para restringir el acceso</span>
+<span class="sd">  a usuarios con rol de analista o staff.</span>
+<span class="sd">- :func:`dashboard_ganancias`: Vista principal del reporte de ganancias, con</span>
+<span class="sd">  filtros por rango de fechas, moneda operada y tipo de operación, además de</span>
+<span class="sd">  métricas agregadas y datos preparados para gráficos.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TruncDate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">login_required</span><span class="p">,</span> <span class="n">user_passes_test</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistroGanancia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">monedas.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Moneda</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="c1"># Mixin para proteger vistas por rol (ej. &#39;analista&#39; o &#39;administrador&#39;)</span>
+
+
+<div class="viewcode-block" id="is_analista_or_admin">
+<a class="viewcode-back" href="../../ganancias.html#ganancias.views.is_analista_or_admin">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_analista_or_admin</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifica si el usuario tiene permiso para ver el dashboard de ganancias.</span>
+
+<span class="sd">    Se considera válido si:</span>
+<span class="sd">    - Está autenticado, y</span>
+<span class="sd">    - Tiene un rol M2M llamado &quot;Analista&quot; o &quot;Administrador&quot; (modelo Role del proyecto), o</span>
+<span class="sd">    - Pertenece al grupo de Django &quot;Analista&quot;, o</span>
+<span class="sd">    - Es staff (is_staff=True).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># 1) Proyecto actual: roles M2M (CustomUser.roles)</span>
+    <span class="n">roles_rel</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="s2">&quot;roles&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">roles_rel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">roles_rel</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name__in</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Analista&quot;</span><span class="p">,</span> <span class="s2">&quot;Administrador&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># 2) Compatibilidad con los tests: grupos clásicos de Django</span>
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Analista&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># 3) Staff también tiene acceso</span>
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">is_staff</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+
+<div class="viewcode-block" id="dashboard_ganancias">
+<a class="viewcode-back" href="../../ganancias.html#ganancias.views.dashboard_ganancias">[documentos]</a>
+<span class="nd">@login_required</span>
+<span class="nd">@user_passes_test</span><span class="p">(</span><span class="n">is_analista_or_admin</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dashboard_ganancias</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Muestra el dashboard de reporte de ganancias.</span>
+
+<span class="sd">    La vista permite filtrar los registros de :class:`ganancias.models.RegistroGanancia`</span>
+<span class="sd">    y calcula métricas agregadas para mostrarlas en tablas y gráficos.</span>
+
+<span class="sd">    Filtros disponibles (vía query string)</span>
+<span class="sd">    --------------------------------------</span>
+<span class="sd">    - ``fecha_inicio`` (YYYY-MM-DD): fecha mínima del registro de ganancia.</span>
+<span class="sd">    - ``fecha_fin`` (YYYY-MM-DD): fecha máxima del registro de ganancia.</span>
+<span class="sd">    - ``moneda_operada``: ID de la moneda extranjera operada.</span>
+<span class="sd">    - ``tipo_operacion``: ``&#39;compra&#39;`` o ``&#39;venta&#39;`` según el tipo de transacción.</span>
+
+<span class="sd">    Métricas calculadas</span>
+<span class="sd">    -------------------</span>
+<span class="sd">    - ``ganancia_total_periodo``: suma total de ``ganancia_registrada`` en el</span>
+<span class="sd">      conjunto filtrado.</span>
+<span class="sd">    - ``ganancias_por_dia``: queryset anotado con la ganancia total por día,</span>
+<span class="sd">      usado para gráficos de tendencia.</span>
+<span class="sd">    - ``ganancias_por_moneda``: lista de diccionarios con el total de</span>
+<span class="sd">      ganancia por cada moneda operada.</span>
+
+<span class="sd">    Contexto enviado a la plantilla</span>
+<span class="sd">    -------------------------------</span>
+<span class="sd">    - ``ganancia_total_periodo``: :class:`Decimal` o ``0`` si no hay registros.</span>
+<span class="sd">    - ``ganancias_por_dia``: queryset con claves ``dia`` y ``total_dia``.</span>
+<span class="sd">    - ``fechas_grafico``: lista de cadenas con fechas formateadas (YYYY-MM-DD).</span>
+<span class="sd">    - ``totales_grafico``: lista de montos (``float``) por día.</span>
+<span class="sd">    - ``ganancias_por_moneda``: lista serializable para gráficos (código, nombre, total).</span>
+<span class="sd">    - ``todas_las_monedas``: queryset de :class:`monedas.models.Moneda` para el filtro.</span>
+<span class="sd">    - ``fecha_inicio_seleccionada``, ``fecha_fin_seleccionada``,</span>
+<span class="sd">      ``moneda_operada_seleccionada``, ``tipo_operacion_seleccionado``:</span>
+<span class="sd">      valores actuales de los filtros para mantener el estado en el formulario.</span>
+
+<span class="sd">    :param request: Objeto HTTP request.</span>
+<span class="sd">    :type request: django.http.HttpRequest</span>
+<span class="sd">    :return: Respuesta renderizada con la plantilla</span>
+<span class="sd">             ``ganancias/dashboard_ganancias.html``.</span>
+<span class="sd">    :rtype: django.http.HttpResponse</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># --- Filtros ---</span>
+    <span class="n">fecha_inicio_str</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fecha_inicio&#39;</span><span class="p">)</span>
+    <span class="n">fecha_fin_str</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fecha_fin&#39;</span><span class="p">)</span>
+    <span class="n">moneda_operada_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;moneda_operada&#39;</span><span class="p">)</span>
+    <span class="n">tipo_operacion</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tipo_operacion&#39;</span><span class="p">)</span>
+
+    <span class="n">ganancias_queryset</span> <span class="o">=</span> <span class="n">RegistroGanancia</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">fecha_inicio_str</span><span class="p">:</span>
+        <span class="n">fecha_inicio</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha_inicio_str</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">ganancias_queryset</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">fecha_registro__date__gte</span><span class="o">=</span><span class="n">fecha_inicio</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Si no se proporciona fecha_inicio_str, no aplicamos un filtro de fecha de inicio por defecto,</span>
+        <span class="c1"># permitiendo que se muestren todos los registros históricos.</span>
+        <span class="n">fecha_inicio</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># No aplicar filtro de inicio por defecto</span>
+    <span class="k">if</span> <span class="n">fecha_fin_str</span><span class="p">:</span>
+        <span class="n">fecha_fin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">fecha_fin_str</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">ganancias_queryset</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">fecha_registro__date__lte</span><span class="o">=</span><span class="n">fecha_fin</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fecha_fin</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># No aplicar filtro de fin por defecto</span>
+        <span class="c1"># Si no se proporciona fecha_fin_str, no aplicamos un filtro de fecha de fin por defecto,</span>
+        <span class="c1"># permitiendo que se muestren todos los registros históricos.</span>
+
+    <span class="k">if</span> <span class="n">moneda_operada_id</span><span class="p">:</span>
+        <span class="n">ganancias_queryset</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">moneda_operada__id</span><span class="o">=</span><span class="n">moneda_operada_id</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tipo_operacion</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;compra&#39;</span><span class="p">,</span> <span class="s1">&#39;venta&#39;</span><span class="p">]:</span>
+        <span class="n">ganancias_queryset</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">transaccion__tipo_operacion</span><span class="o">=</span><span class="n">tipo_operacion</span><span class="p">)</span>
+
+    <span class="c1"># --- Métricas Clave ---</span>
+    <span class="n">ganancia_total_periodo</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">Sum</span><span class="p">(</span><span class="s1">&#39;ganancia_registrada&#39;</span><span class="p">))[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">0</span>
+
+    <span class="c1"># Ganancias por día para el gráfico de tendencias</span>
+    <span class="n">ganancias_por_dia</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+        <span class="n">dia</span><span class="o">=</span><span class="n">TruncDate</span><span class="p">(</span><span class="s1">&#39;fecha_registro&#39;</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s1">&#39;dia&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+        <span class="n">total_dia</span><span class="o">=</span><span class="n">Sum</span><span class="p">(</span><span class="s1">&#39;ganancia_registrada&#39;</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;dia&#39;</span><span class="p">)</span>
+
+    <span class="n">fechas_grafico</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;dia&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">ganancias_por_dia</span><span class="p">]</span>
+    <span class="n">totales_grafico</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;total_dia&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">ganancias_por_dia</span><span class="p">]</span>
+
+    <span class="c1"># Ganancias por moneda operada</span>
+    <span class="n">ganancias_por_moneda_queryset</span> <span class="o">=</span> <span class="n">ganancias_queryset</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+        <span class="s1">&#39;moneda_operada__codigo&#39;</span><span class="p">,</span> <span class="s1">&#39;moneda_operada__nombre&#39;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+        <span class="n">total_moneda</span><span class="o">=</span><span class="n">Sum</span><span class="p">(</span><span class="s1">&#39;ganancia_registrada&#39;</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-total_moneda&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Convertir el QuerySet a una lista de diccionarios para serialización JSON</span>
+    <span class="n">ganancias_por_moneda_lista</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ganancias_por_moneda_queryset</span><span class="p">)</span>
+
+    <span class="c1"># Obtener todas las monedas para el filtro</span>
+    <span class="n">todas_las_monedas</span> <span class="o">=</span> <span class="n">Moneda</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;codigo&#39;</span><span class="p">)</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;ganancia_total_periodo&#39;</span><span class="p">:</span> <span class="n">ganancia_total_periodo</span><span class="p">,</span>
+        <span class="s1">&#39;ganancias_por_dia&#39;</span><span class="p">:</span> <span class="n">ganancias_por_dia</span><span class="p">,</span>
+        <span class="s1">&#39;fechas_grafico&#39;</span><span class="p">:</span> <span class="n">fechas_grafico</span><span class="p">,</span>
+        <span class="s1">&#39;totales_grafico&#39;</span><span class="p">:</span> <span class="n">totales_grafico</span><span class="p">,</span>
+        <span class="s1">&#39;ganancias_por_moneda&#39;</span><span class="p">:</span> <span class="n">ganancias_por_moneda_lista</span><span class="p">,</span> <span class="c1"># Usar la lista serializable</span>
+        <span class="s1">&#39;todas_las_monedas&#39;</span><span class="p">:</span> <span class="n">todas_las_monedas</span><span class="p">,</span>
+        <span class="s1">&#39;fecha_inicio_seleccionada&#39;</span><span class="p">:</span> <span class="n">fecha_inicio_str</span><span class="p">,</span>
+        <span class="s1">&#39;fecha_fin_seleccionada&#39;</span><span class="p">:</span> <span class="n">fecha_fin_str</span><span class="p">,</span>
+        <span class="s1">&#39;moneda_operada_seleccionada&#39;</span><span class="p">:</span> <span class="n">moneda_operada_id</span><span class="p">,</span>
+        <span class="s1">&#39;tipo_operacion_seleccionado&#39;</span><span class="p">:</span> <span class="n">tipo_operacion</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;ganancias/dashboard_ganancias.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Diego.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

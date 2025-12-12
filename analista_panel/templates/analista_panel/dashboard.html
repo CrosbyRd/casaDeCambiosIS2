@@ -12,7 +12,6 @@
       <div class="text-red-600 text-5xl mb-4">📈</div>
       <h2 class="text-xl font-bold mb-2">Cotizaciones</h2>
       <p class="text-gray-500 mb-4">Ajuste manual de compra/venta de divisas y auditoría de cambios.</p>
-      <!-- Reutiliza el módulo existente de cotizaciones/tasas -->
       <a href="{% url 'cotizaciones:cotizacion_list' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
@@ -20,34 +19,28 @@
       </a>
     </section>
 
-    <!-- Ganancias (placeholder) -->
+    <!-- Dashboard de Ganancias (igual que en admin_panel) -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-green-600 text-5xl mb-4">💹</div>
-      <h2 class="text-xl font-bold mb-2">Ganancias</h2>
-      <p class="text-gray-500 mb-4">Panel de ganancias globales y por moneda del negocio.</p>
-      <!-- Botón deshabilitado hasta que el módulo exista -->
-      <button type="button"
-              class="block w-full py-2 rounded-lg font-semibold text-white text-center opacity-60 cursor-not-allowed"
-              style="background:var(--brand);"
-              aria-disabled="true"
-              title="Disponible próximamente">
-        Próximamente
-      </button>
+      <h2 class="text-xl font-bold mb-2">Dashboard de Ganancias</h2>
+      <p class="text-gray-500 mb-4">Visualiza las ganancias por período y por moneda operada.</p>
+      <a href="{% url 'ganancias:dashboard_ganancias' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
     </section>
 
-    <!-- Evolución de Tasas (placeholder idéntico a Ganancias) -->
+    <!-- Reportes (reemplaza “Evolución de Tasas”) -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-blue-600 text-5xl mb-4">📉</div>
-      <h2 class="text-xl font-bold mb-2">Evolución de Tasas</h2>
-      <p class="text-gray-500 mb-4">Gráficos de evolución por moneda y períodos.</p>
-      <!-- Botón deshabilitado hasta que el módulo exista -->
-      <button type="button"
-              class="block w-full py-2 rounded-lg font-semibold text-white text-center opacity-60 cursor-not-allowed"
-              style="background:var(--brand);"
-              aria-disabled="true"
-              title="Disponible próximamente">
-        Próximamente
-      </button>
+      <div class="text-green-600 text-5xl mb-4">💹</div>
+      <h2 class="text-xl font-bold mb-2">Reportes</h2>
+      <p class="text-gray-500 mb-4">Consulta reportes de ganancias y transacciones.</p>
+      <a href="{% url 'reportes:panel_reportes' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
     </section>
 
   </div>

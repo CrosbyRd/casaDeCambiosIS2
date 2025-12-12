@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete core" href="core.html" />
+    <link rel="next" title="paquete configuracion" href="configuracion.html" />
     <link rel="prev" title="paquete admin_panel" href="admin_panel.html" /> 
 </head>
 
@@ -43,18 +43,142 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete clientes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-clientes.forms">módulo clientes.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.forms.ClienteForm"><code class="docutils literal notranslate"><span class="pre">ClienteForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteForm.Meta"><code class="docutils literal notranslate"><span class="pre">ClienteForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteForm.base_fields"><code class="docutils literal notranslate"><span class="pre">ClienteForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">ClienteForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteForm.media"><code class="docutils literal notranslate"><span class="pre">ClienteForm.media</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.forms.ClienteSearchForm"><code class="docutils literal notranslate"><span class="pre">ClienteSearchForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteSearchForm.base_fields"><code class="docutils literal notranslate"><span class="pre">ClienteSearchForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteSearchForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">ClienteSearchForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteSearchForm.media"><code class="docutils literal notranslate"><span class="pre">ClienteSearchForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-clientes.models">módulo clientes.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.models.Cliente"><code class="docutils literal notranslate"><span class="pre">Cliente</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.Categoria"><code class="docutils literal notranslate"><span class="pre">Cliente.Categoria</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Cliente.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Cliente.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.activo"><code class="docutils literal notranslate"><span class="pre">Cliente.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.bonificacion"><code class="docutils literal notranslate"><span class="pre">Cliente.bonificacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.categoria"><code class="docutils literal notranslate"><span class="pre">Cliente.categoria</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.esta_activo"><code class="docutils literal notranslate"><span class="pre">Cliente.esta_activo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.fecha_registro"><code class="docutils literal notranslate"><span class="pre">Cliente.fecha_registro</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.get_categoria_display"><code class="docutils literal notranslate"><span class="pre">Cliente.get_categoria_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.get_next_by_fecha_registro"><code class="docutils literal notranslate"><span class="pre">Cliente.get_next_by_fecha_registro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.get_next_by_ultima_modificacion"><code class="docutils literal notranslate"><span class="pre">Cliente.get_next_by_ultima_modificacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.get_previous_by_fecha_registro"><code class="docutils literal notranslate"><span class="pre">Cliente.get_previous_by_fecha_registro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.get_previous_by_ultima_modificacion"><code class="docutils literal notranslate"><span class="pre">Cliente.get_previous_by_ultima_modificacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.id_cliente"><code class="docutils literal notranslate"><span class="pre">Cliente.id_cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.limite_compra_usd"><code class="docutils literal notranslate"><span class="pre">Cliente.limite_compra_usd</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.medios_acreditacion"><code class="docutils literal notranslate"><span class="pre">Cliente.medios_acreditacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.medios_pago"><code class="docutils literal notranslate"><span class="pre">Cliente.medios_pago</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.nombre"><code class="docutils literal notranslate"><span class="pre">Cliente.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.objects"><code class="docutils literal notranslate"><span class="pre">Cliente.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.obtener_limite_compra"><code class="docutils literal notranslate"><span class="pre">Cliente.obtener_limite_compra()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.obtener_limite_global"><code class="docutils literal notranslate"><span class="pre">Cliente.obtener_limite_global</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.puede_comprar"><code class="docutils literal notranslate"><span class="pre">Cliente.puede_comprar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.transacciones_cliente"><code class="docutils literal notranslate"><span class="pre">Cliente.transacciones_cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.ultima_modificacion"><code class="docutils literal notranslate"><span class="pre">Cliente.ultima_modificacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.Cliente.usuarios"><code class="docutils literal notranslate"><span class="pre">Cliente.usuarios</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.alias"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.alias</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.canal"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.canal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.canal_id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.canal_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.cliente"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.cliente_id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.cliente_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.fecha_creacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.get_next_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.get_previous_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.identificador"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.identificador</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.objects"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion.transaccion_set"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.transaccion_set</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-clientes.views">módulo clientes.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.ClienteCreateView"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.form_class"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.form_valid"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.get_success_url"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.get_success_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.handle_no_permission"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.handle_no_permission()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.model"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.permission_required"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.permission_required</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView.template_name"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.ClienteDeleteView"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.delete"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.get_object"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.get_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.handle_no_permission"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.handle_no_permission()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.model"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.permission_required"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.permission_required</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.success_url"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView.template_name"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.ClienteDetailView"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.context_object_name"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.get_object"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.get_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.handle_no_permission"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.handle_no_permission()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.model"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.permission_required"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.permission_required</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDetailView.template_name"><code class="docutils literal notranslate"><span class="pre">ClienteDetailView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.ClienteListView"><code class="docutils literal notranslate"><span class="pre">ClienteListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">ClienteListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.get_context_data"><code class="docutils literal notranslate"><span class="pre">ClienteListView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.get_queryset"><code class="docutils literal notranslate"><span class="pre">ClienteListView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.handle_no_permission"><code class="docutils literal notranslate"><span class="pre">ClienteListView.handle_no_permission()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.model"><code class="docutils literal notranslate"><span class="pre">ClienteListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.paginate_by"><code class="docutils literal notranslate"><span class="pre">ClienteListView.paginate_by</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.permission_required"><code class="docutils literal notranslate"><span class="pre">ClienteListView.permission_required</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteListView.template_name"><code class="docutils literal notranslate"><span class="pre">ClienteListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.ClienteUpdateView"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.form_class"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.get_object"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.get_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.get_success_url"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.get_success_url()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.handle_no_permission"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.handle_no_permission()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.model"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.permission_required"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.permission_required</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteUpdateView.template_name"><code class="docutils literal notranslate"><span class="pre">ClienteUpdateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.es_admin"><code class="docutils literal notranslate"><span class="pre">es_admin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clientes.views.toggle_cliente_estado"><code class="docutils literal notranslate"><span class="pre">toggle_cliente_estado()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete clientes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-clientes.admin">módulo clientes.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-clientes.apps">módulo clientes.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#clientes.apps.ClientesConfig"><code class="docutils literal notranslate"><span class="pre">ClientesConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-clientes.forms">módulo clientes.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteForm"><code class="docutils literal notranslate"><span class="pre">ClienteForm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#clientes.forms.ClienteSearchForm"><code class="docutils literal notranslate"><span class="pre">ClienteSearchForm</span></code></a></li>
@@ -65,8 +189,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#clientes.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-clientes.tests">módulo clientes.tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-clientes.urls">módulo clientes.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-clientes.views">módulo clientes.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteCreateView"><code class="docutils literal notranslate"><span class="pre">ClienteCreateView</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#clientes.views.ClienteDeleteView"><code class="docutils literal notranslate"><span class="pre">ClienteDeleteView</span></code></a></li>
@@ -77,7 +199,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#clientes.views.toggle_cliente_estado"><code class="docutils literal notranslate"><span class="pre">toggle_cliente_estado()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
@@ -100,6 +221,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -116,7 +248,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete clientes</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/clientes.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -129,36 +260,6 @@
              
   <section id="paquete-clientes">
 <h1>paquete clientes<a class="headerlink" href="#paquete-clientes" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-clientes.admin">
-<span id="modulo-clientes-admin"></span><h2>módulo clientes.admin<a class="headerlink" href="#module-clientes.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-clientes.apps">
-<span id="modulo-clientes-apps"></span><h2>módulo clientes.apps<a class="headerlink" href="#module-clientes.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="clientes.apps.ClientesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clientes.apps.</span></span><span class="sig-name descname"><span class="pre">ClientesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clientes/apps.html#ClientesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#clientes.apps.ClientesConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="clientes.apps.ClientesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#clientes.apps.ClientesConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="clientes.apps.ClientesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clientes'</span></em><a class="headerlink" href="#clientes.apps.ClientesConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="clientes.apps.ClientesConfig.verbose_name">
-<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Gestión</span> <span class="pre">de</span> <span class="pre">Clientes'</span></em><a class="headerlink" href="#clientes.apps.ClientesConfig.verbose_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-clientes.forms">
 <span id="modulo-clientes-forms"></span><h2>módulo clientes.forms<a class="headerlink" href="#module-clientes.forms" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -557,12 +658,6 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 </section>
-<section id="module-clientes.tests">
-<span id="modulo-clientes-tests"></span><h2>módulo clientes.tests<a class="headerlink" href="#module-clientes.tests" title="Link to this heading"></a></h2>
-</section>
-<section id="module-clientes.urls">
-<span id="modulo-clientes-urls"></span><h2>módulo clientes.urls<a class="headerlink" href="#module-clientes.urls" title="Link to this heading"></a></h2>
-</section>
 <section id="module-clientes.views">
 <span id="modulo-clientes-views"></span><h2>módulo clientes.views<a class="headerlink" href="#module-clientes.views" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -806,9 +901,6 @@ Subclasses can override this to return any object.</p>
 <dd></dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-clientes"></span></section>
 </section>
 
 
@@ -816,13 +908,13 @@ Subclasses can override this to return any object.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
         <a href="admin_panel.html" class="btn btn-neutral float-left" title="paquete admin_panel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="core.html" class="btn btn-neutral float-right" title="paquete core" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="configuracion.html" class="btn btn-neutral float-right" title="paquete configuracion" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

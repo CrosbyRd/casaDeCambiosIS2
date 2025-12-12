@@ -5,145 +5,622 @@
 {% block content %}
 <style>
   :root{
-    --brand:#6a3df0; --ink:#1f2330; --muted:#6b7280; --line:#eef0f4;
-    --surface:#ffffff; --surface-2:#f8fafc; --radius:16px;
+    --brand:#7c3aed;
+    --brand-soft:#ede9fe;
+    --brand-hover:#6d28d9;
+    --brand-dark:#5b21b6;
+    --ink:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --light-gray:#f8f9fa;
+    --surface:#ffffff;
+    --surface-2:#f8fafc;
+    --shadow-sm:0 2px 8px rgba(124,58,237,.08);
+    --shadow-md:0 4px 12px rgba(124,58,237,.12);
+    --shadow-lg:0 20px 40px rgba(124,58,237,.15);
   }
-  .page-wrap{max-width:1100px;margin:0 auto;padding:24px 12px;}
-  .cardx{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 6px 16px rgba(31,35,48,.06);}
-  .cardx + .cardx{margin-top:18px;}
-  .cardx-hd{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:600;color:var(--ink);background:var(--surface);}
-  .cardx-bd{padding:18px;}
-  .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600}
-  .pill-success{background:#e8fff1;color:#147a3d;border:1px solid #b7ebc6}
-  .pill-danger{background:#fff0f0;color:#b42318;border:1px solid #ffd1cf}
-  .pill-warn{background:#fff7e6;color:#b45d12;border:1px solid #ffd9b3}
-  .pill-info{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe}
-  .pill-muted{background:#f3f4f6;color:#374151;border:1px solid #e5e7eb}
 
-  .doc-header{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;justify-content:space-between}
-  .doc-title{font-size:1.6rem;font-weight:700;color:var(--ink);letter-spacing:.3px;margin:0}
-  .subtle{color:var(--muted);font-size:.9rem}
-  .mono{font-family: ui-monospace,SFMono-Regular,Menlo,monospace}
-  .chip{display:inline-flex;gap:8px;align-items:center;border:1px dashed var(--line);padding:8px 12px;border-radius:12px;background:var(--surface-2)}
-  .copy-btn{border:none;background:var(--brand);color:#fff;border-radius:10px;padding:6px 10px;font-weight:600}
-  .copy-btn:hover{filter:brightness(.95)}
+  .page-wrap{
+    max-width:1200px;
+    margin:0 auto;
+    padding:2rem 1.5rem;
+  }
 
-  .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .kv{display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-  .kv .k{color:var(--muted);font-size:.9rem}
-  .kv .v{color:var(--ink)}
-  @media (max-width: 860px){ .kv-grid{grid-template-columns:1fr} .kv{grid-template-columns:140px 1fr} }
+  /* Cards principales */
+.cardx{
+  background: var(--surface); 
+  border: 1px solid var(--brand-soft);
+  border-radius:16px;
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
+  transition:.3s;
+}
+.cardx:hover{
+  box-shadow:var(--shadow-md);
+}
+.cardx + .cardx{
+  margin-top:1.5rem;
+}
 
-  .table-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  table.clean{width:100%;border-collapse:collapse}
-  table.clean thead th{background:var(--surface-2);text-align:left;padding:12px;font-size:.9rem;color:var(--muted);border-bottom:1px solid var(--line)}
-  table.clean tbody td{padding:12px;border-bottom:1px solid var(--line)}
-  table.clean tbody tr:hover{background:#fbfbff}
-  .td-right{text-align:right}
-  .td-center{text-align:center}
+/* Header del card en lila fuerte */
+.cardx-hd{
+  padding:1.25rem 1.75rem;
+  border-bottom:2px solid var(--brand-dark);
+  font-weight:700;
+  font-size:1.1rem;
+  color:#ffffff; /* texto blanco */
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+.cardx-hd::before{
+  font-size:1.3rem;
+}
 
-  .actions{display:flex;flex-wrap:wrap;gap:10px}
-  .btnx{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600}
-  .btnx-primary{background:var(--brand);color:#fff;border-color:transparent}
-  .btnx-warn{background:#fff7e6;border-color:#ffd9b3;color:#b45d12}
-  .btnx-danger{background:#fff0f0;border-color:#ffd1cf;color:#b42318}
-  .btnx-ghost{background:#fff;color:#4b5563}
-  .btnx[disabled],a.disabled-link{opacity:.45;pointer-events:none}
+.cardx-bd{
+  padding:1.75rem;
+}
+
+
+  /* Pills de estado */
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border-radius:999px;
+    padding:8px 16px;
+    font-size:.9rem;
+    font-weight:700;
+    letter-spacing:.3px;
+    text-transform:uppercase;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .pill-success{
+    background:linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color:#065f46;
+    border:2px solid #34d399;
+  }
+  .pill-danger{
+    background:linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color:#991b1b;
+    border:2px solid #f87171;
+  }
+  .pill-warn{
+    background:linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color:#92400e;
+    border:2px solid #fbbf24;
+  }
+  .pill-info{
+    background:linear-gradient(135deg, var(--brand-soft) 0%, #ddd6fe 100%);
+    color:var(--brand-dark);
+    border:2px solid var(--brand);
+  }
+  .pill-muted{
+    background:linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color:#374151;
+    border:2px solid #9ca3af;
+  }
+
+
+
+  /* Hacer más grande la pill de Estado SIFEN */
+  .estado-sifen-box .pill{
+    padding: 0.85rem 2.5rem;  /* más alta y más ancha */
+    font-size: 1rem;          /* texto un poco más grande */
+  }
+
+  /* Opcional: ancho mínimo y centrado del texto */
+  .estado-sifen-box .pill-success{
+    min-width: 370px;
+    justify-content: center;
+  }
+  /* DESPUÉS: dos columnas iguales, misma altura */
+  .doc-header{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));  /* 1/2 y 1/2 */
+    gap:2rem;
+    align-items:stretch;                             /* que se estiren */
+  }
+
+  /* que cada columna del header ocupe toda la altura */
+  .doc-header > div{
+    height:100%;
+  }
+
+
+  .doc-title-section h2{
+    font-size:2.5rem;
+    font-weight:900;
+    color:var(--surface);
+    letter-spacing:.5px;
+    margin:0 0 .75rem 0;
+    line-height:1.1;
+  }
+
+  .doc-number{
+    font-size:1.8rem;
+    font-weight:700;
+    color:var(--surface);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;
+    letter-spacing:1px;
+    margin-bottom:1.25rem;
+  }
+
+  .estado-sifen-box{
+    background:linear-gradient(135deg, #fafafa 0%, var(--surface-2) 100%);
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:1.25rem 1.5rem;
+    margin-top:0;        /* quitar el margen que la bajaba */
+    height:100%;         /* misma altura que el CDC */
+  }
+
+  .estado-sifen-label{
+    color:var(--brand-dark);
+    font-size:.85rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    margin-bottom:.75rem;
+    display:block;
+  }
+
+  .estado-pill-wrapper{
+    display:flex;
+    align-items:center;
+    margin-bottom:.5rem;
+  }
+
+  .estado-descripcion{
+    color:var(--muted);
+    font-size:.9rem;
+    margin-top:.5rem;
+    font-style:italic;
+  }
+
+  /* CDC Box */
+  .cdc-box{
+    background:linear-gradient(135deg, var(--brand-soft) 0%, #f5f3ff 100%);
+    border:2px solid var(--brand);
+    border-radius:14px;
+    padding:1.5rem;
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+    box-shadow:var(--shadow-md);
+    height:100%;         /* misma altura que Estado SIFEN */
+  }
+
+  .cdc-label{
+    color:var(--brand-dark);
+    font-size:.85rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    text-align:center;
+  }
+
+  .cdc-value{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;
+    font-size:.9rem;
+    color:var(--ink);
+    word-break:break-all;
+    line-height:1.6;
+    background:#fff;
+    padding:1rem;
+    border-radius:8px;
+    border:1px solid var(--line);
+    text-align:center;
+    font-weight:600;
+  }
+
+  /* Grid de información */
+  .kv-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:1rem;
+  }
+
+  .kv{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:1rem 1.25rem;
+    display:flex;
+    flex-direction:column;
+    gap:.5rem;
+    transition:.2s;
+  }
+  .kv:hover{
+    background:#fff;
+    border-color:var(--brand);
+    box-shadow:var(--shadow-sm);
+  }
+
+  .kv-highlight{
+    background:linear-gradient(135deg, var(--brand-soft) 0%, #f5f3ff 100%);
+    border:2px solid var(--brand);
+    box-shadow:var(--shadow-sm);
+  }
+  .kv-highlight:hover{
+    box-shadow:var(--shadow-md);
+    transform:translateY(-2px);
+  }
+
+  .kv .k{
+    color:var(--muted);
+    font-size:.8rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+
+  .kv .v{
+    color:var(--ink);
+    font-size:1rem;
+    font-weight:600;
+  }
+
+  .kv .v a{
+    color:var(--brand);
+    text-decoration:none;
+    transition:.2s;
+  }
+  .kv .v a:hover{
+    color:var(--brand-hover);
+    text-decoration:underline;
+  }
+
+  /* Tabla de items */
+  .table-wrap{
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:var(--shadow-sm);
+  }
+
+  table.clean{
+    width:100%;
+    border-collapse:collapse;
+  }
+
+  table.clean thead{
+    background:linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
+  }
+
+  table.clean thead th{
+    color:#fff;
+    text-align:left;
+    padding:1rem 1.25rem;
+    font-size:.8rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    border:none;
+  }
+
+  table.clean tbody td{
+    padding:1rem 1.25rem;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+    font-size:.95rem;
+  }
+
+  table.clean tbody tr:hover{
+    background:var(--brand-soft);
+  }
+
+  table.clean tbody tr:last-child td{
+    border-bottom:none;
+  }
+
+  .td-right{text-align:right;}
+  .td-center{text-align:center;}
+
+  /* Botones de acción */
+  .actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.75rem;
+  }
+
+  .btnx{
+    border:2px solid var(--line);
+    background:#fff;
+    border-radius:10px;
+    padding:.75rem 1.25rem;
+    font-weight:700;
+    font-size:.9rem;
+    cursor:pointer;
+    transition:.2s;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btnx:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-sm);
+  }
+
+  .btnx-primary{
+    background:var(--brand);
+    color:#fff;
+    border-color:var(--brand);
+    box-shadow:0 8px 16px -6px rgba(124,58,237,.3);
+  }
+  .btnx-primary:hover{
+    background:var(--brand-hover);
+    box-shadow:0 12px 20px -6px rgba(124,58,237,.4);
+  }
+
+  .btnx-warn{
+    background:#fff7e6;
+    border-color:#fbbf24;
+    color:#92400e;
+  }
+  .btnx-warn:hover{
+    background:#fef3c7;
+    border-color:#f59e0b;
+  }
+
+  .btnx-danger{
+    background:#fff0f0;
+    border-color:#f87171;
+    color:#991b1b;
+  }
+  .btnx-danger:hover{
+    background:#fee2e2;
+    border-color:#ef4444;
+  }
+
+  .btnx-ghost{
+    background:#fff;
+    color:var(--muted);
+    border-color:var(--line);
+  }
+  .btnx-ghost:hover{
+    background:var(--surface-2);
+    color:var(--brand);
+    border-color:var(--brand);
+  }
+
+  .btnx[disabled],
+  .btnx.disabled-link,
+  a.disabled-link{
+    opacity:.4;
+    pointer-events:none;
+    cursor:not-allowed;
+  }
+
+  /* Copy button */
+  .copy-btn{
+    border:none;
+    background:var(--brand);
+    color:#fff;
+    border-radius:8px;
+    padding:.5rem .875rem;
+    font-weight:700;
+    font-size:.8rem;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 4px 8px rgba(124,58,237,.2);
+  }
+  .copy-btn:hover{
+    background:var(--brand-hover);
+    transform:translateY(-1px);
+    box-shadow:0 6px 12px rgba(124,58,237,.3);
+  }
 
   /* Mensajes Django */
-  .msgs{margin-bottom:16px}
-  .msg{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+  .msgs{
+    margin-bottom:1.5rem;
+  }
+
+  .msg{
+    padding:1rem 1.25rem;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:var(--surface-2);
+    color:var(--ink);
+    font-weight:600;
+    box-shadow:var(--shadow-sm);
+  }
+
+  /* Estado actual box */
+  .estado-actual-box{
+    background:var(--surface-2);
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:1rem 1.25rem;
+    margin-top:1rem;
+  }
+
+  .estado-actual-label{
+    color:var(--muted);
+    font-size:.85rem;
+    font-weight:600;
+  }
+
+  .estado-actual-value{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;
+    font-weight:700;
+    color:var(--brand);
+  }
+
+  .help-text{
+    color:var(--muted);
+    font-size:.9rem;
+    margin-top:.75rem;
+    font-style:italic;
+  }
+
+  /* Volver button */
+  .volver-section{
+    margin-top:2rem;
+    text-align:center;
+    padding-top:1.5rem;
+    border-top:2px solid var(--line);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px){
+    .doc-header{
+      grid-template-columns:1fr;
+      gap:1.5rem;
+    }
+    .kv-grid{
+      grid-template-columns:1fr;
+    }
+    .actions{
+      flex-direction:column;
+    }
+    .btnx{
+      width:100%;
+      text-align:center;
+    }
+  }
+
+  /* Animación sutil */
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .cardx{
+    animation:fadeIn .4s ease-out;
+  }
 </style>
 
 <div class="page-wrap">
 {% if messages %}
-  <div class="msgs" style="margin-bottom:16px">
+  <div class="msgs">
     {% for message in messages %}
       <div class="msg">{{ message }}</div>
     {% endfor %}
   </div>
 {% endif %}
 
-  <!-- Encabezado + Estado actual (lo importante) -->
+
+  <!-- TÍTULO PRINCIPAL DE LA PÁGINA -->
+
+  
+  <header class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Documento Electrónico</h1>
+    </div>
+
+    <div class="space-x-3 flex">
+      <a href="{% url 'facturacion_electronica:documento_list' %}" 
+         class="px-4 py-2 rounded-lg font-bold bg-[var(--brand-soft)] hover:brightness-95 text-[var(--ink)]">
+        ⬅ Volver al Panel
+      </a>
+    </div>
+  </header>
+
+  <!-- ENCABEZADO DEL DOCUMENTO -->
   <div class="cardx">
+    <!-- HEADER LILA, IGUAL QUE LAS DEMÁS SECCIONES -->
+    <div class="cardx-hd">
+      <div class="doc-title-section">
+        <h1>Número de documento</h1>
+        <div class="doc-number">
+          {{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}
+        </div>
+      </div>
+    </div>
+
+    <!-- CUERPO DEL CARD -->
     <div class="cardx-bd">
       <div class="doc-header">
+        <!-- Columna izquierda: Estado SIFEN -->
         <div>
-          <div class="subtle">Documento</div>
-          <h1 class="doc-title">{{ documento.emisor.establecimiento }}-{{ documento.emisor.punto_expedicion }}-{{ documento.numero_documento }}</h1>
-
-          <!-- Estado SIFEN simple, visible y claro -->
-          <div style="margin-top:10px">
-            <span class="subtle">Estado SIFEN:</span>
-            {% if documento.estado_sifen == 'aprobado' %}
-              <span class="pill pill-success">{{ documento.get_estado_sifen_display }}</span>
-            {% elif documento.estado_sifen == 'rechazado' or documento.estado_sifen == 'error_api' or documento.estado_sifen == 'error_sifen' %}
-              <span class="pill pill-danger">{{ documento.get_estado_sifen_display }}</span>
-            {% elif documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}
-              <span class="pill pill-warn">{{ documento.get_estado_sifen_display }}</span>
-            {% elif documento.estado_sifen == 'simulado' %}
-              <span class="pill pill-info">{{ documento.get_estado_sifen_display }}</span>
-            {% else %}
-              <span class="pill pill-muted">{{ documento.get_estado_sifen_display }}</span>
+          <div class="estado-sifen-box">
+            <span class="estado-sifen-label">📋 ESTADO SIFEN</span>
+            <div class="estado-pill-wrapper">
+              {% if documento.estado_sifen == 'aprobado' %}
+                <span class="pill pill-success">✓ {{ documento.get_estado_sifen_display }}</span>
+              {% elif documento.estado_sifen == 'rechazado' or documento.estado_sifen == 'error_api' or documento.estado_sifen == 'error_sifen' %}
+                <span class="pill pill-danger">✗ {{ documento.get_estado_sifen_display }}</span>
+              {% elif documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}
+                <span class="pill pill-warn">⚠ {{ documento.get_estado_sifen_display }}</span>
+              {% elif documento.estado_sifen == 'simulado' %}
+                <span class="pill pill-info">🔄 {{ documento.get_estado_sifen_display }}</span>
+              {% else %}
+                <span class="pill pill-muted">⏳ {{ documento.get_estado_sifen_display }}</span>
+              {% endif %}
+            </div>
+            {% if documento.descripcion_estado %}
+              <div class="estado-descripcion">{{ documento.descripcion_estado }}</div>
             {% endif %}
-            {% if documento.descripcion_estado %}<span class="subtle" style="margin-left:8px">( {{ documento.descripcion_estado }} )</span>{% endif %}
           </div>
         </div>
 
-        <div>
-          <div class="subtle">CDC</div>
-          <div class="chip mono" style="margin-top:4px">
-            <span class="text-break">{{ documento.cdc|default:"N/A" }}</span>
-            {% if documento.cdc %}
-            <button type="button" class="copy-btn" onclick="navigator.clipboard.writeText('{{ documento.cdc }}')">Copiar</button>
-            {% endif %}
-          </div>
+        <!-- Columna derecha: CDC -->
+        <div class="cdc-box">
+          <div class="cdc-label">🔐 CÓDIGO DE CONTROL (CDC)</div>
+          {% if documento.cdc %}
+            <div class="cdc-value">{{ documento.cdc }}</div>
+            <button type="button" class="copy-btn" onclick="navigator.clipboard.writeText('{{ documento.cdc }}')">
+              📋 Copiar CDC
+            </button>
+          {% else %}
+            <div class="cdc-value" style="color:var(--muted);text-align:center;">No generado</div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 
-  
 
-  <!-- Información General -->
+  <!-- INFORMACIÓN GENERAL -->
   <div class="cardx">
-    <div class="cardx-hd">Información General</div>
+    <div class="cardx-hd">
+      📄 Información General
+    </div>
     <div class="cardx-bd">
       <div class="kv-grid">
         <div class="kv">
-          <div class="k">ID</div>
-          <div class="v mono">
+          <div class="k">🆔 ID del Documento</div>
+          <div class="v" style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;">
             {{ documento.id }}
-            <button type="button" class="copy-btn" style="margin-left:8px" onclick="navigator.clipboard.writeText('{{ documento.id }}')">Copiar</button>
+            <button type="button" class="copy-btn" style="margin-left:8px;padding:.35rem .65rem;font-size:.75rem;" onclick="navigator.clipboard.writeText('{{ documento.id }}')">Copiar</button>
           </div>
         </div>
+
+        <div class="kv kv-highlight">
+          <div class="k">🔢 Timbrado</div>
+          <div class="v" style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;font-size:1.15rem;color:var(--brand);">
+            {{ documento.numero_timbrado|default:"N/A" }}
+          </div>
+        </div>
+
         <div class="kv">
-          <div class="k">Emisor</div>
+          <div class="k">🏢 Emisor</div>
           <div class="v">
-            <a class="text-decoration-none" href="{% url 'facturacion_electronica:emisor_detail' pk=documento.emisor.pk %}">{{ documento.emisor.nombre }}</a>
+            <a href="{% url 'facturacion_electronica:emisor_detail' pk=documento.emisor.pk %}">
+              {{ documento.emisor.nombre }}
+            </a>
           </div>
         </div>
+
         <div class="kv">
-          <div class="k">Tipo</div>
+          <div class="k">📑 Tipo de Documento</div>
           <div class="v">{{ documento.get_tipo_de_display }}</div>
         </div>
+
         <div class="kv">
-          <div class="k">Timbrado</div>
-          <div class="v">{{ documento.numero_timbrado|default:"N/A" }}</div>
-        </div>
-        <div class="kv">
-          <div class="k">Fecha de emisión</div>
+          <div class="k">📅 Fecha de Emisión</div>
           <div class="v">{{ documento.fecha_emision|date:"d/m/Y H:i:s" }}</div>
         </div>
-        <div class="kv" style="grid-column:1/-1">
-          <div class="k">Transacción asociada</div>
+
+        <div class="kv">
+          <div class="k">💳 Transacción Asociada</div>
           <div class="v">
             {% if documento.transaccion_asociada %}
-              <a class="text-decoration-none mono" href="{% url 'transacciones:resultado_pago' transaccion_id=documento.transaccion_asociada.pk %}">
-                {{ documento.transaccion_asociada.id }}
+              <a href="{% url 'transacciones:resultado_pago' transaccion_id=documento.transaccion_asociada.pk %}" style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;">
+                #{{ documento.transaccion_asociada.id }}
               </a>
             {% else %}
-              <span class="subtle">N/A</span>
+              <span style="color:var(--muted);">Sin transacción asociada</span>
             {% endif %}
           </div>
         </div>
@@ -151,28 +628,32 @@
     </div>
   </div>
 
-  <!-- Ítems -->
+  <!-- ÍTEMS DEL DOCUMENTO -->
+  {% if documento.items.count %}
   <div class="cardx">
-    <div class="cardx-hd">Ítems del Documento</div>
+    <div class="cardx-hd">
+      🛒 Ítems del Documento
+    </div>
     <div class="cardx-bd">
-      {% if documento.items.count %}
       <div class="table-wrap">
         <table class="clean">
           <thead>
             <tr>
-              <th style="width:16%">Código</th>
+              <th style="width:12%">Código</th>
               <th>Descripción</th>
               <th class="td-right" style="width:10%">Cantidad</th>
-              <th class="td-right" style="width:14%">P. Unitario</th>
-              <th class="td-right" style="width:12%">Descuento</th>
-              <th class="td-center" style="width:10%">IVA</th>
-              <th class="td-right" style="width:12%">Tasa IVA</th>
+              <th class="td-right" style="width:12%">P. Unitario</th>
+              <th class="td-right" style="width:11%">Descuento</th>
+              <th class="td-center" style="width:8%">IVA</th>
+              <th class="td-right" style="width:10%">Tasa IVA</th>
             </tr>
           </thead>
-          <tbody class="mono">
+          <tbody>
             {% for item in documento.items.all %}
             <tr>
-              <td class="text-nowrap">{{ item.codigo_interno|default:"N/A" }}</td>
+              <td style="font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;font-size:.9rem;">
+                {{ item.codigo_interno|default:"N/A" }}
+              </td>
               <td>{{ item.descripcion_producto_servicio }}</td>
               <td class="td-right">{{ item.cantidad }}</td>
               <td class="td-right">{{ item.precio_unitario }}</td>
@@ -184,67 +665,65 @@
           </tbody>
         </table>
       </div>
-      {% else %}
-        <div class="subtle">No hay ítems asociados a este documento.</div>
-      {% endif %}
     </div>
   </div>
+  {% endif %}
 
-  <!-- Acciones (consultar estado solo muestra el estado arriba) -->
+  <!-- ACCIONES -->
   <div class="cardx">
-    <div class="cardx-hd">Acciones</div>
+    <div class="cardx-hd">
+      ⚡ Acciones Disponibles
+    </div>
     <div class="cardx-bd">
       <div class="actions">
-        <form action="{% url 'facturacion_electronica:consultar_estado' documento.id %}" method="post">
+        <form action="{% url 'facturacion_electronica:consultar_estado' documento.id %}" method="post" style="display:inline;">
           {% csrf_token %}
-          <button type="submit" class="btnx btnx-primary">Consultar Estado SIFEN</button>
-        </form>
-
-        <form action="{% url 'facturacion_electronica:solicitar_cancelacion' documento.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btnx btnx-warn"
-            {% if documento.estado_sifen != 'aprobado' and documento.estado_sifen != 'aprobado_obs' %}disabled{% endif %}>
-            Solicitar Cancelación
+          <button type="submit" class="btnx btnx-primary">
+            🔍 Consultar Estado SIFEN
           </button>
         </form>
 
-        <form action="{% url 'facturacion_electronica:solicitar_inutilizacion' documento.id %}" method="post">
+        <form action="{% url 'facturacion_electronica:solicitar_cancelacion' documento.id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btnx btnx-warn"
+            {% if documento.estado_sifen != 'aprobado' and documento.estado_sifen != 'aprobado_obs' %}disabled{% endif %}>
+            ⚠️ Solicitar Cancelación
+          </button>
+        </form>
+
+        <form action="{% url 'facturacion_electronica:solicitar_inutilizacion' documento.id %}" method="post" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btnx btnx-danger"
             {% if documento.estado_sifen == 'aprobado' or documento.estado_sifen == 'cancelado' or documento.estado_sifen == 'inutilizado' %}disabled{% endif %}>
-            Solicitar Inutilización
+            🗑️ Solicitar Inutilización
           </button>
         </form>
 
         <a href="{% url 'facturacion_electronica:descargar_kude' documento.id %}"
            class="btnx btnx-ghost {% if not documento.cdc %}disabled-link{% endif %}">
-          Descargar KuDE
+          📄 Descargar PDF
         </a>
 
         <a href="{% url 'facturacion_electronica:descargar_xml' documento.id %}"
            class="btnx btnx-ghost {% if not documento.cdc %}disabled-link{% endif %}">
-          Descargar XML
+          📦 Descargar XML
         </a>
       </div>
 
-    <div style="margin-top:12px; font-size:.95rem;">
-      <span class="subtle">Estado SIFEN actual:</span>
-      <span class="mono">{{ documento.get_estado_sifen_display }}</span>
-      {% if documento.descripcion_estado %}
-        <span class="subtle"> — {{ documento.descripcion_estado }}</span>
-      {% endif %}
-    </div>
+      <div class="estado-actual-box">
+        <span class="estado-actual-label">Estado SIFEN actual:</span>
+        <span class="estado-actual-value">{{ documento.get_estado_sifen_display }}</span>
+        {% if documento.descripcion_estado %}
+          <span style="color:var(--muted);margin-left:8px;">— {{ documento.descripcion_estado }}</span>
+        {% endif %}
+      </div>
 
-      <div class="subtle" style="margin-top:10px">
-        Consejo: tras consultar, recarga la página si no ves cambios inmediatos (según respuesta de SIFEN).
+      <div class="help-text">
+        💡 Consejo: tras consultar el estado, recarga la página si no ves cambios inmediatos (según respuesta de SIFEN).
       </div>
     </div>
   </div>
 
-  <!-- Volver -->
-  <div style="margin-top:18px;text-align:center">
-    <a href="{% url 'facturacion_electronica:documento_list' %}" class="btnx">← Volver a la Lista de Documentos</a>
-  </div>
 
 </div>
 {% endblock %}

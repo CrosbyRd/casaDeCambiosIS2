@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>paquete ganancias &mdash; documentación de CasaDeCambioIS2 Documentation - </title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e2bb6099"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="paquete medios_acreditacion" href="medios_acreditacion.html" />
+    <link rel="prev" title="facturacion_electronica" href="facturacion_electronica.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CasaDeCambioIS2 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete ganancias</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo ganancias.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ganancias.models.RegistroGanancia"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.fecha_registro"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.fecha_registro</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.ganancia_registrada"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.ganancia_registrada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.get_next_by_fecha_registro"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.get_next_by_fecha_registro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.get_previous_by_fecha_registro"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.get_previous_by_fecha_registro()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.moneda_ganancia"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.moneda_ganancia</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.moneda_ganancia_id"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.moneda_ganancia_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.moneda_operada"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.moneda_operada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.moneda_operada_id"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.moneda_operada_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.objects"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.transaccion"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.transaccion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ganancias.models.RegistroGanancia.transaccion_id"><code class="docutils literal notranslate"><span class="pre">RegistroGanancia.transaccion_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-1">módulo ganancias.signals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ganancias.signals.crear_o_actualizar_registro_ganancia"><code class="docutils literal notranslate"><span class="pre">crear_o_actualizar_registro_ganancia()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-2">módulo ganancias.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-3">módulo ganancias.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ganancias.views.dashboard_ganancias"><code class="docutils literal notranslate"><span class="pre">dashboard_ganancias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ganancias.views.is_analista_or_admin"><code class="docutils literal notranslate"><span class="pre">is_analista_or_admin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CasaDeCambioIS2 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">paquete ganancias</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ganancias.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="paquete-ganancias">
+<h1>paquete ganancias<a class="headerlink" href="#paquete-ganancias" title="Link to this heading"></a></h1>
+<section id="module-0">
+<span id="modulo-ganancias-models"></span><h2>módulo ganancias.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
+<p>Modelos de la aplicación <strong>ganancias</strong>.</p>
+<p id="module-ganancias.models">Este módulo define:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ganancias.models.RegistroGanancia" title="ganancias.models.RegistroGanancia"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegistroGanancia</span></code></a>: Almacena la ganancia neta obtenida por cada
+<a class="reference internal" href="transacciones.html#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><code class="xref py py-class docutils literal notranslate"><span class="pre">transacciones.models.Transaccion</span></code></a>, expresada en una moneda base
+(normalmente PYG) y asociada a la moneda extranjera operada.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ganancias.models.</span></span><span class="sig-name descname"><span class="pre">RegistroGanancia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ganancias/models.html#RegistroGanancia"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ganancias.models.RegistroGanancia" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Registro de la ganancia neta asociada a una transacción de compra/venta.</p>
+<p>Cada instancia representa el resultado económico de una
+<a class="reference internal" href="transacciones.html#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><code class="xref py py-class docutils literal notranslate"><span class="pre">transacciones.models.Transaccion</span></code></a>, calculado a partir de la
+comisión efectiva aplicada y el monto operado.</p>
+<section id="campos-principales">
+<h3>Campos principales<a class="headerlink" href="#campos-principales" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">transaccion</span></code>: Llave primaria y relación 1:1 con la transacción origen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancia_registrada</span></code>: Monto de la ganancia neta en <code class="docutils literal notranslate"><span class="pre">moneda_ganancia</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moneda_ganancia</span></code>: Moneda en la que se registra la ganancia
+(por conveniencia suele ser PYG).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moneda_operada</span></code>: Moneda extranjera involucrada en la operación
+(por ejemplo USD, EUR).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fecha_registro</span></code>: Fecha y hora en la que se calculó/registró la ganancia.</p></li>
+</ul>
+<p>Este modelo se crea o actualiza automáticamente desde
+<a class="reference internal" href="#module-1" title="ganancias.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ganancias.signals</span></code></a> cuando una transacción pasa al estado
+<code class="docutils literal notranslate"><span class="pre">completada</span></code>.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.fecha_registro">
+<span class="sig-name descname"><span class="pre">fecha_registro</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.fecha_registro" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.ganancia_registrada">
+<span class="sig-name descname"><span class="pre">ganancia_registrada</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.ganancia_registrada" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.get_next_by_fecha_registro">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha_registro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_registro&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ganancias.models.RegistroGanancia.get_next_by_fecha_registro" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.get_previous_by_fecha_registro">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha_registro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_registro&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ganancias.models.RegistroGanancia.get_previous_by_fecha_registro" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.moneda_ganancia">
+<span class="sig-name descname"><span class="pre">moneda_ganancia</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.moneda_ganancia" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.moneda_ganancia_id">
+<span class="sig-name descname"><span class="pre">moneda_ganancia_id</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.moneda_ganancia_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.moneda_operada">
+<span class="sig-name descname"><span class="pre">moneda_operada</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.moneda_operada" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.moneda_operada_id">
+<span class="sig-name descname"><span class="pre">moneda_operada_id</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.moneda_operada_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#ganancias.models.RegistroGanancia.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.transaccion">
+<span class="sig-name descname"><span class="pre">transaccion</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.transaccion" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Restaurant.place</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ganancias.models.RegistroGanancia.transaccion_id">
+<span class="sig-name descname"><span class="pre">transaccion_id</span></span><a class="headerlink" href="#ganancias.models.RegistroGanancia.transaccion_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+<section id="module-1">
+<span id="modulo-ganancias-signals"></span><h2>módulo ganancias.signals<a class="headerlink" href="#module-1" title="Link to this heading"></a></h2>
+<p>Señales de la aplicación <strong>ganancias</strong>.</p>
+<p id="module-ganancias.signals">Este módulo conecta la señal <code class="xref py py-data docutils literal notranslate"><span class="pre">django.db.models.signals.post_save</span></code> del
+modelo <a class="reference internal" href="transacciones.html#transacciones.models.Transaccion" title="transacciones.models.Transaccion"><code class="xref py py-class docutils literal notranslate"><span class="pre">transacciones.models.Transaccion</span></code></a> con la lógica de negocio que
+calcula y persiste instancias de <a class="reference internal" href="#ganancias.models.RegistroGanancia" title="ganancias.models.RegistroGanancia"><code class="xref py py-class docutils literal notranslate"><span class="pre">ganancias.models.RegistroGanancia</span></code></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ganancias.signals.crear_o_actualizar_registro_ganancia">
+<span class="sig-prename descclassname"><span class="pre">ganancias.signals.</span></span><span class="sig-name descname"><span class="pre">crear_o_actualizar_registro_ganancia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ganancias/signals.html#crear_o_actualizar_registro_ganancia"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ganancias.signals.crear_o_actualizar_registro_ganancia" title="Link to this definition"></a></dt>
+<dd><p>Crea o actualiza un <code class="xref py py-class docutils literal notranslate"><span class="pre">RegistroGanancia</span></code> cuando una transacción
+se marca como <code class="docutils literal notranslate"><span class="pre">completada</span></code>.</p>
+<section id="logica-principal">
+<h3>Lógica principal<a class="headerlink" href="#logica-principal" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Verifica que <code class="docutils literal notranslate"><span class="pre">instance.estado</span> <span class="pre">==</span> <span class="pre">'completada'</span></code>.</p></li>
+<li><p>Obtiene la moneda PYG (moneda base en la que se registra la ganancia).</p></li>
+<li><p>Determina la moneda operada según el tipo de operación:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">venta</span></code>: se toma <code class="docutils literal notranslate"><span class="pre">instance.moneda_destino</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compra</span></code>: se toma <code class="docutils literal notranslate"><span class="pre">instance.moneda_origen</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Calcula la comisión final como:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">comision_final</span> <span class="o">=</span> <span class="n">comision_cotizacion</span> <span class="o">-</span> <span class="n">comision_aplicada</span>
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">comision_cotizacion</span></code> es la comisión bruta de la cotización
+y <code class="docutils literal notranslate"><span class="pre">comision_aplicada</span></code> incluye eventuales bonificaciones.</p>
+</li>
+<li><p>El monto operado para la ganancia depende del tipo de operación:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">venta</span></code>: se usa <code class="docutils literal notranslate"><span class="pre">instance.monto_destino</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compra</span></code>: se usa <code class="docutils literal notranslate"><span class="pre">instance.monto_origen</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Calcula la ganancia neta real como el producto de la comisión final
+por el monto operado y registra el resultado en
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RegistroGanancia</span></code> mediante <code class="xref py py-meth docutils literal notranslate"><span class="pre">update_or_create()</span></code>.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">type sender<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param sender<span class="colon">:</span></dt>
+<dd class="field-even"><p>Modelo que dispara la señal (<code class="docutils literal notranslate"><span class="pre">Transaccion</span></code>).</p>
+</dd>
+<dt class="field-odd">type sender<span class="colon">:</span></dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+<dt class="field-even">type instance<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param instance<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Instancia de transacción recién guardada.</p>
+</dd>
+<dt class="field-even">type instance<span class="colon">:</span></dt>
+<dd class="field-even"><p>transacciones.models.Transaccion</p>
+</dd>
+<dt class="field-odd">type created<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param created<span class="colon">:</span></dt>
+<dd class="field-even"><p>Indica si la instancia fue creada (<code class="docutils literal notranslate"><span class="pre">True</span></code>) o actualizada.</p>
+</dd>
+<dt class="field-odd">type created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">type kwargs<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param kwargs<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Parámetros adicionales de la señal (no utilizados).</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-2">
+<span id="modulo-ganancias-urls"></span><h2>módulo ganancias.urls<a class="headerlink" href="#module-2" title="Link to this heading"></a></h2>
+<p>URLs de la aplicación <strong>ganancias</strong>.</p>
+<p id="module-ganancias.urls">Este módulo expone las rutas públicas del módulo de ganancias, en particular
+el acceso al dashboard principal de análisis de ganancias por transacción.</p>
+</section>
+<section id="module-3">
+<span id="modulo-ganancias-views"></span><h2>módulo ganancias.views<a class="headerlink" href="#module-3" title="Link to this heading"></a></h2>
+<p>Vistas de la aplicación <strong>ganancias</strong>.</p>
+<p id="module-ganancias.views">Este módulo ofrece:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ganancias.views.is_analista_or_admin" title="ganancias.views.is_analista_or_admin"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_analista_or_admin()</span></code></a>: Helper de autorización para restringir el acceso
+a usuarios con rol de analista o staff.</p></li>
+<li><p><a class="reference internal" href="#ganancias.views.dashboard_ganancias" title="ganancias.views.dashboard_ganancias"><code class="xref py py-func docutils literal notranslate"><span class="pre">dashboard_ganancias()</span></code></a>: Vista principal del reporte de ganancias, con
+filtros por rango de fechas, moneda operada y tipo de operación, además de
+métricas agregadas y datos preparados para gráficos.</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="ganancias.views.dashboard_ganancias">
+<span class="sig-prename descclassname"><span class="pre">ganancias.views.</span></span><span class="sig-name descname"><span class="pre">dashboard_ganancias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ganancias/views.html#dashboard_ganancias"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ganancias.views.dashboard_ganancias" title="Link to this definition"></a></dt>
+<dd><p>Muestra el dashboard de reporte de ganancias.</p>
+<p>La vista permite filtrar los registros de <a class="reference internal" href="#ganancias.models.RegistroGanancia" title="ganancias.models.RegistroGanancia"><code class="xref py py-class docutils literal notranslate"><span class="pre">ganancias.models.RegistroGanancia</span></code></a>
+y calcula métricas agregadas para mostrarlas en tablas y gráficos.</p>
+<section id="filtros-disponibles-via-query-string">
+<h3>Filtros disponibles (vía query string)<a class="headerlink" href="#filtros-disponibles-via-query-string" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fecha_inicio</span></code> (YYYY-MM-DD): fecha mínima del registro de ganancia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fecha_fin</span></code> (YYYY-MM-DD): fecha máxima del registro de ganancia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moneda_operada</span></code>: ID de la moneda extranjera operada.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tipo_operacion</span></code>: <code class="docutils literal notranslate"><span class="pre">'compra'</span></code> o <code class="docutils literal notranslate"><span class="pre">'venta'</span></code> según el tipo de transacción.</p></li>
+</ul>
+</section>
+<section id="metricas-calculadas">
+<h3>Métricas calculadas<a class="headerlink" href="#metricas-calculadas" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancia_total_periodo</span></code>: suma total de <code class="docutils literal notranslate"><span class="pre">ganancia_registrada</span></code> en el
+conjunto filtrado.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancias_por_dia</span></code>: queryset anotado con la ganancia total por día,
+usado para gráficos de tendencia.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancias_por_moneda</span></code>: lista de diccionarios con el total de
+ganancia por cada moneda operada.</p></li>
+</ul>
+</section>
+<section id="contexto-enviado-a-la-plantilla">
+<h3>Contexto enviado a la plantilla<a class="headerlink" href="#contexto-enviado-a-la-plantilla" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancia_total_periodo</span></code>: <code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code> o <code class="docutils literal notranslate"><span class="pre">0</span></code> si no hay registros.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancias_por_dia</span></code>: queryset con claves <code class="docutils literal notranslate"><span class="pre">dia</span></code> y <code class="docutils literal notranslate"><span class="pre">total_dia</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fechas_grafico</span></code>: lista de cadenas con fechas formateadas (YYYY-MM-DD).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">totales_grafico</span></code>: lista de montos (<code class="docutils literal notranslate"><span class="pre">float</span></code>) por día.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ganancias_por_moneda</span></code>: lista serializable para gráficos (código, nombre, total).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">todas_las_monedas</span></code>: queryset de <a class="reference internal" href="monedas.html#monedas.models.Moneda" title="monedas.models.Moneda"><code class="xref py py-class docutils literal notranslate"><span class="pre">monedas.models.Moneda</span></code></a> para el filtro.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fecha_inicio_seleccionada</span></code>, <code class="docutils literal notranslate"><span class="pre">fecha_fin_seleccionada</span></code>,
+<code class="docutils literal notranslate"><span class="pre">moneda_operada_seleccionada</span></code>, <code class="docutils literal notranslate"><span class="pre">tipo_operacion_seleccionado</span></code>:
+valores actuales de los filtros para mantener el estado en el formulario.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">type request<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param request<span class="colon">:</span></dt>
+<dd class="field-even"><p>Objeto HTTP request.</p>
+</dd>
+<dt class="field-odd">type request<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpRequest</p>
+</dd>
+<dt class="field-even">return<span class="colon">:</span></dt>
+<dd class="field-even"><p>Respuesta renderizada con la plantilla
+<code class="docutils literal notranslate"><span class="pre">ganancias/dashboard_ganancias.html</span></code>.</p>
+</dd>
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>django.http.HttpResponse</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ganancias.views.is_analista_or_admin">
+<span class="sig-prename descclassname"><span class="pre">ganancias.views.</span></span><span class="sig-name descname"><span class="pre">is_analista_or_admin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ganancias/views.html#is_analista_or_admin"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ganancias.views.is_analista_or_admin" title="Link to this definition"></a></dt>
+<dd><p>Verifica si el usuario tiene permiso para ver el dashboard de ganancias.</p>
+<p>Se considera válido si:
+- Está autenticado, y
+- Tiene un rol M2M llamado «Analista» o «Administrador» (modelo Role del proyecto), o
+- Pertenece al grupo de Django «Analista», o
+- Es staff (is_staff=True).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="facturacion_electronica.html" class="btn btn-neutral float-left" title="facturacion_electronica" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="medios_acreditacion.html" class="btn btn-neutral float-right" title="paquete medios_acreditacion" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

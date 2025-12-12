@@ -6,16 +6,6 @@ facturacion_electronica
    :undoc-members:
    :show-inheritance:
 
-Submódulos
-----------
-
-módulo facturacion_electronica.apps
------------------------------------
-
-.. automodule:: facturacion_electronica.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo facturacion_electronica.forms
 ------------------------------------
