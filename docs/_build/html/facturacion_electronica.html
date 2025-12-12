@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete notificaciones" href="notificaciones.html" />
-    <link rel="prev" title="paquete ted" href="ted.html" /> 
+    <link rel="next" title="paquete ganancias" href="ganancias.html" />
+    <link rel="prev" title="paquete cotizaciones" href="cotizaciones.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,212 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">facturacion_electronica</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo facturacion_electronica.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.Meta"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.base_fields"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.clean"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm.media"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-1">módulo facturacion_electronica.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.ESTADO_SIFEN_CHOICES"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.ESTADO_SIFEN_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.TIPO_DE_CHOICES"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.TIPO_DE_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.cdc"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.cdc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.clean"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.descripcion_estado"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.descripcion_estado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.emisor"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.emisor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.emisor_id"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.emisor_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.estado_sifen"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.estado_sifen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.fecha_emision"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.fecha_emision</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.get_estado_sifen_display"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.get_estado_sifen_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.get_next_by_fecha_emision"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.get_next_by_fecha_emision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.get_previous_by_fecha_emision"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.get_previous_by_fecha_emision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.get_tipo_de_display"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.get_tipo_de_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.id"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.items"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.items</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.json_enviado_api"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.json_enviado_api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.json_respuesta_api"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.json_respuesta_api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.numero_documento"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.numero_documento</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.numero_timbrado"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.numero_timbrado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.objects"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.tipo_de"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.tipo_de</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.transaccion_asociada"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.transaccion_asociada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.transaccion_asociada_id"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.transaccion_asociada_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.url_kude"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.url_kude</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.DocumentoElectronico.url_xml"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronico.url_xml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.activo"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.auth_token"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.auth_token</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.clean"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.codigo_ciudad"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.codigo_ciudad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.codigo_departamento"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.codigo_departamento</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.descripcion_ciudad"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.descripcion_ciudad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.descripcion_departamento"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.descripcion_departamento</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.direccion"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.direccion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.documentos_electronicos"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.documentos_electronicos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.dv_ruc"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.dv_ruc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.email_emisor"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.email_emisor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.establecimiento"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.establecimiento</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.etiqueta_con"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.etiqueta_con()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.fecha_inicio_timbrado"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.fecha_inicio_timbrado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.get_next_by_fecha_inicio_timbrado"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.get_next_by_fecha_inicio_timbrado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.get_previous_by_fecha_inicio_timbrado"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.get_previous_by_fecha_inicio_timbrado()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.id"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.nombre"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.numero_casa"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.numero_casa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.numero_timbrado_actual"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.numero_timbrado_actual</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.objects"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.pais"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.pais</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.punto_expedicion"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.punto_expedicion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_fin"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.rango_numeracion_fin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.rango_numeracion_inicio"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.rango_numeracion_inicio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.reservar_numero_y_avanzar"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.reservar_numero_y_avanzar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.ruc"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.ruc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.siguiente_numero_factura"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.siguiente_numero_factura</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.telefono"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.telefono</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.EmisorFacturaElectronica.token_generado_at"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronica.token_generado_at</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.afectacion_iva"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.afectacion_iva</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.cantidad"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.cantidad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.codigo_interno"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.codigo_interno</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.descripcion_producto_servicio"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.descripcion_producto_servicio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.descuento_item"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.descuento_item</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.documento_electronico</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.documento_electronico_id"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.documento_electronico_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.id"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.objects"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.precio_unitario"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.precio_unitario</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.proporcion_iva"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.proporcion_iva</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.tasa_iva"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.tasa_iva</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.models.ItemDocumentoElectronico.unidad_medida"><code class="docutils literal notranslate"><span class="pre">ItemDocumentoElectronico.unidad_medida</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-2">módulo facturacion_electronica.services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.calcular_de()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.calcular_de_contrato_estricto"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.calcular_de_contrato_estricto()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_kude"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.descargar_kude()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.descargar_xml"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.descargar_xml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.emitir_end_to_end_contrato_estricto()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.generar_de()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.generar_de_contrato_estricto"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.generar_de_contrato_estricto()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.get_estado_sifen"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.get_estado_sifen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_cancelacion"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.solicitar_cancelacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.services.FacturaSeguraAPIClient.solicitar_inutilizacion"><code class="docutils literal notranslate"><span class="pre">FacturaSeguraAPIClient.solicitar_inutilizacion()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-3">módulo facturacion_electronica.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-4">módulo facturacion_electronica.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.context_object_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.delete"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.model"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.success_url"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDeleteView.template_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDeleteView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.context_object_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.get_context_data"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.model"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoDetailView.template_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoDetailView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView.model"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView.paginate_by"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView.paginate_by</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.DocumentoElectronicoListView.template_name"><code class="docutils literal notranslate"><span class="pre">DocumentoElectronicoListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_class"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.form_valid"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.model"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.success_url"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaCreateView.template_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaCreateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.context_object_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.delete"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.model"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.success_url"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDeleteView.template_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDeleteView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDetailView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.context_object_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDetailView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.model"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDetailView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaDetailView.template_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaDetailView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.model"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaListView.template_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_class"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.form_valid"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.model"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.success_url"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.EmisorFacturaElectronicaUpdateView.template_name"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaUpdateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.consultar_estado"><code class="docutils literal notranslate"><span class="pre">consultar_estado()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.consultar_estado_de_view"><code class="docutils literal notranslate"><span class="pre">consultar_estado_de_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.descargar_kude_view"><code class="docutils literal notranslate"><span class="pre">descargar_kude_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.descargar_xml_view"><code class="docutils literal notranslate"><span class="pre">descargar_xml_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.generar_token_view"><code class="docutils literal notranslate"><span class="pre">generar_token_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.panel_facturacion"><code class="docutils literal notranslate"><span class="pre">panel_facturacion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.solicitar_cancelacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_cancelacion_de_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.solicitar_inutilizacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_inutilizacion_de_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.views.toggle_emisor_activo_view"><code class="docutils literal notranslate"><span class="pre">toggle_emisor_activo_view()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-5">módulo facturacion_electronica.tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-6">módulo facturacion_electronica.mixins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin"><code class="docutils literal notranslate"><span class="pre">AdminRequiredMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.mixins.AdminRequiredMixin.dispatch"><code class="docutils literal notranslate"><span class="pre">AdminRequiredMixin.dispatch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#facturacion_electronica.mixins.admin_required"><code class="docutils literal notranslate"><span class="pre">admin_required()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -65,11 +269,6 @@
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">facturacion_electronica</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-facturacion_electronica.apps">módulo facturacion_electronica.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.apps.FacturacionElectronicaConfig"><code class="docutils literal notranslate"><span class="pre">FacturacionElectronicaConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-0">módulo facturacion_electronica.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.forms.EmisorFacturaElectronicaForm"><code class="docutils literal notranslate"><span class="pre">EmisorFacturaElectronicaForm</span></code></a></li>
 </ul>
@@ -99,6 +298,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.descargar_kude_view"><code class="docutils literal notranslate"><span class="pre">descargar_kude_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.descargar_xml_view"><code class="docutils literal notranslate"><span class="pre">descargar_xml_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.generar_token_view"><code class="docutils literal notranslate"><span class="pre">generar_token_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.panel_facturacion"><code class="docutils literal notranslate"><span class="pre">panel_facturacion()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.solicitar_cancelacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_cancelacion_de_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.solicitar_inutilizacion_de_view"><code class="docutils literal notranslate"><span class="pre">solicitar_inutilizacion_de_view()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#facturacion_electronica.views.toggle_emisor_activo_view"><code class="docutils literal notranslate"><span class="pre">toggle_emisor_activo_view()</span></code></a></li>
@@ -116,6 +316,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -132,7 +343,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">facturacion_electronica</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/facturacion_electronica.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -145,33 +355,6 @@
              
   <section id="module-facturacion_electronica">
 <span id="facturacion-electronica"></span><h1>facturacion_electronica<a class="headerlink" href="#module-facturacion_electronica" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-facturacion_electronica.apps">
-<span id="modulo-facturacion-electronica-apps"></span><h2>módulo facturacion_electronica.apps<a class="headerlink" href="#module-facturacion_electronica.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">facturacion_electronica.apps.</span></span><span class="sig-name descname"><span class="pre">FacturacionElectronicaConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/apps.html#FacturacionElectronicaConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.label">
-<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.label" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="facturacion_electronica.apps.FacturacionElectronicaConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'facturacion_electronica'</span></em><a class="headerlink" href="#facturacion_electronica.apps.FacturacionElectronicaConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-0">
 <span id="modulo-facturacion-electronica-forms"></span><h2>módulo facturacion_electronica.forms<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <p>Formularios de la app Facturación Electrónica.</p>
@@ -1500,6 +1683,14 @@ para obtener el contenido XML del documento.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="facturacion_electronica.views.panel_facturacion">
+<span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">panel_facturacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#panel_facturacion"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.panel_facturacion" title="Link to this definition"></a></dt>
+<dd><p>Panel intermedio de Facturación Electrónica.</p>
+<p>Desde aquí se puede ir a Emisores y Documentos Electrónicos.
+Solo redirige a la plantilla panel_facturacion.html.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="facturacion_electronica.views.solicitar_cancelacion_de_view">
 <span class="sig-prename descclassname"><span class="pre">facturacion_electronica.views.</span></span><span class="sig-name descname"><span class="pre">solicitar_cancelacion_de_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documento_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/facturacion_electronica/views.html#solicitar_cancelacion_de_view"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#facturacion_electronica.views.solicitar_cancelacion_de_view" title="Link to this definition"></a></dt>
 <dd><p>Vista para solicitar la cancelación de un documento electrónico en SIFEN.</p>
@@ -1627,14 +1818,14 @@ se muestra un mensaje de error y se le redirige a la página de inicio.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="ted.html" class="btn btn-neutral float-left" title="paquete ted" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="notificaciones.html" class="btn btn-neutral float-right" title="paquete notificaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cotizaciones.html" class="btn btn-neutral float-left" title="paquete cotizaciones" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="ganancias.html" class="btn btn-neutral float-right" title="paquete ganancias" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

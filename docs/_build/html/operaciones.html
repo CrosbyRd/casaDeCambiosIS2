@@ -21,7 +21,7 @@
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="next" title="paquete pagos" href="pagos.html" />
-    <link rel="prev" title="paquete medios_acreditacion" href="medios_acreditacion.html" /> 
+    <link rel="prev" title="paquete usuarios" href="usuarios.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -60,12 +69,6 @@
 <li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete operaciones</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.admin">módulo operaciones.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.apps">módulo operaciones.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#operaciones.apps.OperacionesConfig"><code class="docutils literal notranslate"><span class="pre">OperacionesConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-operaciones.models">módulo operaciones.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser"><code class="docutils literal notranslate"><span class="pre">Tauser</span></code></a></li>
@@ -75,14 +78,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests"><code class="docutils literal notranslate"><span class="pre">TauserAPITests</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-operaciones.urls">módulo operaciones.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-operaciones.views">módulo operaciones.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.views.api_confirmar_deposito_tauser"><code class="docutils literal notranslate"><span class="pre">api_confirmar_deposito_tauser()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.views.api_resolver_variacion_tasa"><code class="docutils literal notranslate"><span class="pre">api_resolver_variacion_tasa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#operaciones.views.obtener_tasa_de_cambio_actual"><code class="docutils literal notranslate"><span class="pre">obtener_tasa_de_cambio_actual()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
@@ -94,6 +95,67 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete operaciones</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-operaciones.models">módulo operaciones.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.models.CanalFinanciero"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.TIPO_CANAL_CHOICES"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.TIPO_CANAL_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.activo"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.get_tipo_display"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.get_tipo_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.id"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.medioacreditacion_set"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.medioacreditacion_set</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.nombre"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.objects"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.CanalFinanciero.tipo"><code class="docutils literal notranslate"><span class="pre">CanalFinanciero.tipo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.models.Tauser"><code class="docutils literal notranslate"><span class="pre">Tauser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Tauser.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Tauser.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.activo"><code class="docutils literal notranslate"><span class="pre">Tauser.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.codigo_identificador"><code class="docutils literal notranslate"><span class="pre">Tauser.codigo_identificador</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Tauser.fecha_creacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Tauser.get_next_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Tauser.get_previous_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.id"><code class="docutils literal notranslate"><span class="pre">Tauser.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.objects"><code class="docutils literal notranslate"><span class="pre">Tauser.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.transaccion_set"><code class="docutils literal notranslate"><span class="pre">Tauser.transaccion_set</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.models.Tauser.ubicacion"><code class="docutils literal notranslate"><span class="pre">Tauser.ubicacion</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-operaciones.tests">módulo operaciones.tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.tests.TauserAPITests"><code class="docutils literal notranslate"><span class="pre">TauserAPITests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.setUp"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.setUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.test_confirmar_deposito_tasa_expirada_con_cambio()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.test_confirmar_deposito_tasa_expirada_sin_cambio()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.test_confirmar_deposito_tasa_valida"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.test_confirmar_deposito_tasa_valida()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.test_resolver_variacion_aceptar"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.test_resolver_variacion_aceptar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#operaciones.tests.TauserAPITests.test_resolver_variacion_cancelar"><code class="docutils literal notranslate"><span class="pre">TauserAPITests.test_resolver_variacion_cancelar()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-operaciones.views">módulo operaciones.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.views.api_confirmar_deposito_tauser"><code class="docutils literal notranslate"><span class="pre">api_confirmar_deposito_tauser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.views.api_resolver_variacion_tasa"><code class="docutils literal notranslate"><span class="pre">api_resolver_variacion_tasa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operaciones.views.obtener_tasa_de_cambio_actual"><code class="docutils literal notranslate"><span class="pre">obtener_tasa_de_cambio_actual()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -123,31 +185,6 @@
              
   <section id="paquete-operaciones">
 <h1>paquete operaciones<a class="headerlink" href="#paquete-operaciones" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-operaciones.admin">
-<span id="modulo-operaciones-admin"></span><h2>módulo operaciones.admin<a class="headerlink" href="#module-operaciones.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-operaciones.apps">
-<span id="modulo-operaciones-apps"></span><h2>módulo operaciones.apps<a class="headerlink" href="#module-operaciones.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">operaciones.apps.</span></span><span class="sig-name descname"><span class="pre">OperacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/operaciones/apps.html#OperacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#operaciones.apps.OperacionesConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#operaciones.apps.OperacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="operaciones.apps.OperacionesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'operaciones'</span></em><a class="headerlink" href="#operaciones.apps.OperacionesConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-operaciones.models">
 <span id="modulo-operaciones-models"></span><h2>módulo operaciones.models<a class="headerlink" href="#module-operaciones.models" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -360,9 +397,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
-<section id="module-operaciones.urls">
-<span id="modulo-operaciones-urls"></span><h2>módulo operaciones.urls<a class="headerlink" href="#module-operaciones.urls" title="Link to this heading"></a></h2>
-</section>
 <section id="module-operaciones.views">
 <span id="modulo-operaciones-views"></span><h2>módulo operaciones.views<a class="headerlink" href="#module-operaciones.views" title="Link to this heading"></a></h2>
 <dl class="py function">
@@ -389,23 +423,20 @@ Devuelve la tasa de “compra” desde la perspectiva de la casa de cambio.</p>
 </dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-operaciones"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="medios_acreditacion.html" class="btn btn-neutral float-left" title="paquete medios_acreditacion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="usuarios.html" class="btn btn-neutral float-left" title="paquete usuarios" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
         <a href="pagos.html" class="btn btn-neutral float-right" title="paquete pagos" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

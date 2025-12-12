@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete configuracion" href="configuracion.html" />
+    <link rel="next" title="paquete operaciones" href="operaciones.html" />
     <link rel="prev" title="paquete roles" href="roles.html" /> 
 </head>
 
@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -57,12 +66,6 @@
 <li class="toctree-l2"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete usuarios</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-usuarios.admin">módulo usuarios.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-usuarios.apps">módulo usuarios.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#usuarios.apps.UsuariosConfig"><code class="docutils literal notranslate"><span class="pre">UsuariosConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-usuarios.forms">módulo usuarios.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm"><code class="docutils literal notranslate"><span class="pre">RegistroForm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.VerificacionForm"><code class="docutils literal notranslate"><span class="pre">VerificacionForm</span></code></a></li>
@@ -74,7 +77,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.models.UsuariosPermissions"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-usuarios.tests">módulo usuarios.tests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-0">módulo usuarios.urls</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-usuarios.urls">URLs de la app Usuarios.</a></li>
 </ul>
@@ -96,7 +98,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#usuarios.views.verify"><code class="docutils literal notranslate"><span class="pre">verify()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
@@ -109,6 +110,112 @@
 <li class="toctree-l2"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete usuarios</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-usuarios.forms">módulo usuarios.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.forms.RegistroForm"><code class="docutils literal notranslate"><span class="pre">RegistroForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.Meta"><code class="docutils literal notranslate"><span class="pre">RegistroForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.base_fields"><code class="docutils literal notranslate"><span class="pre">RegistroForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.clean_email"><code class="docutils literal notranslate"><span class="pre">RegistroForm.clean_email()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.clean_terms"><code class="docutils literal notranslate"><span class="pre">RegistroForm.clean_terms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">RegistroForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.media"><code class="docutils literal notranslate"><span class="pre">RegistroForm.media</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.RegistroForm.save"><code class="docutils literal notranslate"><span class="pre">RegistroForm.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.forms.VerificacionForm"><code class="docutils literal notranslate"><span class="pre">VerificacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.VerificacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">VerificacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.VerificacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">VerificacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.forms.VerificacionForm.media"><code class="docutils literal notranslate"><span class="pre">VerificacionForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-usuarios.models">módulo usuarios.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.models.CustomUser"><code class="docutils literal notranslate"><span class="pre">CustomUser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CustomUser.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CustomUser.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.REQUIRED_FIELDS"><code class="docutils literal notranslate"><span class="pre">CustomUser.REQUIRED_FIELDS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.USERNAME_FIELD"><code class="docutils literal notranslate"><span class="pre">CustomUser.USERNAME_FIELD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.clientes"><code class="docutils literal notranslate"><span class="pre">CustomUser.clientes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.code_created_at"><code class="docutils literal notranslate"><span class="pre">CustomUser.code_created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.date_joined"><code class="docutils literal notranslate"><span class="pre">CustomUser.date_joined</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.email"><code class="docutils literal notranslate"><span class="pre">CustomUser.email</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.first_name"><code class="docutils literal notranslate"><span class="pre">CustomUser.first_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.generate_verification_code"><code class="docutils literal notranslate"><span class="pre">CustomUser.generate_verification_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.get_all_permissions"><code class="docutils literal notranslate"><span class="pre">CustomUser.get_all_permissions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.get_full_name"><code class="docutils literal notranslate"><span class="pre">CustomUser.get_full_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.get_next_by_date_joined"><code class="docutils literal notranslate"><span class="pre">CustomUser.get_next_by_date_joined()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.get_previous_by_date_joined"><code class="docutils literal notranslate"><span class="pre">CustomUser.get_previous_by_date_joined()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.groups"><code class="docutils literal notranslate"><span class="pre">CustomUser.groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.has_module_perms"><code class="docutils literal notranslate"><span class="pre">CustomUser.has_module_perms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.has_perm"><code class="docutils literal notranslate"><span class="pre">CustomUser.has_perm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.id"><code class="docutils literal notranslate"><span class="pre">CustomUser.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.is_active"><code class="docutils literal notranslate"><span class="pre">CustomUser.is_active</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.is_code_valid"><code class="docutils literal notranslate"><span class="pre">CustomUser.is_code_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.is_staff"><code class="docutils literal notranslate"><span class="pre">CustomUser.is_staff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.is_superuser"><code class="docutils literal notranslate"><span class="pre">CustomUser.is_superuser</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.is_verified"><code class="docutils literal notranslate"><span class="pre">CustomUser.is_verified</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.last_login"><code class="docutils literal notranslate"><span class="pre">CustomUser.last_login</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.last_name"><code class="docutils literal notranslate"><span class="pre">CustomUser.last_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.logentry_set"><code class="docutils literal notranslate"><span class="pre">CustomUser.logentry_set</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.medios_acreditacion"><code class="docutils literal notranslate"><span class="pre">CustomUser.medios_acreditacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.movimientos_ted"><code class="docutils literal notranslate"><span class="pre">CustomUser.movimientos_ted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.notificaciones"><code class="docutils literal notranslate"><span class="pre">CustomUser.notificaciones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.objects"><code class="docutils literal notranslate"><span class="pre">CustomUser.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.operaciones_realizadas"><code class="docutils literal notranslate"><span class="pre">CustomUser.operaciones_realizadas</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.password"><code class="docutils literal notranslate"><span class="pre">CustomUser.password</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.preferencias_notificacion"><code class="docutils literal notranslate"><span class="pre">CustomUser.preferencias_notificacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.roles"><code class="docutils literal notranslate"><span class="pre">CustomUser.roles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.user_permissions"><code class="docutils literal notranslate"><span class="pre">CustomUser.user_permissions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUser.verification_code"><code class="docutils literal notranslate"><span class="pre">CustomUser.verification_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.models.CustomUserManager"><code class="docutils literal notranslate"><span class="pre">CustomUserManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.CustomUserManager.create_user"><code class="docutils literal notranslate"><span class="pre">CustomUserManager.create_user()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.models.UsuariosPermissions"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.UsuariosPermissions.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.UsuariosPermissions.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.UsuariosPermissions.id"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usuarios.models.UsuariosPermissions.objects"><code class="docutils literal notranslate"><span class="pre">UsuariosPermissions.objects</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo usuarios.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-usuarios.urls">URLs de la app Usuarios.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-usuarios.views">módulo usuarios.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.admin_panel"><code class="docutils literal notranslate"><span class="pre">admin_panel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.agregar_cliente"><code class="docutils literal notranslate"><span class="pre">agregar_cliente()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.dashboard"><code class="docutils literal notranslate"><span class="pre">dashboard()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.listar_usuarios"><code class="docutils literal notranslate"><span class="pre">listar_usuarios()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.login_otp"><code class="docutils literal notranslate"><span class="pre">login_otp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.login_otp_resend"><code class="docutils literal notranslate"><span class="pre">login_otp_resend()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.login_redirect"><code class="docutils literal notranslate"><span class="pre">login_redirect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.login_view"><code class="docutils literal notranslate"><span class="pre">login_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.logout_view"><code class="docutils literal notranslate"><span class="pre">logout_view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.quitar_cliente"><code class="docutils literal notranslate"><span class="pre">quitar_cliente()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.reenviar_codigo"><code class="docutils literal notranslate"><span class="pre">reenviar_codigo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.register"><code class="docutils literal notranslate"><span class="pre">register()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.seleccionar_cliente"><code class="docutils literal notranslate"><span class="pre">seleccionar_cliente()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usuarios.views.verify"><code class="docutils literal notranslate"><span class="pre">verify()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -140,31 +247,6 @@
              
   <section id="paquete-usuarios">
 <h1>paquete usuarios<a class="headerlink" href="#paquete-usuarios" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-usuarios.admin">
-<span id="modulo-usuarios-admin"></span><h2>módulo usuarios.admin<a class="headerlink" href="#module-usuarios.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-usuarios.apps">
-<span id="modulo-usuarios-apps"></span><h2>módulo usuarios.apps<a class="headerlink" href="#module-usuarios.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="usuarios.apps.UsuariosConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">usuarios.apps.</span></span><span class="sig-name descname"><span class="pre">UsuariosConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usuarios/apps.html#UsuariosConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#usuarios.apps.UsuariosConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="usuarios.apps.UsuariosConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#usuarios.apps.UsuariosConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="usuarios.apps.UsuariosConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'usuarios'</span></em><a class="headerlink" href="#usuarios.apps.UsuariosConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-usuarios.forms">
 <span id="modulo-usuarios-forms"></span><h2>módulo usuarios.forms<a class="headerlink" href="#module-usuarios.forms" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -612,9 +694,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
-<section id="module-usuarios.tests">
-<span id="modulo-usuarios-tests"></span><h2>módulo usuarios.tests<a class="headerlink" href="#module-usuarios.tests" title="Link to this heading"></a></h2>
-</section>
 <section id="module-0">
 <span id="modulo-usuarios-urls"></span><h2>módulo usuarios.urls<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <section id="module-usuarios.urls">
@@ -697,9 +776,6 @@ Se añade la ruta <code class="docutils literal notranslate"><span class="pre">/
 <dd></dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-usuarios"></span></section>
 </section>
 
 
@@ -707,13 +783,13 @@ Se añade la ruta <code class="docutils literal notranslate"><span class="pre">/
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
         <a href="roles.html" class="btn btn-neutral float-left" title="paquete roles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="configuracion.html" class="btn btn-neutral float-right" title="paquete configuracion" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="operaciones.html" class="btn btn-neutral float-right" title="paquete operaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

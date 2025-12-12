@@ -93,7 +93,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.timezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">now</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pagos.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TipoMedioPago</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SET_NULL</span>
 
 <span class="c1"># Forward declaration for MedioAcreditacion</span>
 <div class="viewcode-block" id="MedioAcreditacion">
@@ -184,10 +184,28 @@
     <span class="c1"># Detalles financieros</span>
     <span class="n">tasa_cambio_aplicada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
     <span class="n">comision_aplicada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">comision_cotizacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span>
+        <span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">decimal_places</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Comisión de compra/venta de la cotización en el momento de la transacción.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># Información operativa</span>
-    <span class="n">medio_acreditacion_cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;clientes.MedioAcreditacion&#39;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).&quot;</span><span class="p">)</span>
-    <span class="n">medio_pago_utilizado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">TipoMedioPago</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).&quot;</span><span class="p">)</span>
+    <span class="n">medio_acreditacion_cliente</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;clientes.MedioAcreditacion&#39;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Cuenta del cliente donde se acreditarán los fondos (solo en COMPRA de divisa).&quot;</span><span class="p">)</span>
+    <span class="n">medio_pago_utilizado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">TipoMedioPago</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">SET_NULL</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Medio de pago utilizado por el cliente para pagar (solo en VENTA de divisa).&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Nuevo campo para la instantánea de los datos del medio de pago</span>
+    <span class="n">datos_medio_pago_snapshot</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Instantánea de los datos del medio de pago del cliente al momento de la transacción.&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># Nuevo campo para la instantánea de los datos del medio de acreditación</span>
+    <span class="n">datos_medio_acreditacion_snapshot</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Instantánea de los datos del medio de acreditación del cliente al momento de la transacción.&quot;</span>
+    <span class="p">)</span>
+
     <span class="n">tauser_utilizado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">Tauser</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Terminal donde se realizó el depósito/retiro físico.&quot;</span><span class="p">)</span>
     <span class="n">codigo_operacion_tauser</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help_text</span><span class="o">=</span><span class="s2">&quot;Código único para que el cliente opere en el Tauser.&quot;</span><span class="p">)</span>
 
@@ -302,7 +320,14 @@
             <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Límite mensual excedido: </span><span class="si">{</span><span class="n">acumulado_mes</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">monto_pyg</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">limite</span><span class="o">.</span><span class="n">monto_mensual</span><span class="si">}</span><span class="s2"> PYG&quot;</span>
             <span class="p">)</span></div>
-</div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comision_final</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Comisión final calculada como:</span>
+<span class="sd">            comision_cotizacion - comision_aplicada</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comision_cotizacion</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comision_aplicada</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span></div>
 
 </pre></div>
 

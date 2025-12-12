@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="facturacion_electronica" href="facturacion_electronica.html" />
+    <link rel="next" title="paquete notificaciones" href="notificaciones.html" />
     <link rel="prev" title="paquete transacciones" href="transacciones.html" /> 
 </head>
 
@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -64,11 +73,6 @@
 <li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete ted</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ted.apps">módulo ted.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#ted.apps.TedConfig"><code class="docutils literal notranslate"><span class="pre">TedConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ted.forms">módulo ted.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#ted.forms.AjusteInventarioForm"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm</span></code></a></li>
 </ul>
@@ -107,6 +111,84 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete ted</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-ted.forms">módulo ted.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ted.forms.AjusteInventarioForm"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ted.forms.AjusteInventarioForm.base_fields"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.forms.AjusteInventarioForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.forms.AjusteInventarioForm.media"><code class="docutils literal notranslate"><span class="pre">AjusteInventarioForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo ted.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-ted.models">Modelos de la app TED.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.models.TedPerms"><code class="docutils literal notranslate"><span class="pre">TedPerms</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedPerms.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedPerms.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.created_at"><code class="docutils literal notranslate"><span class="pre">TedPerms.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedPerms.get_next_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedPerms.get_previous_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.id"><code class="docutils literal notranslate"><span class="pre">TedPerms.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedPerms.objects"><code class="docutils literal notranslate"><span class="pre">TedPerms.objects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.models.TedTerminal"><code class="docutils literal notranslate"><span class="pre">TedTerminal</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedTerminal.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedTerminal.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.direccion"><code class="docutils literal notranslate"><span class="pre">TedTerminal.direccion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_next_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.get_next_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_next_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_previous_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.get_previous_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.get_previous_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.id"><code class="docutils literal notranslate"><span class="pre">TedTerminal.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.objects"><code class="docutils literal notranslate"><span class="pre">TedTerminal.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.serial"><code class="docutils literal notranslate"><span class="pre">TedTerminal.serial</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ted.models.TedTerminal.updated_at"><code class="docutils literal notranslate"><span class="pre">TedTerminal.updated_at</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ted.services">módulo ted.services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ted.services.get_cotizacion_vigente"><code class="docutils literal notranslate"><span class="pre">get_cotizacion_vigente()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ted.urls">módulo ted.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ted.views">módulo ted.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vistas-del-modulo-ted-terminal">Vistas del módulo TED (Terminal).</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#funciones-auxiliares">Funciones auxiliares:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vistas-principales">Vistas principales:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vistas-de-inventario">Vistas de inventario:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#endpoints-json">Endpoints JSON:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.cheque_mock"><code class="docutils literal notranslate"><span class="pre">cheque_mock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.crear_stock"><code class="docutils literal notranslate"><span class="pre">crear_stock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.eliminar_denominacion"><code class="docutils literal notranslate"><span class="pre">eliminar_denominacion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.eliminar_moneda"><code class="docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.inventario"><code class="docutils literal notranslate"><span class="pre">inventario()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.inventario_ajustar"><code class="docutils literal notranslate"><span class="pre">inventario_ajustar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.inventario_movimientos"><code class="docutils literal notranslate"><span class="pre">inventario_movimientos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.monedas_disponibles"><code class="docutils literal notranslate"><span class="pre">monedas_disponibles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.operar"><code class="docutils literal notranslate"><span class="pre">operar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.panel"><code class="docutils literal notranslate"><span class="pre">panel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.ticket_popup"><code class="docutils literal notranslate"><span class="pre">ticket_popup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ted.views.ubicaciones_disponibles"><code class="docutils literal notranslate"><span class="pre">ubicaciones_disponibles()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -136,33 +218,6 @@
              
   <section id="paquete-ted">
 <h1>paquete ted<a class="headerlink" href="#paquete-ted" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-ted.apps">
-<span id="modulo-ted-apps"></span><h2>módulo ted.apps<a class="headerlink" href="#module-ted.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ted.apps.TedConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ted.apps.</span></span><span class="sig-name descname"><span class="pre">TedConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ted/apps.html#TedConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ted.apps.TedConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ted.apps.TedConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#ted.apps.TedConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ted.apps.TedConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ted'</span></em><a class="headerlink" href="#ted.apps.TedConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ted.apps.TedConfig.verbose_name">
-<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Terminal</span> <span class="pre">TED'</span></em><a class="headerlink" href="#ted.apps.TedConfig.verbose_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-ted.forms">
 <span id="modulo-ted-forms"></span><h2>módulo ted.forms<a class="headerlink" href="#module-ted.forms" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -919,8 +974,7 @@ VENTA  = el cliente vende extranjera   -&gt; depositan billetes -&gt; pagamos PY
 </dl>
 </dd></dl>
 
-<p>Contenido del módulo</p>
-<span class="target" id="module-ted"></span></section>
+</section>
 </section>
 
 
@@ -928,13 +982,13 @@ VENTA  = el cliente vende extranjera   -&gt; depositan billetes -&gt; pagamos PY
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
         <a href="transacciones.html" class="btn btn-neutral float-left" title="paquete transacciones" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="facturacion_electronica.html" class="btn btn-neutral float-right" title="facturacion_electronica" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="notificaciones.html" class="btn btn-neutral float-right" title="paquete notificaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

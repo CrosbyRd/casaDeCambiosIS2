@@ -474,8 +474,8 @@
             <span class="p">)</span>
 
             <span class="c1"># Avanzar correlativo SOLO luego de éxito</span>
-            <span class="n">emisor_instance</span><span class="o">.</span><span class="n">siguiente_numero_factura</span> <span class="o">=</span> <span class="n">numero_doc_int</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">emisor_instance</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;siguiente_numero_factura&quot;</span><span class="p">])</span>
+            <span class="c1">#emisor_instance.siguiente_numero_factura = numero_doc_int + 1</span>
+            <span class="c1">#emisor_instance.save(update_fields=[&quot;siguiente_numero_factura&quot;])</span>
 
             <span class="k">return</span> <span class="n">doc_electronico</span>
 

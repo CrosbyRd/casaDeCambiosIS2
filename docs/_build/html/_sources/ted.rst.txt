@@ -2,17 +2,6 @@ paquete ted
 ===========
 
 
-Submódulos
-----------
-
-módulo ted.apps
----------------
-
-.. automodule:: ted.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 módulo ted.forms
 ----------------
 
@@ -53,9 +42,3 @@ módulo ted.views
    :undoc-members:
    :show-inheritance:
 
-Contenido del módulo
-
-.. automodule:: ted
-   :members:
-   :undoc-members:
-   :show-inheritance:

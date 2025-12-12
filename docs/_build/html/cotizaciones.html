@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete lib" href="lib.html" />
+    <link rel="next" title="facturacion_electronica" href="facturacion_electronica.html" />
     <link rel="prev" title="paquete correo" href="correo.html" /> 
 </head>
 
@@ -43,8 +43,82 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete cotizaciones</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-cotizaciones.forms">módulo cotizaciones.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm"><code class="docutils literal notranslate"><span class="pre">CotizacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm.Meta"><code class="docutils literal notranslate"><span class="pre">CotizacionForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">CotizacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">CotizacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm.media"><code class="docutils literal notranslate"><span class="pre">CotizacionForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cotizaciones.models">módulo cotizaciones.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.models.Cotizacion"><code class="docutils literal notranslate"><span class="pre">Cotizacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Cotizacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Cotizacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.comision_compra"><code class="docutils literal notranslate"><span class="pre">Cotizacion.comision_compra</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.comision_venta"><code class="docutils literal notranslate"><span class="pre">Cotizacion.comision_venta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Cotizacion.fecha_actualizacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.get_next_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Cotizacion.get_next_by_fecha_actualizacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.get_previous_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Cotizacion.get_previous_by_fecha_actualizacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.id"><code class="docutils literal notranslate"><span class="pre">Cotizacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.moneda_base"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.moneda_base_id"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_base_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.moneda_destino"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.moneda_destino_id"><code class="docutils literal notranslate"><span class="pre">Cotizacion.moneda_destino_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.objects"><code class="docutils literal notranslate"><span class="pre">Cotizacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.save"><code class="docutils literal notranslate"><span class="pre">Cotizacion.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.total_compra"><code class="docutils literal notranslate"><span class="pre">Cotizacion.total_compra</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.total_venta"><code class="docutils literal notranslate"><span class="pre">Cotizacion.total_venta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.valor_compra"><code class="docutils literal notranslate"><span class="pre">Cotizacion.valor_compra</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion.valor_venta"><code class="docutils literal notranslate"><span class="pre">Cotizacion.valor_venta</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.comision_compra"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.comision_compra</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.comision_venta"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.comision_venta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.fecha"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.fecha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.fuente"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.fuente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.get_next_by_fecha"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.get_next_by_fecha()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.get_previous_by_fecha"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.get_previous_by_fecha()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.id"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.moneda_base"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.moneda_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.moneda_base_id"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.moneda_base_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.moneda_destino"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.moneda_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.moneda_destino_id"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.moneda_destino_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.objects"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.valor_compra"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.valor_compra</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica.valor_venta"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica.valor_venta</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cotizaciones.views">módulo cotizaciones.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.api_serie"><code class="docutils literal notranslate"><span class="pre">api_serie()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.cotizacion_create"><code class="docutils literal notranslate"><span class="pre">cotizacion_create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.cotizacion_delete"><code class="docutils literal notranslate"><span class="pre">cotizacion_delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.cotizacion_list"><code class="docutils literal notranslate"><span class="pre">cotizacion_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.cotizacion_update"><code class="docutils literal notranslate"><span class="pre">cotizacion_update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.obtener_cotizacion_api"><code class="docutils literal notranslate"><span class="pre">obtener_cotizacion_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cotizaciones.views.obtener_valores_api"><code class="docutils literal notranslate"><span class="pre">obtener_valores_api()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -52,23 +126,17 @@
 <li class="toctree-l2"><a class="reference internal" href="core.html">paquete core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="correo.html">paquete correo</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete cotizaciones</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.admin">módulo cotizaciones.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.apps">módulo cotizaciones.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.apps.CotizacionesConfig"><code class="docutils literal notranslate"><span class="pre">CotizacionesConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.forms">módulo cotizaciones.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.forms.CotizacionForm"><code class="docutils literal notranslate"><span class="pre">CotizacionForm</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.models">módulo cotizaciones.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.Cotizacion"><code class="docutils literal notranslate"><span class="pre">Cotizacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.models.CotizacionHistorica"><code class="docutils literal notranslate"><span class="pre">CotizacionHistorica</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.tests">módulo cotizaciones.tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.urls">módulo cotizaciones.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-cotizaciones.views">módulo cotizaciones.views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cotizaciones.views.api_serie"><code class="docutils literal notranslate"><span class="pre">api_serie()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.views.cotizacion_create"><code class="docutils literal notranslate"><span class="pre">cotizacion_create()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.views.cotizacion_delete"><code class="docutils literal notranslate"><span class="pre">cotizacion_delete()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.views.cotizacion_list"><code class="docutils literal notranslate"><span class="pre">cotizacion_list()</span></code></a></li>
@@ -77,7 +145,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#cotizaciones.views.obtener_valores_api"><code class="docutils literal notranslate"><span class="pre">obtener_valores_api()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
@@ -97,6 +164,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -113,7 +191,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete cotizaciones</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/cotizaciones.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -126,31 +203,6 @@
              
   <section id="paquete-cotizaciones">
 <h1>paquete cotizaciones<a class="headerlink" href="#paquete-cotizaciones" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-cotizaciones.admin">
-<span id="modulo-cotizaciones-admin"></span><h2>módulo cotizaciones.admin<a class="headerlink" href="#module-cotizaciones.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-cotizaciones.apps">
-<span id="modulo-cotizaciones-apps"></span><h2>módulo cotizaciones.apps<a class="headerlink" href="#module-cotizaciones.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="cotizaciones.apps.CotizacionesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cotizaciones.apps.</span></span><span class="sig-name descname"><span class="pre">CotizacionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/apps.html#CotizacionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.apps.CotizacionesConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cotizaciones.apps.CotizacionesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#cotizaciones.apps.CotizacionesConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cotizaciones.apps.CotizacionesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cotizaciones'</span></em><a class="headerlink" href="#cotizaciones.apps.CotizacionesConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-cotizaciones.forms">
 <span id="modulo-cotizaciones-forms"></span><h2>módulo cotizaciones.forms<a class="headerlink" href="#module-cotizaciones.forms" title="Link to this heading"></a></h2>
 <dl class="py class">
@@ -331,15 +383,132 @@ object the first time, the query is executed.</p>
 
 </dd></dl>
 
-</section>
-<section id="module-cotizaciones.tests">
-<span id="modulo-cotizaciones-tests"></span><h2>módulo cotizaciones.tests<a class="headerlink" href="#module-cotizaciones.tests" title="Link to this heading"></a></h2>
-</section>
-<section id="module-cotizaciones.urls">
-<span id="modulo-cotizaciones-urls"></span><h2>módulo cotizaciones.urls<a class="headerlink" href="#module-cotizaciones.urls" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cotizaciones.models.</span></span><span class="sig-name descname"><span class="pre">CotizacionHistorica</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moneda_destino</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valor_compra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comision_compra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valor_venta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comision_venta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fecha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuente</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/models.html#CotizacionHistorica"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.DoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.comision_compra">
+<span class="sig-name descname"><span class="pre">comision_compra</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.comision_compra" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.comision_venta">
+<span class="sig-name descname"><span class="pre">comision_venta</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.comision_venta" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.fecha">
+<span class="sig-name descname"><span class="pre">fecha</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.fecha" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.fuente">
+<span class="sig-name descname"><span class="pre">fuente</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.fuente" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.get_next_by_fecha">
+<span class="sig-name descname"><span class="pre">get_next_by_fecha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.get_next_by_fecha" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.get_previous_by_fecha">
+<span class="sig-name descname"><span class="pre">get_previous_by_fecha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.get_previous_by_fecha" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.id" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.moneda_base">
+<span class="sig-name descname"><span class="pre">moneda_base</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.moneda_base" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.moneda_base_id">
+<span class="sig-name descname"><span class="pre">moneda_base_id</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.moneda_base_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.moneda_destino">
+<span class="sig-name descname"><span class="pre">moneda_destino</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.moneda_destino" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.moneda_destino_id">
+<span class="sig-name descname"><span class="pre">moneda_destino_id</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.moneda_destino_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.objects" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.valor_compra">
+<span class="sig-name descname"><span class="pre">valor_compra</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.valor_compra" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cotizaciones.models.CotizacionHistorica.valor_venta">
+<span class="sig-name descname"><span class="pre">valor_venta</span></span><a class="headerlink" href="#cotizaciones.models.CotizacionHistorica.valor_venta" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-cotizaciones.views">
 <span id="modulo-cotizaciones-views"></span><h2>módulo cotizaciones.views<a class="headerlink" href="#module-cotizaciones.views" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cotizaciones.views.api_serie">
+<span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">api_serie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#api_serie"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.api_serie" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="cotizaciones.views.cotizacion_create">
 <span class="sig-prename descclassname"><span class="pre">cotizaciones.views.</span></span><span class="sig-name descname"><span class="pre">cotizacion_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cotizaciones/views.html#cotizacion_create"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#cotizaciones.views.cotizacion_create" title="Link to this definition"></a></dt>
@@ -373,9 +542,6 @@ Devuelve un diccionario: {“valor_compra”: float, “valor_venta”: float} o
 <dd></dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-cotizaciones"></span></section>
 </section>
 
 
@@ -383,13 +549,13 @@ Devuelve un diccionario: {“valor_compra”: float, “valor_venta”: float} o
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
         <a href="correo.html" class="btn btn-neutral float-left" title="paquete correo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="lib.html" class="btn btn-neutral float-right" title="paquete lib" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="facturacion_electronica.html" class="btn btn-neutral float-right" title="facturacion_electronica" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

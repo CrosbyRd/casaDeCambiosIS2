@@ -1,24 +1,8 @@
 paquete pagos
 =============
 
-Submódulos
-----------
 
-módulo pagos.admin
-------------------
 
-.. automodule:: pagos.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo pagos.apps
------------------
-
-.. automodule:: pagos.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo pagos.forms
 ------------------
@@ -96,14 +80,6 @@ módulo pagos.integrations.router
 --------------------------------
 
 .. automodule:: pagos.integrations.router
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Contenido del módulo
---------------------
-
-.. automodule:: pagos
    :members:
    :undoc-members:
    :show-inheritance:
