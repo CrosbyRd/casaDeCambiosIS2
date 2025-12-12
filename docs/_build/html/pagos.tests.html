@@ -19,7 +19,9 @@
       <script src="_static/translations.js?v=f85f4cfb"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
-    <link rel="search" title="Búsqueda" href="search.html" /> 
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="next" title="Reportes" href="reportes.html" />
+    <link rel="prev" title="paquete simuladores" href="simuladores.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,9 +43,90 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
-<ul>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.tests.html">paquete configuracion.tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">Ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lib.html">paquete lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.tests.html">paquete medios_acreditacion.tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete pagos.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pagos.tests.test_forms">módulo pagos.tests.test_forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pagos.tests.test_forms.TipoMedioPagoFormTests"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoFormTests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_forms.TipoMedioPagoFormTests.test_form_invalido_comision_negativa"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoFormTests.test_form_invalido_comision_negativa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_forms.TipoMedioPagoFormTests.test_form_invalido_sin_nombre"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoFormTests.test_form_invalido_sin_nombre()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_forms.TipoMedioPagoFormTests.test_form_valido"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoFormTests.test_form_valido()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pagos.tests.test_models">módulo pagos.tests.test_models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pagos.tests.test_models.TipoMedioPagoModelTests"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoModelTests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_models.TipoMedioPagoModelTests.test_comision_bonificacion_maxima"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoModelTests.test_comision_bonificacion_maxima()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_models.TipoMedioPagoModelTests.test_str_retorna_nombre"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoModelTests.test_str_retorna_nombre()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_models.TipoMedioPagoModelTests.test_valores_invalidos"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoModelTests.test_valores_invalidos()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_models.TipoMedioPagoModelTests.test_valores_por_defecto"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoModelTests.test_valores_por_defecto()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pagos.tests.test_urls">módulo pagos.tests.test_urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_agregar_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_agregar_url_resuelve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_editar_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_editar_url_resuelve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_eliminar_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_eliminar_url_resuelve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_listar_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_listar_url_resuelve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_toggle_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_toggle_url_resuelve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_urls.TipoMedioPagoURLsTests.test_ver_url_resuelve"><code class="docutils literal notranslate"><span class="pre">TipoMedioPagoURLsTests.test_ver_url_resuelve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pagos.tests.test_views">módulo pagos.tests.test_views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.assertStatus"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.assertStatus()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.setUp"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.setUp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_agregar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_agregar_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_agregar_tipo_medio_pago_invalido"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_agregar_tipo_medio_pago_invalido()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_editar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_editar_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_eliminar_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_eliminar_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_eliminar_tipo_medio_pago_inexistente"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_eliminar_tipo_medio_pago_inexistente()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_listar_tipos_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_listar_tipos_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_listar_tipos_medio_pago_sin_login"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_listar_tipos_medio_pago_sin_login()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_toggle_activo_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_toggle_activo_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_ver_tipo_medio_pago"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_ver_tipo_medio_pago()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pagos.tests.test_views.PagosViewsTests.test_ver_tipo_medio_pago_inexistente"><code class="docutils literal notranslate"><span class="pre">PagosViewsTests.test_ver_tipo_medio_pago_inexistente()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">Reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.management.html">paquete usuarios.management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.management.commands.html">paquete usuarios.management.commands</a></li>
 </ul>
 
         </div>
@@ -254,12 +337,15 @@ Si hay un formulario con errores, los agrega automáticamente al mensaje.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
+        <a href="simuladores.html" class="btn btn-neutral float-left" title="paquete simuladores" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="reportes.html" class="btn btn-neutral float-right" title="Reportes" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

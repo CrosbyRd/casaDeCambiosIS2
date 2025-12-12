@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
-    <link rel="next" title="paquete operaciones" href="operaciones.html" />
-    <link rel="prev" title="paquete configuracion" href="configuracion.html" /> 
+    <link rel="next" title="casaDeCambiosIS2" href="modules.html" />
+    <link rel="prev" title="paquete ganancias" href="ganancias.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,193 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete medios_acreditacion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo medios_acreditacion.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm.Meta"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm.base_fields"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm.media"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm.media</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.base_fields"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.clean"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.media"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm.media</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.Meta"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.base_fields"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.media"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm.media</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm.Meta"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm.base_fields"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm.media"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-1">módulo medios_acreditacion.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.RegexOpciones"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.RegexOpciones</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.TipoDato"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.TipoDato</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.activo"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.get_regex_display"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.get_regex_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.get_tipo_dato_display"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.get_tipo_dato_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.id_campo"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.id_campo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.nombre"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.objects"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.obligatorio"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.obligatorio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.regex"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.regex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_dato"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.tipo_dato</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.tipo_medio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.CampoMedioAcreditacion.tipo_medio_id"><code class="docutils literal notranslate"><span class="pre">CampoMedioAcreditacion.tipo_medio_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.activo"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.actualizado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.actualizado_en</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.alias"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.alias</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.clean"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.cliente"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.cliente_id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.cliente_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.creado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.creado_en</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.datos"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.datos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_actualizado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.get_next_by_actualizado_en()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_next_by_creado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.get_next_by_creado_en()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_actualizado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.get_previous_by_actualizado_en()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.get_previous_by_creado_en"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.get_previous_by_creado_en()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.id_medio"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.id_medio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.objects"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.predeterminado"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.predeterminado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.save"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.tipo"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.tipo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.MedioAcreditacionCliente.tipo_id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionCliente.tipo_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.activo"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.activo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.campos"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.campos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.descripcion"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.descripcion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.id_tipo"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.id_tipo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.medios_cliente"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.medios_cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.nombre"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.models.TipoMedioAcreditacion.objects"><code class="docutils literal notranslate"><span class="pre">TipoMedioAcreditacion.objects</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-2">módulo medios_acreditacion.urls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#secciones-principales"><strong>Secciones principales</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-3">módulo medios_acreditacion.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin.dispatch"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin.dispatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.AccessMediosAcreditacionMixin.required_permission"><code class="docutils literal notranslate"><span class="pre">AccessMediosAcreditacionMixin.required_permission</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.CampoFormSet"><code class="docutils literal notranslate"><span class="pre">CampoFormSet</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.form_class"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.form_valid"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.get_context_data"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.get_form_kwargs"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.get_form_kwargs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.get_initial"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.get_initial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.model"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.success_url"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteCreateView.template_name"><code class="docutils literal notranslate"><span class="pre">MedioClienteCreateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView.delete"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView.get_queryset"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView.model"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView.success_url"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteDeleteView.template_name"><code class="docutils literal notranslate"><span class="pre">MedioClienteDeleteView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView.get_queryset"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView.model"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteListView.template_name"><code class="docutils literal notranslate"><span class="pre">MedioClienteListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.MedioClientePredeterminarView"><code class="docutils literal notranslate"><span class="pre">MedioClientePredeterminarView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClientePredeterminarView.get"><code class="docutils literal notranslate"><span class="pre">MedioClientePredeterminarView.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClientePredeterminarView.post"><code class="docutils literal notranslate"><span class="pre">MedioClientePredeterminarView.post()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.form_class"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.form_valid"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.get_context_data"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.get_form_kwargs"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.get_form_kwargs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.get_queryset"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.model"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.success_url"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.MedioClienteUpdateView.template_name"><code class="docutils literal notranslate"><span class="pre">MedioClienteUpdateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.form_class"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.form_valid"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.get_context_data"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.model"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.success_url"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioCreateView.template_name"><code class="docutils literal notranslate"><span class="pre">TipoMedioCreateView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView.delete"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView.model"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView.success_url"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioDeleteView.template_name"><code class="docutils literal notranslate"><span class="pre">TipoMedioDeleteView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioListView"><code class="docutils literal notranslate"><span class="pre">TipoMedioListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioListView.context_object_name"><code class="docutils literal notranslate"><span class="pre">TipoMedioListView.context_object_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioListView.model"><code class="docutils literal notranslate"><span class="pre">TipoMedioListView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioListView.template_name"><code class="docutils literal notranslate"><span class="pre">TipoMedioListView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.form_class"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.form_class</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.form_valid"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.form_valid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.get_context_data"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.model"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.success_url"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.success_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView.template_name"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView.template_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -59,15 +244,10 @@
 <li class="toctree-l2"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete medios_acreditacion</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.admin">módulo medios_acreditacion.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-medios_acreditacion.apps">módulo medios_acreditacion.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.apps.MediosAcreditacionConfig"><code class="docutils literal notranslate"><span class="pre">MediosAcreditacionConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-0">módulo medios_acreditacion.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.CampoMedioForm"><code class="docutils literal notranslate"><span class="pre">CampoMedioForm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacionClienteInOperacionForm</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.forms.TipoMedioForm"><code class="docutils literal notranslate"><span class="pre">TipoMedioForm</span></code></a></li>
 </ul>
 </li>
@@ -95,7 +275,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#medios_acreditacion.views.TipoMedioUpdateView"><code class="docutils literal notranslate"><span class="pre">TipoMedioUpdateView</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
@@ -108,6 +287,17 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -124,7 +314,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete medios_acreditacion</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/medios_acreditacion.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -137,39 +326,6 @@
              
   <section id="paquete-medios-acreditacion">
 <h1>paquete medios_acreditacion<a class="headerlink" href="#paquete-medios-acreditacion" title="Link to this heading"></a></h1>
-<blockquote>
-<div><p>medios_acreditacion.tests</p>
-</div></blockquote>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-medios_acreditacion.admin">
-<span id="modulo-medios-acreditacion-admin"></span><h2>módulo medios_acreditacion.admin<a class="headerlink" href="#module-medios_acreditacion.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-medios_acreditacion.apps">
-<span id="modulo-medios-acreditacion-apps"></span><h2>módulo medios_acreditacion.apps<a class="headerlink" href="#module-medios_acreditacion.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.apps.</span></span><span class="sig-name descname"><span class="pre">MediosAcreditacionConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/apps.html#MediosAcreditacionConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'medios_acreditacion'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="medios_acreditacion.apps.MediosAcreditacionConfig.verbose_name">
-<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Medios</span> <span class="pre">de</span> <span class="pre">Acreditación'</span></em><a class="headerlink" href="#medios_acreditacion.apps.MediosAcreditacionConfig.verbose_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-0">
 <span id="modulo-medios-acreditacion-forms"></span><h2>módulo medios_acreditacion.forms<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <p>Formularios de la aplicación <strong>medios_acreditacion</strong>.</p>
@@ -301,6 +457,42 @@ en <code class="xref py py-class docutils literal notranslate"><span class="pre"
 <dl class="py property">
 <dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteForm.media">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.media" title="Link to this definition"></a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">medios_acreditacion.forms.</span></span><span class="sig-name descname"><span class="pre">MedioAcreditacionClienteInOperacionForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#MedioAcreditacionClienteInOperacionForm"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm" title="medios_acreditacion.forms.MedioAcreditacionClienteForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">MedioAcreditacionClienteForm</span></code></a></p>
+<p>Formulario especializado para crear un MedioAcreditacionCliente desde la pasarela
+de <cite>iniciar_operacion</cite>. Hereda toda la lógica y campos del formulario base.
+Se personaliza para ocultar campos administrativos y preestablecer valores.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.Meta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="_modules/medios_acreditacion/forms.html#MedioAcreditacionClienteInOperacionForm.Meta"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta" title="medios_acreditacion.forms.MedioAcreditacionClienteForm.Meta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Meta</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.Meta.exclude">
+<span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('activo',</span> <span class="pre">'predeterminado')</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.Meta.exclude" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alias':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tipo':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.base_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.declared_fields" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.media">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#medios_acreditacion.forms.MedioAcreditacionClienteInOperacionForm.media" title="Link to this definition"></a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -1487,23 +1679,20 @@ agrega clave «accion» = «editar».</p>
 </dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-medios_acreditacion"></span></section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="configuracion.html" class="btn btn-neutral float-left" title="paquete configuracion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
-        <a href="operaciones.html" class="btn btn-neutral float-right" title="paquete operaciones" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ganancias.html" class="btn btn-neutral float-left" title="paquete ganancias" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="casaDeCambiosIS2" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

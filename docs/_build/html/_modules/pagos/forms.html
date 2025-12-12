@@ -294,16 +294,37 @@
             <span class="n">tipo_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tipo</span>
 
         <span class="c1"># b) Si viene por POST (form enviado) o por initial / querystring</span>
+        <span class="c1"># 1) Determinar el &#39;tipo&#39; seleccionado</span>
+        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># a) Si estoy editando y ya hay FK</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;pk&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;tipo_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">tipo_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">tipo</span>
+
+        <span class="c1"># b) Si viene por POST (form enviado) o por initial / querystring</span>
         <span class="k">if</span> <span class="n">tipo_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tipo_pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_pk obtenido: </span><span class="si">{</span><span class="n">tipo_pk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
-            <span class="k">if</span> <span class="n">tipo_pk</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">tipo_obj</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">tipo_pk</span><span class="p">,</span> <span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_obj encontrado: </span><span class="si">{</span><span class="n">tipo_obj</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
-                <span class="k">except</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-                    <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo.&quot;</span><span class="p">)</span> <span class="c1"># Debugging</span>
+            <span class="c1"># Primero intentamos obtener el tipo usando el prefijo, si existe</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
+                <span class="n">tipo_pk_prefixed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">-tipo&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tipo_pk_prefixed</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">tipo_pk_prefixed</span><span class="p">,</span> <span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_obj encontrado con prefijo </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tipo_obj</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo con prefijo </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Si no se encontró con prefijo, intentamos sin prefijo</span>
+            <span class="k">if</span> <span class="n">tipo_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tipo_pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tipo&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_pk obtenido sin prefijo: </span><span class="si">{</span><span class="n">tipo_pk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tipo_pk</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">tipo_pk</span><span class="p">,</span> <span class="n">activo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: tipo_obj encontrado sin prefijo: </span><span class="si">{</span><span class="n">tipo_obj</span><span class="o">.</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">TipoMedioPago</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                        <span class="n">tipo_obj</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG MedioPagoClienteForm: TipoMedioPago no encontrado o inactivo sin prefijo.&quot;</span><span class="p">)</span>
 
         <span class="c1"># c) Fallback UX: si no hay selección y hay al menos un tipo activo, usamos el primero</span>
         <span class="k">if</span> <span class="n">tipo_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -349,7 +370,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cleaned</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
         <span class="n">datos</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">errores</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">check_regex</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="n">valor</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">patron</span><span class="p">:</span>
@@ -366,27 +386,51 @@
             <span class="c1"># Validación por tipo de dato liviana (se alinea con models.clean())</span>
             <span class="k">if</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">NUMERO</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^-?\d+(?:[\.,]\d+)?$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Debe ser numérico&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span><span class="p">,</span> <span class="s2">&quot;Debe ser numérico&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">TELEFONO</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\+?\d{6,15}$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Teléfono inválido&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span><span class="p">,</span> <span class="s2">&quot;Teléfono inválido&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">EMAIL</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[^@\s]+@[^@\s]+\.[^@\s]+$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Email inválido&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span><span class="p">,</span> <span class="s2">&quot;Email inválido&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">campo</span><span class="o">.</span><span class="n">tipo_dato</span> <span class="o">==</span> <span class="n">CampoMedioPago</span><span class="o">.</span><span class="n">TipoDato</span><span class="o">.</span><span class="n">RUC</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^\d{6,8}-\d</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">valor</span><span class="p">)):</span>
-                    <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;RUC inválido (########-#)&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span><span class="p">,</span> <span class="s2">&quot;RUC inválido (########-#)&quot;</span><span class="p">)</span>
 
             <span class="c1"># Regex solo predefinida</span>
             <span class="n">patron</span> <span class="o">=</span> <span class="n">campo</span><span class="o">.</span><span class="n">regex_opcional</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">valor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">patron</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_regex</span><span class="p">(</span><span class="n">patron</span><span class="p">,</span> <span class="n">valor</span><span class="p">):</span>
-                <span class="n">errores</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Formato inválido&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_error</span><span class="p">(</span><span class="n">campo</span><span class="o">.</span><span class="n">nombre_campo</span><span class="p">,</span> <span class="s2">&quot;Formato inválido&quot;</span><span class="p">)</span>
 
             <span class="n">datos</span><span class="p">[</span><span class="n">nombre</span><span class="p">]</span> <span class="o">=</span> <span class="n">valor</span>
 
-        <span class="k">if</span> <span class="n">errores</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">forms</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span><span class="n">errores</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">datos</span> <span class="o">=</span> <span class="n">datos</span>
+        <span class="c1"># Si hay errores en &#39;self._errors&#39;, Django ya los habrá manejado, no necesitamos lanzar ValidationError</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span> <span class="c1"># Solo construir &#39;datos&#39; si no hay errores en los campos dinámicos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">datos</span> <span class="o">=</span> <span class="n">datos</span>
+        
         <span class="k">return</span> <span class="n">cleaned</span></div>
 </div>
+
+
+<div class="viewcode-block" id="MedioPagoClienteInOperacionForm">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoClienteInOperacionForm">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MedioPagoClienteInOperacionForm</span><span class="p">(</span><span class="n">MedioPagoClienteForm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formulario especializado para crear un MedioPagoCliente desde la pasarela</span>
+<span class="sd">    de `iniciar_operacion`. Hereda toda la lógica y campos del formulario base,</span>
+<span class="sd">    pero oculta los campos &#39;activo&#39; y &#39;predeterminado&#39; para simplificar la UI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MedioPagoClienteInOperacionForm.Meta">
+<a class="viewcode-back" href="../../pagos.html#pagos.forms.MedioPagoClienteInOperacionForm.Meta">[documentos]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">MedioPagoClienteForm</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="c1"># Excluimos los campos que no queremos mostrar en este contexto</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;activo&quot;</span><span class="p">,</span> <span class="s2">&quot;predeterminado&quot;</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Nos aseguramos de que los campos no estén presentes en el formulario</span>
+        <span class="k">if</span> <span class="s1">&#39;activo&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;activo&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;predeterminado&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">[</span><span class="s1">&#39;predeterminado&#39;</span><span class="p">]</span></div>
 
 </pre></div>
 

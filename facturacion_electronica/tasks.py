@@ -223,9 +223,11 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
     iTiContRec_val = "" # No informar si D201 = 2
     dRucRec_val = "" # No informar si D201 = 2
     dDVRec_val = "" # No informar si D201 = 2
-    iTipIDRec_val = "5" # 5=Innominado
-    dNumIDRec_val = "0" # Si es Innominado, completar con 0
-    dNomRec_val = "Sin Nombre" # Si es Innominado, completar con "Sin Nombre"
+
+    # Usamos tipo de documento 5 ("otro"), válido para montos altos si hay un nombre real
+    iTipIDRec_val = "1"     # existe
+    dNumIDRec_val = "9999999"     # numero permitido por SIFEN
+    dNomRec_val =  nombre_cliente  # Si es Innominado, completar con "Sin Nombre"
     email_cliente = email_receptor or "receptor@test.com" # El email del receptor sigue siendo obligatorio para Factura Segura
 
     # === Ítems ===
@@ -378,6 +380,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "dTiCam": "", # No informar dTiCam si cMoneOpe es PYG
         "iCondOpe": "1",  # 1=Contado
         # Receptor
+        "iTipOper": "1",  # <- ESTA ES LA LÍNEA QUE SOLUCIONA EL ERROR 1321
         "iNatRec": iNatRec_val,
         "iTiOpe": iTiOpe_val,
         "cPaisRec": cPaisRec_val,
@@ -422,7 +425,7 @@ def _build_de_resumido_desde_transaccion(transaccion, emisor, numero_documento_s
         "dTBasGraIVA": _format_decimal_to_str(dTBasGraIVA),
         "dTotalGs": _format_decimal_to_str(dTotalGs) if codigo_dest != "PYG" and dTotalGs else "", # Calculated if cMoneOpe != PYG
         # Info adicional
-        "dInfAdic": f"Tx {transaccion.id} • {getattr(transaccion, 'tipo_operacion', '')} • Estado {getattr(transaccion, 'estado', '')}",
+        "dInfAdic": "",
         # Placeholders
         "CDC": "0", "dCodSeg": "0", "dDVId": "0", "dSisFact": "1",
     }
@@ -495,6 +498,11 @@ def generar_factura_electronica_task(self, emisor_id, transaccion_id, json_de_co
         # 3) generar_de – usamos el services para persistir el DocumentoElectronico
         #    (si actualizaste services con contrato estricto, ahí adentro ya se envía solo DE)
         doc_electronico = client.generar_de(de_completo, transaccion_id)
+
+        # Actualizar estado de la transacción a 'completada' si es una operación de 'compra'
+        if tx.tipo_operacion == 'compra':
+            tx.estado = 'completada'
+            tx.save(update_fields=['estado'])
 
         # 4) agendar consulta si corresponde
         if (
@@ -597,13 +605,6 @@ def get_estado_sifen_task(self, documento_electronico_id):
                 new_estado, new_desc = "cancelado", "Documento cancelado en SIFEN."
             elif est == "APROBADO":
                 new_estado, new_desc = "aprobado", info.get("desc_sifen", "Aprobado en SIFEN.")
-                # --- INICIO: Lógica para actualizar estado de la transacción ---
-                transaccion = doc_electronico.transaccion_asociada
-                if transaccion and transaccion.estado == 'procesando_acreditacion':
-                    transaccion.estado = 'completada'
-                    transaccion.save(update_fields=['estado'])
-                # --- FIN: Lógica para actualizar estado de la transacción ---
-                
                 # --- INICIO: Enviar factura por email (para pruebas) ---
                 # Se envía cada vez que se consulta y el estado es 'aprobado'.
                 enviar_factura_por_email_task.delay(doc_electronico.id)

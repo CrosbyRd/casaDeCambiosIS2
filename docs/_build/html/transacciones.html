@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -63,19 +72,11 @@
 <li class="toctree-l2"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
 <li class="toctree-l2"><a class="reference internal" href="payments.html">paquete payments</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete transacciones</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.admin">módulo casaDeCambiosIS2.transacciones.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.apps">módulo transacciones.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#transacciones.apps.TransaccionesConfig"><code class="docutils literal notranslate"><span class="pre">TransaccionesConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-0">módulo transacciones.models</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion"><code class="docutils literal notranslate"><span class="pre">Transaccion</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.tests">módulo transacciones.tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-transacciones.urls">módulo transacciones.urls</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-transacciones.views">módulo transacciones.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarCompraDivisaView"><code class="docutils literal notranslate"><span class="pre">IniciarCompraDivisaView</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView</span></code></a></li>
@@ -84,7 +85,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#transacciones.views.cancelar_por_tasa"><code class="docutils literal notranslate"><span class="pre">cancelar_por_tasa()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-transacciones">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ted.html">paquete ted</a></li>
@@ -93,6 +93,106 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete transacciones</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo transacciones.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.models.MedioAcreditacion"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion.id"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.MedioAcreditacion.objects"><code class="docutils literal notranslate"><span class="pre">MedioAcreditacion.objects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.models.Transaccion"><code class="docutils literal notranslate"><span class="pre">Transaccion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Transaccion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.ESTADO_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.ESTADO_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.MODALIDAD_TASA_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.MODALIDAD_TASA_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Transaccion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.TIPO_OPERACION_CHOICES"><code class="docutils literal notranslate"><span class="pre">Transaccion.TIPO_OPERACION_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.clean"><code class="docutils literal notranslate"><span class="pre">Transaccion.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.cliente"><code class="docutils literal notranslate"><span class="pre">Transaccion.cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.cliente_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.cliente_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.codigo_operacion_tauser"><code class="docutils literal notranslate"><span class="pre">Transaccion.codigo_operacion_tauser</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.comision_aplicada"><code class="docutils literal notranslate"><span class="pre">Transaccion.comision_aplicada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.comision_cotizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.comision_cotizacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.comision_final"><code class="docutils literal notranslate"><span class="pre">Transaccion.comision_final</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.datos_medio_acreditacion_snapshot"><code class="docutils literal notranslate"><span class="pre">Transaccion.datos_medio_acreditacion_snapshot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.datos_medio_pago_snapshot"><code class="docutils literal notranslate"><span class="pre">Transaccion.datos_medio_pago_snapshot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.documentos_electronicos"><code class="docutils literal notranslate"><span class="pre">Transaccion.documentos_electronicos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.estado"><code class="docutils literal notranslate"><span class="pre">Transaccion.estado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.estado_dinamico"><code class="docutils literal notranslate"><span class="pre">Transaccion.estado_dinamico</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.fecha_actualizacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.fecha_creacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_estado_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_estado_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_estado_display_dinamico"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_estado_display_dinamico()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_modalidad_tasa_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_modalidad_tasa_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_next_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_next_by_fecha_actualizacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_next_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_previous_by_fecha_actualizacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_previous_by_fecha_actualizacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_previous_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.get_tipo_operacion_display"><code class="docutils literal notranslate"><span class="pre">Transaccion.get_tipo_operacion_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.id"><code class="docutils literal notranslate"><span class="pre">Transaccion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.is_tasa_expirada"><code class="docutils literal notranslate"><span class="pre">Transaccion.is_tasa_expirada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.medio_acreditacion_cliente"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_acreditacion_cliente</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.medio_acreditacion_cliente_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_acreditacion_cliente_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.medio_pago_utilizado"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_pago_utilizado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.medio_pago_utilizado_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.medio_pago_utilizado_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.modalidad_tasa"><code class="docutils literal notranslate"><span class="pre">Transaccion.modalidad_tasa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.moneda_destino"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.moneda_destino_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_destino_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.moneda_origen"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_origen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.moneda_origen_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.moneda_origen_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.monto_destino"><code class="docutils literal notranslate"><span class="pre">Transaccion.monto_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.monto_origen"><code class="docutils literal notranslate"><span class="pre">Transaccion.monto_origen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.objects"><code class="docutils literal notranslate"><span class="pre">Transaccion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.registro_ganancia"><code class="docutils literal notranslate"><span class="pre">Transaccion.registro_ganancia</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.tasa_cambio_aplicada"><code class="docutils literal notranslate"><span class="pre">Transaccion.tasa_cambio_aplicada</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.tasa_garantizada_hasta"><code class="docutils literal notranslate"><span class="pre">Transaccion.tasa_garantizada_hasta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.tauser_utilizado"><code class="docutils literal notranslate"><span class="pre">Transaccion.tauser_utilizado</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.tauser_utilizado_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.tauser_utilizado_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.tipo_operacion"><code class="docutils literal notranslate"><span class="pre">Transaccion.tipo_operacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.usuario_operador"><code class="docutils literal notranslate"><span class="pre">Transaccion.usuario_operador</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.models.Transaccion.usuario_operador_id"><code class="docutils literal notranslate"><span class="pre">Transaccion.usuario_operador_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-transacciones.views">módulo transacciones.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.views.IniciarCompraDivisaView"><code class="docutils literal notranslate"><span class="pre">IniciarCompraDivisaView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarCompraDivisaView.get_context_data"><code class="docutils literal notranslate"><span class="pre">IniciarCompraDivisaView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarCompraDivisaView.template_name"><code class="docutils literal notranslate"><span class="pre">IniciarCompraDivisaView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView.get"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView.post"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.IniciarPagoTransaccionView.template_name"><code class="docutils literal notranslate"><span class="pre">IniciarPagoTransaccionView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.views.ResultadoPagoView"><code class="docutils literal notranslate"><span class="pre">ResultadoPagoView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.ResultadoPagoView.get_context_data"><code class="docutils literal notranslate"><span class="pre">ResultadoPagoView.get_context_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.ResultadoPagoView.template_name"><code class="docutils literal notranslate"><span class="pre">ResultadoPagoView.template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.views.WebhookConfirmacionPagoView"><code class="docutils literal notranslate"><span class="pre">WebhookConfirmacionPagoView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.WebhookConfirmacionPagoView.dispatch"><code class="docutils literal notranslate"><span class="pre">WebhookConfirmacionPagoView.dispatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transacciones.views.WebhookConfirmacionPagoView.post"><code class="docutils literal notranslate"><span class="pre">WebhookConfirmacionPagoView.post()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transacciones.views.cancelar_por_tasa"><code class="docutils literal notranslate"><span class="pre">cancelar_por_tasa()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -122,37 +222,6 @@
              
   <section id="paquete-transacciones">
 <h1>paquete transacciones<a class="headerlink" href="#paquete-transacciones" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-transacciones.admin">
-<span id="modulo-casadecambiosis2-transacciones-admin"></span><h2>módulo casaDeCambiosIS2.transacciones.admin<a class="headerlink" href="#module-transacciones.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-transacciones.apps">
-<span id="modulo-transacciones-apps"></span><h2>módulo transacciones.apps<a class="headerlink" href="#module-transacciones.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transacciones.apps.</span></span><span class="sig-name descname"><span class="pre">TransaccionesConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/apps.html#TransaccionesConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.apps.TransaccionesConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'transacciones'</span></em><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transacciones.apps.TransaccionesConfig.ready">
-<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transacciones/apps.html#TransaccionesConfig.ready"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#transacciones.apps.TransaccionesConfig.ready" title="Link to this definition"></a></dt>
-<dd><p>Override this method in subclasses to run code when Django starts.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-0">
 <span id="modulo-transacciones-models"></span><h2>módulo transacciones.models<a class="headerlink" href="#module-0" title="Link to this heading"></a></h2>
 <p>Modelos de la aplicación <strong>transacciones</strong>.</p>
@@ -280,6 +349,34 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="transacciones.models.Transaccion.comision_aplicada">
 <span class="sig-name descname"><span class="pre">comision_aplicada</span></span><a class="headerlink" href="#transacciones.models.Transaccion.comision_aplicada" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.comision_cotizacion">
+<span class="sig-name descname"><span class="pre">comision_cotizacion</span></span><a class="headerlink" href="#transacciones.models.Transaccion.comision_cotizacion" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.comision_final">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">comision_final</span></span><a class="headerlink" href="#transacciones.models.Transaccion.comision_final" title="Link to this definition"></a></dt>
+<dd><p>Comisión final calculada como:
+comision_cotizacion - comision_aplicada</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.datos_medio_acreditacion_snapshot">
+<span class="sig-name descname"><span class="pre">datos_medio_acreditacion_snapshot</span></span><a class="headerlink" href="#transacciones.models.Transaccion.datos_medio_acreditacion_snapshot" title="Link to this definition"></a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.datos_medio_pago_snapshot">
+<span class="sig-name descname"><span class="pre">datos_medio_pago_snapshot</span></span><a class="headerlink" href="#transacciones.models.Transaccion.datos_medio_pago_snapshot" title="Link to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -480,6 +577,19 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="transacciones.models.Transaccion.registro_ganancia">
+<span class="sig-name descname"><span class="pre">registro_ganancia</span></span><a class="headerlink" href="#transacciones.models.Transaccion.registro_ganancia" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="transacciones.models.Transaccion.tasa_cambio_aplicada">
 <span class="sig-name descname"><span class="pre">tasa_cambio_aplicada</span></span><a class="headerlink" href="#transacciones.models.Transaccion.tasa_cambio_aplicada" title="Link to this definition"></a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -539,12 +649,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </section>
 </dd></dl>
 
-</section>
-<section id="module-transacciones.tests">
-<span id="modulo-transacciones-tests"></span><h2>módulo transacciones.tests<a class="headerlink" href="#module-transacciones.tests" title="Link to this heading"></a></h2>
-</section>
-<section id="module-transacciones.urls">
-<span id="modulo-transacciones-urls"></span><h2>módulo transacciones.urls<a class="headerlink" href="#module-transacciones.urls" title="Link to this heading"></a></h2>
 </section>
 <section id="module-transacciones.views">
 <span id="modulo-transacciones-views"></span><h2>módulo transacciones.views<a class="headerlink" href="#module-transacciones.views" title="Link to this heading"></a></h2>
@@ -630,9 +734,6 @@ Actualiza el estado de la transacción según el resultado del pago.</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-transacciones">
-<span id="contenido-del-modulo"></span><h2>Contenido del módulo<a class="headerlink" href="#module-transacciones" title="Link to this heading"></a></h2>
-</section>
 </section>
 
 
@@ -646,7 +747,7 @@ Actualiza el estado de la transacción según el resultado del pago.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

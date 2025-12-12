@@ -117,42 +117,43 @@
       </a>
     </section>
 
-    <!-- Emisores -->
+    <!-- Facturación Electrónica -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-orange-600 text-5xl mb-4">🏢</div>
-      <h2 class="text-xl font-bold mb-2">Emisores</h2>
-      <p class="text-gray-500 mb-4">Administra los emisores de documentos electrónicos.</p>
-      <a href="{% url 'facturacion_electronica:emisor_list' %}"
+      <div class="text-orange-600 text-5xl mb-4">📄</div>
+      <h2 class="text-xl font-bold mb-2">Facturación Electrónica</h2>
+      <p class="text-gray-500 mb-4">
+        Administra emisores y documentos electrónicos desde un solo lugar.
+      </p>
+      <a href="{% url 'facturacion_electronica:panel_facturacion' %}"
          class="block w-full py-2 rounded-lg font-semibold text-white text-center"
          style="background:var(--brand);">
         Acceder
       </a>
     </section>
 
-    <!-- Documentos Electrónicos -->
-    <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
-      <div class="text-cyan-600 text-5xl mb-4">📄</div>
-      <h2 class="text-xl font-bold mb-2">Documentos Electrónicos</h2>
-      <p class="text-gray-500 mb-4">Visualiza y gestiona los documentos electrónicos generados.</p>
-      <a href="{% url 'facturacion_electronica:documento_list' %}"
-         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
-         style="background:var(--brand);">
-        Acceder
-      </a>
-    </section>
 
-    <!-- Visualizar Ganancias (placeholder) -->
+  <!-- Visualizar Ganancias (placeholder) -->
+  <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+    <div class="text-green-600 text-5xl mb-4">💹</div>
+    <h2 class="text-xl font-bold mb-2">Reportes</h2>
+    <p class="text-gray-500 mb-4">Consulta reportes de ganancias y transacciones.</p>
+    <a href="{% url 'reportes:panel_reportes' %}"
+      class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+      style="background:var(--brand);">
+      Acceder
+    </a>
+  </section>
+
+    <!-- Dashboard de Ganancias -->
     <section class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
       <div class="text-green-600 text-5xl mb-4">💹</div>
-      <h2 class="text-xl font-bold mb-2">Generar Reportes</h2>
-      <p class="text-gray-500 mb-4">Panel para generacion de reportes del negocio.</p>
-      <button type="button"
-              class="block w-full py-2 rounded-lg font-semibold text-white text-center opacity-60 cursor-not-allowed"
-              style="background:var(--brand);"
-              aria-disabled="true"
-              title="Disponible próximamente">
-        Próximamente
-      </button>
+      <h2 class="text-xl font-bold mb-2">Dashboard de Ganancias</h2>
+      <p class="text-gray-500 mb-4">Visualiza las ganancias por período y por moneda operada.</p>
+      <a href="{% url 'ganancias:dashboard_ganancias' %}"
+         class="block w-full py-2 rounded-lg font-semibold text-white text-center"
+         style="background:var(--brand);">
+        Acceder
+      </a>
     </section>
 
   </div>

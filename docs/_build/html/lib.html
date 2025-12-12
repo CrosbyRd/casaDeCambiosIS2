@@ -21,7 +21,7 @@
     <link rel="index" title="Índice" href="genindex.html" />
     <link rel="search" title="Búsqueda" href="search.html" />
     <link rel="next" title="módulo manage" href="manage.html" />
-    <link rel="prev" title="paquete cotizaciones" href="cotizaciones.html" /> 
+    <link rel="prev" title="Ganancias" href="ganancias.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +43,43 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.tests.html">paquete configuracion.tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">Ganancias</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete lib</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodulos">Submódulos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.admin">módulo lib.admin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.apps">módulo lib.apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lib.apps.LibConfig"><code class="docutils literal notranslate"><span class="pre">LibConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lib.apps.LibConfig.default_auto_field"><code class="docutils literal notranslate"><span class="pre">LibConfig.default_auto_field</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lib.apps.LibConfig.name"><code class="docutils literal notranslate"><span class="pre">LibConfig.name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.models">módulo lib.models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.tests">módulo lib.tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.urls">módulo lib.urls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lib.views">módulo lib.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lib.views.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lib.views.login_view"><code class="docutils literal notranslate"><span class="pre">login_view()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manage.html">módulo manage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.tests.html">paquete medios_acreditacion.tests</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -86,6 +121,20 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="monedas.html">paquete monedas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.tests.html">paquete pagos.tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">Reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.management.html">paquete usuarios.management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.management.commands.html">paquete usuarios.management.commands</a></li>
 </ul>
 
         </div>
@@ -102,7 +151,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">casaDeCambiosIS2</a></li>
       <li class="breadcrumb-item active">paquete lib</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/lib.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
@@ -171,14 +219,14 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pie de página">
-        <a href="cotizaciones.html" class="btn btn-neutral float-left" title="paquete cotizaciones" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="ganancias.html" class="btn btn-neutral float-left" title="Ganancias" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
         <a href="manage.html" class="btn btn-neutral float-right" title="módulo manage" accesskey="n" rel="next">Siguiente <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

@@ -9,4 +9,5 @@ urlpatterns = [
     path('editar/<int:pk>/', views.cotizacion_update, name='cotizacion_update'),
     path('eliminar/<int:pk>/', views.cotizacion_delete, name='cotizacion_delete'),
     path('api/valores/', views.obtener_valores_api, name='api_valores'),
+    path('api/serie/', views.api_serie, name='api_serie'),
 ]

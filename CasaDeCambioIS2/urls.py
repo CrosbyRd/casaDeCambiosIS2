@@ -80,10 +80,17 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('configuracion/', include('configuracion.urls')),
     path("analista/", include(("analista_panel.urls", "analista_panel"), namespace="analista_panel")),
+    path("ganancias/", include(("ganancias.urls", "ganancias"), namespace="ganancias")), # Nuevo módulo de ganancias
 
     path('facturacion-electronica/', include('facturacion_electronica.urls', namespace='facturacion_electronica')), # Nueva app de facturación electrónica
     path('notificaciones/', include('notificaciones.urls', namespace='notificaciones')),
 
     # TED
     path("ted/", include(("ted.urls", "ted"), namespace="ted")),
+
+
+    #REPORTES
+    path("reportes/", include("reportes.urls")),
+
+
 ]

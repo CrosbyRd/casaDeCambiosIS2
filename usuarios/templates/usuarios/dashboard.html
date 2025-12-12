@@ -198,14 +198,14 @@
                   {% if transaccion.monto_origen or transaccion.monto_destino %}
                   <div class="text-sm text-neutral-600 font-medium">
                     {% if transaccion.monto_origen %}
-                      <span class="font-bold text-purple-900">{{ transaccion.monto_origen|floatformat:2 }}</span>
+                      <span class="font-bold text-purple-900">{{ transaccion.monto_origen|floatformat:"-2" }}</span>
                       <span class="text-neutral-400">{{ transaccion.moneda_origen }}</span>
                     {% endif %}
                     {% if transaccion.monto_origen and transaccion.monto_destino %}
                       <span class="mx-1 text-purple-400">→</span>
                     {% endif %}
                     {% if transaccion.monto_destino %}
-                      <span class="font-bold text-purple-900">{{ transaccion.monto_destino|floatformat:2 }}</span>
+                      <span class="font-bold text-purple-900">{{ transaccion.monto_destino|floatformat:"-2" }}</span>
                       <span class="text-neutral-400">{{ transaccion.moneda_destino }}</span>
                     {% endif %}
                   </div>

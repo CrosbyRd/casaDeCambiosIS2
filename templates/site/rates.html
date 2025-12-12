@@ -3,50 +3,668 @@
 {% block title %}Global Exchange{% endblock %}
 
 {% block content %}
-<main class="max-w-[1200px] mx-auto px-6 py-10">
-  <h1 class="h1 mb-6">Tipos de cambio</h1>
+<main class="container-wide py-10">
+<style>
+    :root{
+        --brand:#7c3aed; --brand-soft:#ede9fe; --brand-hover:#6d28d9;
+        --ink:#111827; --muted:#6b7280; --light-gray:#f8f9fa; --line:#e5e7eb;
+        --shadow-sm:0 2px 8px rgba(124,58,237,.08);
+        --shadow-md:0 4px 12px rgba(124,58,237,.12);
+        --shadow-lg:0 20px 40px rgba(124,58,237,.15);
+    }
 
-  <section class="bg-white border rounded-xl shadow-sm overflow-hidden" style="border-color:var(--line)">
-    <table class="w-full border-collapse">
-      <thead class="bg-[var(--brand)] text-white">
-        <tr>
-          <th class="px-4 py-3 text-left">Moneda</th>
-          <th class="px-4 py-3 text-right">Compra (PYG)</th>
-          <th class="px-4 py-3 text-right">Venta (PYG)</th>
-          <th class="px-4 py-3 text-right">Actualización</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in cotizaciones %}
-          <tr class="border-b hover:bg-[var(--brand-soft)]" style="border-color:var(--line)">
-            <td class="px-4 py-3">
-              <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
-              {{ c.moneda_destino.codigo }}
-            </td>
+    /* === CONTENEDORES === */
 
-            {# sin decimales #}
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_compra|unlocalize|floatformat:0 }}</td>
-            <td class="px-4 py-3 text-right font-semibold">{{ c.total_venta|unlocalize|floatformat:0 }}</td>
+    .container-wide{max-width:1360px;margin:0 auto;padding:0 16px;}
 
-            <td class="px-4 py-3 text-right text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+    /* Header */
+    .dashboard-header{padding:1rem 0;margin-bottom:1.25rem;}
+    .dashboard-header h1{color:#000;font-size:1.75rem;font-weight:700;margin:0;padding-left:clamp(24px,5vw,120px);}
+    .page-header{
+    margin-top: 22px;
+    margin-bottom: 28px;
+    padding-top: 6px;
+    }
+    .page-header h1{
+    margin: 0 0 6px 0;
+    }
+    .page-header p{
+    margin: 0;
+    color: var(--muted);
+    }
+
+    .filter-section{
+        background:#fff;
+        border-radius:12px;
+        box-shadow:var(--shadow-sm);
+        padding:1.25rem;
+        border-left:none;
+        }
+    .filter-section h3{font-size:1.05rem;font-weight:600;color:var(--muted);margin:0 0 1rem;display:flex;gap:.5rem;align-items:center;}
+    .filter-section h3::before{content:"🔍";}
+    .filter-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
+    .filter-col{flex:1;min-width:220px}
+    .filter-form .form-label{font-weight:600;color:var(--muted);font-size:.875rem;margin-bottom:.5rem}
+    .filter-form .form-control,.filter-form .form-select{border:1px solid var(--line);border-radius:8px;padding:.625rem .875rem;transition:.2s}
+    .filter-form .form-control:focus,.filter-form .form-select:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in oklab, var(--brand) 22%, transparent);outline:none}
+    .filter-actions{display:flex;gap:.75rem;align-items:center}
+
+    .btn-primary-custom{background:var(--brand);border:none;color:#fff;padding:.625rem 1.25rem;border-radius:8px;font-weight:600;box-shadow:0 12px 24px -10px rgba(124,58,237,.35);transition:.2s}
+    .btn-primary-custom:hover{background:var(--brand-hover);transform:translateY(-1px);box-shadow:0 14px 28px -10px rgba(124,58,237,.45)}
+
+    .btn-secondary-custom{background:#fff;border:2px solid var(--line);color:var(--muted);padding:.625rem 1.25rem;border-radius:8px;font-weight:600;transition:.2s}
+    .btn-secondary-custom:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+
+    /* === GRID DE CONTENIDO: main (2.2fr) + aside (1fr) === */
+    .content-grid{display:grid;grid-template-columns:2.2fr 1fr;gap:1.5rem;margin-top:1.25rem}
+
+    /* Hero KPI a todo el ancho del grid */
+    .metric-hero{grid-column:1 / -1;background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%);
+        border-radius:20px;padding:2rem 2rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;transition:.3s}
+    .metric-hero::before{content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;
+        background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);border-radius:50%}
+    .metric-hero::after{content:"";position:absolute;bottom:-30%;left:-10%;width:300px;height:300px;
+        background:radial-gradient(circle,rgba(255,255,255,.1) 0%,transparent 70%);border-radius:50%}
+    .metric-hero:hover{transform:translateY(-3px);box-shadow:0 25px 50px rgba(124,58,237,.25)}
+
+    .metric-hero-content{text-align:center;position:relative;z-index:1}
+    .metric-hero-icon{font-size:2.3rem;margin-bottom:.35rem;display:inline-block;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    .metric-hero-label{color:rgba(255,255,255,.92);font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.35rem}
+    .metric-hero-value{color:#fff;font-size:clamp(2rem,4vw,2.8rem);font-weight:900;line-height:1.1;margin-bottom:.25rem;text-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .metric-hero-currency{color:rgba(255,255,255,.9);font-weight:800}
+    /* Cards y charts */
+    .card{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:1.25rem}
+    .card + .card{margin-top:1rem}
+    .card-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:2px solid var(--light-gray)}
+    .card-header h3{font-size:1.1rem;font-weight:700;color:#333;margin:0}
+    .chart-container{position:relative;height:360px}
+    .chart-container--compact{height:280px}
+        /* Tarjeta de tendencia del período */
+    .trend-card{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:1.25rem;
+        padding:1.25rem 1.5rem;
+        border-radius:14px;
+        background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(124,58,237,.14));
+        border:1px solid rgba(124,58,237,.15);
+    }
+    .trend-main-label{
+        font-size:.75rem;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:.2rem;
+    }
+    .trend-main-value{
+        font-size:1.35rem;
+        font-weight:800;
+        color:var(--ink);
+        margin-bottom:.2rem;
+    }
+    .trend-main-sub{
+        font-size:.85rem;
+        color:var(--muted);
+    }
+    .trend-pill{
+        min-width:210px;
+        text-align:center;
+        padding:.9rem 1.4rem;
+        border-radius:999px;
+        font-weight:700;
+        font-size:.95rem;
+        box-shadow:var(--shadow-sm);
+        background:var(--light-gray);
+        color:var(--muted);
+        transition:.2s;
+        transform:translateY(0);
+    }
+    .trend-pill.up{
+        background:rgba(16,185,129,.1);
+        color:#047857;
+        box-shadow:0 10px 25px rgba(16,185,129,.25);
+    }
+    .trend-pill.down{
+        background:rgba(239,68,68,.1);
+        color:#b91c1c;
+        box-shadow:0 10px 25px rgba(239,68,68,.25);
+    }
+    .trend-pill.flat{
+        background:var(--light-gray);
+        color:var(--muted);
+    }
+    .trend-pill:not(.flat):hover{
+        transform:translateY(-2px);
+    }
+    @media (max-width:768px){
+        .trend-card{align-items:flex-start;}
+        .trend-pill{width:100%;}
+    }
+
+    /* KPIs laterales */
+    .side-stack{display:flex;flex-direction:column;gap:1rem}
+    .metric-card{background:#fff;border-radius:16px;padding:1.25rem;box-shadow:var(--shadow-sm);
+        border:1px solid var(--line);display:flex;gap:1rem;align-items:center;position:relative;overflow:hidden}
+    .metric-card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--brand),var(--brand-hover))}
+    .metric-card-icon-wrapper{flex-shrink:0;width:52px;height:52px;background:linear-gradient(135deg,var(--brand-soft),rgba(255,255,255,.6));
+        border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 4px 12px rgba(124,58,237,.12)}
+    .metric-card-label{color:var(--muted);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.35rem}
+    .metric-card-value{color:var(--ink);font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:.1rem}
+    .metric-card-suffix{color:var(--brand);font-weight:600;font-size:.85rem}
+
+    /* Tabla */
+    .table-custom thead{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-hover) 100%)}
+    .table-custom thead th{color:#fff;font-weight:700;text-transform:uppercase;font-size:.8rem;letter-spacing:.5px;border:none;padding:.75rem 1rem}
+    .table-custom tbody td{padding:.8rem 1rem;vertical-align:middle;border-bottom:1px solid var(--line)}
+    .table-custom tbody tr:hover{background:var(--brand-soft)}
+    .currency-badge{display:inline-block;padding:.35rem .6rem;background:var(--brand-soft);color:var(--brand);border-radius:6px;font-weight:700;font-size:.85rem}
+    .amount-display{font-weight:700;color:var(--brand);font-size:1.05rem}
+
+    /* Responsivo */
+    @media (max-width:1200px){.content-grid{grid-template-columns:1.7fr 1fr}}
+    @media (max-width:992px){
+        .content-grid{grid-template-columns:1fr}
+        .chart-container{height:320px}
+    }
+  </style>
+
+  <header class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-extrabold mb-2 text-[var(--ink)]">Tipos de Cambio</h1>
+      <p class="text-lg leading-relaxed max-w-2xl text-[var(--muted)]">
+        Visualiza la evolución histórica de las tasas de cambio con controles avanzados de filtrado.
+      </p>
+    </div>
+  </header>
+    <section class="card mb-6">
+    <div class="card-header">
+      <span>📋</span><h3>Cotizaciones Disponibles</h3>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-custom w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Moneda</th>
+            <th class="text-end">Compra (PYG)</th>
+            <th class="text-end">Venta (PYG)</th>
+            <th class="text-end">Actualización</th>
           </tr>
-        {% empty %}
-          <tr><td colspan="4" class="px-4 py-6 text-center text-neutral-500">Sin cotizaciones.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for c in cotizaciones %}
+            <tr class="cursor-pointer" data-code="{{ c.moneda_destino.codigo }}"
+                data-compra="{{ c.total_compra|unlocalize|floatformat:0 }}"
+                data-venta="{{ c.total_venta|unlocalize|floatformat:0 }}">
+              <td>
+                <span class="currency-badge">
+                  <span class="currency-emoji" data-code="{{ c.moneda_destino.codigo }}"></span>
+                  {{ c.moneda_destino.codigo }}
+                </span>
+              </td>
+              <td class="text-end font-semibold">
+                <span class="rate" data-field="compra">{{ c.total_compra|unlocalize|floatformat:0 }}</span>
+              </td>
+              <td class="text-end font-semibold">
+                <span class="rate" data-field="venta">{{ c.total_venta|unlocalize|floatformat:0 }}</span>
+              </td>
+              <td class="text-end text-neutral-500">{{ c.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="px-4 py-6 text-center text-neutral-500">
+                Sin cotizaciones.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </section>
-</main>
+
+  <section class="filter-section">
+    <h3>Filtros de Búsqueda</h3>
+    <form class="filter-form" id="fx-form">
+      <div class="filter-row">
+        <div class="filter-col">
+          <label for="fx-from" class="form-label">📅 Fecha Inicio</label>
+          <input type="date" id="fx-from" class="form-control" />
+        </div>
+
+        <div class="filter-col">
+          <label for="fx-to" class="form-label">📅 Fecha Fin</label>
+          <input type="date" id="fx-to" class="form-control" />
+        </div>
+
+        <div class="filter-col">
+          <label for="fx-select" class="form-label">💱 Moneda Operada</label>
+          <select id="fx-select" class="form-select form-control"></select>
+        </div>
+
+        <div class="filter-col">
+          <label class="form-label" for="fx-type">Tipo de Operación</label>
+          <select id="fx-type" class="form-select form-control">
+            <option value="venta" selected>Precio de Venta</option>
+            <option value="compra">Precio de Compra</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn btn-primary-custom" id="fx-apply">✓ Aplicar</button>
+          <button type="button" class="btn btn-secondary-custom" id="fx-reset">↺ Limpiar</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <div class="content-grid">
+    <!-- HERO KPI a todo el ancho -->
+        <section class="metric-hero">
+            <div class="metric-hero-content">
+                <div class="metric-hero-icon">💱</div>
+                <div class="metric-hero-label">Cotización Actual</div>
+                <div class="metric-hero-value"><span id="fx-base">PYG</span> → <span id="fx-symbol">—</span></div>
+                <div class="metric-hero-currency">Tasa de cambio en tiempo real</div>
+            </div>
+        </section>
+    <!-- COLUMNA PRINCIPAL (IZQUIERDA) -->
+        <section class="main-col">
+            <!-- 1) Evolución de tasas -->
+      <div class="card">
+        <div class="card-header">
+          <span>📈</span><h3>Evolución de Tasas Diarias</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="ratesChart"></canvas>
+        </div>
+        <p id="chart-empty" class="text-xs text-muted mt-3 hidden">No hay datos históricos para el rango seleccionado.</p>
+        <p class="text-xs text-neutral-500 mt-1">Rango por defecto: últimos 90 días.</p>
+      </div>
+
+            <div class="card">
+        <div class="card-header">
+          <span>📊</span><h3>Evolución Promedio del Período</h3>
+        </div>
+        <div class="trend-card">
+          <div>
+            <div class="trend-main-label">Resumen del período</div>
+            <div class="trend-main-value" id="fx-trend-text">Sin datos suficientes.</div>
+            <div class="trend-main-sub" id="fx-trend-detail">Selecciona un rango para ver la tendencia.</div>
+          </div>
+          <div id="fx-trend-pill" class="trend-pill flat">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA (ASIDE) -->
+        <aside class="side-col">
+      <div class="side-stack">
+        <div class="metric-card">
+          <div class="metric-card-icon-wrapper">📊</div>
+          <div>
+            <div class="metric-card-label">Días Analizados</div>
+            <div class="metric-card-value" id="fx-days">0</div>
+            <div class="metric-card-suffix">días con registro</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-icon-wrapper">💱</div>
+          <div>
+            <div class="metric-card-label">Monedas Operadas</div>
+            <div class="metric-card-value" id="fx-coins">0</div>
+            <div class="metric-card-suffix">monedas diferentes</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
 
 <script>
 (function(){
-  const MAP = {USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
-               MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
-               CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"};
+  const MAP = {
+    USD:"🇺🇸", EUR:"🇪🇺", ARS:"🇦🇷", BRL:"🇧🇷", CLP:"🇨🇱", COP:"🇨🇴",
+    MXN:"🇲🇽", PEN:"🇵🇪", PYG:"🇵🇾", UYU:"🇺🇾", GBP:"🇬🇧", JPY:"🇯🇵",
+    CNY:"🇨🇳", AUD:"🇦🇺", CAD:"🇨🇦", CHF:"🇨🇭"
+  };
+
   document.querySelectorAll('.currency-emoji').forEach(el=>{
     const code = String(el.dataset.code||'').toUpperCase();
     el.textContent = (MAP[code] || "💱") + " ";
   });
+
+  // Indicadores de variación con persistencia de 12h
+  const TTL = 12 * 60 * 60 * 1000;
+  const rows = document.querySelectorAll('tbody tr[data-code]');
+
+  rows.forEach(row => {
+    const code = String(row.dataset.code || '').toUpperCase();
+
+    ['compra', 'venta'].forEach(field => {
+      const el = row.querySelector(`.rate[data-field="${field}"]`);
+      if (!el) return;
+
+      const textNum = (el.textContent || '').replace(/\D+/g, '');
+      const nowVal = Number(row.dataset[field] || textNum);
+      const key = `rates:${code}:${field}`;
+      const nowTs = Date.now();
+
+      let data = null;
+      // --- Continuación del script de variaciones (final del bloque previo) ---
+
+      try {
+        data = JSON.parse(localStorage.getItem(key) || "null");
+      } catch(e){
+        data = null;
+      }
+
+      let prevVal = data?.value ?? null;
+      let lastChange = data?.lastChange ?? null;
+      let showDir = null;
+
+      if (prevVal !== null && prevVal !== nowVal) {
+        showDir = nowVal > prevVal ? 'up' : 'down';
+        lastChange = { time: nowTs, dir: showDir };
+      } else if (lastChange && (nowTs - lastChange.time) < TTL) {
+        showDir = lastChange.dir;
+      }
+
+      if (showDir) {
+        const badge = document.createElement('span');
+        badge.textContent = showDir === 'up' ? '▲' : '▼';
+        badge.className = 'ml-1 text-xs opacity-70 align-middle';
+        badge.classList.add(showDir === 'up' ? 'text-emerald-600' : 'text-red-600');
+        badge.style.position = 'relative';
+        badge.style.top = '-1px';
+        el.after(badge);
+      }
+
+      const persisted = lastChange && (nowTs - lastChange.time) < TTL ? lastChange : null;
+      localStorage.setItem(key, JSON.stringify({ value: nowVal, lastChange: persisted }));
+    });
+  });
 })();
 </script>
+
+<!-- Chart.js + date-fns + adapter -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+
+<script>
+(function(){
+  const apiUrl   = "{% url 'cotizaciones:api_serie' %}";
+  const rows     = Array.from(document.querySelectorAll('tbody tr[data-code]'));
+  const elSymbol = document.getElementById('fx-symbol');
+  const elBase  = document.getElementById('fx-base');
+  const select   = document.getElementById('fx-select');
+  const typeSel  = document.getElementById('fx-type');
+  const fromInp  = document.getElementById('fx-from');
+  const toInp    = document.getElementById('fx-to');
+  const emptyMsg = document.getElementById('chart-empty');
+  const ctx      = document.getElementById('ratesChart').getContext('2d');
+  const applyBtn = document.getElementById('fx-apply');
+  const resetBtn = document.getElementById('fx-reset');
+  const daysEl   = document.getElementById('fx-days');
+  const coinsEl  = document.getElementById('fx-coins');
+  const trendPill = document.getElementById('fx-trend-pill');
+  const trendText = document.getElementById('fx-trend-text');
+  const trendDetail = document.getElementById('fx-trend-detail');
+
+  // Poblar selector FX (monedas)
+  const seen = new Set();
+  rows.forEach(tr => {
+    const code = String(tr.dataset.code || '').toUpperCase();
+    if (code && !seen.has(code)) {
+      seen.add(code);
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = code;
+      select.appendChild(opt);
+    }
+  });
+
+  const initial = select.options[0]?.value || rows[0]?.dataset.code || 'USD';
+  select.value = initial;
+  coinsEl.textContent = seen.size || 0;
+
+  const today = new Date();
+  const ninetyAgo = new Date();
+  ninetyAgo.setDate(today.getDate() - 90);
+
+  const formatDate = (d) => d.toISOString().slice(0,10);
+  fromInp.value = formatDate(ninetyAgo);
+  toInp.value = formatDate(today);
+
+  const defaultState = {
+    code: initial,
+    campo: 'venta',
+    desde: fromInp.value,
+    hasta: toInp.value
+  };
+
+  const state = { ...defaultState };
+  elSymbol.textContent = state.code;
+
+  typeSel.value = state.campo;
+
+  // Inicializar Chart.js
+  const css   = getComputedStyle(document.documentElement);
+  const BRAND = css.getPropertyValue('--brand').trim() || '#7c3aed';
+
+  Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  Chart.defaults.color = '#6c757d';
+
+  let chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'PYG → ' + state.code,
+        data: [],
+        tension: 0.1,
+        borderWidth: 3,
+        borderColor: BRAND,
+        backgroundColor: 'rgba(124,58,237,0.15)',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: BRAND,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        fill: true,
+        spanGaps: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+      interaction: { intersect: false, mode: 'index' },
+      scales: {
+          x: {
+          type: 'time',
+          time: { unit: 'day' },
+          grid: { display: false, drawBorder: false },
+          ticks: {
+            maxTicksLimit: 8,
+            callback: function(value, index, ticks) {
+              const v = ticks[index].value;      // timestamp del tick
+              const d = new Date(v);
+              // Ej: "09 dic" en español
+              return d.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: 'short'
+              });
+            }
+          },
+          title: { display: true, text: 'Fecha', font: { weight: '600', size: 12 } }
+        },
+        y: {
+          beginAtZero: false,
+          grid: { color: 'rgba(0,0,0,.05)', drawBorder: false },
+          ticks: { callback: (v) => Number(v).toLocaleString('es-PY') },
+          title: { display: true, text: 'Valor (PYG)', font: { weight: '600', size: 12 } }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,.85)',
+          padding: 12,
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: BRAND,
+          borderWidth: 1,
+          displayColors: false,
+          callbacks: {
+            label: (ctx) => `Valor: ${ctx.parsed.y.toLocaleString('es-PY')} PYG`
+          }
+        }
+      }
+    }
+  });
+
+  // Cargar serie
+  async function loadSeries() {
+        // Actualizar la dirección de la flecha según el tipo de precio
+    if (state.campo === 'compra') {
+      // Compramos moneda destino pagando PYG: PYG → DESTINO
+      elBase.textContent   = 'PYG';
+      elSymbol.textContent = state.code;
+    } else {
+      // Vendemos moneda destino y recibimos PYG: DESTINO → PYG
+      elBase.textContent   = state.code;
+      elSymbol.textContent = 'PYG';
+    }
+    emptyMsg.classList.add('hidden');
+
+    const params = new URLSearchParams({
+      base: 'PYG',
+      destino: state.code,
+      campo: state.campo,
+      agg: 'last',  // siempre usar último valor
+      desde: state.desde,
+      hasta: state.hasta
+    });
+
+    try {
+      const r = await fetch(`${apiUrl}?${params.toString()}`);
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'Error al obtener serie');
+
+            const points = (j.points || []).map(p => ({
+        x: new Date(p.x),
+        y: p.y
+      }));
+
+      // Ajustar dinámicamente el rango del eje Y en función de los datos
+      if (points.length) {
+        const ys = points.map(p => p.y);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        const range = maxY - minY || (minY || 1) * 0.01;
+        const padding = range * 0.1; // ~10% de margen arriba y abajo
+
+        chart.options.scales.y.min = minY - padding;
+        chart.options.scales.y.max = maxY + padding;
+      } else {
+        chart.options.scales.y.min = undefined;
+        chart.options.scales.y.max = undefined;
+      }
+
+      const campoLabel = state.campo === 'compra' ? 'Compra' : 'Venta';
+      const fromCode   = state.campo === 'compra' ? 'PYG' : state.code;
+      const toCode     = state.campo === 'compra' ? state.code : 'PYG';
+
+      chart.data.datasets[0].label = `${fromCode} → ${toCode} (${campoLabel})`;
+
+      chart.data.datasets[0].data  = points;
+      chart.update();
+
+
+      if (!points.length) emptyMsg.classList.remove('hidden');
+      updateKpis(points);
+
+    } catch(e){
+      console.error(e);
+      chart.data.datasets[0].data = [];
+      chart.update();
+      emptyMsg.textContent = 'No se pudo cargar el histórico.';
+      emptyMsg.classList.remove('hidden');
+      updateKpis([]);
+    }
+  }
+
+  // Sincronizar estado
+  const syncState = () => {
+    state.code = select.value || defaultState.code;
+    state.campo = typeSel.value || 'venta';
+    state.desde = fromInp.value || defaultState.desde;
+    state.hasta = toInp.value || defaultState.hasta;
+  };
+
+  select.addEventListener('change', () => { syncState(); loadSeries(); });
+  typeSel.addEventListener('change', () => { syncState(); loadSeries(); });
+
+  // Click en filas
+  rows.forEach(tr => tr.addEventListener('click', () => {
+    const code = String(tr.dataset.code || 'USD').toUpperCase();
+    state.code = code;
+    if (select.value !== code) select.value = code;
+    syncState();
+    loadSeries();
+  }));
+
+  if (applyBtn) applyBtn.addEventListener('click', () => { syncState(); loadSeries(); });
+
+  if (resetBtn) resetBtn.addEventListener('click', () => {
+    Object.assign(state, defaultState);
+    select.value = state.code;
+    typeSel.value = state.campo;
+    fromInp.value = state.desde;
+    toInp.value = state.hasta;
+    loadSeries();
+  });
+
+  // Primera carga
+  syncState();
+  loadSeries();
+
+  // KPIs
+  function updateKpis(points){
+    const uniqueDays = new Set(points.map(p => new Date(p.x).toISOString().slice(0,10)));
+    daysEl.textContent = uniqueDays.size;
+
+    if (points.length < 2) {
+      trendPill.textContent = '—';
+      trendPill.className = 'trend-pill flat';
+      trendText.textContent = 'Sin datos suficientes.';
+      trendDetail.textContent = 'Selecciona un rango para ver la tendencia.';
+      return;
+    }
+
+    const sorted = [...points].sort((a,b)=>a.x-b.x);
+    const first = sorted[0].y;
+    const last  = sorted[sorted.length-1].y;
+    const diff  = last - first;
+    const pct   = first ? (diff/first)*100 : 0;
+
+    const arrow = diff>0 ? '⬆' : diff<0 ? '⬇' : '➖';
+    const dirClass = diff>0 ? 'up' : diff<0 ? 'down' : 'flat';
+
+    trendPill.textContent = `${arrow} ${diff>0?'Al alza':diff<0?'A la baja':'Estable'}`;
+    trendPill.className = `trend-pill ${dirClass}`;
+
+    const changeLabel = diff===0 ? 'sin variación' : diff>0 ? 'positivo' : 'negativo';
+    trendText.textContent = `Cambio ${changeLabel} de ${Math.abs(diff).toLocaleString('es-PY')} PYG`;
+    trendDetail.textContent = `Variación de ${pct.toFixed(2)}% entre el primer y último dato.`;
+  }
+})();
+</script>
+
+</main>
 {% endblock %}

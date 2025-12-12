@@ -1,16 +1,7 @@
 paquete notificaciones
 ======================
 
-Submódulos
-----------
 
-módulo notificaciones.apps
---------------------------
-
-.. automodule:: notificaciones.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo notificaciones.emails
 ----------------------------
@@ -44,13 +35,7 @@ módulo notificaciones.signals
    :undoc-members:
    :show-inheritance:
 
-módulo notificaciones.tasks
----------------------------
 
-.. automodule:: notificaciones.tasks
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo notificaciones.urls
 --------------------------
@@ -76,10 +61,3 @@ módulo notificaciones.views
    :undoc-members:
    :show-inheritance:
 
-Contenido del módulo
---------------------
-
-.. automodule:: notificaciones
-   :members:
-   :undoc-members:
-   :show-inheritance:

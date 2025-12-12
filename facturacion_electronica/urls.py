@@ -14,6 +14,9 @@ from . import views
 app_name = 'facturacion_electronica'
 
 urlpatterns = [
+
+    path('panel/', views.panel_facturacion, name='panel_facturacion'),
+    
     # URLs para EmisorFacturaElectronica
     path('emisores/', views.EmisorFacturaElectronicaListView.as_view(), name='emisor_list'),
     path('emisores/crear/', views.EmisorFacturaElectronicaCreateView.as_view(), name='emisor_create'),

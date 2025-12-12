@@ -43,8 +43,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contenidos:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clientes.html">paquete clientes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuracion.html">paquete configuracion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">paquete core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="correo.html">paquete correo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cotizaciones.html">paquete cotizaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="facturacion_electronica.html">facturacion_electronica</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ganancias.html">paquete ganancias</a></li>
+<li class="toctree-l1"><a class="reference internal" href="medios_acreditacion.html">paquete medios_acreditacion</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">casaDeCambiosIS2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CasaDeCambioIS2.html">paquete CasaDeCambioIS2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="admin_panel.html">paquete admin_panel</a></li>
@@ -55,12 +64,6 @@
 <li class="toctree-l2"><a class="reference internal" href="lib.html">paquete lib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manage.html">módulo manage</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">paquete monedas</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodulos">Submódulos</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.admin">módulo monedas.admin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.apps">módulo monedas.apps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#monedas.apps.MonedasConfig"><code class="docutils literal notranslate"><span class="pre">MonedasConfig</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-monedas.forms">módulo monedas.forms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#modulo-forms-de-la-app-monedas">Módulo forms de la app monedas</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.forms.CHOICES"><code class="docutils literal notranslate"><span class="pre">CHOICES</span></code></a></li>
@@ -75,13 +78,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento"><code class="docutils literal notranslate"><span class="pre">TedMovimiento</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.tests">módulo monedas.tests</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-monedas.urls">módulo monedas.urls</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#modulo-urls-de-la-app-monedas">Módulo urls de la app monedas</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.app_name"><code class="docutils literal notranslate"><span class="pre">app_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#monedas.urls.urlpatterns"><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-monedas.views">módulo monedas.views</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.crear_moneda"><code class="docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.editar_moneda"><code class="docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a></li>
@@ -90,7 +86,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#monedas.views.moneda_detalle"><code class="docutils literal notranslate"><span class="pre">moneda_detalle()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#contenido-del-modulo">Contenido del módulo</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="roles.html">paquete roles</a></li>
@@ -107,6 +102,132 @@
 <li class="toctree-l2"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
 </ul>
 </li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">paquete monedas</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-monedas.forms">módulo monedas.forms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modulo-forms-de-la-app-monedas">Módulo forms de la app monedas</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#contenido">Contenido</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clases">Clases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#funciones">Funciones</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#constantes">Constantes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.forms.CHOICES"><code class="docutils literal notranslate"><span class="pre">CHOICES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.forms.CURRENCIES"><code class="docutils literal notranslate"><span class="pre">CURRENCIES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.forms.MonedaForm"><code class="docutils literal notranslate"><span class="pre">MonedaForm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.Meta"><code class="docutils literal notranslate"><span class="pre">MonedaForm.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.base_fields"><code class="docutils literal notranslate"><span class="pre">MonedaForm.base_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.clean"><code class="docutils literal notranslate"><span class="pre">MonedaForm.clean()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.clean_minima_denominacion"><code class="docutils literal notranslate"><span class="pre">MonedaForm.clean_minima_denominacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">MonedaForm.declared_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.media"><code class="docutils literal notranslate"><span class="pre">MonedaForm.media</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.forms.MonedaForm.save"><code class="docutils literal notranslate"><span class="pre">MonedaForm.save()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-0">módulo monedas.models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.models.Moneda"><code class="docutils literal notranslate"><span class="pre">Moneda</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Moneda.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Moneda.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.admite_en_linea"><code class="docutils literal notranslate"><span class="pre">Moneda.admite_en_linea</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.admite_terminal"><code class="docutils literal notranslate"><span class="pre">Moneda.admite_terminal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.codigo"><code class="docutils literal notranslate"><span class="pre">Moneda.codigo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.cotizaciones_base"><code class="docutils literal notranslate"><span class="pre">Moneda.cotizaciones_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.cotizaciones_destino"><code class="docutils literal notranslate"><span class="pre">Moneda.cotizaciones_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.decimales"><code class="docutils literal notranslate"><span class="pre">Moneda.decimales</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.denominaciones_ted"><code class="docutils literal notranslate"><span class="pre">Moneda.denominaciones_ted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Moneda.fecha_creacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.ganancias_en_pyg"><code class="docutils literal notranslate"><span class="pre">Moneda.ganancias_en_pyg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.ganancias_por_moneda"><code class="docutils literal notranslate"><span class="pre">Moneda.ganancias_por_moneda</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.get_next_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Moneda.get_next_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.get_previous_by_fecha_creacion"><code class="docutils literal notranslate"><span class="pre">Moneda.get_previous_by_fecha_creacion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.hist_base"><code class="docutils literal notranslate"><span class="pre">Moneda.hist_base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.hist_destino"><code class="docutils literal notranslate"><span class="pre">Moneda.hist_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.id"><code class="docutils literal notranslate"><span class="pre">Moneda.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.minima_denominacion"><code class="docutils literal notranslate"><span class="pre">Moneda.minima_denominacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.nombre"><code class="docutils literal notranslate"><span class="pre">Moneda.nombre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.objects"><code class="docutils literal notranslate"><span class="pre">Moneda.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.seguidores"><code class="docutils literal notranslate"><span class="pre">Moneda.seguidores</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.simbolo"><code class="docutils literal notranslate"><span class="pre">Moneda.simbolo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.transacciones_destino"><code class="docutils literal notranslate"><span class="pre">Moneda.transacciones_destino</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.transacciones_origen"><code class="docutils literal notranslate"><span class="pre">Moneda.transacciones_origen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.transactionlimit_set"><code class="docutils literal notranslate"><span class="pre">Moneda.transactionlimit_set</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.Moneda.ultima_actualizacion_tasa"><code class="docutils literal notranslate"><span class="pre">Moneda.ultima_actualizacion_tasa</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.models.TedDenominacion"><code class="docutils literal notranslate"><span class="pre">TedDenominacion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.activa"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.activa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.id"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.moneda"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.moneda</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.moneda_id"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.moneda_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.movimientos"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.movimientos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.objects"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.stock"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.stock</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedDenominacion.valor"><code class="docutils literal notranslate"><span class="pre">TedDenominacion.valor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.models.TedInventario"><code class="docutils literal notranslate"><span class="pre">TedInventario</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedInventario.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedInventario.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.cantidad"><code class="docutils literal notranslate"><span class="pre">TedInventario.cantidad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.denominacion"><code class="docutils literal notranslate"><span class="pre">TedInventario.denominacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.denominacion_id"><code class="docutils literal notranslate"><span class="pre">TedInventario.denominacion_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.get_next_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedInventario.get_next_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.get_previous_by_updated_at"><code class="docutils literal notranslate"><span class="pre">TedInventario.get_previous_by_updated_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.id"><code class="docutils literal notranslate"><span class="pre">TedInventario.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.objects"><code class="docutils literal notranslate"><span class="pre">TedInventario.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.ubicacion"><code class="docutils literal notranslate"><span class="pre">TedInventario.ubicacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedInventario.updated_at"><code class="docutils literal notranslate"><span class="pre">TedInventario.updated_at</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.models.TedMovimiento"><code class="docutils literal notranslate"><span class="pre">TedMovimiento</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_AJUSTE"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_AJUSTE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_CHEQUE"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_CHEQUE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_CHOICES"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_CHOICES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_COMPRA"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_COMPRA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_OTRO"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_OTRO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MOTIVO_VENTA"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MOTIVO_VENTA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.creado_por"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.creado_por</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.creado_por_id"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.creado_por_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.created_at"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.created_at</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.delta"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.delta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.denominacion"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.denominacion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.denominacion_id"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.denominacion_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.get_motivo_display"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.get_motivo_display()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.get_next_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.get_next_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.get_previous_by_created_at"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.get_previous_by_created_at()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.id"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.motivo"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.motivo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.objects"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monedas.models.TedMovimiento.transaccion_ref"><code class="docutils literal notranslate"><span class="pre">TedMovimiento.transaccion_ref</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-monedas.views">módulo monedas.views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.views.crear_moneda"><code class="docutils literal notranslate"><span class="pre">crear_moneda()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.views.editar_moneda"><code class="docutils literal notranslate"><span class="pre">editar_moneda()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.views.eliminar_moneda"><code class="docutils literal notranslate"><span class="pre">eliminar_moneda()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.views.listar_monedas"><code class="docutils literal notranslate"><span class="pre">listar_monedas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monedas.views.moneda_detalle"><code class="docutils literal notranslate"><span class="pre">moneda_detalle()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notificaciones.html">paquete notificaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="operaciones.html">paquete operaciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pagos.html">paquete pagos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="payments.html">paquete payments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportes.html">paquete reportes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roles.html">paquete roles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simuladores.html">paquete simuladores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ted.html">paquete ted</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transacciones.html">paquete transacciones</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usuarios.html">paquete usuarios</a></li>
 </ul>
 
         </div>
@@ -136,31 +257,6 @@
              
   <section id="paquete-monedas">
 <h1>paquete monedas<a class="headerlink" href="#paquete-monedas" title="Link to this heading"></a></h1>
-<section id="submodulos">
-<h2>Submódulos<a class="headerlink" href="#submodulos" title="Link to this heading"></a></h2>
-</section>
-<section id="module-monedas.admin">
-<span id="modulo-monedas-admin"></span><h2>módulo monedas.admin<a class="headerlink" href="#module-monedas.admin" title="Link to this heading"></a></h2>
-</section>
-<section id="module-monedas.apps">
-<span id="modulo-monedas-apps"></span><h2>módulo monedas.apps<a class="headerlink" href="#module-monedas.apps" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="monedas.apps.MonedasConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">monedas.apps.</span></span><span class="sig-name descname"><span class="pre">MonedasConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monedas/apps.html#MonedasConfig"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#monedas.apps.MonedasConfig" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="monedas.apps.MonedasConfig.default_auto_field">
-<span class="sig-name descname"><span class="pre">default_auto_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django.db.models.BigAutoField'</span></em><a class="headerlink" href="#monedas.apps.MonedasConfig.default_auto_field" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="monedas.apps.MonedasConfig.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monedas'</span></em><a class="headerlink" href="#monedas.apps.MonedasConfig.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-monedas.forms">
 <span id="modulo-monedas-forms"></span><h2>módulo monedas.forms<a class="headerlink" href="#module-monedas.forms" title="Link to this heading"></a></h2>
 <section id="modulo-forms-de-la-app-monedas">
@@ -448,6 +544,36 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 object the first time, the query is executed.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.ganancias_en_pyg">
+<span class="sig-name descname"><span class="pre">ganancias_en_pyg</span></span><a class="headerlink" href="#monedas.models.Moneda.ganancias_en_pyg" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.ganancias_por_moneda">
+<span class="sig-name descname"><span class="pre">ganancias_por_moneda</span></span><a class="headerlink" href="#monedas.models.Moneda.ganancias_por_moneda" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="monedas.models.Moneda.get_next_by_fecha_creacion">
 <span class="sig-name descname"><span class="pre">get_next_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.Moneda.get_next_by_fecha_creacion" title="Link to this definition"></a></dt>
@@ -457,6 +583,36 @@ object the first time, the query is executed.</p>
 <dt class="sig sig-object py" id="monedas.models.Moneda.get_previous_by_fecha_creacion">
 <span class="sig-name descname"><span class="pre">get_previous_by_fecha_creacion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">fecha_creacion&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#monedas.models.Moneda.get_previous_by_fecha_creacion" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.hist_base">
+<span class="sig-name descname"><span class="pre">hist_base</span></span><a class="headerlink" href="#monedas.models.Moneda.hist_base" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="monedas.models.Moneda.hist_destino">
+<span class="sig-name descname"><span class="pre">hist_destino</span></span><a class="headerlink" href="#monedas.models.Moneda.hist_destino" title="Link to this definition"></a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="monedas.models.Moneda.id">
@@ -893,48 +1049,6 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </section>
-<section id="module-monedas.tests">
-<span id="modulo-monedas-tests"></span><h2>módulo monedas.tests<a class="headerlink" href="#module-monedas.tests" title="Link to this heading"></a></h2>
-</section>
-<section id="module-monedas.urls">
-<span id="modulo-monedas-urls"></span><h2>módulo monedas.urls<a class="headerlink" href="#module-monedas.urls" title="Link to this heading"></a></h2>
-<section id="modulo-urls-de-la-app-monedas">
-<h3>Módulo urls de la app monedas<a class="headerlink" href="#modulo-urls-de-la-app-monedas" title="Link to this heading"></a></h3>
-<p>Este módulo define las rutas de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.
-Cada URL se asocia a una vista correspondiente en <a class="reference internal" href="#module-monedas.views" title="monedas.views"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monedas.views</span></code></a>.
-Las vistas requieren autenticación para acceder, excepto el detalle de moneda
-que igualmente valida permisos en la vista.</p>
-<section id="id1">
-<h4>Contenido<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">listar_monedas</span></code>: Lista todas las monedas registradas.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">crear_moneda</span></code>: Formulario para crear una nueva moneda.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">editar_moneda</span></code>: Formulario para editar una moneda existente.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">eliminar_moneda</span></code>: Confirma y elimina una moneda.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">moneda_detalle</span></code>: Muestra la información detallada de una moneda.</p></li>
-</ul>
-</section>
-<section id="id2">
-<h4>Constantes<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
-<ul class="simple">
-<li><p><a class="reference internal" href="#monedas.urls.app_name" title="monedas.urls.app_name"><code class="xref py py-data docutils literal notranslate"><span class="pre">app_name</span></code></a>: Define el namespace de la aplicación.</p></li>
-<li><p><a class="reference internal" href="#monedas.urls.urlpatterns" title="monedas.urls.urlpatterns"><code class="xref py py-data docutils literal notranslate"><span class="pre">urlpatterns</span></code></a>: Lista de rutas URL.</p></li>
-</ul>
-</section>
-</section>
-<dl class="py data">
-<dt class="sig sig-object py" id="monedas.urls.app_name">
-<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">app_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'monedas'</span></em><a class="headerlink" href="#monedas.urls.app_name" title="Link to this definition"></a></dt>
-<dd><p>Namespace de la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="monedas.urls.urlpatterns">
-<span class="sig-prename descclassname"><span class="pre">monedas.urls.</span></span><span class="sig-name descname"><span class="pre">urlpatterns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;URLPattern</span> <span class="pre">''</span> <span class="pre">[name='listar_monedas']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'crear/'</span> <span class="pre">[name='crear_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'editar/&lt;int:pk&gt;/'</span> <span class="pre">[name='editar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'eliminar/&lt;int:pk&gt;/'</span> <span class="pre">[name='eliminar_moneda']&gt;,</span> <span class="pre">&lt;URLPattern</span> <span class="pre">'ver/&lt;int:pk&gt;/'</span> <span class="pre">[name='moneda_detalle']&gt;]</span></em><a class="headerlink" href="#monedas.urls.urlpatterns" title="Link to this definition"></a></dt>
-<dd><p>Definición de patrones de URL para la aplicación <code class="docutils literal notranslate"><span class="pre">monedas</span></code>.</p>
-</dd></dl>
-
-</section>
 <section id="module-monedas.views">
 <span id="modulo-monedas-views"></span><h2>módulo monedas.views<a class="headerlink" href="#module-monedas.views" title="Link to this heading"></a></h2>
 <dl class="py function">
@@ -963,9 +1077,6 @@ que igualmente valida permisos en la vista.</p>
 <dd></dd></dl>
 
 </section>
-<section id="contenido-del-modulo">
-<h2>Contenido del módulo<a class="headerlink" href="#contenido-del-modulo" title="Link to this heading"></a></h2>
-<span class="target" id="module-monedas"></span></section>
 </section>
 
 
@@ -979,7 +1090,7 @@ que igualmente valida permisos en la vista.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Derechos de autor 2025, Diego.</p>
+    <p>&#169; Derechos de autor 2025, Grupo 5 IS2 - FPUNA .</p>
   </div>
 
   Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un

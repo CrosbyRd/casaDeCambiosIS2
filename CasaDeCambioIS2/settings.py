@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "clientes",
     "roles",
     "monedas",
-    "cotizaciones",
     "admin_panel",
     "core.apps.CoreConfig",
     "pagos",
@@ -68,7 +67,11 @@ INSTALLED_APPS = [
     "django_extensions",
     "analista_panel",
     "facturacion_electronica", # Nueva app para facturación electrónica
+    "ganancias", # Nueva app para el módulo de ganancias
     "widget_tweaks",
+    "cotizaciones.apps.CotizacionesConfig",
+
+    'reportes',
 
 ]
 

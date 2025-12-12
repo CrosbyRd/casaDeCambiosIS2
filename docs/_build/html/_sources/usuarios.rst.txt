@@ -2,24 +2,6 @@ paquete usuarios
 ================
 
 
-Submódulos
-----------
-
-módulo usuarios.admin
----------------------
-
-.. automodule:: usuarios.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo usuarios.apps
---------------------
-
-.. automodule:: usuarios.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo usuarios.forms
 ---------------------
@@ -37,13 +19,7 @@ módulo usuarios.models
    :undoc-members:
    :show-inheritance:
 
-módulo usuarios.tests
----------------------
 
-.. automodule:: usuarios.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo usuarios.urls
 --------------------
@@ -61,10 +37,4 @@ módulo usuarios.views
    :undoc-members:
    :show-inheritance:
 
-Contenido del módulo
----------------
 
-.. automodule:: usuarios
-   :members:
-   :undoc-members:
-   :show-inheritance:

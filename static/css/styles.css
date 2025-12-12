@@ -218,15 +218,16 @@ img, svg, video{ max-width:100%; height:auto; }
 
 /* Pantalla con altura estable */
 .ted-screen{
-  background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 18%,#1f2937) 0%,#0f172a 60%);
+  background:#020617 !important; /* mismo fondo liso */
   border-radius:16px;
-  box-shadow:inset 0 0 0 1px color-mix(in oklab,#fff 8%,transparent);
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,0.35);
   min-height:clamp(420px,55vh,580px);
   height:clamp(420px,55vh,580px);
   position:relative;
   display:flex;
   flex-direction:column;
 }
+
 @media (min-width:768px){
   .ted-screen{ min-height:clamp(480px,58vh,620px); height:clamp(480px,58vh,620px); }
 }
@@ -236,7 +237,13 @@ img, svg, video{ max-width:100%; height:auto; }
     .ted-screen{ min-height:clamp(480px,58dvh,620px); height:clamp(480px,58dvh,620px); }
   }
 }
-.ted-screen-glow{position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 18%,transparent) 0%,transparent 65%);pointer-events:none;border-radius:16px}
+.ted-screen-glow{
+  position:absolute;
+  inset:0;
+  background:transparent !important;
+  pointer-events:none;
+  border-radius:16px;
+}
 
 /* Contenedor de vistas con scroll interno */
 .ted-screen-inner{
@@ -347,19 +354,19 @@ img, svg, video{ max-width:100%; height:auto; }
 }
 .currency-chip:hover{transform:scale(1.05);background:rgba(255,255,255,.15)}
 
-/* Badge welcome */
 .welcome-badge{
   display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .7rem;border-radius:999px;
-  background:linear-gradient(90deg,var(--brand-soft),color-mix(in oklab,#fff 12%,var(--brand-soft)));
+  background:var(--brand-soft);
+  background:linear-gradient(90deg,var(--brand-soft),color-mix(in srgb,#fff 12%,var(--brand-soft)));
   color:#4c1d95;font-weight:800;box-shadow:0 8px 20px -10px rgba(124,58,237,.45)
 }
 
 /* Panel lateral */
-.pad-info-card{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;color:#e5e7eb}
+.pad-info-card{border:1px solid rgba(255,255,255,.18);background:#1a2332;background:radial-gradient(120% 120% at 30% 20%,color-mix(in srgb,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;color:#e5e7eb}
 .pad-info-card .clock{font-variant-numeric:tabular-nums;font-weight:900}
 .pad-bezel{background:#0b0b0f;border-radius:18px;padding:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.ted-pad{border:1px solid rgba(255,255,255,.18);background:radial-gradient(120% 120% at 30% 20%,color-mix(in oklab,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;position:relative;overflow:hidden}
-.ted-pad::after{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 20% 15%,color-mix(in oklab,var(--brand) 14%,transparent) 0%,transparent 65%);pointer-events:none}
+.ted-pad{border:1px solid rgba(255,255,255,.18);background:#1a2332;background:radial-gradient(120% 120% at 30% 20%,color-mix(in srgb,var(--brand) 12%,#1f2937) 0%,#0f172a 60%);border-radius:14px;padding:14px;position:relative;overflow:hidden}
+.ted-pad::after{content:"";position:absolute;inset:0;background:transparent !important;pointer-events:none}
 .ted-key{
   display:flex;align-items:center;justify-content:center;height:56px;border-radius:14px;
   border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
@@ -415,3 +422,13 @@ img, svg, video{ max-width:100%; height:auto; }
   white-space:nowrap;
 }
 .rate-card.hidden{ display:none; }
+/* --- Charts (cohesivo con la UI) --- */
+.chart-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 24px -12px rgba(17,24,39,.08);
+}
+.chart-controls input[type="radio"] { accent-color: var(--brand); }
+#fx-select { border-color: var(--line); }
+

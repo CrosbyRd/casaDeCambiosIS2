@@ -1,0 +1,320 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% translate "¡Operación Iniciada Correctamente!" %} - Global Exchange</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f3ff 0%, #e9e4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1a1a1a;
+        }
+
+        .container { 
+            max-width: 750px; 
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(138, 99, 210, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 32px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            backdrop-filter: blur(10px);
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .header-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 { 
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .content-wrapper {
+            padding: 32px 30px;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .success-message p {
+            font-size: 16px;
+            color: #065f46;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .operation-code-section {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .code-label {
+            font-size: 16px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .operation-code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e5e5e5;
+            margin: 24px 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 22px;
+            height: 22px;
+            fill: #8b5cf6;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1e40af;
+            text-align: center;
+        }
+
+        .actions { 
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn { 
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .btn-primary { 
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e5e5e5;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background: #fafafa;
+            border-color: #d4d4d4;
+        }
+
+        .transaction-id {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .header {
+                padding: 24px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .content-wrapper {
+                padding: 24px 20px;
+            }
+
+            .operation-code {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            <h1>{% translate "¡Operación Iniciada Correctamente!" %}</h1>
+            <p class="header-subtitle">
+                {% translate "Tu operación ha sido registrada exitosamente en nuestro sistema" %}
+            </p>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="success-message">
+                <p>
+                    {% if transaccion.tipo_operacion == 'compra' %}
+                        {% translate "Tu operación de compra de" %} {{ transaccion.moneda_origen.codigo }} {% translate "ha sido iniciada con éxito." %}
+                    {% else %}
+                        {% translate "Tu operación de venta de" %} {{ transaccion.moneda_origen.codigo }} {% translate "ha sido iniciada con éxito." %}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="operation-code-section">
+                <p class="code-label">{% translate "Código de Operación" %}</p>
+                <div class="operation-code">{{ transaccion.codigo_operacion_tauser }}</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                </svg>
+                {% translate "Próximos Pasos" %}
+            </div>
+
+            <div class="info-box">
+                {% translate "Por favor, procede a realizar el pago de tu operación en el Tauser más cercano." %}
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'core:detalle_transaccion' transaccion.id %}" class="btn btn-primary">
+                    {% translate "Ver Detalles de la Operación" %}
+                </a>
+                <a href="{% url 'core:historial_transacciones' %}" class="btn btn-secondary">
+                    {% translate "Ir al Historial de Transacciones" %}
+                </a>
+            </div>
+
+            <div class="transaction-id">
+                ID de Transacción: {{ transaccion.id }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

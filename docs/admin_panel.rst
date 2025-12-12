@@ -1,24 +1,7 @@
 paquete admin\_panel
 ====================
 
-Submódulos
-----------
 
-módulo admin\_panel.admin
--------------------------
-
-.. automodule:: admin_panel.admin
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-módulo admin\_panel.apps
-------------------------
-
-.. automodule:: admin_panel.apps
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo admin\_panel.models
 --------------------------
@@ -28,13 +11,6 @@ módulo admin\_panel.models
    :undoc-members:
    :show-inheritance:
 
-módulo admin\_panel.tests
--------------------------
-
-.. automodule:: admin_panel.tests
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 módulo admin\_panel.urls
 ------------------------
@@ -52,10 +28,3 @@ módulo admin\_panel.views
    :undoc-members:
    :show-inheritance:
 
-Contenido del módulo
----------------
-
-.. automodule:: admin_panel
-   :members:
-   :undoc-members:
-   :show-inheritance:
